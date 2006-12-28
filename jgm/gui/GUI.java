@@ -1,6 +1,6 @@
 package jgm.gui;
 
-import jgm.JGlideMon;
+import jgm.*;
 import jgm.gui.panes.*;
 import jgm.gui.updaters.*;
 
@@ -11,7 +11,10 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-public class GUI implements java.util.Observer, ActionListener {
+public class GUI 
+	implements java.util.Observer,
+				ActionListener {
+	
 	private JGlideMon     jgm;
 	private JFrame        frame;
 
@@ -32,7 +35,12 @@ public class GUI implements java.util.Observer, ActionListener {
 		
 		frame = new JFrame("JGlideMon " + JGlideMon.version);
 
-		frame.setSize(1000, 700);
+		frame.setSize(cfg.window.width, cfg.window.height);
+		
+		if (cfg.window.maximized) {
+			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		}
+		
 		frame.addWindowListener(
 			new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
@@ -40,7 +48,29 @@ public class GUI implements java.util.Observer, ActionListener {
 				} // end WindowClosing
 			}
 		);
+		
+		frame.addWindowStateListener(new WindowStateListener() {
+			public void windowStateChanged(WindowEvent e) {
+				if (JFrame.MAXIMIZED_BOTH ==
+					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
+					//System.out.println("Window is maximized");
+					cfg.window.maximized = true;
+				} else {
+					//System.out.println("Window not maximized");
+					cfg.window.maximized = false;
+				}
+			}
+		});
 
+		frame.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				Dimension s = frame.getSize();
+				//System.out.println("Window resized: " + s);
+				cfg.window.width = s.width;
+				cfg.window.height = s.height;				
+			}
+		});
+		
 		try {
 			// Set System L&F
 			UIManager.setLookAndFeel(

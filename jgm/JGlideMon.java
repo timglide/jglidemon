@@ -76,6 +76,8 @@ public class JGlideMon {
 		
 		t1.start(); t2.start(); t3.start(); t4.start();
 		
+		cfg.writeIni(); 
+		
 		while (t1.isAlive() || t2.isAlive() || 
 			   t3.isAlive() || t4.isAlive()) {}
 		
