@@ -36,6 +36,7 @@ public class GUI
 		frame = new JFrame("JGlideMon " + JGlideMon.version);
 
 		frame.setSize(cfg.window.width, cfg.window.height);
+		frame.setLocation(cfg.window.x, cfg.window.y);
 		
 		if (cfg.window.maximized) {
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -66,8 +67,25 @@ public class GUI
 			public void componentResized(ComponentEvent e) {
 				Dimension s = frame.getSize();
 				//System.out.println("Window resized: " + s);
-				cfg.window.width = s.width;
-				cfg.window.height = s.height;				
+				
+				// only save if not maximized
+				if (JFrame.MAXIMIZED_BOTH !=
+					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
+					cfg.window.width = s.width;
+					cfg.window.height = s.height;
+				}
+			}
+			
+			public void componentMoved(ComponentEvent e) {
+				Point p = frame.getLocation();
+				System.out.println("Window moved: " + p);
+				
+				// only save if not maximized
+				if (JFrame.MAXIMIZED_BOTH !=
+					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
+					cfg.window.x = p.x;
+					cfg.window.y = p.y;
+				}
 			}
 		});
 		

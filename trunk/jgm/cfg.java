@@ -47,6 +47,8 @@ public class cfg extends Thread {
 		if (screenshot.scale > 100) screenshot.scale = 100; else
 		if (screenshot.scale < 10)  screenshot.scale = 10;
 		
+		window.x = ini.getIntegerProperty("window", "x", 50);
+		window.y = ini.getIntegerProperty("window", "y", 50);
 		window.maximized = ini.getBooleanProperty("window", "maximized", true);
 		window.width = ini.getIntegerProperty("window", "width", 1000);
 		window.height = ini.getIntegerProperty("window", "height", 700);
@@ -68,6 +70,8 @@ public class cfg extends Thread {
 				ini.setIntegerProperty("screenshot", "updateinterval", screenshot.updateInterval);
 				ini.setIntegerProperty("screenshot", "scale", screenshot.scale);
 		
+				ini.setIntegerProperty("window", "x", window.x);
+				ini.setIntegerProperty("window", "y", window.y);
 				ini.setBooleanProperty("window", "maximized", window.maximized);
 				ini.setIntegerProperty("window", "width", window.width);
 				ini.setIntegerProperty("window", "height", window.height);				
@@ -96,6 +100,8 @@ public class cfg extends Thread {
 	}
 	
 	public static class window {
+		public static int x = 50;
+		public static int y = 50;
 		public static boolean maximized = true;
 		public static int width = 1000;
 		public static int height = 700;
