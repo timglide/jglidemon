@@ -51,7 +51,7 @@ public class MobInfoPane extends Pane {
 
 	public void update(StatusUpdater s) {
 		name.setText("Target Name: " + s.targetName);
-		level.setText("Target Health: " + s.targetLevel);
+		level.setText("Target Level: " + s.targetLevel);
 		health.setValue((int) s.targetHealth);
 
 		kills.setText("Kills: " + s.kills);
