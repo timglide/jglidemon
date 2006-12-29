@@ -8,6 +8,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class ControlPane extends Pane implements ActionListener {
+	private static GliderConn conn;
+	
 	private JButton connect;
 	private JButton attach;
 	private JButton start;
@@ -23,19 +25,19 @@ public class ControlPane extends Pane implements ActionListener {
 		
 		attach = new JButton("Attach");
 		attach.addActionListener(this);
-		//attach.setEnabled(false);
+		attach.setEnabled(false);
 		c.gridy++;
 		add(attach, c);
 
-		start = new JButton("Start Glider");
+		start = new JButton("Start Glide");
 		start.addActionListener(this);
-		//start.setEnabled(false);
+		start.setEnabled(false);
 		c.gridy++; c.gridwidth = 1;
 		add(start, c);
 		
-		stop = new JButton("Stop Glider");
+		stop = new JButton("Stop Glide");
 		stop.addActionListener(this);
-		//stop.setEnabled(false);
+		stop.setEnabled(false);
 		c.gridx++;
 		add(stop, c);
 	}
@@ -44,11 +46,18 @@ public class ControlPane extends Pane implements ActionListener {
 		if (s.attached) {
 			connect.setText("Disconnect");
 			attach.setEnabled(false);
+			start.setEnabled(true);
+			stop.setEnabled(true);
+		} else {
+			attach.setEnabled(true);
+			start.setEnabled(false);
+			stop.setEnabled(false);
 		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		GliderConn conn = JGlideMon.instance.keysConn;
+		if (conn == null) conn = JGlideMon.instance.keysConn;
+		
 		String cmd = e.getActionCommand();
 		String s = null;
 		
@@ -61,8 +70,9 @@ public class ControlPane extends Pane implements ActionListener {
 		}
 		
 		if (s != null) {
+			System.out.println("Sending: " + s);
 			conn.send(s);
-			conn.readLine(); // status
+			System.out.println(conn.readLine()); // status
 			conn.readLine(); // ---
 		}
 	}
