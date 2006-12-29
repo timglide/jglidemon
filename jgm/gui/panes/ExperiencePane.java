@@ -1,11 +1,7 @@
 package jgm.gui.panes;
 
-import jgm.glider.*;
 import jgm.gui.updaters.StatusUpdater;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.applet.*;
 import javax.swing.*;
 
 public class ExperiencePane extends Pane {
@@ -60,7 +56,7 @@ public class ExperiencePane extends Pane {
 			d = 60 * (d - minutes);
 			seconds = (int) d;
 
-			ttl.setText(hours + "hr " + minutes + "min " + seconds + " sec");
+			ttl.setText(hours + "hr " + minutes + "min " + seconds + "sec");
 		} else {
 			ttl.setText("Unknown");
 		}

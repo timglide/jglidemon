@@ -1,7 +1,6 @@
 package jgm.gui;
 
 import java.io.*;
-import java.awt.event.*;
 import javax.swing.*;
  
 public class Console implements Runnable {
@@ -13,14 +12,16 @@ public class Console implements Runnable {
 	JTextArea displayPane;
 	BufferedReader reader;
  
-	private Console(JTextArea displayPane, PipedOutputStream pos) {
+	/*private Console(JTextArea displayPane, PipedOutputStream pos) {
 		this.displayPane = displayPane;
  
 		try {
 			PipedInputStream pis = new PipedInputStream(pos);
 			reader = new BufferedReader(new InputStreamReader(pis));
-		} catch(IOException e) {}
-	}
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}*/
 
 	private Console(JTextArea displayPane, BufferedReader r) {
 		this.displayPane = displayPane;

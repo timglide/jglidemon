@@ -72,7 +72,7 @@ public class StatusUpdater extends Observable implements Runnable {
 				update();
 				Thread.sleep(cfg.status.updateInterval);
 			} catch (IOException e) {
-				System.err.println("IOE: " + e.getMessage());
+				e.printStackTrace();
 			} catch (InterruptedException e) {
 				System.out.println(thread.getName() + " interrupted");
 				return;

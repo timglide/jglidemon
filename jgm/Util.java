@@ -1,7 +1,5 @@
 package jgm;
 
-import java.applet.Applet;
-
 public class Util {
 	// convert a raw (unsigned) byte to an int since
 	// java doesn't actually have unsigned numbers

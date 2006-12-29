@@ -12,8 +12,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class GUI 
-	implements java.util.Observer,
-				ActionListener {
+	implements java.util.Observer, ActionListener {
 	
 	private JGlideMon     jgm;
 	private JFrame        frame;
@@ -78,7 +77,7 @@ public class GUI
 			
 			public void componentMoved(ComponentEvent e) {
 				Point p = frame.getLocation();
-				System.out.println("Window moved: " + p);
+				//System.out.println("Window moved: " + p);
 				
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
