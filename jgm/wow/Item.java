@@ -67,11 +67,13 @@ public class Item implements Comparable<Item> {
 	public static final int SLOT_OFF_HAND = 17;
 	public static final int SLOT_RANGED = 18;
 	public static final int SLOT_TABARD = 19;
+	public static final int SLOT_CHEST_ROBE = 20;
 	
 	public static final String[] SLOTS = {
 		"Ammo", "Head", "Neck", "Shoulder", "Shirt", "Chest", "Waist",
 		"Legs", "Feet", "Wrist", "Hands", "Finger", "Finger", "Trinket", "Trinket",
-		"Back", "Main Hand", "Off Hand", "Ranged", "Tabard"
+		"Back", "Main Hand", "Off Hand", "Ranged", "Tabard",
+		"Chest (Robe)"
 	};
 	
 	public static final int CLASS_WEAPON = 2;
@@ -182,6 +184,8 @@ public class Item implements Comparable<Item> {
 		try {
 			switch (clazz) {
 				case CLASS_ARMOR:
+					return SLOTS[slot];
+					
 				case CLASS_WEAPON:
 					switch (subclass) {
 						case SUBCLASS_STAFF:
@@ -196,7 +200,9 @@ public class Item implements Comparable<Item> {
 						case SUBCLASS_CROSSBOW:
 							return "Ranged";
 					}
-					return SLOTS[slot];
+					
+					return "One-Hand";
+					//return SLOTS[slot];
 					
 				case CLASS_PROJECTILE:
 					return CLASSES[clazz];
