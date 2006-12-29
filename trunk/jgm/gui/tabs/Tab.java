@@ -1,11 +1,8 @@
 package jgm.gui.tabs;
 
-import jgm.glider.*;
 import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.applet.*;
 import javax.swing.*;
 
 public abstract class Tab extends jgm.gui.panes.Pane {

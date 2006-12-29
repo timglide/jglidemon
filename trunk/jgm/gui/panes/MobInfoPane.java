@@ -1,11 +1,7 @@
 package jgm.gui.panes;
 
-import jgm.glider.*;
 import jgm.gui.updaters.StatusUpdater;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.applet.*;
 import javax.swing.*;
 
 public class MobInfoPane extends Pane {

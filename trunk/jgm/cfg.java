@@ -2,8 +2,6 @@ package jgm;
 
 import jgm.util.*;
 
-import java.util.Observable;
-
 public class cfg extends Thread {
 	private boolean set = false;
 	private static QuickIni ini = new QuickIni("JGlideMon.ini");

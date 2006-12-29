@@ -112,7 +112,7 @@ public class SSUpdater extends Thread {
 			tab.ssLabel.setIcon(icon);
 			tab.ssLabel.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
 		} catch (IOException e) {
-			System.err.println("IOE: " + e.getMessage());
+			e.printStackTrace();
 			conn.wait();
 		} catch (NullPointerException e) {
 			System.err.println("NULL: " + e.getMessage());

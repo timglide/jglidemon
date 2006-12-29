@@ -2,7 +2,6 @@ package jgm.glider;
 
 import jgm.cfg;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.*;
 
@@ -113,7 +112,7 @@ public class GliderConn extends Thread {
 		try {
 			return inStream.read();
 		} catch (IOException e) {
-			System.err.println("IOE: " + e.getMessage());
+			e.printStackTrace();
 			return -1;
 		}
 	}
@@ -124,7 +123,7 @@ public class GliderConn extends Thread {
 		try {
 			return inStream.read(buff);
 		} catch (IOException e) {
-			System.err.println("IOE: " + e.getMessage());
+			e.printStackTrace();
 			return -1;
 		}
 	}
@@ -135,7 +134,7 @@ public class GliderConn extends Thread {
 		try {
 			return inStream.read(buff, off, len);
 		} catch (IOException e) {
-			System.err.println("IOE: " + e.getMessage());
+			e.printStackTrace();
 			return -1;
 		}
 	}
@@ -146,7 +145,7 @@ public class GliderConn extends Thread {
 		try {
 			return inStream.skip(n);
 		} catch (IOException e) {
-			System.err.println("IOE: " + e.getMessage());
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -157,7 +156,7 @@ public class GliderConn extends Thread {
 		try {
 			return in.readLine();
 		} catch (IOException e) {
-			System.err.println("IOE: " + e.getMessage());
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -172,6 +171,8 @@ public class GliderConn extends Thread {
 			in.close();
 			out.close();
 			s.close();
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
