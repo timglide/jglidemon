@@ -160,11 +160,11 @@ public class ItemTooltip extends JPanel {
 		updateLbl(damageLabel, s);
 		
 		s = i.speed > 0
-			? String.format("  Speed %01.1f", i.speed / 1000.0) : null;
+			? String.format("  Speed %01.2f", i.speed / 1000.0) : null;
 		updateLbl(speedLabel, s);
 		
 		s = i.dmgLow > 0 && i.dmgHigh > 0 && i.speed > 0
-			? String.format("(%01.2f damage per second)", ((i.dmgLow + i.dmgHigh) / 2.0) / (i.speed / 1000.0))
+			? String.format("(%01.1f damage per second)", ((i.dmgLow + i.dmgHigh) / 2.0) / (i.speed / 1000.0))
 			: null;
 		updateLbl(dpsLabel, s);
 		
