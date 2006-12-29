@@ -71,12 +71,12 @@ public class SaveURL
 	/**
 	 * Extract links directly from a URL by calling extractLinks(getURL())
 	 */
-	public static Vector extractLinks(URL url)
+	public static Vector<String> extractLinks(URL url)
 		throws IOException {
 		return extractLinks(getURL(url));
 	}
 
-	public static Map extractLinksWithText(URL url)
+	public static Map<String, String> extractLinksWithText(URL url)
 		throws IOException {
 		return extractLinksWithText(getURL(url));
 	}
@@ -86,9 +86,9 @@ public class SaveURL
      * In order to avoid the possible double conversion from mixed to lower case
      * a second method is provided, where the conversion is done externally.
      */
-    public static Vector extractLinks(String rawPage, String page) {
+    public static Vector<String> extractLinks(String rawPage, String page) {
 		int index = 0;
-		Vector links = new Vector();
+		Vector<String> links = new Vector<String>();
 		while ((index = page.indexOf("<a ", index)) != -1)
 		{
 		    if ((index = page.indexOf("href", index)) == -1) break;
@@ -108,9 +108,9 @@ public class SaveURL
 	 * Note that due to the nature of a Map only one link text is returned per
 	 * URL, even if a link occurs multiple times with different texts.
 	 */
-	public static Map extractLinksWithText(String rawPage, String page) {
+	public static Map<String, String> extractLinksWithText(String rawPage, String page) {
 		int index = 0;
-		Map links = new HashMap();
+		Map<String, String> links = new HashMap<String, String>();
 		while ((index = page.indexOf("<a ", index)) != -1)
 		{
 			int tagEnd = page.indexOf(">", index);
@@ -138,11 +138,11 @@ public class SaveURL
 	 * the validity of its results nor does it care about html comments, so
 	 * links that are commented out are also retrieved.
 	 */
-	public static Vector extractLinks(String rawPage) {
+	public static Vector<String> extractLinks(String rawPage) {
         return extractLinks(rawPage, rawPage.toLowerCase().replaceAll("\\s", " "));
 	}
 
-	public static Map extractLinksWithText(String rawPage) {
+	public static Map<String, String> extractLinksWithText(String rawPage) {
         return extractLinksWithText(rawPage, rawPage.toLowerCase().replaceAll("\\s", " "));
 	}
 }
