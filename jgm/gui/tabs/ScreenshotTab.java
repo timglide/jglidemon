@@ -92,7 +92,7 @@ public class ScreenshotTab extends Tab
 		if (conn == null) conn = JGlideMon.instance.keysConn;
 		if (updater == null) updater = JGlideMon.instance.ssUpdater;
 		
-		System.out.println(e);
+		//System.out.println(e);
 		
 		int code = e.getKeyCode();
 		
