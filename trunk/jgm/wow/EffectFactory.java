@@ -11,7 +11,7 @@ public class EffectFactory {
 	
 	private static final String EFFECT_STR = 
 		// Equip: <a href="/db/spell.html?wspell=18185" class="itemeffectlink">Increases defense rating by 16.</a>
-		"(Equip|Use): <a.*?(\\d+).*?>(.*?)</a>.*?";
+		"(Chance on hit|Equip|Use): <a.*?(\\d+).*?>(.*?)</a>.*?";
 	private static Pattern EFFECT_PATTERN = null;
 	
 	static {
