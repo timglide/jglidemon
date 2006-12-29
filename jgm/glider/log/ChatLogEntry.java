@@ -14,11 +14,12 @@ public class ChatLogEntry extends LogEntry {
 	private static Pattern PATTERN = null;
 
 	static {
-		PATTERN = Pattern.compile("\\[([^]]+)\\] (whisper|say)s: (.*)");
+		PATTERN = Pattern.compile("(<GM>|)\\[([^]]+)\\] (whisper|say)s: (.*)");
 
-		/* group 1: from
-		 *       2: type
-		 *       3: message
+		/* group 1: <GM>?
+		 *       2: from
+		 *       3: type
+		 *       4: message
 		 */
 	}
 
@@ -31,12 +32,16 @@ public class ChatLogEntry extends LogEntry {
 
 		int urgency = 1;;
 
-		String from    = m.group(1);
-		String type    = m.group(2);
+		boolean gm     = m.group(1).equals("<GM>");
+		String from    = m.group(2);
+		String type    = m.group(3);
 		type = Character.toUpperCase(type.charAt(0)) + type.substring(1);
-		String message = m.group(3);
+		String message = m.group(4);
 
-		if (from.startsWith("<GM>")) urgency++;
+		if (gm) {
+			type = "GM " + type;
+			urgency++;
+		}
 		
 		return new WhisperEntry(
 			s, message, from, urgency, type
