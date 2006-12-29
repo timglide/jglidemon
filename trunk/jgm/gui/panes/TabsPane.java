@@ -4,10 +4,9 @@ import jgm.gui.tabs.*;
 import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 
-public class TabsPane extends Pane implements KeyListener {
+public class TabsPane extends Pane {
 	private JTabbedPane  tabbedPane;
 
 	public ScreenshotTab screenshotTab;
@@ -29,7 +28,6 @@ public class TabsPane extends Pane implements KeyListener {
 
 		screenshotTab = new ScreenshotTab();
 		tabbedPane.addChangeListener(screenshotTab);
-		tabbedPane.addKeyListener(this);
 		addTab(screenshotTab);
 
 		statusLog  = new LogTab("Status", tabbedPane);
@@ -54,8 +52,9 @@ public class TabsPane extends Pane implements KeyListener {
 		addTab(config);
 		
 		add(tabbedPane, BorderLayout.CENTER);
-		
-		urgentChatLog.add(new jgm.glider.log.WhisperEntry("raw", "test", "xersees", 1, "Whisper"));
+
+		// for testing
+//		urgentChatLog.add(new jgm.glider.log.WhisperEntry("[Xersees] whispers: Blah", "[Xersees] whispers: Blah", "Xersees", 1, "Whisper"));
 	}
 
 	private void addTab(Tab t) {
@@ -65,16 +64,4 @@ public class TabsPane extends Pane implements KeyListener {
 	public void update(StatusUpdater s) {
 
 	}
-	
-	public void keyPressed(KeyEvent e) {}
-	
-	public void keyReleased(KeyEvent e) {
-		switch (tabbedPane.getSelectedIndex()) {
-			case 0:
-				screenshotTab.keyReleased(e);
-				break;
-		}
-	}
-	
-	public void keyTyped(KeyEvent e) {}
 }

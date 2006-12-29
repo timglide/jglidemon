@@ -15,11 +15,26 @@ public class ScreenshotTab extends Tab
 	private static GliderConn conn = null;
 	private static SSUpdater updater = null;
 	
+	public JTextField keysField;
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
 
 	public ScreenshotTab() {
 		super(new BorderLayout(), "Screenshot");
+		
+		JPanel jp = new JPanel(new GridBagLayout());
+		c.weightx = 0.0;
+		jp.add(new JLabel("Chars typed in the textfield will be sent immediately: "), c);
+		keysField = new JTextField();
+		keysField.addKeyListener(this);
+		keysField.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				keysField.setText("");
+			}
+		});
+		c.gridx++; c.weightx = 1.0;
+		jp.add(keysField, c);
+		add(jp, BorderLayout.NORTH);
 		
 		ssLabel = new JLabel();
 		ssLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -59,7 +74,7 @@ public class ScreenshotTab extends Tab
 			e.getButton() == MouseEvent.BUTTON1
 			? "left" : "right";
 		
-		System.out.println(btn + " click @ " + x + "," + y + " (" + xp + "," + yp + ") [" + s.width + "x" + s.height + "]");
+		//System.out.println(btn + " click @ " + x + "," + y + " (" + xp + "," + yp + ") [" + s.width + "x" + s.height + "]");
 		
 		conn.send("/setmouse " + xp + "/" + yp);
 		System.out.println(conn.readLine()); conn.readLine();
@@ -78,62 +93,68 @@ public class ScreenshotTab extends Tab
 		if (updater == null) updater = JGlideMon.instance.ssUpdater;
 		
 		System.out.println(e);
-		//displayInfo(e, "Released: ");
+		
+		int code = e.getKeyCode();
+		
+		boolean goodKey = false;
+		
+		switch (code) {
+			case KeyEvent.VK_SPACE:
+			case KeyEvent.VK_ENTER:
+				goodKey = true;
+		}
+		
+		// A-Z, 0-9, F1-F12, 4 arrows
+		if (KeyEvent.VK_A <= code && code <= KeyEvent.VK_Z ||
+			KeyEvent.VK_0 <= code && code <= KeyEvent.VK_9 || 
+			KeyEvent.VK_F1 <= code && code <= KeyEvent.VK_F12 ||
+			KeyEvent.VK_LEFT <= code && code <= KeyEvent.VK_DOWN) {
+			goodKey = true;
+		}
+		
+		 if (!goodKey) {
+			System.out.println("Bad key: " + code + ", " + KeyEvent.getKeyText(code));
+			return;
+		}
+		
+		if (e.isAltDown() && code == KeyEvent.VK_F4) {
+			System.out.println("NOT sending Alt+F4!");
+			return;
+		}
+			
+		if (e.isControlDown()) {
+			conn.send("/holdkey " + KeyEvent.VK_CONTROL);
+			System.out.println(conn.readLine()); conn.readLine();
+		}
+			
+		if (e.isAltDown()) {
+			conn.send("/holdkey " + KeyEvent.VK_ALT);
+			System.out.println(conn.readLine()); conn.readLine();
+		}
+			
+		if (e.isShiftDown()) {
+			conn.send("/holdkey " + KeyEvent.VK_SHIFT);
+			System.out.println(conn.readLine()); conn.readLine();
+		}
+			
+		conn.send("/forcekeys #" + code + "#");
+		System.out.println(conn.readLine()); conn.readLine();
+			
+		if (e.isShiftDown()) {
+			conn.send("/releasekey " + KeyEvent.VK_SHIFT);
+			System.out.println(conn.readLine()); conn.readLine();
+		}
+			
+		if (e.isAltDown()) {
+			conn.send("/releasekey " + KeyEvent.VK_ALT);
+			System.out.println(conn.readLine()); conn.readLine();
+		}
+			
+		if (e.isControlDown()) {
+			conn.send("/releasekey " + KeyEvent.VK_CONTROL);
+			System.out.println(conn.readLine()); conn.readLine();
+		}
 	}
 	
 	public void keyTyped(KeyEvent e) {}
-	
-	protected void displayInfo(KeyEvent e, String s){
-	        //You should only rely on the key char if the event
-	        //is a key typed event.
-		String keyString = null;
-		String modString = null;
-		String tmpString = null;
-		String actionString = null;
-		String locationString = null;
-	        int id = e.getID();
-	        if (id == KeyEvent.KEY_TYPED) {
-	            char c = e.getKeyChar();
-	            keyString = "key character = '" + c + "'";
-	        } else {
-	            int keyCode = e.getKeyCode();
-	            keyString = "key code = " + keyCode
-	                        + " ("
-	                        + KeyEvent.getKeyText(keyCode)
-	                        + ")";
-	        }
-
-	        int modifiers = e.getModifiersEx();
-	        modString = "modifiers = " + modifiers;
-	        tmpString = KeyEvent.getModifiersExText(modifiers);
-	        if (tmpString.length() > 0) {
-	            modString += " (" + tmpString + ")";
-	        } else {
-	            modString += " (no modifiers)";
-	        }
-
-	        actionString = "action key? ";
-	        if (e.isActionKey()) {
-	            actionString += "YES";
-	        } else {
-	            actionString += "NO";
-	        }
-
-	        locationString = "key location: ";
-	        int location = e.getKeyLocation();
-	        if (location == KeyEvent.KEY_LOCATION_STANDARD) {
-	            locationString += "standard";
-	        } else if (location == KeyEvent.KEY_LOCATION_LEFT) {
-	            locationString += "left";
-	        } else if (location == KeyEvent.KEY_LOCATION_RIGHT) {
-	            locationString += "right";
-	        } else if (location == KeyEvent.KEY_LOCATION_NUMPAD) {
-	            locationString += "numpad";
-	        } else { // (location == KeyEvent.KEY_LOCATION_UNKNOWN)
-	            locationString += "unknown";
-	        }
-	        
-	        System.out.println(keyString + "\n" + modString + "\n" +
-	        tmpString + "\n" + actionString + "\n" + locationString);
-	    }
 }
