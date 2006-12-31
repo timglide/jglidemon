@@ -77,7 +77,7 @@ public class LogTab extends Tab {
 				WhisperEntry wentry = (WhisperEntry) entry;
 				String t = wentry.getType();
 				
-				if (t.equals("Whisper") || t.equals("Say")) {
+				if (t.contains("Whisper") || t.contains("Say")) {
 					SendKeysTab skt =
 						jgm.JGlideMon.instance.gui.tabsPane.sendKeys;
 
