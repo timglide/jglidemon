@@ -2,7 +2,7 @@ package jgm.gui.updaters;
 
 import jgm.cfg;
 
-import jgm.glider.GliderConn;
+import jgm.glider.*;
 import jgm.gui.tabs.*;
 
 import java.io.*;
@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
  
-public class SSUpdater extends Thread {
+public class SSUpdater implements Runnable, ConnectionListener {
 	public boolean idle = false;
 	private boolean stop = false;
 
@@ -18,37 +18,33 @@ public class SSUpdater extends Thread {
 
 	private ScreenshotTab tab;
  
+	public Thread thread;
+	
 	public SSUpdater(ScreenshotTab t) {
-		super("SSUpdater");
-
 		tab  = t;
-
-		start();
+		conn = new GliderConn();
 	}
 
+	public GliderConn getConn() {
+		return conn;
+	}
+	
+	public void connectionEstablished() {
+		thread = new Thread(this, "SSUpdater");
+		thread.start();
+	}
+	
 	public void close() {
 		stop = true;
-		this.interrupt();
+		thread.interrupt();
 		conn.close();
 	}
 
-	public boolean update() {
-		if (conn == null) conn = new GliderConn();
-
+	public boolean update() throws IOException {
 	  synchronized (conn) {
 		
-		if (!conn.isConnected()) {
-			try {
-				conn.wait();
-			} catch (InterruptedException e) {
-				System.out.println(this.getName() + " interrupted");
-			}
-		}
-		
 		if (stop) return false;
-		
-	  try {
-		
+				
 		System.gc();
 		conn.send("/capturescale " + cfg.screenshot.scale);
 		conn.readLine(); // set scale successfully
@@ -102,27 +98,16 @@ public class SSUpdater extends Thread {
 
 //		System.out.println("Read " + written + " for image");
 
-		try {
-//			System.out.println("Making ss...");
-			BufferedImage img =
-				javax.imageio.ImageIO.read(
-					new ByteArrayInputStream(buff)
-				);
-			ImageIcon icon = new ImageIcon(img);
-			tab.ssLabel.setIcon(icon);
-			tab.ssLabel.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
-		} catch (IOException e) {
-			e.printStackTrace();
-			conn.wait();
-		} catch (NullPointerException e) {
-			System.err.println("NULL: " + e.getMessage());
-		}
+//		System.out.println("Making ss...");
+		BufferedImage img =
+			javax.imageio.ImageIO.read(
+				new ByteArrayInputStream(buff)
+			);
+		ImageIcon icon = new ImageIcon(img);
+		tab.ssLabel.setIcon(icon);
+		tab.ssLabel.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
 
-		return true;
-	  } catch (Exception e) {
-		  return false;
-	  }
-	  
+		return true;	  
 	  }
 	}
 
@@ -131,12 +116,20 @@ public class SSUpdater extends Thread {
 			try {
 				// don't update if the tab isn't showing
 				idle = false;
-				while (tab.isCurrentTab() && !update()) {}
+				
+				try {
+					while (tab.isCurrentTab() && !update()) {}
+				} catch (IOException e) {
+					e.printStackTrace();
+					idle = true;
+					return;
+				}
+				
 				idle = true;
-				sleep(cfg.screenshot.updateInterval);
+				Thread.sleep(cfg.screenshot.updateInterval);
 			} catch (InterruptedException e) {
-				System.out.println(getName() + " interrupted");
-				interrupted();
+				System.out.println(thread.getName() + " interrupted");
+				Thread.interrupted();
 				
 				if (stop) {
 					return;

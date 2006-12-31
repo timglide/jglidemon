@@ -1,11 +1,13 @@
 package jgm.gui.updaters;
 
-import jgm.glider.GliderConn;
+import jgm.glider.*;
 import jgm.glider.log.*;
 import jgm.gui.panes.TabsPane;
 import jgm.gui.tabs.*;
  
-public class LogUpdater extends Thread {
+import java.io.*;
+
+public class LogUpdater implements Runnable, ConnectionListener {
 	private boolean stop = false;
 
 	private GliderConn conn;
@@ -19,9 +21,9 @@ public class LogUpdater extends Thread {
 	private LogTab combatLog;
 	private LootsTab lootsTab;
  
+	private Thread thread;
+	
 	public LogUpdater(TabsPane t) {
-		super("LogUpdater");
-
 		statusLog  = t.statusLog;
 		rawLog     = t.rawLog;
 		gliderLog  = t.gliderLog;
@@ -30,81 +32,82 @@ public class LogUpdater extends Thread {
 		urgentChatLog = t.urgentChatLog;
 		combatLog  = t.combatLog;
 		lootsTab   = t.lootsTab;
- 
-		start();
-	}
+		
+		conn = new GliderConn();
+ 	}
 
 	public void close() {
 		stop = true;
-		this.interrupt();
+		thread.interrupt();
 		conn.close();
 	}
 
+	public GliderConn getConn() {
+		return conn;
+	}
+	
+	public void connectionEstablished() {
+		thread = new Thread(this, "LogUpdater");
+		thread.start();
+	}
+	
 	public void run() {
-		conn = new GliderConn();
-
-	  synchronized (conn) {
-		
-		while (true) {
-			while (!conn.isConnected()) {
-				try {
-					conn.wait();
-				} catch (InterruptedException e) {
-					System.out.println("LogUpdater interrupted");
-					interrupted();
-				}
-			}
-			
-			if (stop) return;
-		
+		try {
 			conn.send("/log all");
 			conn.readLine(); // Log mode added: all
 			conn.readLine(); // ---
-
-			String   line = null;
-			LogEntry e    = null;
-
-			while (null != (line = conn.readLine())) {
-				if (stop) return;
-
-				e = LogEntry.factory(line);
-
-				if (e == null) continue;
-
-				rawLog.add(e);
-
-				if (e instanceof GliderLogEntry) {
-					gliderLog.add(e);
-				} else if (e instanceof StatusEntry) {
-					statusLog.add(e);
-				} else if (e instanceof ChatLogEntry) {
-					ChatLogEntry e2 = (ChatLogEntry) e;
-				
-					if (e2 instanceof WhisperEntry) {
-						urgentChatLog.add(e, true);
-					}
-				
-					chatLog.add(e);
-				} else if (e instanceof RawChatLogEntry) {
-					rawChatLog.add(e);
-
-					RawChatLogEntry e2 = (RawChatLogEntry) e;
-
-					if (e2.hasItem())  {
-//						System.out.println("Adding item: " + e2.getItem().toString());
-						lootsTab.add(e2.getItem());
-					}
-				
-					if (e2.hasMoney()) {
-						lootsTab.addMoney(e2.getMoney());
-					}
-				} else if (e instanceof CombatLogEntry) {
-					combatLog.add(e);
-				}
-			}
- 
-			System.err.println("Conn must have disconnected, reconnecting...");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return; // connection died, will be restarted eventually
 		}
-	  }
+
+		String   line = null;
+		LogEntry e    = null;
+
+		while (true) {
+			try {
+				line = conn.readLine();
+			} catch (IOException x) {
+				x.printStackTrace();
+				return;
+			}
+			
+			if (null == line || stop) return;
+
+			e = LogEntry.factory(line);
+
+			if (e == null) continue;
+
+			rawLog.add(e);
+
+			if (e instanceof GliderLogEntry) {
+				gliderLog.add(e);
+			} else if (e instanceof StatusEntry) {
+				statusLog.add(e);
+			} else if (e instanceof ChatLogEntry) {
+				ChatLogEntry e2 = (ChatLogEntry) e;
+				
+				if (e2 instanceof WhisperEntry) {
+					urgentChatLog.add(e, true);
+				}
+				
+				chatLog.add(e);
+			} else if (e instanceof RawChatLogEntry) {
+				rawChatLog.add(e);
+
+				RawChatLogEntry e2 = (RawChatLogEntry) e;
+
+				if (e2.hasItem())  {
+//					System.out.println("Adding item: " + e2.getItem().toString());
+					lootsTab.add(e2.getItem());
+				}
+				
+				if (e2.hasMoney()) {
+					lootsTab.addMoney(e2.getMoney());
+				}
+			} else if (e instanceof CombatLogEntry) {
+				combatLog.add(e);
+			}
+		}
 	}
 }

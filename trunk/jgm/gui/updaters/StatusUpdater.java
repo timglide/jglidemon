@@ -2,13 +2,15 @@ package jgm.gui.updaters;
 
 import jgm.cfg;
 
-import jgm.glider.GliderConn;
+import jgm.glider.*;
 
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-public class StatusUpdater extends Observable implements Runnable {
+public class StatusUpdater extends Observable
+	implements Runnable, ConnectionListener {
+	
 	public String version        = "";
 	public boolean attached      = false;
 	public String mode           = "Auto";
@@ -36,8 +38,7 @@ public class StatusUpdater extends Observable implements Runnable {
 	private boolean stop = false;
 
 	public StatusUpdater() {
-		thread = new Thread(this, "StatusUpdater");
-		thread.start();
+		conn = new GliderConn();
 	}
 
 	public void close() {
@@ -46,42 +47,32 @@ public class StatusUpdater extends Observable implements Runnable {
 		conn.close();
 	}
 
+	public GliderConn getConn() {
+		return conn;
+	}
+	
+	public void connectionEstablished() {
+		thread = new Thread(this, "StatusUpdater");
+		thread.start();
+	}
+	
 	public void run() {
-		if (conn == null) conn = new GliderConn();
-
-	  synchronized (conn) {
-		
-		try {
-			conn.wait();
-		} catch (InterruptedException e) {
-			return;
-		}
-		
 		while (true) {
-			if (!stop && !conn.isConnected()) {
-				try {
-					conn.wait();
-				} catch (InterruptedException e) {
-					System.out.println(thread.getName() + " interrupted");
-				}
-			}
-			
 			if (stop) return;
 			
 			try {
 				update();
 				Thread.sleep(cfg.status.updateInterval);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-			} catch (InterruptedException e) {
-				System.out.println(thread.getName() + " interrupted");
 				return;
 			}
 		}
-	  }
 	}
 
-	private void update() throws InterruptedException, IOException {
+	private void update()
+		throws NullPointerException, InterruptedException, IOException {
+		
 		String line = null;
 		Map<String, String> m = new HashMap<String, String>();
 		BufferedReader r = conn.getIn();

@@ -1,7 +1,7 @@
 package jgm.gui.panes;
 
 import jgm.JGlideMon;
-import jgm.glider.GliderConn;
+import jgm.glider.*;
 import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.event.*;
@@ -19,7 +19,8 @@ public class ControlPane extends Pane implements ActionListener {
 		super();
 
 		connect = new JButton("Connect");
-		connect.setEnabled(false);
+		connect.addActionListener(this);
+		//connect.setEnabled(false);
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
 		add(connect, c);
 		
@@ -60,20 +61,29 @@ public class ControlPane extends Pane implements ActionListener {
 		
 		String cmd = e.getActionCommand();
 		String s = null;
-		
+		System.out.println("Cmd: " + cmd);
 		if (cmd.equals("Attach")) {
 			s = "/attach";
 		} else if (cmd.equals("Start Glide")) {
 			s = "/startglide";
 		} else if (cmd.equals("Stop Glide")) {
 			s = "/stopglide";
+		} else if (cmd.equals("Disconnect")) {
+			Connector.instance.disconnect();
+		} else if (cmd.equals("Connect")) {
+			Connector.instance.connect();
 		}
 		
 		if (s != null) {
 			System.out.println("Sending: " + s);
-			conn.send(s);
-			System.out.println(conn.readLine()); // status
-			conn.readLine(); // ---
+			
+			try {
+				conn.send(s);
+				System.out.println(conn.readLine()); // status
+				conn.readLine(); // ---
+			} catch (Exception x) {
+				x.printStackTrace();
+			}
 		}
 	}
 }
