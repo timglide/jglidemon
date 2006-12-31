@@ -20,7 +20,7 @@ public class ControlPane extends Pane implements ActionListener {
 
 		connect = new JButton("Connect");
 		connect.addActionListener(this);
-		//connect.setEnabled(false);
+		connect.setEnabled(false);
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
 		add(connect, c);
 		
