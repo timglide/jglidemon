@@ -5,51 +5,23 @@ import jgm.cfg;
 import java.io.*;
 import java.net.*;
 
-public class GliderConn extends Thread {
+public class GliderConn {
 	private static int instances = 0;
 	
-	private boolean        stop = false;
 	private Socket         s;
 	private PrintWriter    out;
 	private InputStream    inStream;
 	private BufferedReader in;
 
 	public GliderConn() {
-		super("GliderConn" + (++instances));
-		start();
+		++instances;
 	}
 	
-	public void run() {
-		while (!stop) {
-			while (!isConnected()) {
-				connect();
-				
-				if (!isConnected()) {
-					try {
-						System.out.println("  not connected, waiting");
-						sleep(5000);
-					} catch (InterruptedException e) {
-						System.out.println(getName() + " interrupted");
-					}
-					
-					if (stop) return;
-				}
-			}
-			
-			try {
-				System.out.println(getName() + " tick");
-				sleep(20000);
-			} catch (InterruptedException e) {
-				System.out.println(getName() + " interrupted");
-				return;
-			}
-		}
-	}
-	
-	public synchronized void connect() {
+	public synchronized void connect()
+		throws UnknownHostException, IOException {
 		s = null; out = null; inStream = null; in = null;
 		
-		try {
+		//try {
 			System.out.println("Connecting to " + cfg.net.host + "...");
 			s   = new Socket(cfg.net.host, cfg.net.port);
 			out = new PrintWriter(s.getOutputStream(), true);
@@ -60,7 +32,7 @@ public class GliderConn extends Thread {
 			in.readLine(); // ignore Authenticated OK line
 			
 			notifyAll();
-		} catch (UnknownHostException e) {
+		/*} catch (UnknownHostException e) {
 			s = null; out = null; inStream = null; in = null;
 			System.err.println("Cannot connect to " + cfg.net.host);
 			//System.exit(1);
@@ -69,20 +41,12 @@ public class GliderConn extends Thread {
 			System.err.println("Cannot initialize socket to " + cfg.net.host);
 			System.err.println("  Error initializing I/O " + e.getMessage());
 			//System.exit(1);
-		}
+		}*/
 	}
 
 	public boolean isConnected() {
 		return s != null && s.isConnected() && !s.isOutputShutdown();
 	}
-	
-/*	public GliderConn(JTextArea text) {
-		this();
-
-		jgm.gui.Console.redirect(in, text);
-
-		send("/log all");
-	}*/
 
 	public InputStream getInStream() {
 		return inStream;
@@ -99,80 +63,48 @@ public class GliderConn extends Thread {
 	public void send(String str) {
 		while (!isConnected()) {}
 		
-		try {
+		//try {
 			out.println(str);
-		} catch (Exception e) {
+		/*} catch (Exception e) {
 			System.err.println("Error sending '" + str + "'. " + e.getMessage());
-		}
+		}*/
 	}
 
-	public int read() {
-		while (!isConnected()) {}
-		
-		try {
-			return inStream.read();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return -1;
-		}
+	public int read() throws IOException {
+		return inStream.read();
 	}
 
-	public int read(byte[] buff) {
-		while (!isConnected()) {}
-		
-		try {
-			return inStream.read(buff);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return -1;
-		}
+	public int read(byte[] buff) throws IOException {
+		return inStream.read(buff);
 	}
 
-	public int read(byte[] buff, int off, int len) {
-		while (!isConnected()) {}
-		
-		try {
-			return inStream.read(buff, off, len);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return -1;
-		}
+	public int read(byte[] buff, int off, int len) throws IOException {
+		return inStream.read(buff, off, len);
 	}
 
-	public long skip(long n) {
-		while (!isConnected()) {}
-		
-		try {
-			return inStream.skip(n);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return 0;
-		}
+	public long skip(long n) throws IOException {
+		return inStream.skip(n);
 	}
 
-	public String readLine() {
-		while (!isConnected()) {}
-		
-		try {
-			return in.readLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public String readLine() throws IOException {
+		return in.readLine();
 	}
 
 	public void close() {
-		try {
-			stop = true;
-			this.interrupt();
-			send("/exit");
-			in.readLine(); // Bye!
+		try {			
+			if (isConnected()) {
+				send("/exit");
+				in.readLine(); // Bye!
 //			Thread.sleep(500);
+			}
+			
 			in.close();
 			out.close();
 			s.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		in = null; out = null; s = null;
 	}
 }

@@ -4,6 +4,8 @@ import jgm.JGlideMon;
 import jgm.glider.GliderConn;
 import jgm.gui.updaters.SSUpdater;
 
+import java.util.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -51,7 +53,7 @@ public class ScreenshotTab extends Tab
 		// if user switches to this tab, force an update
 		// since we stopped updating when the tab wasn't selected
 		if (updater != null && this.isCurrentTab() && updater.idle) {
-			updater.interrupt();
+			updater.thread.interrupt();
 		}
 	}
 	
@@ -75,44 +77,29 @@ public class ScreenshotTab extends Tab
 			? "left" : "right";
 		
 		//System.out.println(btn + " click @ " + x + "," + y + " (" + xp + "," + yp + ") [" + s.width + "x" + s.height + "]");
-		
+	try {
 		conn.send("/setmouse " + xp + "/" + yp);
 		System.out.println(conn.readLine()); conn.readLine();
 		conn.send("/clickmouse " + btn);
 		System.out.println(conn.readLine()); conn.readLine();
-		
+	} catch (Exception ex) {
+		ex.printStackTrace();
+	}
 		//if (updater != null && updater.idle) {
-			updater.interrupt();
+			updater.thread.interrupt();
 		//}
 	}
 	
-	public void keyPressed(KeyEvent e) {}
+	private static Map<Integer, Boolean> keysDown
+		= new HashMap<Integer, Boolean>();
 	
-	public void keyReleased(KeyEvent e) {
+	public void keyPressed(KeyEvent e) {
 		if (conn == null) conn = JGlideMon.instance.keysConn;
 		if (updater == null) updater = JGlideMon.instance.ssUpdater;
-		
-		//System.out.println(e);
-		
+
 		int code = e.getKeyCode();
 		
-		boolean goodKey = false;
-		
-		switch (code) {
-			case KeyEvent.VK_SPACE:
-			case KeyEvent.VK_ENTER:
-				goodKey = true;
-		}
-		
-		// A-Z, 0-9, F1-F12, 4 arrows
-		if (KeyEvent.VK_A <= code && code <= KeyEvent.VK_Z ||
-			KeyEvent.VK_0 <= code && code <= KeyEvent.VK_9 || 
-			KeyEvent.VK_F1 <= code && code <= KeyEvent.VK_F12 ||
-			KeyEvent.VK_LEFT <= code && code <= KeyEvent.VK_DOWN) {
-			goodKey = true;
-		}
-		
-		 if (!goodKey) {
+		if (!isGoodKey(code)) {
 			System.out.println("Bad key: " + code + ", " + KeyEvent.getKeyText(code));
 			return;
 		}
@@ -121,40 +108,73 @@ public class ScreenshotTab extends Tab
 			System.out.println("NOT sending Alt+F4!");
 			return;
 		}
-			
-		if (e.isControlDown()) {
-			conn.send("/holdkey " + KeyEvent.VK_CONTROL);
-			System.out.println(conn.readLine()); conn.readLine();
+		
+		if (keysDown.containsKey(code)) {
+			return;
 		}
-			
-		if (e.isAltDown()) {
-			conn.send("/holdkey " + KeyEvent.VK_ALT);
-			System.out.println(conn.readLine()); conn.readLine();
+		
+		keysDown.put(code, Boolean.TRUE);
+		
+	try {
+		conn.send("/holdkey " + code);
+		System.out.println(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+	} catch (Exception ex) {
+		ex.printStackTrace();
+	}
+	}
+	
+	public void keyReleased(KeyEvent e) {
+		//System.out.println(e);
+
+		int code = e.getKeyCode();
+		
+		keysDown.remove(code);
+		
+		if (!isGoodKey(code)) {
+			//System.out.println("Bad key: " + code + ", " + KeyEvent.getKeyText(code));
+			return;
 		}
-			
-		if (e.isShiftDown()) {
-			conn.send("/holdkey " + KeyEvent.VK_SHIFT);
-			System.out.println(conn.readLine()); conn.readLine();
-		}
-			
-		conn.send("/forcekeys #" + code + "#");
-		System.out.println(conn.readLine()); conn.readLine();
-			
-		if (e.isShiftDown()) {
-			conn.send("/releasekey " + KeyEvent.VK_SHIFT);
-			System.out.println(conn.readLine()); conn.readLine();
-		}
-			
-		if (e.isAltDown()) {
-			conn.send("/releasekey " + KeyEvent.VK_ALT);
-			System.out.println(conn.readLine()); conn.readLine();
-		}
-			
-		if (e.isControlDown()) {
-			conn.send("/releasekey " + KeyEvent.VK_CONTROL);
-			System.out.println(conn.readLine()); conn.readLine();
-		}
+
+	try {
+		conn.send("/releasekey " + code);
+		System.out.println(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+	} catch (Exception ex) {
+		ex.printStackTrace();
+	}
 	}
 	
 	public void keyTyped(KeyEvent e) {}
+	
+	private boolean isGoodKey(int code) {
+		// A-Z, 0-9, F1-F12, 4 arrows
+		if (KeyEvent.VK_A <= code && code <= KeyEvent.VK_Z ||
+			KeyEvent.VK_0 <= code && code <= KeyEvent.VK_9 || 
+			KeyEvent.VK_F1 <= code && code <= KeyEvent.VK_F12 ||
+			KeyEvent.VK_LEFT <= code && code <= KeyEvent.VK_DOWN) {
+			return true;
+		}
+		
+		switch (code) {
+			case KeyEvent.VK_SPACE:
+			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_CONTROL:
+			case KeyEvent.VK_ALT:
+			case KeyEvent.VK_SHIFT:
+			case KeyEvent.VK_PERIOD:
+			case KeyEvent.VK_COMMA:
+			case KeyEvent.VK_SLASH:
+			case KeyEvent.VK_SEMICOLON:
+			case KeyEvent.VK_QUOTE:
+			case KeyEvent.VK_OPEN_BRACKET:
+			case KeyEvent.VK_CLOSE_BRACKET:
+			case KeyEvent.VK_BACK_SLASH:
+			case KeyEvent.VK_BACK_SPACE:
+			case KeyEvent.VK_BACK_QUOTE:
+			case KeyEvent.VK_MINUS:
+			case KeyEvent.VK_EQUALS:
+				return true;
+		}
+				
+		return false;
+	}
 }

@@ -1,10 +1,10 @@
 package jgm;
 
-import jgm.glider.GliderConn;
+import jgm.glider.*;
 import jgm.gui.GUI;
 import jgm.gui.updaters.*;
 
-public class JGlideMon {
+public class JGlideMon implements ConnectionListener {
 	public static final String version = "0.1 dev";
 	
 	public static JGlideMon instance;
@@ -16,21 +16,30 @@ public class JGlideMon {
 	private LogUpdater    logUpdater;
 	public  SSUpdater     ssUpdater;
 
+	public Connector connector;
+	
 	public JGlideMon() {
 		instance = this;
 		c = new cfg();
 		init();
 	}
 	
+	public GliderConn getConn() {
+		return keysConn;
+	}
+	
+	public void connectionEstablished() {}
+	
 	private void init() {
-	  synchronized (c) {
+		synchronized (c) {
 		if (!c.isSet()) {
 			try {
 				c.wait();
 			} catch (InterruptedException e) {}
 		}
-	  }
+		}
 		
+	  	connector = new Connector();
 		gui = new GUI(this);
 
 		// create a seperate thread to connect in case it
@@ -39,10 +48,16 @@ public class JGlideMon {
 			public void run() {
 				Sound.init();
 				keysConn   = new GliderConn();
+				Connector.addListener(JGlideMon.this);
 				logUpdater = new LogUpdater(gui.tabsPane);
+				Connector.addListener(logUpdater);
 				ssUpdater  = new SSUpdater(gui.tabsPane.screenshotTab);
+				Connector.addListener(ssUpdater);
 				status     = new StatusUpdater();
+				Connector.addListener(status);
 				status.addObserver(gui);
+				
+				connector.connect();
 			}
 		};
 
@@ -73,10 +88,12 @@ public class JGlideMon {
 				keysConn.close();
 			}
 		});
-		
+			
 		t1.start(); t2.start(); t3.start(); t4.start();
 		
-		cfg.writeIni(); 
+		cfg.writeIni();
+		connector.stop = true;
+		connector.interrupt();
 		
 		while (t1.isAlive() || t2.isAlive() || 
 			   t3.isAlive() || t4.isAlive()) {}

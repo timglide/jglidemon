@@ -133,20 +133,28 @@ public class SendKeysTab extends Tab implements ActionListener {
 					sb.append('|');
 				}
 				
+			try {
 				System.out.println("Sending: " + sb.toString());
 				conn.send("/queuekeys " + sb.toString());
 				conn.readLine(); // queued keys
 				conn.readLine(); // ---
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 				
 				resetFields();
 				setEnabled(true);
 			} else if (s.equals("Reset")) {
 				resetFields();
 			} else if (s.equals("Clear Queue")) {
+			try {
 				System.out.println("Clearing key queue");
 				conn.send("/clearsay");
 				conn.readLine(); // status
 				conn.readLine(); // ---
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 				resetFields();
 				setEnabled(true);
 			}
