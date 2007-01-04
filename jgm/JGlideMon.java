@@ -5,7 +5,7 @@ import jgm.gui.GUI;
 import jgm.gui.updaters.*;
 
 public class JGlideMon implements ConnectionListener {
-	public static final String version = "0.2";
+	public static final String version = "0.2 dev";
 	
 	public static JGlideMon instance;
 	
