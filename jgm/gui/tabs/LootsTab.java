@@ -45,13 +45,23 @@ public class LootsTab extends Tab implements ActionListener {
 			items[i]  = new ItemTableModel();
 			tables[i] = new ItemTable(items[i]);
 			panes[i]  = new LootsPane(headers[i], i, tables[i]);
-			jp.add(panes[i]);
+			
+			if (i < 3) {
+				jp.add(panes[i]);
+			}
 			
 //			if (i == 3)
 //				for (int j = 0; j < 1; j++)
 //					items[i].add(Item.factory(7713 + j, "Illusionary Rod")); // for testing
 		}
 
+		JPanel superLoot = new JPanel(new GridLayout(0, 1, 10, 0));
+		
+		for (int i = 3; i < 5; i++)
+			superLoot.add(panes[i]);
+		
+		jp.add(superLoot);
+		
 		layeredPane = new JLayeredPane();
 		
 		itemTooltip = new ItemTooltip("Test Item");
@@ -98,11 +108,16 @@ public class LootsTab extends Tab implements ActionListener {
 
 		public LootsPane(String s, int quality, final ItemTable table) {
 			setLayout(new BorderLayout(10, 10));
-			header = new JLabel(s);
-			header.setForeground(Item.getColor(quality, false));
+			//header = new JLabel(s);
+			//header.setForeground(Item.getColor(quality, false));
 
-			add(header, BorderLayout.NORTH);
+			//add(header, BorderLayout.NORTH);
 			scrollPane = new JScrollPane(table);
+			
+			javax.swing.border.TitledBorder ttlBorder =
+				BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), s);
+			ttlBorder.setTitleColor(Item.getColor(quality, false));
+			setBorder(ttlBorder);
 			
 			scrollPane.addMouseWheelListener(new MouseWheelListener() {
 				public void mouseWheelMoved(MouseWheelEvent e) {
