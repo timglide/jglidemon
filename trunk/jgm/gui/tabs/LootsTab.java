@@ -51,7 +51,7 @@ public class LootsTab extends Tab implements ActionListener {
 			}
 			
 //			if (i == 3)
-//				for (int j = 0; j < 1; j++)
+//				for (int j = 0; j < 10; j++)
 //					items[i].add(Item.factory(7713 + j, "Illusionary Rod")); // for testing
 		}
 
@@ -117,6 +117,8 @@ public class LootsTab extends Tab implements ActionListener {
 			javax.swing.border.TitledBorder ttlBorder =
 				BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), s);
 			ttlBorder.setTitleColor(Item.getColor(quality, false));
+			ttlBorder.setTitleFont(Item.TITLE_FONT);
+			ttlBorder.setTitleJustification(javax.swing.border.TitledBorder.CENTER);
 			setBorder(ttlBorder);
 			
 			scrollPane.addMouseWheelListener(new MouseWheelListener() {
@@ -159,14 +161,7 @@ public class LootsTab extends Tab implements ActionListener {
 			
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
-		
-/*		public JToolTip createToolTip() {
-            int row = this.rowAtPoint(this.getMousePosition());
-            Item i = getItem(row);
-            itemTooltip.setItem(i);
-			return toolTip;
-		}*/
-		
+				
 		public Item getItem(int row) {
 			return ((ItemTableModel) dataModel).getItem(row);
 		}
