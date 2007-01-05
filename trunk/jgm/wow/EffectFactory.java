@@ -11,7 +11,7 @@ public class EffectFactory {
 	
 	private static final String EFFECT_STR = 
 		// Equip: <a href="/db/spell.html?wspell=18185" class="itemeffectlink">Increases defense rating by 16.</a>
-		"(Chance on hit|Equip|Use): <a.*?(\\d+).*?>(.*?)</a>.*?";
+		"(Chance On Hit|Equip|Use): <a.*?(\\d+).*?>(.*?)</a>.*?";
 	private static Pattern EFFECT_PATTERN = null;
 	
 	static {
@@ -47,14 +47,14 @@ public class EffectFactory {
 			Effect e = new Effect();
 			String s = m.group(1);
 			
-			if (s != null && !s.equals("")) {				
-				if (s.equals("Use")) {
-					e.type = Effect.USE;
-				} else if (s.equals("Equip")) {
-					e.type = Effect.EQUIP;
-				} else { 
-					e.type = Effect.UNKNOWN;
+			if (s != null && !s.equals("")) {
+				e.type = Effect.UNKNOWN;
+				
+				for (int j = 0; j < Effect.TYPES.length; j++) {
+					if (s.equals(Effect.TYPES[j])) e.type = j;
 				}
+			} else {
+				e.type = Effect.UNKNOWN;				
 			}
 						
 			s = m.group(2);
