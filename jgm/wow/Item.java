@@ -1,9 +1,16 @@
 package jgm.wow;
 
 import java.awt.Color;
+import java.awt.Font;
+
 import javax.swing.ImageIcon;
+import java.util.*;
 
 public class Item implements Comparable<Item> {
+	public static final Font TITLE_FONT = new Font(null, Font.BOLD, 20);
+	
+	private static Map<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
+	
 	public static final int POOR = 0;
 	public static final int COMMON = 1;
 	public static final int UNCOMMON = 2;
@@ -184,7 +191,18 @@ public class Item implements Comparable<Item> {
 		try {
 			switch (clazz) {
 				case CLASS_ARMOR:
-					return SLOTS[slot];
+					switch (subclass) {
+						case SUBCLASS_SHIELD:
+							return SLOTS[SLOT_OFF_HAND];
+						
+						case SUBCLASS_TOTEM:
+						case SUBCLASS_IDOL:
+						case SUBCLASS_LIBRAM:
+							return "Relic";
+							
+						default:
+							return SLOTS[slot];
+					}
 					
 				case CLASS_WEAPON:
 					switch (subclass) {
@@ -229,7 +247,7 @@ public class Item implements Comparable<Item> {
 	public String getStatText(int n) {
 		try {
 			if (stats[n] > 0) {
-				return stat_values[n] + " " + STATS[stats[n]];
+				return String.format("%+d %s", stat_values[n], STATS[stats[n]]);
 			}
 		} catch (Exception e) {
 			return "Unkown (" + stats[n] + "," + stat_values[n] + ")";
@@ -269,9 +287,15 @@ public class Item implements Comparable<Item> {
 
 	public ImageIcon getIcon() {
 		if (icon == null) {
+			if (icons.containsKey(iconPath)) {
+				icon = icons.get(iconPath);
+				return icon;
+			}
+			
 			try {
 				icon = new javax.swing.ImageIcon(
 					   new java.net.URL(ICON_BASE + iconPath));
+				icons.put(iconPath, icon);
 			} catch (java.net.MalformedURLException e) {
 				System.err.println("Unable to make icon in Item: " + e.getMessage());
 				icon = null;

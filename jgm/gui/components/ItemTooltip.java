@@ -53,6 +53,7 @@ public class ItemTooltip extends JPanel {
 		setVisible(false);
 				
 		titleLabel = new JLabel(title, JLabel.CENTER);
+		titleLabel.setFont(Item.TITLE_FONT);
 		titleLabel.setForeground(Color.WHITE);
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.weightx = 1.0;
 		p.add(titleLabel, c);
@@ -182,7 +183,7 @@ public class ItemTooltip extends JPanel {
 		for (int n = 0; n < 3; n++) {
 			s = i.getEffectText(n);
 			s = s != null
-				? "<html>" + s.replaceAll("\\. ", ".<br>") + "</html>" : null;
+				? "<html>" + lineify(s) + "</html>" : null;
 			updateLbl(effectLabels[n], s);
 		}
 		
@@ -216,5 +217,28 @@ public class ItemTooltip extends JPanel {
 			l.setText(s);
 			l.setVisible(true);
 		}
+	}
+	
+	public static final int CHARS_PER_LINE = 35;
+	
+	public static final String lineify(String s) {
+		String[] words = s.split(" ");
+		StringBuffer out = new StringBuffer();
+		StringBuffer sb = new StringBuffer();
+		
+		for (int i = 0; i < words.length; i++) {
+			if (sb.length() >= CHARS_PER_LINE) {
+				out.append(sb);
+				out.append("<br>\n");
+				
+				sb = new StringBuffer();
+			}
+			
+			sb.append(words[i] + " ");
+		}
+		
+		out.append(sb);
+		
+		return out.toString();
 	}
 }
