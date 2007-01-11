@@ -1,6 +1,6 @@
 package jgm.glider.log;
 
-import jgm.Sound;
+import jgm.sound.*;
 
 public class WhisperEntry extends ChatLogEntry {
 	public static final int TRIVIAL = 0;
@@ -24,9 +24,15 @@ public class WhisperEntry extends ChatLogEntry {
 		this.urgency = urgency;
 		
 		if (isCritical()) {
-			Sound.playSound(Sound.GM_WHISPER);
+			new Sound(Audible.Type.GM, jgm.util.Sound.File.GM_WHISPER).play();
+			new Phrase(Audible.Type.GM, parsed).play();
 		} else if (isUrgent()) {
-			Sound.playSound(Sound.WHISPER);
+			Audible.Type t = (type.equals("Whisper")) ? Audible.Type.WHISPER : Audible.Type.SAY;
+			
+			new Sound(t, jgm.util.Sound.File.WHISPER).play();
+			new Phrase(t, getText()).play();
+		} else {
+			new Phrase(Audible.Type.STATUS, raw).play();
 		}
 	}
 	
