@@ -6,7 +6,15 @@ import java.awt.*;
 
 import javax.swing.*;
 
+/**
+ * Represents an item tooltip similar to that found
+ * when one mouseovers an item in-game.
+ * @author Tim
+ * @since 0.1
+ */
 public class ItemTooltip extends JPanel {
+	public static final int PADDING = 20;
+	
 	private JPanel p; // internal panel
 	
 	private String title = "";
@@ -140,6 +148,10 @@ public class ItemTooltip extends JPanel {
 		add(p, BorderLayout.CENTER);
 	}
 	
+	/**
+	 * Update the tooltip to reflect a new item.
+	 * @param i The item to update the tooltip to represent
+	 */
 	public void setItem(Item i) {
 		//System.out.println("In setItem()");
 		if (item != null && i.equals(item)) return;
@@ -202,7 +214,7 @@ public class ItemTooltip extends JPanel {
 		Point     pt   = this.getLocation();
 		Dimension pref = p.getPreferredSize();
 		this.setBounds(
-			pt.x, pt.y, pref.width + 20, pref.height + 20
+			pt.x, pt.y, pref.width + PADDING, pref.height + PADDING
 		);
 		
 		revalidate();
@@ -221,6 +233,14 @@ public class ItemTooltip extends JPanel {
 	
 	public static final int CHARS_PER_LINE = 35;
 	
+	/**
+	 * Insert "&lt;br&gt;\n" in a String preferably every
+	 * {@link #CHARS_PER_LINE} characters. The string will
+	 * be split at the next space after CHARS_PER_LINE.
+	 * @param s The String to add newlines to
+	 * @return The String with newlines added
+	 * @since 0.3
+	 */
 	public static final String lineify(String s) {
 		String[] words = s.split(" ");
 		StringBuffer out = new StringBuffer();

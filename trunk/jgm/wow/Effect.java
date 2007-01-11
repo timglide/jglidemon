@@ -1,17 +1,31 @@
 package jgm.wow;
 
+/**
+ * Represents an effect an item can have. These
+ * include use, equip, and chance on hit.
+ * @author Tim
+ * @since 0.1
+ */
 public class Effect {
-	public static final int UNKNOWN = 0;
-	public static final int USE = 1;
-	public static final int EQUIP = 2;
-	public static final int CHANCE_ON_HIT = 3;
-	
-	public static final String[] TYPES = {
-		"Unknown", "Use", "Equip", "Chance On Hit"
-	};
+	public enum Type {
+		UNKNOWN       ("Unknown"),
+		USE           ("Use"),
+		EQUIP         ("Equip"),
+		CHANCE_ON_HIT ("Chance On Hit");
+		
+		private String text;
+		
+		private Type(String s) {
+			text = s;
+		}
+		
+		public String toString() {
+			return text;
+		}
+	}
 	
 	public int id;
-	public int type = 0;
+	public Type type = Type.UNKNOWN;
 	public String text;
 	
 	public Effect() {
@@ -22,11 +36,7 @@ public class Effect {
 	}
 	
 	public String getTypeText() {
-		try {
-			return TYPES[type];
-		} catch (Exception e) {
-			return TYPES[UNKNOWN];
-		}
+		return type.toString();
 	}
 	
 	public String toString() {

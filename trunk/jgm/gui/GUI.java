@@ -1,6 +1,7 @@
 package jgm.gui;
 
 import jgm.*;
+import jgm.glider.*;
 import jgm.gui.panes.*;
 import jgm.gui.updaters.*;
 
@@ -220,7 +221,9 @@ public class GUI
 			version = "Glider v" + s.version + " ";
 		}
 		
-		if (s.attached) {
+		if (!Connector.isConnected()) {
+			statusBar.setText("Disconnected");
+		} else if (s.attached) {
 			statusBar.setText(version + "Attached: " + s.profile);
 		} else {
 			statusBar.setText(version + "Not Attached");

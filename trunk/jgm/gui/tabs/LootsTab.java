@@ -196,10 +196,11 @@ public class LootsTab extends Tab implements ActionListener {
 			Dimension ttSize    = itemTooltip.getSize();
 			
 			// ensure tooltip is drawn within the window
+			int halfPad = ItemTooltip.PADDING / 2;
 			if (p.x + ttSize.width  >= panelSize.width)
-				p.x = panelSize.width - ttSize.width;
+				p.x = panelSize.width - ttSize.width - halfPad;
 			if (p.y + ttSize.height >= panelSize.height)
-				p.y = panelSize.height - ttSize.height;
+				p.y = panelSize.height - ttSize.height - halfPad;
 			
 			itemTooltip.setLocation(p.x + 10, p.y);
 		  } catch (NullPointerException x) {} // meh

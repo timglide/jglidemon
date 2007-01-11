@@ -1,7 +1,7 @@
 package jgm.gui.tabs;
 
 import jgm.JGlideMon;
-import jgm.glider.GliderConn;
+import jgm.glider.*;
 import jgm.gui.updaters.SSUpdater;
 
 import java.util.*;
@@ -66,6 +66,8 @@ public class ScreenshotTab extends Tab
 		if (conn == null) conn = JGlideMon.instance.keysConn;
 		if (updater == null) updater = JGlideMon.instance.ssUpdater;
 		
+		if (!Connector.isConnected()) return;
+		
 		Dimension s = ssLabel.getSize();
 		int x = e.getX(); int y = e.getY();
 		
@@ -97,6 +99,8 @@ public class ScreenshotTab extends Tab
 		if (conn == null) conn = JGlideMon.instance.keysConn;
 		if (updater == null) updater = JGlideMon.instance.ssUpdater;
 
+		if (!Connector.isConnected()) return;
+		
 		int code = e.getKeyCode();
 		
 		if (!isGoodKey(code)) {
@@ -126,6 +130,11 @@ public class ScreenshotTab extends Tab
 	public void keyReleased(KeyEvent e) {
 		//System.out.println(e);
 
+		if (!Connector.isConnected()) {
+			keysDown.clear();
+			return;
+		}
+		
 		int code = e.getKeyCode();
 		
 		keysDown.remove(code);

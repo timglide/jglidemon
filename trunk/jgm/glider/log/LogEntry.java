@@ -3,15 +3,26 @@ package jgm.glider.log;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
+/**
+ * Represents a log entry that would be received from
+ * the /log command from the Glider remote client.
+ * @author Tim
+ * @since 0.1
+ */
 public class LogEntry implements Comparable<LogEntry> {
 	protected Date timestamp = new Date();
 	protected String type = "Unknown";
 	
 	protected String rawText = null;
 
-	public LogEntry(String t, String s) {
-		type = t;
-		rawText = s;
+	/**
+	 * Create a new LogEntry.
+	 * @param type The type of entry
+	 * @param rawText The raw text as received from the /log command
+	 */
+	public LogEntry(String type, String rawText) {
+		this.type = type;
+		this.rawText = rawText;
 	}
 	
 	public final String getType() {
@@ -33,15 +44,30 @@ public class LogEntry implements Comparable<LogEntry> {
 		return getRawText();
 	}
 
+	/**
+	 * Compares this LogEntry's timestamp to the
+	 * supplied LogEntry's.
+	 * @param e The LogEntry to compare to
+	 */
 	public int compareTo(LogEntry e) {
 		return this.timestamp.compareTo(e.timestamp);
 	}
 
+	/**
+	 * Returns the timestamp in HH:mm:ss format.
+	 * @return The formatted timestamp
+	 */
 	public String getFormattedTimestamp() {
 		SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
 		return df.format(timestamp);
 	}
 
+	/**
+	 * Create a subclass of LogEntry depending on the
+	 * content of s.
+	 * @param s The raw String to parse
+	 * @return The appropriate subclass of LogEntry
+	 */
 	public static LogEntry factory(String s) {
 		String[] parts = s.split(" ", 2);
 

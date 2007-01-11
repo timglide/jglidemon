@@ -5,6 +5,11 @@ import jgm.cfg;
 import java.io.*;
 import java.net.*;
 
+/**
+ * Represents a connection to the Glider remote client.
+ * @author Tim
+ * @since 0.1
+ */
 public class GliderConn {
 	private static int instances = 0;
 	
@@ -93,14 +98,16 @@ public class GliderConn {
 	public void close() {
 		try {			
 			if (isConnected()) {
-				send("/exit");
-				in.readLine(); // Bye!
-//			Thread.sleep(500);
+				try {
+					send("/exit");
+					in.readLine(); // Bye!
+//					Thread.sleep(500);
+				} catch (IOException e) {}
 			}
 			
-			in.close();
-			out.close();
-			s.close();
+			if (in != null) in.close();
+			if (out != null) out.close();
+			if (s != null) s.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

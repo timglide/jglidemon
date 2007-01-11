@@ -48,15 +48,15 @@ public class EffectFactory {
 			String s = m.group(1);
 			
 			if (s != null && !s.equals("")) {
-				e.type = Effect.UNKNOWN;
+				e.type = Effect.Type.UNKNOWN;
 				
-				for (int j = 0; j < Effect.TYPES.length; j++) {
-					if (s.equals(Effect.TYPES[j])) e.type = j;
+				for (Effect.Type t : Effect.Type.values()) {
+					if (s.equals(t.toString())) e.type = t;
 				}
 			} else {
-				e.type = Effect.UNKNOWN;				
+				e.type = Effect.Type.UNKNOWN;				
 			}
-						
+			
 			s = m.group(2);
 			
 			if (s != null && !s.equals("")) {
