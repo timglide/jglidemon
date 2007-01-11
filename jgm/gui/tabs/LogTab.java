@@ -64,7 +64,8 @@ public class LogTab extends Tab {
 		// switch to the send keys tab and fill in the 
 		// fields to whisper that person
 		public void mouseClicked(MouseEvent e) {
-			System.out.println(e);
+			//System.out.println(e);
+			
 			if (e.getClickCount() != 2) return;
 			
 			Point pt = e.getPoint();

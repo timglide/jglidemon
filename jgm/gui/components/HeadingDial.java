@@ -4,6 +4,12 @@ import java.awt.*;
 import java.awt.image.*;
 import javax.swing.*;
 
+/**
+ * Draws an arrow within a circle pointing toward
+ * a particular heading.
+ * @author Tim
+ * @since 0.1
+ */
 public class HeadingDial extends JComponent {
 	private static BufferedImage bg    = null;
 	private static BufferedImage arrow = null;
@@ -17,11 +23,11 @@ public class HeadingDial extends JComponent {
 					jgm.JGlideMon.class.getResource("resources/images/arrow.png")
 			); 
 		} catch (Exception e){
-			System.err.println("Unable to load resources: " + e.getMessage());
+			System.err.println("Unable to load HeadingDial resources: " + e.getMessage());
 		}
 	}
 	
-	private double heading = 0.0;
+	private double heading = -1.0;
 
 	public HeadingDial() {
 		setMinimumSize(size);
@@ -48,10 +54,13 @@ public class HeadingDial extends JComponent {
 			
 		g.drawImage(bg, 0, 0, null);
 		
-		// it would be Math.PI / 2.0 + heading but
-		// the arrow points up unrotated
-		g2.rotate(-heading, 45 / 2, 45 / 2);
+		// don't draw arrow if it's negative
+		if (heading >= 0.0) {
+			// it would be Math.PI / 2.0 + heading but
+			// the arrow points up unrotated
+			g2.rotate(-heading, 45 / 2, 45 / 2);
 		
-		g.drawImage(arrow, 25 / 2, 25 / 2, null);
+			g.drawImage(arrow, 25 / 2, 25 / 2, null);
+		}
 	}
 }

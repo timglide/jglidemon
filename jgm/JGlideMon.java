@@ -3,7 +3,13 @@ package jgm;
 import jgm.glider.*;
 import jgm.gui.GUI;
 import jgm.gui.updaters.*;
+import jgm.util.*;
 
+/**
+ * The main program.
+ * @author Tim
+ * @since 0.1
+ */
 public class JGlideMon implements ConnectionListener {
 	public static final String version = "0.2 dev";
 	
@@ -29,6 +35,7 @@ public class JGlideMon implements ConnectionListener {
 	}
 	
 	public void connectionEstablished() {}
+	public void connectionDied() {}
 	
 	private void init() {
 		synchronized (c) {
@@ -47,6 +54,7 @@ public class JGlideMon implements ConnectionListener {
 		Runnable r = new Runnable() {
 			public void run() {
 				Sound.init();
+				Speech.init();
 				keysConn   = new GliderConn();
 				Connector.addListener(JGlideMon.this);
 				logUpdater = new LogUpdater(gui.tabsPane);
@@ -56,6 +64,7 @@ public class JGlideMon implements ConnectionListener {
 				status     = new StatusUpdater();
 				Connector.addListener(status);
 				status.addObserver(gui);
+				status.addObserver(ssUpdater);
 				
 				connector.connect();
 			}
@@ -90,18 +99,31 @@ public class JGlideMon implements ConnectionListener {
 		});
 			
 		t1.start(); t2.start(); t3.start(); t4.start();
+		Speech.destroy();
 		
 		cfg.writeIni();
 		connector.stop = true;
 		connector.interrupt();
 		
 		while (t1.isAlive() || t2.isAlive() || 
-			   t3.isAlive() || t4.isAlive()) {}
+			   t3.isAlive() || t4.isAlive()) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {}
+		}
 		
 		System.exit(0);
 	}
 	
 	public static void main(String[] args) {
-		new JGlideMon();
+		JGlideMon jgm = new JGlideMon();
+		
+		while (!Speech.ready()) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {}
+		}
+		
+		jgm.gui.tabsPane.urgentChatLog.add(new jgm.glider.log.WhisperEntry("[Test] whispers: Test whisper", "[Test] whispers: Test whisper", "Test", 1, "Whisper"));
 	}
 }

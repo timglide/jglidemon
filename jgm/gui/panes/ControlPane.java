@@ -20,7 +20,7 @@ public class ControlPane extends Pane implements ActionListener {
 
 		connect = new JButton("Connect");
 		connect.addActionListener(this);
-		connect.setEnabled(false);
+		//connect.setEnabled(false);
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
 		add(connect, c);
 		
@@ -44,13 +44,35 @@ public class ControlPane extends Pane implements ActionListener {
 	}
 
 	public void update(StatusUpdater s) {
+		//System.out.println("ControlPane.update()");
+		
 		if (s.attached) {
-			connect.setText("Disconnect");
 			attach.setEnabled(false);
 			start.setEnabled(true);
 			stop.setEnabled(true);
 		} else {
 			attach.setEnabled(true);
+			start.setEnabled(false);
+			stop.setEnabled(false);
+		}
+		
+		//System.out.println(Connector.state);
+		switch (Connector.state) {
+			case CONNECTED:
+			case DISCONNECTED:
+				connect.setEnabled(true);
+				break;
+				
+			default:
+				connect.setEnabled(false);
+				break;
+		}
+		
+		if (Connector.isConnected()) {
+			connect.setText("Disconnect");
+		} else {
+			connect.setText("Connect");
+			attach.setEnabled(false);
 			start.setEnabled(false);
 			stop.setEnabled(false);
 		}
@@ -69,8 +91,10 @@ public class ControlPane extends Pane implements ActionListener {
 		} else if (cmd.equals("Stop Glide")) {
 			s = "/stopglide";
 		} else if (cmd.equals("Disconnect")) {
+			connect.setEnabled(false);
 			Connector.instance.disconnect();
 		} else if (cmd.equals("Connect")) {
+			connect.setEnabled(false);
 			Connector.instance.connect();
 		}
 		

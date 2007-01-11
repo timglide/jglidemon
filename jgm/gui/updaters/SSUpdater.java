@@ -5,14 +5,16 @@ import jgm.cfg;
 import jgm.glider.*;
 import jgm.gui.tabs.*;
 
+import java.util.Observer;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
  
-public class SSUpdater implements Runnable, ConnectionListener {
+public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	public boolean idle = false;
-	private boolean stop = false;
+	private volatile boolean stop = false;
+	private volatile boolean attached = false;
 
 	private GliderConn conn = null;
 
@@ -34,10 +36,12 @@ public class SSUpdater implements Runnable, ConnectionListener {
 		thread.start();
 	}
 	
+	public void connectionDied() {}
+	
 	public void close() {
 		stop = true;
-		thread.interrupt();
-		conn.close();
+		if (thread != null) thread.interrupt();
+		if (conn != null) conn.close();
 	}
 
 	public boolean update() throws IOException {
@@ -48,6 +52,9 @@ public class SSUpdater implements Runnable, ConnectionListener {
 		System.gc();
 		conn.send("/capturescale " + cfg.screenshot.scale);
 		conn.readLine(); // set scale successfully
+		conn.readLine(); // ---
+		conn.send("/capturequality " + cfg.screenshot.quality);
+		conn.readLine(); // set quality successfully
 		conn.readLine(); // ---
 		conn.send("/capture");
 		conn.readLine(); // info stating stuff about the datastream
@@ -63,7 +70,7 @@ public class SSUpdater implements Runnable, ConnectionListener {
 
 //		System.out.print("\nJPG Size: " + size + "\n_");
 
-		if (size < 1 || size > 150000) { // size invalid? wtf O.o
+		if (size < 1 || size > 500000) { // size invalid? wtf O.o
 			String s = null;
 			int z = 0;
 			System.err.println("Invalid size: " + size + ", clearing stream");
@@ -118,9 +125,9 @@ public class SSUpdater implements Runnable, ConnectionListener {
 				idle = false;
 				
 				try {
-					while (tab.isCurrentTab() && !update()) {}
-				} catch (IOException e) {
-					e.printStackTrace();
+					while (attached && tab.isCurrentTab() && !update()) {}
+				} catch (Exception e) {
+					System.err.println("Stopping SSUpdater, Ex: " + e.getMessage());
 					idle = true;
 					return;
 				}
@@ -140,5 +147,10 @@ public class SSUpdater implements Runnable, ConnectionListener {
 			
 			idle = false;
 		}
+	}
+	
+	public void update(java.util.Observable obs, Object o) {
+		StatusUpdater s = (StatusUpdater) o;
+		attached = s.attached;
 	}
 }

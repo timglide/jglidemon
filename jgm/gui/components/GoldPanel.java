@@ -2,6 +2,13 @@ package jgm.gui.components;
 
 import javax.swing.*;
 
+/**
+ * A JPanel with a JLabel for gold, silver, and copper.
+ * Also has a gold/silver/copper gif icon next to the number
+ * and an optional prefix.
+ * @author Tim
+ * @since 0.1
+ */
 public class GoldPanel extends JPanel {
 	private String      title;
 	private int         money  = 0;
@@ -13,21 +20,35 @@ public class GoldPanel extends JPanel {
 	private        JLabel[]    labels = null;
 	private static ImageIcon[] icons  = null;
 	
-	public GoldPanel(String s) {
-		this(0, s, false);
+	/**
+	 * Create a GoldPanel with the given prefix and
+	 * an initial amount of 0.
+	 * @param prefix
+	 */
+	public GoldPanel(String prefix) {
+		this(0, prefix, false);
 	}
 	
+	/**
+	 * Create a GoldPanel with an initial amount of 0.
+	 */
 	public GoldPanel() {
 		this(0, "", false);
 	}
 	
+	/**
+	 * Create a GoldPanel with the specified amount.
+	 * @param gold The amount of gold
+	 * @param silver The amount of silver
+	 * @param copper The amount of copper
+	 */
 	public GoldPanel(int gold, int silver, int copper) {
 		this(gscToC(gold, silver, copper), "", false);
 	}
 	
 	/**
-	 * Create a new GoldPane with additional options.
-	 * @param s A title String to precede the gold icons with
+	 * Create a new GoldPanel.
+	 * @param s A prefix to precede the gold icons with
 	 * @param i The amount of copper to represend
 	 * @param hide Whether to hide the panel when there is zero copper worth
 	 * @param fontColor The foreground color of the labels

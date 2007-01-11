@@ -1,16 +1,23 @@
 package jgm.glider;
 
 import jgm.cfg;
+import jgm.sound.*;
 
 import java.util.*;
 
 public class Connector extends Thread {
-	public boolean stop = false;
+	public enum State {
+		DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING
+	}
+	
+	public volatile boolean stop = false;
 	
 	public static Connector instance;
 	
 	private static Vector<ConnectionListener> listeners
 		= new Vector<ConnectionListener>();
+	
+	public static volatile State state = State.DISCONNECTED;
 	
 	public Connector() {
 		super("Connector");
@@ -18,11 +25,12 @@ public class Connector extends Thread {
 	}
 	
 	public static boolean isConnected() {
-		if (listeners.size() > 0) {
+		return state == State.CONNECTED;
+		/*if (listeners.size() > 0) {
 			return listeners.get(0).getConn().isConnected();
 		}
 		
-		return false;
+		return false;*/
 	}
 	
 	public void run() {
@@ -61,49 +69,62 @@ public class Connector extends Thread {
 	public void connect() {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
+				state = State.CONNECTING;
 				boolean success = true;
 				
 				for (ConnectionListener c : listeners) {
 					try {
 						c.getConn().connect();
 					} catch (Exception e) {
-						e.printStackTrace();						
+						System.err.println("Error connecting to " + cfg.net.host + ": " + e.getMessage());						
 						success = false;
 						break;
 					}
 				}
 				
+				state = (success) ? State.CONNECTED : State.DISCONNECTED;
+				
 				if (success) {
-					start(); // start auto-reconnector
+					new Phrase(Audible.Type.STATUS, "Connection established.").play();
+					//Connector.this.start(); // start auto-reconnector
 					notifyConnectionEstablished();
+				} else {
+					notifyConnectionDied();
 				}
 			}
 		}, "Connector.connect");
 		
+		System.out.println("Attempting to connect...");
 		t.start();
 	}
 	
 	public void disconnect() {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
+				state = State.DISCONNECTING;
 				boolean success = true;
 				
 				for (ConnectionListener c : listeners) {
 					try {
 						c.getConn().close();
 					} catch (Exception e) {
-						e.printStackTrace();
-						success = false;
-						break;
+						System.err.println("Error closing a connection: " + e.getMessage());
+						//success = false;
+						//break;
 					}
 				}
 				
+				state = State.DISCONNECTED;
+				
 				if (success) {
-					//notifyConnectionDied();
+					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
+					System.out.println("Notifying of disconnect");
+					notifyConnectionDied();
 				}
 			}
 		}, "Connector.disconnect");
 		
+		System.out.println("Attempting to disconnect...");
 		t.start();
 	}
 	
@@ -120,4 +141,10 @@ public class Connector extends Thread {
 			c.connectionEstablished();
 		}
 	}
+	
+	private void notifyConnectionDied() {
+		for (ConnectionListener c : listeners) {
+			c.connectionDied();
+		}
+	}	
 }

@@ -25,7 +25,7 @@ public class StatusUpdater extends Observable
 	public int    nextExperience = 1;
 	public int    xpPerHour      = 0;
 	public String location       = "";
-	public double heading        = 0.0;
+	public double heading        = -1.0;
 	public int    kills          = 0;
 	public int    loots          = 0;
 	public int    deaths         = 0;
@@ -35,7 +35,7 @@ public class StatusUpdater extends Observable
 
 	private GliderConn conn;
 	private Thread thread;
-	private boolean stop = false;
+	private volatile boolean stop = false;
 
 	public StatusUpdater() {
 		conn = new GliderConn();
@@ -43,8 +43,8 @@ public class StatusUpdater extends Observable
 
 	public void close() {
 		stop = true;
-		thread.interrupt();
-		conn.close();
+		if (thread != null) thread.interrupt();
+		if (conn != null) conn.close();
 	}
 
 	public GliderConn getConn() {
@@ -56,6 +56,12 @@ public class StatusUpdater extends Observable
 		thread.start();
 	}
 	
+	public void connectionDied() {
+		attached = false;
+		setChanged();
+		notifyObservers(this);
+	}
+	
 	public void run() {
 		while (true) {
 			if (stop) return;
@@ -64,7 +70,7 @@ public class StatusUpdater extends Observable
 				update();
 				Thread.sleep(cfg.status.updateInterval);
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.err.println("Stopping StatusUpdater, Ex: " + e.getMessage());
 				return;
 			}
 		}
@@ -75,6 +81,8 @@ public class StatusUpdater extends Observable
 		
 		String line = null;
 		Map<String, String> m = new HashMap<String, String>();
+		
+		try {
 		BufferedReader r = conn.getIn();
 
 		conn.send("/status");
@@ -89,6 +97,7 @@ public class StatusUpdater extends Observable
 			m.put(parts[0], parts[1].trim());
 //			System.out.println(parts[0] + ": " + parts[1].trim());
 		}
+		} catch (Exception e) {}
 
 //		System.out.println("--><--");
 
@@ -181,12 +190,12 @@ public class StatusUpdater extends Observable
 
 		try {
 			if (!m.containsKey("Heading")) {
-				heading = 0.0;
+				heading = -1.0;
 			} else {
 				heading = Double.parseDouble(m.get("Heading"));
 			}
 		} catch (NumberFormatException e) {
-			heading = 0.0;
+			heading = -1.0;
 		}
 
 		try {

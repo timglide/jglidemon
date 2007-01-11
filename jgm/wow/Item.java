@@ -6,6 +6,11 @@ import java.awt.Font;
 import javax.swing.ImageIcon;
 import java.util.*;
 
+/**
+ * Represents an in-game item.
+ * @author Tim
+ * @since 0.1
+ */
 public class Item implements Comparable<Item> {
 	public static final Font TITLE_FONT = new Font(null, Font.BOLD, 20);
 	
@@ -216,6 +221,7 @@ public class Item implements Comparable<Item> {
 						case SUBCLASS_GUN:
 						case SUBCLASS_BOW:
 						case SUBCLASS_CROSSBOW:
+						case SUBCLASS_WAND:
 							return "Ranged";
 					}
 					
@@ -334,12 +340,16 @@ public class Item implements Comparable<Item> {
 		return name.compareTo(i.name);
 	}
 
+	/**
+	 * @return A comparator that sorts items by quantity desc and name
+	 */
 	public static java.util.Comparator<Item> getQuantityComparator() {
 		return getQuantityComparator(-1);
 	}
 
 	/**
-	 * Sort by quantity, ascending or descending and then by name.
+	 * @param sort 1 for asc, -1 for desc by quantity
+	 * @return A comporator thats sorts items by quantity and name
 	 */
 	public static java.util.Comparator<Item> getQuantityComparator(final int sort) {
 		return new java.util.Comparator<Item>() {
@@ -357,10 +367,23 @@ public class Item implements Comparable<Item> {
 		};
 	}
 
+	/**
+	 * Create a new item with an initial quantity of 0.
+	 * @param id The item id
+	 * @param name The item's name
+	 * @return An item representing the supplied parameters
+	 */
 	public static Item factory(int id, String name) {
 		return factory(id, name, 0);
 	}
 
+	/**
+	 * Create a new item.
+	 * @param id The item id
+	 * @param name The item's name
+	 * @param initialQuantity The initial quantity
+	 * @return An item representing the supplied parameters
+	 */
 	public static Item factory(int id, String name, int initialQuantity) {
 		Item item = new Item(id, name);
 
