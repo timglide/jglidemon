@@ -5,8 +5,9 @@ import jgm.cfg;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 
-public class ConfigTab extends Tab implements ActionListener {
+public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 	private JButton update;
 	
 	private JPanel net;
@@ -20,6 +21,22 @@ public class ConfigTab extends Tab implements ActionListener {
 	private JPanel screenshot;
 	private JTextField screenshotInterval;
 	private JSlider screenshotScale;
+	private JSlider screenshotQuality;
+	
+	
+	private JPanel sound;
+	private JCheckBox enableSound;
+	private JCheckBox soundWhisper;
+	private JCheckBox soundSay;
+	private JCheckBox soundGM;
+	
+	private JCheckBox enableTTS;
+	private JCheckBox ttsWhisper;
+	private JCheckBox ttsSay;
+	private JCheckBox ttsGM;
+	private JCheckBox ttsStatus;
+	
+	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
 	
 	public ConfigTab() {
 		super(new BorderLayout(), "Config");
@@ -28,12 +45,13 @@ public class ConfigTab extends Tab implements ActionListener {
 		update.addActionListener(this);
 		add(update, BorderLayout.NORTH);
 		
-		JPanel p = new JPanel(new GridLayout(1, 0, 10, 10));
+		JPanel p = new JPanel(new GridLayout(2, 3, 10, 10));
+		
 		
 		// net config pane
 		net = new JPanel(new GridBagLayout());
 		net.setBorder(
-			BorderFactory.createTitledBorder("Network"));
+			BorderFactory.createTitledBorder(lineBorder, "Network"));
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0; c.gridy = 0; c.weightx = 1.0;
@@ -67,7 +85,7 @@ public class ConfigTab extends Tab implements ActionListener {
 		// status config pane
 		status = new JPanel(new GridBagLayout());
 		status.setBorder(
-			BorderFactory.createTitledBorder("Status"));
+			BorderFactory.createTitledBorder(lineBorder, "Status"));
 		
 		c.gridx = 0; c.gridy = 0;
 		status.add(new JLabel("Refresh (ms): "), c);
@@ -86,7 +104,7 @@ public class ConfigTab extends Tab implements ActionListener {
 		// screenshot panel
 		screenshot = new JPanel(new GridBagLayout());
 		screenshot.setBorder(
-			BorderFactory.createTitledBorder("Screenshot"));
+			BorderFactory.createTitledBorder(lineBorder, "Screenshot"));
 		
 		c.gridx = 0; c.gridy = 0;
 		screenshot.add(new JLabel("Refresh (ms): "), c);
@@ -107,13 +125,111 @@ public class ConfigTab extends Tab implements ActionListener {
 		c.gridx++;
 		screenshot.add(screenshotScale, c);
 		
+		c.gridx = 0; c.gridy++;
+		screenshot.add(new JLabel("Quality: "), c);
+		
+		screenshotQuality =
+			new JSlider(JSlider.HORIZONTAL, 10, 100, cfg.screenshot.quality);
+			
+		screenshotQuality.setMajorTickSpacing(30);
+		screenshotQuality.setMinorTickSpacing(10);
+		screenshotQuality.setPaintTicks(true);
+		screenshotQuality.setPaintLabels(true);
+		c.gridx++;
+		screenshot.add(screenshotQuality, c);
+		
 		c.gridx = 0; c.gridy++; c.weighty = 1.0;
 		screenshot.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
 		p.add(screenshot);
 		
+		
+		// sound config
+		JPanel tmp = new JPanel(new GridLayout(1, 0, 10, 10));
+		tmp.setBorder(
+				BorderFactory.createTitledBorder(lineBorder, "Sound"));
+			
+		sound = new JPanel(new GridBagLayout());
+		
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.weightx = 1.0; c.weighty = 0.0;
+		enableSound = new JCheckBox("Enable Sound", cfg.sound.enabled);
+		enableSound.addChangeListener(this);
+		sound.add(enableSound, c);
+		
+		c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
+		sound.add(new JLabel("    "), c);
+		
+		c.gridx++; c.weightx = 1.0;
+		soundWhisper = new JCheckBox("On Whisper", cfg.sound.whisper);
+		sound.add(soundWhisper, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		sound.add(new JLabel("    "), c);
+		
+		c.gridx++; c.weightx = 1.0;
+		soundSay = new JCheckBox("On Say", cfg.sound.say);
+		sound.add(soundSay, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		sound.add(new JLabel("    "), c);
+		
+		c.gridx++; c.weightx = 1.0;
+		soundGM = new JCheckBox("On GM Event", cfg.sound.gm);
+		sound.add(soundGM, c);
+		
+		c.gridy++; c.weighty = 1.0;
+		sound.add(new JLabel(), c);
+		
+		tmp.add(sound);
+		sound = new JPanel(new GridBagLayout());
+		
+		c.gridx = 0; c.gridy++; c.gridwidth = 2; c.weighty = 0.0;
+		enableTTS = new JCheckBox("Enable TTS", cfg.sound.tts.enabled);
+		enableTTS.addChangeListener(this);
+		sound.add(enableTTS, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		sound.add(new JLabel("    "), c);
+		
+		c.gridx++; c.weightx = 1.0;
+		ttsWhisper = new JCheckBox("On Whisper", cfg.sound.tts.whisper);
+		sound.add(ttsWhisper, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		sound.add(new JLabel("    "), c);
+		
+		c.gridx++; c.weightx = 1.0;
+		ttsSay = new JCheckBox("On Say", cfg.sound.tts.say);
+		sound.add(ttsSay, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		sound.add(new JLabel("    "), c);
+		
+		c.gridx++; c.weightx = 1.0;
+		ttsGM = new JCheckBox("On GM Event", cfg.sound.tts.gm);
+		sound.add(ttsGM, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		sound.add(new JLabel("    "), c);
+		
+		c.gridx++; c.weightx = 1.0;
+		ttsStatus = new JCheckBox("On Status Event", cfg.sound.tts.status);
+		sound.add(ttsStatus, c);
+		
+		c.gridy++; c.weighty = 1.0;
+		sound.add(new JLabel(), c);
+		
+		tmp.add(sound);
+		sound = tmp;
+		
+		p.add(sound);
+		
 		add(p, BorderLayout.CENTER);
+		
+		// to initialize enabled/disabled states
+		stateChanged(new ChangeEvent(enableSound));
+		stateChanged(new ChangeEvent(enableTTS));
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -141,8 +257,40 @@ public class ConfigTab extends Tab implements ActionListener {
 			}
 			
 			cfg.screenshot.scale = screenshotScale.getValue();
+			cfg.screenshot.quality = screenshotQuality.getValue();
+			
+			cfg.sound.enabled = enableSound.isSelected();
+			cfg.sound.whisper = soundWhisper.isSelected();
+			cfg.sound.say = soundSay.isSelected();
+			cfg.sound.gm = soundGM.isSelected();
+			cfg.sound.tts.enabled = enableTTS.isSelected();
+			cfg.sound.tts.whisper = ttsWhisper.isSelected();
+			cfg.sound.tts.say = ttsSay.isSelected();
+			cfg.sound.tts.gm = ttsGM.isSelected();
+			cfg.sound.tts.status = ttsStatus.isSelected();
 			
 			cfg.writeIni();
+		}
+	}
+	
+	public void stateChanged(ChangeEvent e) {
+		if (e.getSource() == enableSound) {
+			boolean state = enableSound.isEnabled() && enableSound.isSelected();
+			
+			soundWhisper.setEnabled(state);
+			soundSay.setEnabled(state);
+			soundGM.setEnabled(state);
+			
+			// make tts dependant on general sound
+			//enableTTS.setEnabled(state);
+			//stateChanged(new ChangeEvent(enableTTS));
+		} else if (e.getSource() == enableTTS) {
+			boolean state = enableTTS.isEnabled() && enableTTS.isSelected();
+			
+			ttsWhisper.setEnabled(state);
+			ttsSay.setEnabled(state);
+			ttsGM.setEnabled(state);
+			ttsStatus.setEnabled(state);
 		}
 	}
 }
