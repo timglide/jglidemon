@@ -218,7 +218,7 @@ public class GUI
 		String version = "";
 		
 		if (!s.version.equals("")) {
-			version = "Glider v" + s.version + " ";
+			version = "Glider v" + s.version + " - ";
 		}
 		
 		if (!Connector.isConnected()) {

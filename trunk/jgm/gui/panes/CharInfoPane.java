@@ -80,7 +80,7 @@ public class CharInfoPane extends Pane {
 
 	public void update(StatusUpdater s) {
 		name.setText(s.name);
-		level.setText(Integer.toString(s.level));
+		level.setText(((s.level > 0) ? Integer.toString(s.level) : ""));
 		health.setValue((int) s.health);
 		mana.setValue((int) s.mana);
 
