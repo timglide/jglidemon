@@ -22,7 +22,7 @@ public class StatusUpdater extends Observable
 	public String clazz          = ""; // class
 	public int    level          = 0;
 	public int    experience     = 0;
-	public int    nextExperience = 1;
+	public int    nextExperience = 0;
 	public int    xpPerHour      = 0;
 	public String location       = "";
 	public double heading        = -1.0;
@@ -175,9 +175,9 @@ public class StatusUpdater extends Observable
 		try {
 			nextExperience = m.containsKey("Next-Experience")
 							 ? Integer.parseInt(m.get("Next-Experience"))
-							 : 1;
+							 : 0;
 		} catch (NumberFormatException e) {
-			nextExperience = 1;
+			nextExperience = 0;
 		}
 
 		try {

@@ -28,7 +28,7 @@ public class MobInfoPane extends Pane {
 		health = new JProgressBar(0, 100);
 		health.setString("Target's Health");
 		health.setStringPainted(true);
-		health.setValue(74);
+		health.setValue(0);
 		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0;
 		add(health, c);
 
@@ -46,8 +46,8 @@ public class MobInfoPane extends Pane {
 	}
 
 	public void update(StatusUpdater s) {
-		name.setText("Target Name: " + s.targetName);
-		level.setText("Target Level: " + s.targetLevel);
+		name.setText("Target Name: " + ((s.targetName.equals("")) ? "No Target" : s.targetName));
+		level.setText("Target Level: " + ((s.targetLevel > 0) ? s.targetLevel : ""));
 		health.setValue((int) s.targetHealth);
 
 		kills.setText("Kills: " + s.kills);

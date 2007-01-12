@@ -26,19 +26,19 @@ public class ExperiencePane extends Pane {
 		c.gridx = 2; c.weightx = 0.0;
 		add(new JLabel("Experience: "), c);
 
-		xp = new JLabel("123/456 (24%)");
+		xp = new JLabel("Unknown");
 		c.gridx = 3; c.weightx = 1.0;
 		add(xp, c);
 
 		c.gridx = 4; c.weightx = 0.0;
 		add(new JLabel("XP/Hour: "), c);
 
-		xph = new JLabel("1000");
+		xph = new JLabel("Unknown");
 		c.gridx = 5; c.weightx = 1.0;
 		add(xph, c);
 
 		xpbar = new JProgressBar(0, 100);
-		xpbar.setValue(24); c.weightx = 0.0;
+		xpbar.setValue(0); c.weightx = 0.0;
 		c.gridx = 0; c.gridy = 1; c.gridwidth = 6;
 		add(xpbar, c);
 	}
@@ -61,11 +61,15 @@ public class ExperiencePane extends Pane {
 			ttl.setText("Unknown");
 		}
 
-		xpPercent = (int) (100 * ((float) s.experience / (float) s.nextExperience));
+		if (s.nextExperience > 0) {
+			xpPercent = (int) (100 * ((float) s.experience / (float) s.nextExperience));
 
-		xp.setText(
-			s.experience + "/" + s.nextExperience
-			+ " (" + xpPercent + "%)");
+			xp.setText(
+				s.experience + "/" + s.nextExperience
+				+ " (" + xpPercent + "%)");
+		} else {
+			xp.setText("Unknown");
+		}
 
 		xpbar.setValue(xpPercent);
 		xph.setText(Integer.toString(s.xpPerHour));
