@@ -96,6 +96,15 @@ public class Speech implements Runnable {
 	 * @param phrase The phrase to be spoken
 	 */
 	public static void speak(String phrase) {
+		speak(phrase, false);
+	}
+	
+	/**
+	 * Enqueue a phrase to be spoken.
+	 * @param phrase The phrase to be spoken
+	 * @param wait Whether to block the current thread until the phrase is spoken
+	 */
+	public static void speak(String phrase, boolean wait) {
 		if (voice == null)
 			return;
 		
@@ -104,6 +113,14 @@ public class Speech implements Runnable {
 		
 		if (instance.idle)
 			instance.thread.interrupt();
+		
+		if (wait) {
+			while (toSay.contains(phrase)) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {}
+			}
+		}
 	}
 	
 	/**
@@ -158,8 +175,11 @@ public class Speech implements Runnable {
     		
     		String s = null;
     		
-    		while (!stop && null != (s = toSay.poll())) {
+    		// speak each item in the queue removing it
+    		// once it has been spoken
+    		while (!stop && null != (s = toSay.peek())) {
     			speakImpl(s);
+    			toSay.poll();
     		}
     		
     		idle = true;

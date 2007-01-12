@@ -19,8 +19,8 @@ public class Sound extends Audible {
 		this.sound = sound;
 	}
 	
-	protected void createSound() {
-		sound.play();
+	protected void createSound(boolean wait) {
+		sound.play(wait);
 	}
 
 	public boolean isAudible() {

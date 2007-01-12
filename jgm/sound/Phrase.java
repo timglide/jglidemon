@@ -21,8 +21,8 @@ public class Phrase extends Audible {
 		text = s;
 	}
 	
-	protected void createSound() {		
-		Speech.speak(text);
+	protected void createSound(boolean wait) {		
+		Speech.speak(text, wait);
 	}
 	
 	public boolean isAudible() {
