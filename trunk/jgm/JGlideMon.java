@@ -1,5 +1,7 @@
 package jgm;
 
+import javax.swing.JOptionPane;
+
 import jgm.glider.*;
 import jgm.gui.GUI;
 import jgm.gui.updaters.*;
@@ -49,6 +51,17 @@ public class JGlideMon implements ConnectionListener {
 	  	connector = new Connector();
 		gui = new GUI(this);
 
+		if (!jgm.cfg.iniFileExists() || jgm.cfg.net.host.equals("")) {
+			gui.tabsPane.tabbedPane.setSelectedComponent(gui.tabsPane.config);
+			
+			JOptionPane.showMessageDialog(gui.frame,
+				"Please enter the server name, port, and password.\n" +
+				"Next, click Save Settings, then click Connect.\n\n" +
+				"Remember to click Save Settings any time you change a setting.",
+				"Configuration Required",
+				JOptionPane.INFORMATION_MESSAGE);
+		}
+		
 		// create a seperate thread to connect in case it
 		// takes a while to connect it won't slow the gui
 		Runnable r = new Runnable() {

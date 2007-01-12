@@ -65,7 +65,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 		c.gridx = 0; c.gridy++;
 		net.add(new JLabel("Port: " ), c);
 		
-		port = new JTextField(Integer.toString(cfg.net.port));
+		port = new JTextField(((cfg.net.port > 0) ? Integer.toString(cfg.net.port) : ""));
 		c.gridx++;
 		net.add(port, c);
 		
@@ -240,9 +240,12 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Save Settings")) {
 			cfg.net.host = host.getText();
-			
+						
 			try {
 				cfg.net.port = Integer.parseInt(port.getText());
+				
+				if (cfg.net.port < 1) 
+					throw new NumberFormatException("Port must be positive");
 			} catch (NumberFormatException x) {
 				System.err.println("Invalid port: " + port.getText());
 			}
