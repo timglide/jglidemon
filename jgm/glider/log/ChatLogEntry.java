@@ -30,7 +30,7 @@ public class ChatLogEntry extends LogEntry {
 			return new ChatLogEntry(s);
 		}
 
-		int urgency = 1;;
+		WhisperEntry.Urgency urgency = WhisperEntry.Urgency.URGENT;
 
 		boolean gm     = m.group(1).equals("<GM>");
 		String from    = m.group(2);
@@ -40,9 +40,9 @@ public class ChatLogEntry extends LogEntry {
 
 		if (gm) {
 			type = "GM " + type;
-			urgency++;
+			urgency = WhisperEntry.Urgency.CRITICAL;
 		}
-		
+
 		return new WhisperEntry(
 			s, message, from, urgency, type
 		);
