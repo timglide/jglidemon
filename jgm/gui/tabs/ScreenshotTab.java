@@ -13,7 +13,7 @@ import javax.swing.event.*;
 import javax.swing.*;
 
 public class ScreenshotTab extends Tab
-	implements ChangeListener, MouseListener, KeyListener {
+	implements ActionListener, ChangeListener, MouseListener, KeyListener {
 	private static GliderConn conn = null;
 	private static SSUpdater updater = null;
 	
@@ -21,6 +21,8 @@ public class ScreenshotTab extends Tab
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
 
+	private JButton refresh;
+	
 	public ScreenshotTab() {
 		super(new BorderLayout(), "Screenshot");
 		
@@ -47,13 +49,44 @@ public class ScreenshotTab extends Tab
 		p.add(ssLabel);
 		
 		add(p, BorderLayout.CENTER);
+		
+		refresh = new JButton("Refresh Screenshot Immediately");
+		refresh.addActionListener(this);
+		add(refresh, BorderLayout.SOUTH);
+		
+		checkNulls();
+	}
+	
+	private void checkNulls() {
+		if (conn == null) conn = JGlideMon.instance.keysConn;
+		if (updater == null) updater = JGlideMon.instance.ssUpdater;
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		checkNulls();
+		
+		if (e.getSource() == refresh) {
+			System.out.println("Want to update SS");
+			
+			if (updater != null && updater.idle) {
+				System.out.println("Updating SS");
+				updater.thread.interrupt();
+			}	
+		}
 	}
 	
 	public void stateChanged(ChangeEvent e) {
+		checkNulls();
+		
 		// if user switches to this tab, force an update
 		// since we stopped updating when the tab wasn't selected
-		if (updater != null && this.isCurrentTab() && updater.idle) {
-			updater.thread.interrupt();
+		if (this.isCurrentTab()) {
+			System.out.println("Want to update SS");
+			
+			if (updater != null && updater.idle) {
+				System.out.println("Updating SS");
+				updater.thread.interrupt();
+			}
 		}
 	}
 	
@@ -62,10 +95,8 @@ public class ScreenshotTab extends Tab
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
 
-	public void mouseClicked(MouseEvent e) {
-		if (conn == null) conn = JGlideMon.instance.keysConn;
-		if (updater == null) updater = JGlideMon.instance.ssUpdater;
-		
+	public void mouseClicked(MouseEvent e) {	
+		checkNulls();
 		if (!Connector.isConnected()) return;
 		
 		Dimension s = ssLabel.getSize();
@@ -96,9 +127,7 @@ public class ScreenshotTab extends Tab
 		= new HashMap<Integer, Boolean>();
 	
 	public void keyPressed(KeyEvent e) {
-		if (conn == null) conn = JGlideMon.instance.keysConn;
-		if (updater == null) updater = JGlideMon.instance.ssUpdater;
-
+		checkNulls();
 		if (!Connector.isConnected()) return;
 		
 		int code = e.getKeyCode();
@@ -128,6 +157,7 @@ public class ScreenshotTab extends Tab
 	}
 	
 	public void keyReleased(KeyEvent e) {
+		checkNulls();
 		//System.out.println(e);
 
 		if (!Connector.isConnected()) {
