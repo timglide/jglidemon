@@ -17,7 +17,7 @@ public class LogEntry implements Comparable<LogEntry> {
 
 	/**
 	 * Create a new LogEntry.
-	 * @param type The type of entry
+	 * @param type The type of entry, Whisper, Chat, GliderLog, etc.
 	 * @param rawText The raw text as received from the /log command
 	 */
 	public LogEntry(String type, String rawText) {
