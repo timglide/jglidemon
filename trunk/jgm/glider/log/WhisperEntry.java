@@ -3,11 +3,11 @@ package jgm.glider.log;
 import jgm.sound.*;
 
 public class WhisperEntry extends ChatLogEntry {
-	public static final int TRIVIAL = 0;
-	public static final int URGENT = 1;
-	public static final int CRITICAL = 2;
-	
-	private int    urgency = TRIVIAL;
+	public static enum Urgency {
+		TRIVIAL, URGENT, CRITICAL
+	};
+		
+	private Urgency urgency = Urgency.TRIVIAL;
 	private String message = null;
 	
 	public String from;
@@ -15,14 +15,14 @@ public class WhisperEntry extends ChatLogEntry {
 	public WhisperEntry(String raw,
 						String parsed,
 						String from,
-						int    urgency,
+						Urgency urgency,
 						String type) {
 		super(type, raw);
 		
 		this.message = parsed;
 		this.from = from;
 		this.urgency = urgency;
-		
+
 		if (isCritical()) {
 			new Sound(Audible.Type.GM, jgm.util.Sound.File.GM_WHISPER).play();
 			new Phrase(Audible.Type.GM, parsed).play();
@@ -37,11 +37,20 @@ public class WhisperEntry extends ChatLogEntry {
 	}
 	
 	public boolean isUrgent() {
-		return urgency >= URGENT;
+		switch (urgency) {
+			case URGENT:
+			case CRITICAL: return true;
+		}
+		
+		return false;
 	}
 
 	public boolean isCritical() {
-		return urgency >= CRITICAL;
+		switch (urgency) {
+			case CRITICAL: return true;
+		}
+		
+		return false;
 	}
 	
 	public String getFrom() {
