@@ -59,6 +59,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 		net.add(new JLabel("Host: "), c);
 		
 		host = new JTextField(cfg.net.host);
+		host.addActionListener(this);
 		c.gridx++;
 		net.add(host, c);
 		
@@ -66,6 +67,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 		net.add(new JLabel("Port: " ), c);
 		
 		port = new JTextField(((cfg.net.port > 0) ? Integer.toString(cfg.net.port) : ""));
+		port.addActionListener(this);
 		c.gridx++;
 		net.add(port, c);
 		
@@ -73,6 +75,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 		net.add(new JLabel("Password: " ), c);
 		
 		password = new JTextField(cfg.net.password);
+		password.addActionListener(this);
 		c.gridx++;
 		net.add(password, c);
 		
@@ -97,6 +100,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 		status.add(new JLabel("Refresh (ms): "), c);
 		
 		statusInterval = new JTextField(Integer.toString(cfg.status.updateInterval));
+		statusInterval.addActionListener(this);
 		c.gridx++;
 		status.add(statusInterval, c);
 		
@@ -116,6 +120,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 		screenshot.add(new JLabel("Refresh (ms): "), c);
 		
 		screenshotInterval = new JTextField(Integer.toString(cfg.screenshot.updateInterval));
+		screenshotInterval.addActionListener(this);
 		c.gridx++;
 		screenshot.add(screenshotInterval, c);
 		
@@ -239,48 +244,46 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Save Settings")) {
-			cfg.net.host = host.getText();
-						
-			try {
-				cfg.net.port = Integer.parseInt(port.getText());
-				
-				if (cfg.net.port < 1) 
-					throw new NumberFormatException("Port must be positive");
-			} catch (NumberFormatException x) {
-				System.err.println("Invalid port: " + port.getText());
-			}
+		cfg.net.host = host.getText();
+		
+		try {
+			cfg.net.port = Integer.parseInt(port.getText());
 			
-			cfg.net.password = password.getText();
-			cfg.net.autoReconnect = netReconnect.isSelected();			
-			
-			try {
-				cfg.status.updateInterval = Integer.parseInt(statusInterval.getText());
-			} catch (NumberFormatException x) {
-				System.err.println("Invalid interval: " + statusInterval.getText());
-			}
-			
-			try {
-				cfg.screenshot.updateInterval = Integer.parseInt(screenshotInterval.getText());
-			} catch (NumberFormatException x) {
-				System.err.println("Invalid interval: " + screenshotInterval.getText());
-			}
-			
-			cfg.screenshot.scale = screenshotScale.getValue();
-			cfg.screenshot.quality = screenshotQuality.getValue();
-			
-			cfg.sound.enabled = enableSound.isSelected();
-			cfg.sound.whisper = soundWhisper.isSelected();
-			cfg.sound.say = soundSay.isSelected();
-			cfg.sound.gm = soundGM.isSelected();
-			cfg.sound.tts.enabled = enableTTS.isSelected();
-			cfg.sound.tts.whisper = ttsWhisper.isSelected();
-			cfg.sound.tts.say = ttsSay.isSelected();
-			cfg.sound.tts.gm = ttsGM.isSelected();
-			cfg.sound.tts.status = ttsStatus.isSelected();
-			
-			cfg.writeIni();
+			if (cfg.net.port < 1) 
+				throw new NumberFormatException("Port must be positive");
+		} catch (NumberFormatException x) {
+			System.err.println("Invalid port: " + port.getText());
 		}
+		
+		cfg.net.password = password.getText();
+		cfg.net.autoReconnect = netReconnect.isSelected();			
+		
+		try {
+			cfg.status.updateInterval = Integer.parseInt(statusInterval.getText());
+		} catch (NumberFormatException x) {
+			System.err.println("Invalid interval: " + statusInterval.getText());
+		}
+		
+		try {
+			cfg.screenshot.updateInterval = Integer.parseInt(screenshotInterval.getText());
+		} catch (NumberFormatException x) {
+			System.err.println("Invalid interval: " + screenshotInterval.getText());
+		}
+		
+		cfg.screenshot.scale = screenshotScale.getValue();
+		cfg.screenshot.quality = screenshotQuality.getValue();
+		
+		cfg.sound.enabled = enableSound.isSelected();
+		cfg.sound.whisper = soundWhisper.isSelected();
+		cfg.sound.say = soundSay.isSelected();
+		cfg.sound.gm = soundGM.isSelected();
+		cfg.sound.tts.enabled = enableTTS.isSelected();
+		cfg.sound.tts.whisper = ttsWhisper.isSelected();
+		cfg.sound.tts.say = ttsSay.isSelected();
+		cfg.sound.tts.gm = ttsGM.isSelected();
+		cfg.sound.tts.status = ttsStatus.isSelected();
+		
+		cfg.writeIni();
 	}
 	
 	public void stateChanged(ChangeEvent e) {
