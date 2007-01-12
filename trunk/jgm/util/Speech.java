@@ -14,14 +14,14 @@ import java.util.*;
 public class Speech implements Runnable {
 	public static boolean destroyWhenEmpty = false;
 	public static boolean printTime = false;
-	
-	private static Voice voice;
+
+	private static Speech instance = null;
+	private static Voice voice = null;
 	private static Queue<String> toSay = new LinkedList<String>();
-	private static Speech instance;
-	
-	private Thread thread;
-	
+		
 	public static volatile boolean stop = false;
+
+	private Thread thread = null;
 	
 	private Speech() {
 		if (voice == null) return;
@@ -51,10 +51,26 @@ public class Speech implements Runnable {
 	 * @param v The voice name to use
 	 */
 	public static void init(String v) {
-        VoiceManager voiceManager = VoiceManager.getInstance();
+		VoiceManager voiceManager = null;
+		
+		// allow the TTS libraries to be optional
+		try {
+			Class<?> contextClass = Class.forName("com.sun.speech.freetts.VoiceManager");
+			voiceManager = VoiceManager.getInstance();
+		} catch (Exception e) {
+			voice = null;
+			instance = null;
+			
+			System.err.println("Unable to load TTS, libraries not available");
+			return;
+		}
+		
         voice = voiceManager.getVoice(v);
         
         if (voice == null) {
+			voice = null;
+			instance = null;
+			
         	System.err.println("Unable to load TTS");
         	return;
         }
