@@ -77,6 +77,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 		net.add(password, c);
 		
 		netReconnect = new JCheckBox("Auto Reconnect", cfg.net.autoReconnect);
+		netReconnect.setEnabled(false);
 		c.gridx = 0; c.gridy++;	c.gridwidth = 2;
 		net.add(netReconnect, c);
 		
