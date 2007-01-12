@@ -32,19 +32,30 @@ public abstract class Audible {
 	 * @return Whether the sound should be heard
 	 */
 	public abstract boolean isAudible();
-	
+
 	/**
 	 * Play the sound if it should be played according
 	 * to the configuration.
 	 */
 	public void play() {
+		play(false);
+	}
+	
+	/**
+	 * Play the sound if it should be played according
+	 * to the configuration and potentially block the current thread
+	 * until the sound finishes playing.
+	 * @param wait Whether to block the current thread until the sound has finished playing
+	 */
+	public void play(boolean wait) {
 		if (!isAudible()) return;
 		
-		createSound();
+		createSound(wait);
 	}
 	
 	/**
 	 * Actually generate the sound.
+	 * @param wait Whether to block the current thread until the sound finishes playing
 	 */
-	protected abstract void createSound();
+	protected abstract void createSound(boolean wait);
 }
