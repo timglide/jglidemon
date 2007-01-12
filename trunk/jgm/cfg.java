@@ -113,6 +113,7 @@ public class cfg extends Thread {
 				ini.setBooleanProperty("sound.tts", "gm", sound.tts.gm);
 				ini.setBooleanProperty("sound.tts", "status", sound.tts.status);
 				
+				System.out.println("Saving configuration to " + iniFile.getName());
 				ini.updateFile();
 			}
 		});
