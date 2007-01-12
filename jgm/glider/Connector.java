@@ -72,6 +72,8 @@ public class Connector extends Thread {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				state = State.CONNECTING;
+				jgm.gui.GUI.setStatusBarText("Connecting...", false, true);
+				jgm.gui.GUI.setStatusBarProgressIndeterminent();
 				boolean success = true;
 				
 				for (ConnectionListener c : listeners) {
@@ -85,8 +87,10 @@ public class Connector extends Thread {
 				}
 				
 				state = (success) ? State.CONNECTED : State.DISCONNECTED;
+				jgm.gui.GUI.hideStatusBarProgress();
 				
 				if (success) {
+					jgm.gui.GUI.setStatusBarText("Connected", false, true);
 					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 					
 					if (cfg.net.autoReconnect)
@@ -102,10 +106,16 @@ public class Connector extends Thread {
 		t.start();
 	}
 	
-	public void disconnect() {
+	public Thread disconnect() {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
+				runImpl();
+			}
+			
+			private synchronized void runImpl() {
 				state = State.DISCONNECTING;
+				jgm.gui.GUI.setStatusBarText("Disconnecting...", false, true);
+				jgm.gui.GUI.setStatusBarProgressIndeterminent();
 				boolean success = true;
 				
 				for (ConnectionListener c : listeners) {
@@ -119,17 +129,23 @@ public class Connector extends Thread {
 				}
 				
 				state = State.DISCONNECTED;
+				jgm.gui.GUI.setStatusBarText("Disconnected", false, true);
+				jgm.gui.GUI.hideStatusBarProgress();
 				
 				if (success) {
-					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 					System.out.println("Notifying of disconnect");
 					notifyConnectionDied();
+					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 				}
+				
+				notifyAll();
 			}
 		}, "Connector.disconnect");
 		
 		System.out.println("Attempting to disconnect...");
 		t.start();
+		
+		return t;
 	}
 	
 	public static void addListener(ConnectionListener cl) {
