@@ -14,6 +14,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 	private JTextField host;
 	private JTextField port;
 	private JTextField password;
+	private JCheckBox netReconnect;
 	
 	private JPanel status;
 	private JTextField statusInterval;
@@ -75,7 +76,11 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 		c.gridx++;
 		net.add(password, c);
 		
-		c.gridx = 0; c.gridy++; c.weighty = 1.0;
+		netReconnect = new JCheckBox("Auto Reconnect", cfg.net.autoReconnect);
+		c.gridx = 0; c.gridy++;	c.gridwidth = 2;
+		net.add(netReconnect, c);
+		
+		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 1;
 		net.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
@@ -243,6 +248,7 @@ public class ConfigTab extends Tab implements ActionListener, ChangeListener {
 			}
 			
 			cfg.net.password = password.getText();
+			cfg.net.autoReconnect = netReconnect.isSelected();			
 			
 			try {
 				cfg.status.updateInterval = Integer.parseInt(statusInterval.getText());
