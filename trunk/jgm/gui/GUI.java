@@ -30,8 +30,74 @@ public class GUI
 
 	private JMenuBar      menuBar;
 
-	private JStatusBar    statusBar;
+	private static JStatusBar    statusBar;
 
+	private JFrame aboutFrame;
+	
+	private static volatile boolean lockStatusText = false;
+	
+	public static void unlockStatusBarText() {
+		lockStatusText = false;
+	}
+	
+	/**
+	 * Set the status bar's text.
+	 * @param s The String to set the text to
+	 */
+	public static void setStatusBarText(String s) {
+		setStatusBarText(s, false, false);
+	}
+	
+	/**
+	 * Set the status bar's text and possibly lock it
+	 * afterward.
+	 * @param s The String to set the text to
+	 * @param lock Whether to lock the text after setting it
+	 * @param force Whether to ignore if the text is locked
+	 */
+	public static void setStatusBarText(String s, boolean lock, boolean force) {
+		if (statusBar == null || (lockStatusText && !force)) return;
+
+		if (lock)
+			lockStatusText = true;
+		
+		lastStatusText = currentStatusText;
+		currentStatusText = s;
+		statusBar.setText(s);
+	}
+	
+	private static String lastStatusText = "";
+	private static String currentStatusText = "";
+	
+	public static void revertStatusBarText() {
+		if (statusBar == null) return;
+		
+		statusBar.setText(lastStatusText);
+	}
+	
+	public static void setStatusBarProgressIndeterminent() {
+		if (statusBar == null) return;
+		
+		statusBar.getProgressBar().setIndeterminate(true);
+		statusBar.getProgressBar().setVisible(true);
+	}
+	
+	public static void setStatusBarProgress(int i) {
+		if (statusBar == null) return;
+		
+		statusBar.getProgressBar().setIndeterminate(false);
+		statusBar.getProgressBar().setValue(i);
+		statusBar.getProgressBar().setVisible(true);
+	}
+	
+	public static void hideStatusBarProgress() {
+		if (statusBar == null) return;
+		
+		statusBar.getProgressBar().setIndeterminate(false);
+		statusBar.getProgressBar().setValue(0);
+		statusBar.getProgressBar().setVisible(false);
+	}
+	
 	public GUI(JGlideMon j) {
 		instance = this;
 		jgm = j;
@@ -157,6 +223,11 @@ public class GUI
 		statusBar.putClientProperty("JStatusBar.clientBorder", "Flat");
 		statusBar.setText("Disconnected");
 
+		JProgressBar tmp = statusBar.getProgressBar();
+		tmp.setStringPainted(false);
+		tmp.setMaximum(100);
+		tmp.setMinimum(0);
+		
 		frame.add(statusBar, BorderLayout.SOUTH);
 
 		frame.setJMenuBar(menuBar);
@@ -167,47 +238,9 @@ public class GUI
 		frame.setVisible(true);
 	    frame.repaint();
 	    
-	    initAboutFrame();
+	    aboutFrame = new AboutFrame();
 	}
 	
-
-	private JFrame aboutFrame;
-	private JLabel aboutIcon;
-	private JLabel aboutText;
-	
-	private void initAboutFrame() {
-		aboutFrame = new JFrame("About JGlideMon");
-		aboutFrame.setSize(250, 200);
-		aboutFrame.setResizable(false);
-		aboutFrame.setLocationRelativeTo(null); // center
-		aboutFrame.setLayout(new BorderLayout(20, 20));
-		ImageIcon icon = new ImageIcon(
-			JGlideMon.class.getResource("resources/images/stitch/stitch0.jpg"));
-		aboutIcon = new JLabel(icon);
-		aboutFrame.add(aboutIcon, BorderLayout.WEST);
-		aboutText = new JLabel(
-			"<html>JGlideMon " + JGlideMon.version + "<br><br>" +
-			"By Tim" +
-			"</html>"
-		);
-		aboutFrame.add(aboutText, BorderLayout.CENTER);
-		
-		aboutFrame.addWindowListener(
-			new WindowAdapter() {
-				public void windowOpened(WindowEvent e) {
-					java.util.Random r = new java.util.Random();
-					aboutIcon.setIcon(
-						new ImageIcon(
-							JGlideMon.class.getResource("resources/images/stitch/stitch" + r.nextInt(2) + ".jpg")));
-				}
-				
-				public void windowClosing(WindowEvent e) {
-					aboutFrame.setVisible(false);
-				} // end WindowClosing
-			}
-		);		
-	}
-
 	public void update(java.util.Observable obs, Object o) {
 //		System.out.println("GUI.update() called");
 		StatusUpdater s = (StatusUpdater) o;
@@ -225,11 +258,19 @@ public class GUI
 		}
 		
 		if (!Connector.isConnected()) {
-			statusBar.setText("Disconnected");
+			String st;
+			
+			switch (Connector.state) {
+				case CONNECTING: st = "Connecting..."; break;
+				case DISCONNECTING: st = "Disconnecting..."; break;
+				default: st = "Disconnected"; break;
+			}
+			
+			setStatusBarText(st);
 		} else if (s.attached) {
-			statusBar.setText(version + "Attached: " + s.profile);
+			setStatusBarText(version + "Attached: " + s.profile);
 		} else {
-			statusBar.setText(version + "Not Attached");
+			setStatusBarText(version + "Not Attached");
 		}
 	}
 	

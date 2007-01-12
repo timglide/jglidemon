@@ -3,6 +3,7 @@ package jgm.gui.updaters;
 import jgm.cfg;
 
 import jgm.glider.*;
+import jgm.gui.GUI;
 import jgm.gui.tabs.*;
 
 import java.util.Observer;
@@ -12,7 +13,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.*;
  
 public class SSUpdater implements Observer, Runnable, ConnectionListener {
-	public boolean idle = false;
+	public  volatile boolean idle = true;
 	private volatile boolean stop = false;
 	private volatile boolean attached = false;
 
@@ -48,8 +49,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	  synchronized (conn) {
 		
 		if (stop) return false;
-				
-		System.gc();
+		
+		GUI.setStatusBarText("Updating screenshot...", true, false);
+		GUI.setStatusBarProgress(0);
+		
 		conn.send("/capturescale " + cfg.screenshot.scale);
 		conn.readLine(); // set scale successfully
 		conn.readLine(); // ---
@@ -91,6 +94,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 
 			System.err.println("Clear Stream done");	
 
+			GUI.hideStatusBarProgress();
+			GUI.unlockStatusBarText();
+			
 			return false;
 		}
 
@@ -98,6 +104,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 
 		while (written < size) {
 			written += conn.read(buff, written, size - written);
+			
+			int percent = (int) (((float) written / (float) size) * 100);
+			GUI.setStatusBarProgress(percent);
 		}
 
 		conn.readLine(); // ---
@@ -114,6 +123,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		tab.ssLabel.setIcon(icon);
 		tab.ssLabel.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
 
+		GUI.revertStatusBarText();
+		GUI.unlockStatusBarText();
+		GUI.hideStatusBarProgress();
+		
 		return true;	  
 	  }
 	}
@@ -129,6 +142,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				} catch (Exception e) {
 					System.err.println("Stopping SSUpdater, Ex: " + e.getMessage());
 					idle = true;
+					GUI.revertStatusBarText();
+					GUI.unlockStatusBarText();
+					GUI.hideStatusBarProgress();
 					return;
 				}
 				
@@ -137,6 +153,8 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			} catch (InterruptedException e) {
 				System.out.println(thread.getName() + " interrupted");
 				Thread.interrupted();
+
+				idle = true;
 				
 				if (stop) {
 					return;
@@ -145,7 +163,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				}
 			}
 			
-			idle = false;
+			idle = true;
 		}
 	}
 	
