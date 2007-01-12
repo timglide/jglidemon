@@ -2,6 +2,8 @@ package jgm;
 
 import jgm.util.*;
 
+import java.io.File;
+
 /**
  * Contains all global configuration values and handles
  * reading and writing to the ini file.
@@ -9,9 +11,14 @@ import jgm.util.*;
  * @since 0.1
  */
 public class cfg extends Thread {
-	private boolean set = false;
-	private static QuickIni ini = new QuickIni("JGlideMon.ini");
+	private volatile boolean set = false;
+	private static final File iniFile = new File("JGlideMon.ini");
+	private static QuickIni ini = new QuickIni(iniFile.getName());
 	private static int instances = 0;
+	
+	public static boolean iniFileExists() {
+		return iniFile.exists();
+	}
 	
 	public cfg() {
 		if (++instances > 1) {
@@ -37,8 +44,8 @@ public class cfg extends Thread {
 	}
 	
 	public synchronized void readIni() {
-		net.host = ini.getStringProperty("network", "host", "localhost");
-		net.port = ini.getIntegerProperty("network", "port", 1234);
+		net.host = ini.getStringProperty("network", "host", "");
+		net.port = ini.getIntegerProperty("network", "port", 0);
 		net.password = ini.getStringProperty("network", "password", "");
 		net.autoReconnect = ini.getBooleanProperty("network", "autoreconnect", true);
 		
@@ -70,7 +77,7 @@ public class cfg extends Thread {
 		sound.tts.say = ini.getBooleanProperty("sound.tts", "say", false);
 		sound.tts.gm = ini.getBooleanProperty("sound.tts", "gm", true);
 		sound.tts.status = ini.getBooleanProperty("sound.tts", "status", true);
-		
+				
 		notifyAll();
 	}
 	

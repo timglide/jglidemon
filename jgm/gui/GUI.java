@@ -15,8 +15,10 @@ import javax.swing.*;
 public class GUI 
 	implements java.util.Observer, ActionListener {
 	
+	public static GUI instance;
+	
 	private JGlideMon     jgm;
-	private JFrame        frame;
+	public JFrame        frame;
 
 	private JPanel        mainPane;
 
@@ -31,6 +33,7 @@ public class GUI
 	private JStatusBar    statusBar;
 
 	public GUI(JGlideMon j) {
+		instance = this;
 		jgm = j;
 		
 		frame = new JFrame("JGlideMon " + JGlideMon.version);

@@ -7,7 +7,7 @@ import java.awt.*;
 import javax.swing.*;
 
 public class TabsPane extends Pane {
-	private JTabbedPane  tabbedPane;
+	public JTabbedPane  tabbedPane;
 
 	public ScreenshotTab screenshotTab;
 	public LogTab        statusLog;
@@ -52,9 +52,6 @@ public class TabsPane extends Pane {
 		addTab(config);
 		
 		add(tabbedPane, BorderLayout.CENTER);
-
-		// for testing
-//		urgentChatLog.add(new jgm.glider.log.WhisperEntry("[Xersees] whispers: Blah", "[Xersees] whispers: Blah", "Xersees", 1, "Whisper"));
 	}
 
 	private void addTab(Tab t) {
