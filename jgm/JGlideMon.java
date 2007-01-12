@@ -3,6 +3,7 @@ package jgm;
 import javax.swing.JOptionPane;
 
 import jgm.glider.*;
+import jgm.glider.log.WhisperEntry;
 import jgm.gui.GUI;
 import jgm.gui.updaters.*;
 import jgm.util.*;
@@ -87,43 +88,18 @@ public class JGlideMon implements ConnectionListener {
 	}
 
 	public void destroy() {
-		Thread t1 = new Thread(new Runnable() {
-			public void run() {
-				logUpdater.close();
-			}
-		});
-		
-		Thread t2 = new Thread(new Runnable() {
-			public void run() {
-				status.close();
-			}
-		});
-		
-		Thread t3 = new Thread(new Runnable() {
-			public void run() {
-				ssUpdater.close();
-			}
-		});
-		
-		Thread t4 = new Thread(new Runnable() {
-			public void run() {
-				keysConn.close();
-			}
-		});
-			
-		t1.start(); t2.start(); t3.start(); t4.start();
-		Speech.destroy();
-		
-		cfg.writeIni();
-		connector.stop = true;
-		connector.interrupt();
-		
-		while (t1.isAlive() || t2.isAlive() || 
-			   t3.isAlive() || t4.isAlive()) {
+		if (Connector.isConnected()) {
 			try {
-				Thread.sleep(100);
+				Thread t = Connector.instance.disconnect();
+				
+				synchronized (t) {
+					t.wait();
+				}
 			} catch (InterruptedException e) {}
 		}
+		
+		Speech.destroy();
+		cfg.writeIni();
 		
 		System.exit(0);
 	}
@@ -137,6 +113,6 @@ public class JGlideMon implements ConnectionListener {
 			} catch (InterruptedException e) {}
 		}
 		
-		jgm.gui.tabsPane.urgentChatLog.add(new jgm.glider.log.WhisperEntry("[Test] whispers: Test whisper", "[Test] whispers: Test whisper", "Test", 1, "Whisper"));
+		jgm.gui.tabsPane.urgentChatLog.add(new jgm.glider.log.WhisperEntry("[Test] whispers: Test whisper", "[Test] whispers: Test whisper", "Test", WhisperEntry.Urgency.URGENT, "Whisper"));
 	}
 }
