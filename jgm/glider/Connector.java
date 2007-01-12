@@ -64,6 +64,8 @@ public class Connector extends Thread {
 				break;
 			}
 		}
+		
+		System.out.println("Auto-reconnector terminating");
 	}
 	
 	public void connect() {
@@ -86,7 +88,9 @@ public class Connector extends Thread {
 				
 				if (success) {
 					new Phrase(Audible.Type.STATUS, "Connection established.").play();
-					//Connector.this.start(); // start auto-reconnector
+					
+					if (cfg.net.autoReconnect)
+						Connector.this.start(); // start auto-reconnector
 					notifyConnectionEstablished();
 				} else {
 					notifyConnectionDied();
