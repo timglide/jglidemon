@@ -47,7 +47,8 @@ public class cfg extends Thread {
 		net.host = ini.getStringProperty("network", "host", "");
 		net.port = ini.getIntegerProperty("network", "port", 0);
 		net.password = ini.getStringProperty("network", "password", "");
-		net.autoReconnect = ini.getBooleanProperty("network", "autoreconnect", true);
+		//net.autoReconnect = ini.getBooleanProperty("network", "autoreconnect", true);
+		net.autoReconnect = false;
 		
 		status.updateInterval = ini.getIntegerProperty("status", "updateInterval", 500);
 		
