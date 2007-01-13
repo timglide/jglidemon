@@ -12,7 +12,7 @@ public class Connector extends Thread {
 	
 	public volatile boolean stop = false;
 	
-	public static Connector instance;
+	private static Connector instance;
 	
 	private static Vector<ConnectionListener> listeners
 		= new Vector<ConnectionListener>();
@@ -26,11 +26,6 @@ public class Connector extends Thread {
 	
 	public static boolean isConnected() {
 		return state == State.CONNECTED;
-		/*if (listeners.size() > 0) {
-			return listeners.get(0).getConn().isConnected();
-		}
-		
-		return false;*/
 	}
 	
 	public void run() {
@@ -68,7 +63,13 @@ public class Connector extends Thread {
 		System.out.println("Auto-reconnector terminating");
 	}
 	
-	public void connect() {
+	public static void connect() {
+		if (instance == null) return;
+		
+		instance.connectImpl();
+	}
+	
+	private void connectImpl() {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				state = State.CONNECTING;
@@ -79,8 +80,14 @@ public class Connector extends Thread {
 				for (ConnectionListener c : listeners) {
 					try {
 						c.getConn().connect();
+					} catch (java.net.UnknownHostException e) {
+						System.err.println("Error connecting to " + cfg.net.host + ": " + e.getMessage());
+						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.net.host + ":" + cfg.net.port + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
+						success = false;
+						break;
 					} catch (Exception e) {
-						System.err.println("Error connecting to " + cfg.net.host + ": " + e.getMessage());						
+						System.err.println("Error connecting to " + cfg.net.host + ": " + e.getMessage());
+						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.net.host + ":" + cfg.net.port + " - " + e.getMessage(), true, true);						
 						success = false;
 						break;
 					}
@@ -106,7 +113,15 @@ public class Connector extends Thread {
 		t.start();
 	}
 	
-	public Thread disconnect() {
+	public static Thread disconnect() {
+		if (instance == null) return null;
+		
+		return instance.disconnectImpl();
+	}
+	
+	private Thread disconnectImpl() {
+		if (state != State.CONNECTED) return null;
+		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				runImpl();

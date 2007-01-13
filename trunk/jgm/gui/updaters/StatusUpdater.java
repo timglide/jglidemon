@@ -71,6 +71,7 @@ public class StatusUpdater extends Observable
 				Thread.sleep(cfg.status.updateInterval);
 			} catch (Exception e) {
 				System.err.println("Stopping StatusUpdater, Ex: " + e.getMessage());
+				Connector.disconnect();
 				return;
 			}
 		}

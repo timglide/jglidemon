@@ -60,7 +60,8 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			conn.readLine(); // ---
 		} catch (IOException e) {
 			System.err.println("Stopping LogUpdater, IOE: " + e.getMessage());
-			return; // connection died, will be restarted eventually
+			Connector.disconnect();
+			return; // connection died
 		}
 
 		String   line = null;
