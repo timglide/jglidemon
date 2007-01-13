@@ -171,10 +171,14 @@ public class Item implements Comparable<Item> {
 	public int merchentBuyPrice;
 	public int slot;
 	
-	public int[] stats = new int[5];
-	public int[] stat_values = new int[5];
+	public static final int MAX_STATS = 5;
 	
-	public Effect[] effects = new Effect[3];
+	public int[] stats = new int[MAX_STATS];
+	public int[] stat_values = new int[MAX_STATS];
+	
+	public static final int MAX_EFFECTS = 3;
+	
+	public Effect[] effects = new Effect[MAX_EFFECTS];
 	
 	public String iconPath = "/images/icons/INV_Misc_QuestionMark.png";
 	private ImageIcon icon = null;

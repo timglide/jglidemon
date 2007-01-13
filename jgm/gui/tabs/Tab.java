@@ -32,7 +32,7 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 		name = s;
 	}
 
-	public boolean isFocusable() {
+	public final boolean isFocusable() {
 		return true;
 	}
 	
@@ -40,7 +40,7 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * Returns the index of this Tab.
 	 * @return The index of this Tab
 	 */
-	public int getIndex() {
+	public final int getIndex() {
 		return ((JTabbedPane) this.getParent()).indexOfTab(name);
 	}
 	
@@ -48,7 +48,7 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * Determines if this Tab is currently selected.
 	 * @return Whether this Tab is currently selected
 	 */
-	public boolean isCurrentTab() {
+	public final boolean isCurrentTab() {
 		return ((JTabbedPane) this.getParent()).getSelectedIndex()
 				== getIndex();
 	}

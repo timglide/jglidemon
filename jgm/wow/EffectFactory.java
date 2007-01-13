@@ -42,7 +42,7 @@ public class EffectFactory {
 			return false;
 		}
 		
-		// TODO Fix regex
+		// TODO Fix regex to find up to 3 effects
 		for (int i = 0; i < 1; i++) {
 			Effect e = new Effect();
 			String s = m.group(1);
