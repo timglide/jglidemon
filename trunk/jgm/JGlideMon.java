@@ -3,7 +3,6 @@ package jgm;
 import javax.swing.JOptionPane;
 
 import jgm.glider.*;
-import jgm.glider.log.WhisperEntry;
 import jgm.gui.GUI;
 import jgm.gui.updaters.*;
 import jgm.util.*;
@@ -14,7 +13,7 @@ import jgm.util.*;
  * @since 0.1
  */
 public class JGlideMon implements ConnectionListener {
-	public static final String version = "0.2 dev";
+	public static final String version = "0.3";
 	
 	public static JGlideMon instance;
 	
@@ -105,14 +104,6 @@ public class JGlideMon implements ConnectionListener {
 	}
 	
 	public static void main(String[] args) {
-		JGlideMon jgm = new JGlideMon();
-		
-		while (!Speech.ready()) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {}
-		}
-		
-		jgm.gui.tabsPane.urgentChatLog.add(new jgm.glider.log.WhisperEntry("[Test] whispers: Test whisper", "[Test] whispers: Test whisper", "Test", WhisperEntry.Urgency.URGENT, "Whisper"));
+		new JGlideMon();
 	}
 }
