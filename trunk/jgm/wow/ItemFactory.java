@@ -70,7 +70,7 @@ public class ItemFactory {
 		item.merchentBuyPrice = getIntValue(doc, "buyprice");
 		item.slot = getIntValue(doc, "slot");
 		
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < item.stats.length; i++) {
 			item.stats[i] = getIntValue(doc, "stat" + i + "_stat");
 			item.stat_values[i] = getIntValue(doc, "stat" + i + "_value");
 		}
