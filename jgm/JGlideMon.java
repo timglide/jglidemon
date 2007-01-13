@@ -80,7 +80,7 @@ public class JGlideMon implements ConnectionListener {
 				status.addObserver(gui);
 				status.addObserver(ssUpdater);
 				
-				connector.connect();
+				Connector.connect();
 			}
 		};
 
@@ -90,7 +90,7 @@ public class JGlideMon implements ConnectionListener {
 	public void destroy() {
 		if (Connector.isConnected()) {
 			try {
-				Thread t = Connector.instance.disconnect();
+				Thread t = Connector.disconnect();
 				
 				synchronized (t) {
 					t.wait();

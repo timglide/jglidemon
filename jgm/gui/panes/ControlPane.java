@@ -92,10 +92,10 @@ public class ControlPane extends Pane implements ActionListener {
 			s = "/stopglide";
 		} else if (cmd.equals("Disconnect")) {
 			connect.setEnabled(false);
-			Connector.instance.disconnect();
+			Connector.disconnect();
 		} else if (cmd.equals("Connect")) {
 			connect.setEnabled(false);
-			Connector.instance.connect();
+			Connector.connect();
 		}
 		
 		if (s != null) {

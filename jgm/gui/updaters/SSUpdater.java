@@ -145,6 +145,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					GUI.revertStatusBarText();
 					GUI.unlockStatusBarText();
 					GUI.hideStatusBarProgress();
+					Connector.disconnect();
 					return;
 				}
 				

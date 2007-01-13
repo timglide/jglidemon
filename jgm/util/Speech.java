@@ -130,12 +130,16 @@ public class Speech implements Runnable {
 	private static void speakImpl(String phrase) {		
 		long t1, t2;
 		
-		t1 = System.currentTimeMillis();
-		voice.speak(phrase);
-		t2 = System.currentTimeMillis();
+		try {
+			t1 = System.currentTimeMillis();
+			voice.speak(phrase);
+			t2 = System.currentTimeMillis();
 		
-		if (printTime) 
-			System.out.println("Time to say \"" + phrase + "\": " + (t2 - t1) + "ms");
+			if (printTime) 
+				System.out.println("Time to say \"" + phrase + "\": " + (t2 - t1) + "ms");
+		} catch (Exception e) {
+			System.err.println("Error during TTS: " + e.getMessage());
+		}
 	}
 	
 	/**

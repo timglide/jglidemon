@@ -58,8 +58,13 @@ public class GUI
 	public static void setStatusBarText(String s, boolean lock, boolean force) {
 		if (statusBar == null || (lockStatusText && !force)) return;
 
+		// if locking set the lock
 		if (lock)
 			lockStatusText = true;
+		// else not locking and forcing unset the lock
+		else if (force)
+			lockStatusText = false;
+		
 		
 		lastStatusText = currentStatusText;
 		currentStatusText = s;
@@ -254,7 +259,7 @@ public class GUI
 		String version = "";
 		
 		if (!s.version.equals("")) {
-			version = "Glider v" + s.version + " - ";
+			version = "Connected to Glider v" + s.version + " - ";
 		}
 		
 		if (!Connector.isConnected()) {
