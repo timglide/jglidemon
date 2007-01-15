@@ -38,5 +38,5 @@ public abstract class Pane extends JPanel {
 	 * has been updated.
 	 * @param s The StatusUpdater with updated information
 	 */
-	public abstract void update(StatusUpdater s);
+	public void update(StatusUpdater s) {}
 }
