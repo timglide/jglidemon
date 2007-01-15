@@ -13,7 +13,7 @@ import jgm.util.*;
  * @since 0.1
  */
 public class JGlideMon implements ConnectionListener {
-	public static final String version = "0.3";
+	public static final String version = "0.3 dev";
 	
 	public static JGlideMon instance;
 	
@@ -52,14 +52,14 @@ public class JGlideMon implements ConnectionListener {
 		gui = new GUI(this);
 
 		if (!jgm.cfg.iniFileExists() || jgm.cfg.net.host.equals("")) {
-			gui.tabsPane.tabbedPane.setSelectedComponent(gui.tabsPane.config);
-			
 			JOptionPane.showMessageDialog(gui.frame,
 				"Please enter the server name, port, and password.\n" +
 				"Next, click Save Settings, then click Connect.\n\n" +
 				"Remember to click Save Settings any time you change a setting.",
 				"Configuration Required",
 				JOptionPane.INFORMATION_MESSAGE);
+			
+			gui.showConfig();
 		}
 		
 		// create a seperate thread to connect in case it
