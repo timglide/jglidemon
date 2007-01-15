@@ -2,6 +2,7 @@ package jgm.gui;
 
 import jgm.*;
 import jgm.glider.*;
+import jgm.gui.dialogs.*;
 import jgm.gui.panes.*;
 import jgm.gui.updaters.*;
 
@@ -32,7 +33,8 @@ public class GUI
 
 	private static JStatusBar    statusBar;
 
-	private JFrame aboutFrame;
+	private About aboutFrame;
+	private Config configDialog;
 	
 	private static volatile boolean lockStatusText = false;
 	
@@ -210,6 +212,12 @@ public class GUI
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(fileMenu);
 
+		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
+		configItem.addActionListener(this);
+		fileMenu.add(configItem);
+		
+		fileMenu.addSeparator();
+		
 		JMenuItem exitItem = new JMenuItem("Exit", KeyEvent.VK_X);
 		exitItem.addActionListener(this);
 		fileMenu.add(exitItem);
@@ -242,8 +250,6 @@ public class GUI
 		frame.validate();
 		frame.setVisible(true);
 	    frame.repaint();
-	    
-	    aboutFrame = new AboutFrame();
 	}
 	
 	public void update(java.util.Observable obs, Object o) {
@@ -282,10 +288,20 @@ public class GUI
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		
-		if (cmd.equals("Exit")) {
+		if (cmd.equals("Configuration")) {
+			showConfig();
+		} else if (cmd.equals("Exit")) {
 			jgm.destroy();
 		} else if (cmd.equals("About")) {
-			aboutFrame.setVisible(true);
+			showAbout();
 		}
+	}
+	
+	public void showConfig() {
+		configDialog = new Config(frame);
+	}
+	
+	public void showAbout() {
+		aboutFrame = new About(frame);
 	}
 }

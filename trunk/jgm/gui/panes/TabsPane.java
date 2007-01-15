@@ -1,5 +1,6 @@
 package jgm.gui.panes;
 
+import jgm.gui.dialogs.Config;
 import jgm.gui.tabs.*;
 import jgm.gui.updaters.StatusUpdater;
 
@@ -19,7 +20,6 @@ public class TabsPane extends Pane {
 	public LogTab        combatLog;
 	public LogTab        gliderLog;
 	public LogTab        rawLog;
-	public ConfigTab     config;
 
 	public TabsPane() {
 		super(new BorderLayout());
@@ -48,9 +48,6 @@ public class TabsPane extends Pane {
 		lootsTab = new LootsTab();
 		addTab(lootsTab);
 
-		config = new ConfigTab();
-		addTab(config);
-		
 		add(tabbedPane, BorderLayout.CENTER);
 	}
 
