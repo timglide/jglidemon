@@ -54,4 +54,20 @@ public class Util {
 		return (i >>> 24) | (i << 24) | 
 				((i << 8) & 0x00FF0000) | ((i >> 8) & 0x0000FF00);
 	}
+	
+	/**
+	 * Resize an ImageIcon to the specified size.
+	 * @param icon The ImageIcon to resize
+	 * @param width The new width
+	 * @param height The new height
+	 */
+	public final static javax.swing.ImageIcon resizeIcon(javax.swing.ImageIcon icon, int width, int height) {
+		java.awt.Image img = icon.getImage();
+		java.awt.image.BufferedImage bi = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		
+		java.awt.Graphics g = bi.createGraphics();
+		g.drawImage(img, 0, 0, width, height, null);
+		
+		return new javax.swing.ImageIcon(bi);
+	}
 }

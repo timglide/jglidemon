@@ -143,12 +143,12 @@ public class LootsTab extends Tab implements ActionListener {
 		public ItemTable(ItemTableModel dm) {
 			super(dm);
 			
-			setRowHeight(64);
+			setRowHeight(32);
 
 			TableColumnModel cm = getColumnModel();
 			cm.getColumn(0).setResizable(false);
-			cm.getColumn(0).setMinWidth(64);
-			cm.getColumn(0).setMaxWidth(64);
+			cm.getColumn(0).setMinWidth(32);
+			cm.getColumn(0).setMaxWidth(32);
 			cm.getColumn(1).setResizable(true);
 			cm.getColumn(1).setMinWidth(25);
 //			cm.getColumn(1).setMaxWidth(200);
@@ -212,7 +212,7 @@ public class LootsTab extends Tab implements ActionListener {
 	private static final java.util.Comparator<Item> comp
 		= Item.getQuantityComparator();
 
-	private static final String[] columnNames = {"Icon", "Name", "Qty"};
+	private static final String[] columnNames = {" ", "Name", "Qty"};
 	
 	private class ItemTableModel extends AbstractTableModel {
 		private Vector<Item> items;

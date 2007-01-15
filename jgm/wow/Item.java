@@ -305,6 +305,7 @@ public class Item implements Comparable<Item> {
 			try {
 				icon = new javax.swing.ImageIcon(
 					   new java.net.URL(ICON_BASE + iconPath));
+				icon = jgm.Util.resizeIcon(icon, 32, 32);
 				icons.put(iconPath, icon);
 			} catch (java.net.MalformedURLException e) {
 				System.err.println("Unable to make icon in Item: " + e.getMessage());
