@@ -24,12 +24,12 @@ public class WhisperEntry extends ChatLogEntry {
 		this.urgency = urgency;
 
 		if (isCritical()) {
-			new Sound(Audible.Type.GM, jgm.util.Sound.File.GM_WHISPER).play();
+			new Sound(Audible.Type.GM, jgm.util.Sound.File.GM_WHISPER).play(true);
 			new Phrase(Audible.Type.GM, parsed).play();
 		} else if (isUrgent()) {
 			Audible.Type t = (type.equals("Whisper")) ? Audible.Type.WHISPER : Audible.Type.SAY;
 			
-			new Sound(t, jgm.util.Sound.File.WHISPER).play();
+			new Sound(t, jgm.util.Sound.File.WHISPER).play(true);
 			new Phrase(t, getText()).play();
 		} else {
 			new Phrase(Audible.Type.STATUS, raw).play();
