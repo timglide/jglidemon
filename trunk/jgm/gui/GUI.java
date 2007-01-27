@@ -19,7 +19,7 @@ public class GUI
 	public static GUI instance;
 	
 	private JGlideMon     jgm;
-	public JFrame        frame;
+	public static JFrame        frame;
 
 	private JPanel        mainPane;
 
@@ -35,6 +35,12 @@ public class GUI
 
 	private About aboutFrame;
 	private Config configDialog;
+	
+	public static void setTitleBorder(JComponent c, String text) {
+		c.setBorder(
+			BorderFactory.createTitledBorder(text)
+		);
+	}
 	
 	private static volatile boolean lockStatusText = false;
 	
@@ -105,11 +111,23 @@ public class GUI
 		statusBar.getProgressBar().setVisible(false);
 	}
 	
+	public static final String BASE_TITLE = "JGlideMon " + JGlideMon.version;
+
+	public static void setTitle() {
+		setTitle(null);
+	}
+
+	public static void setTitle(String s) {
+		if (frame == null) return;
+
+		frame.setTitle((s != null && !s.equals("") ? s + " - " : "") + BASE_TITLE);
+	}
+
 	public GUI(JGlideMon j) {
 		instance = this;
 		jgm = j;
 		
-		frame = new JFrame("JGlideMon " + JGlideMon.version);
+		frame = new JFrame(BASE_TITLE);
 
 		frame.setSize(cfg.window.width, cfg.window.height);
 		frame.setLocation(cfg.window.x, cfg.window.y);
@@ -247,9 +265,11 @@ public class GUI
 
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
+	}
+	
+	public void makeVisible() {
 		frame.validate();
 		frame.setVisible(true);
-	    frame.repaint();
 	}
 	
 	public void update(java.util.Observable obs, Object o) {
@@ -260,7 +280,7 @@ public class GUI
 		mobInfo.update(s);
 		ctrlPane.update(s);
 		xpPane.update(s);
-//		tabsPane.update(s);
+		tabsPane.update(s);
 
 		String version = "";
 		
@@ -298,10 +318,12 @@ public class GUI
 	}
 	
 	public void showConfig() {
-		configDialog = new Config(frame);
+		if (configDialog == null) configDialog = new Config(frame);
+		configDialog.setVisible(true);
 	}
 	
 	public void showAbout() {
-		aboutFrame = new About(frame);
+		if (aboutFrame == null) aboutFrame = new About(frame);
+		aboutFrame.setVisible(true);
 	}
 }
