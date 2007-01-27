@@ -71,6 +71,7 @@ public class StatusUpdater extends Observable
 				Thread.sleep(cfg.status.updateInterval);
 			} catch (Exception e) {
 				System.err.println("Stopping StatusUpdater, Ex: " + e.getMessage());
+				e.printStackTrace();
 				Connector.disconnect();
 				return;
 			}
@@ -110,7 +111,7 @@ public class StatusUpdater extends Observable
 		profile    = m.containsKey("Profile")     ? m.get("Profile")     : "";
 		log        = m.containsKey("Log")         ? m.get("Log")         : "None";
 		name       = m.containsKey("Name")        ? m.get("Name")        : "";
-		clazz      = m.containsKey("Class")       ? m.get("Class")       : "";
+		clazz      = m.containsKey("Class")       ? m.get("Class")       : "Unknown";
 		location   = m.containsKey("Location")    ? m.get("Location")    : "";
 		targetName = m.containsKey("Target-Name") ? m.get("Target-Name") : "";
 		
@@ -141,19 +142,24 @@ public class StatusUpdater extends Observable
 				mana = 0.0;
 			} else {
 				// "Mana: 123 (42%)"
-				Pattern p = Pattern.compile(".*?(\\d+)%.*");
+				// "Mana: 100 (CP = 0)"
+				// group 1: whole thing
+				//       2: mana percent
+				//       3: combo points if they exist
+				Pattern p = Pattern.compile("(.*(\\d+)%|.*?(\\d+)).*");
+				//Pattern p = Pattern.compile(".*?(:?(\\d+)%?|(\\d+) \\(CP = \\d+\\)).*");
 				Matcher x = p.matcher(m.get("Mana"));
 
 				//System.out.println("Matching: " + m.get("Mana"));
 				
 				if (!x.matches()) throw new NumberFormatException("No Match");
 
-				mana = Double.parseDouble(x.group(1));
-				
 				//System.out.println("  Found: " + x.group(1));
+				mana = Double.parseDouble(x.group(1));
 			}	
-		} catch (NumberFormatException e) {
-			//System.err.println("Did not match mana");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Did not match mana");
 			mana = 0.0;
 		}
 
