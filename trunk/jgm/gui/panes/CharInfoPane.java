@@ -85,9 +85,14 @@ public class CharInfoPane extends Pane {
 		mana.setValue((int) s.mana);
 
 		if (!clazz.getText().equals(s.clazz)) {
-			clazz.setText(s.clazz);
-			java.net.URL iconURL = jgm.JGlideMon.class.getResource("resources/images/classes/" + s.clazz.toLowerCase() + ".png");
-			iconLabel.setIcon(new ImageIcon(iconURL));
+			try {
+				clazz.setText(s.clazz);
+				java.net.URL iconURL = jgm.JGlideMon.class.getResource("resources/images/classes/" + s.clazz.toLowerCase() + ".png");
+				iconLabel.setIcon(new ImageIcon(iconURL));
+			} catch (NullPointerException e) {
+				System.err.println("Null when setting class icon");
+				e.printStackTrace();
+			}
 			
 			if (s.clazz.equals("Warrior")) {
 				manaLbl.setText("Rage: ");
