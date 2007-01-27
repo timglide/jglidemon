@@ -33,7 +33,11 @@ public class ItemTooltip extends JPanel {
 //	private JLabel duraLabel;
 	private JLabel reqLvlLabel;
 	private JLabel[] effectLabels = new JLabel[3];
+	private static String merchantPriceFormat1 = "Sells For%s: ";
+	private static String merchantPriceFormat2 = " (x%d)";
 	private GoldPanel merchentBuyPricePanel;
+	private static String stackPriceFormat = "Per Stack of %d: ";
+	private GoldPanel stackPricePanel;
 	private JLabel itemLvlLabel;
 	private JLabel descriptionLabel;
 //	private JLabel sourceLabel;
@@ -135,6 +139,11 @@ public class ItemTooltip extends JPanel {
 		c.gridy++;
 		p.add(merchentBuyPricePanel, c);
 		
+		stackPricePanel = new GoldPanel("", 0, true, Color.WHITE);
+		stackPricePanel.setOpaque(false);
+		c.gridy++;
+		p.add(stackPricePanel, c);
+		
 		itemLvlLabel = new JLabel("Item Level 39", JLabel.LEFT);
 		itemLvlLabel.setForeground(Color.WHITE);
 		c.gridy++;
@@ -199,16 +208,19 @@ public class ItemTooltip extends JPanel {
 			updateLbl(effectLabels[n], s);
 		}
 		
-		merchentBuyPricePanel.setText("Sell Price" +
+		merchentBuyPricePanel.setText(String.format(merchantPriceFormat1,
 			(i.quantity > 1
-			 ? " (x" + i.quantity + ")" : "") + ": ");
+			 ? String.format(merchantPriceFormat2, i.quantity) : "")));
 		merchentBuyPricePanel.setMoney(i.merchentBuyPrice * i.quantity);
+		
+		stackPricePanel.setText(String.format(stackPriceFormat, i.stackSize));
+		stackPricePanel.setMoney(i.merchentBuyPrice * ((i.stackSize > 1) ? i.stackSize : 0));
 		
 		s = i.itemLevel > 0 ? "Item Level " + i.itemLevel : null;
 		updateLbl(itemLvlLabel, s);
 		
 		s = i.description != null
-			? '"' + i.description + '"' : null;
+			? lineify('"' + i.description + '"') : null;
 		updateLbl(descriptionLabel, s);
 		
 		Point     pt   = this.getLocation();
