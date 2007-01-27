@@ -98,6 +98,10 @@ public class GoldPanel extends JPanel {
 		}
 	}
 	
+	public int getMoney() {
+		return money;
+	}
+	
 	public void setMoney(int c) {
 		setMoney(cToGsc(c));
 	}
