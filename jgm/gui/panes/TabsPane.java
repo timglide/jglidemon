@@ -1,6 +1,5 @@
 package jgm.gui.panes;
 
-import jgm.gui.dialogs.Config;
 import jgm.gui.tabs.*;
 import jgm.gui.updaters.StatusUpdater;
 
@@ -56,6 +55,6 @@ public class TabsPane extends Pane {
 	}
 
 	public void update(StatusUpdater s) {
-
+		lootsTab.update(s);
 	}
 }

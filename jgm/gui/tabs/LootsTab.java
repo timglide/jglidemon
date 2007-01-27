@@ -12,8 +12,11 @@ import javax.swing.table.*;
 public class LootsTab extends Tab implements ActionListener {
 	private GoldPanel        goldLooted = new GoldPanel("Gold Looted: ");
 	private GoldPanel        lootWorth  = new GoldPanel("Loot Worth: ");
+	private GoldPanel        goldPerHour = new GoldPanel("Gold/Hour: ");
 	
 	private JButton          resetBtn   = new JButton("Reset Loot");
+	
+	private long initialGoldTime = System.currentTimeMillis();
 	
 	// array index is the item's quality
 	private LootsPane[]      panes  = new LootsPane[5];
@@ -34,6 +37,7 @@ public class LootsTab extends Tab implements ActionListener {
 		JPanel goldPanel = new JPanel(new GridLayout(1, 0));
 		goldPanel.add(goldLooted);
 		goldPanel.add(lootWorth);
+		goldPanel.add(goldPerHour);
 		goldPanel.add(resetBtn);
 		resetBtn.addActionListener(this);
 		
@@ -85,16 +89,51 @@ public class LootsTab extends Tab implements ActionListener {
 	
 		items[quality].add(i);
 		tables[quality].changeSelection(0, 1, false, false);
+		doGoldPerHour();
 	}
 
 	public void addMoney(int i) {
 		goldLooted.addMoney(i);
+		doGoldPerHour();
+	}
+	
+	private void doGoldPerHour() {
+		long d = System.currentTimeMillis() - initialGoldTime;
+		//System.out.print("GPH ms: " + d);
+		double diff = d / 1000.0; // ms to s
+		//System.out.print("; s: " + diff);
+		diff /= 60.0;   // s to min
+		//System.out.print("; mn: " + diff);
+		diff /= 60.0;   // min to hr
+		//System.out.println("; hr: " + diff);
+				
+		if (diff <= 0) return;
+		
+		//System.out.println("   GPH: " + (goldLooted.getMoney() + lootWorth.getMoney() / diff));
+		
+		int totalGold = goldLooted.getMoney() + lootWorth.getMoney();
+		
+		if (totalGold <= 0) {
+			resetGPH();
+		} else {
+			goldPerHour.setMoney((int) (totalGold / diff));
+		}
+	}
+	
+	private void resetGPH() {
+		goldPerHour.setMoney(0);
+		initialGoldTime = System.currentTimeMillis();
+	}
+	
+	public void update(jgm.gui.updaters.StatusUpdater s) {
+		doGoldPerHour();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Reset Loot")) {
 			goldLooted.setMoney(0);
 			lootWorth.setMoney(0);
+			resetGPH();
 			
 			for (int i = 0; i < items.length; i++) {
 				items[i].empty();
