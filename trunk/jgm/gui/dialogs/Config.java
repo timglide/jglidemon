@@ -1,6 +1,7 @@
 package jgm.gui.dialogs;
 
 import jgm.cfg;
+import jgm.gui.GUI;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -38,11 +39,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JCheckBox ttsStatus;
 	
 	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
-	
+		
 	public Config(Frame owner) {
 		super(owner, "Configuration");
 		
 		update = new JButton("Save Settings");
+		update.setMnemonic(KeyEvent.VK_S);
 		update.addActionListener(this);
 		add(update, BorderLayout.NORTH);
 		
@@ -51,8 +53,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		// net config pane
 		net = new JPanel(new GridBagLayout());
-		net.setBorder(
-			BorderFactory.createTitledBorder(lineBorder, "Network"));
+		GUI.setTitleBorder(net, "Network");
+		//net.setBorder(
+		//	BorderFactory.createTitledBorder(lineBorder, "Network"));
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0; c.gridy = 0; c.weightx = 1.0;
@@ -93,8 +96,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		// status config pane
 		status = new JPanel(new GridBagLayout());
-		status.setBorder(
-			BorderFactory.createTitledBorder(lineBorder, "Status"));
+		GUI.setTitleBorder(status, "Status");
+		//status.setBorder(
+		//	BorderFactory.createTitledBorder(lineBorder, "Status"));
 		
 		c.gridx = 0; c.gridy = 0;
 		status.add(new JLabel("Refresh (ms): "), c);
@@ -113,8 +117,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		// screenshot panel
 		screenshot = new JPanel(new GridBagLayout());
-		screenshot.setBorder(
-			BorderFactory.createTitledBorder(lineBorder, "Screenshot"));
+		GUI.setTitleBorder(screenshot, "Screenshot");
+		//screenshot.setBorder(
+		//	BorderFactory.createTitledBorder(lineBorder, "Screenshot"));
 		
 		c.gridx = 0; c.gridy = 0;
 		screenshot.add(new JLabel("Refresh (ms): "), c);
@@ -158,8 +163,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		// sound config
 		JPanel tmp = new JPanel(new GridLayout(1, 0, 10, 10));
-		tmp.setBorder(
-				BorderFactory.createTitledBorder(lineBorder, "Sound"));
+		GUI.setTitleBorder(tmp, "Sound");
+		//tmp.setBorder(
+		//		BorderFactory.createTitledBorder(lineBorder, "Sound"));
 			
 		sound = new JPanel(new GridBagLayout());
 		
@@ -287,7 +293,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		cfg.writeIni();
 		
-		dispose();
+		setVisible(false);
 	}
 	
 	public void stateChanged(ChangeEvent e) {
