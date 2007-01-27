@@ -98,12 +98,14 @@ public class Connector extends Thread {
 				
 				if (success) {
 					jgm.gui.GUI.setStatusBarText("Connected", false, true);
+					jgm.gui.GUI.setTitle(cfg.net.host + ':' + cfg.net.port);
 					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 					
 					if (cfg.net.autoReconnect)
 						Connector.this.start(); // start auto-reconnector
 					notifyConnectionEstablished();
 				} else {
+					jgm.gui.GUI.setTitle();
 					notifyConnectionDied();
 				}
 			}
@@ -152,7 +154,8 @@ public class Connector extends Thread {
 					notifyConnectionDied();
 					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 				}
-				
+
+				jgm.gui.GUI.setTitle();
 				notifyAll();
 			}
 		}, "Connector.disconnect");
