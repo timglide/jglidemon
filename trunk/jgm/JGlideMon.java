@@ -55,12 +55,15 @@ public class JGlideMon implements ConnectionListener {
 			JOptionPane.showMessageDialog(gui.frame,
 				"Please enter the server name, port, and password.\n" +
 				"Next, click Save Settings, then click Connect.\n\n" +
-				"Remember to click Save Settings any time you change a setting.",
+				"Remember to click Save Settings any time you change a setting.\n" +
+				"You may access the configuration screen later via the File menu.",
 				"Configuration Required",
 				JOptionPane.INFORMATION_MESSAGE);
 			
 			gui.showConfig();
 		}
+		
+		gui.makeVisible();
 		
 		// create a seperate thread to connect in case it
 		// takes a while to connect it won't slow the gui
