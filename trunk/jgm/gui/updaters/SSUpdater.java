@@ -68,12 +68,14 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 
 //		System.out.println("Read " + conn.read(b) + " for size");
 
-		int size    = jgm.Util.byteArrayToInt(b);
+		int size = jgm.Util.byteArrayToInt(b);
+		//System.out.print("\nJPG Size before: " + size);
+		//size &= 0x1FFFFF; // restrict to ~2 megs 
 		int written = 0;
 
-//		System.out.print("\nJPG Size: " + size + "\n_");
+		//System.out.println(", after: " + size);
 
-		if (size < 1 || size > 500000) { // size invalid? wtf O.o
+		if (size < 1 || size > 1000000) { // size invalid? wtf O.o
 			String s = null;
 			int z = 0;
 			System.err.println("Invalid size: " + size + ", clearing stream");
@@ -102,12 +104,23 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 
 		byte[] buff = new byte[size];
 
+		//System.out.println("Reading...");
 		while (written < size) {
-			written += conn.read(buff, written, size - written);
+			int read = conn.read(buff, written, size - written);
+			
+			if (read == -1) break;
+
+			written += read;
+			
+			//for (int i = 0; i < 8; i++)
+			//	System.out.print('\b');
+			//System.out.print(written);
 			
 			int percent = (int) (((float) written / (float) size) * 100);
 			GUI.setStatusBarProgress(percent);
 		}
+		
+		//System.out.println();
 
 		conn.readLine(); // ---
 //		System.out.println(conn.readLine()); // ---
