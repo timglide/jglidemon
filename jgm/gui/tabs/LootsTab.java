@@ -42,7 +42,7 @@ public class LootsTab extends Tab implements ActionListener {
 		resetBtn.addActionListener(this);
 		
 		add(goldPanel, BorderLayout.NORTH);
-		
+				
 		JPanel jp = new JPanel(new GridLayout(1, 0, 10, 0));
 
 		for (int i = 0; i < 5; i++) {
@@ -112,16 +112,23 @@ public class LootsTab extends Tab implements ActionListener {
 		//System.out.println("   GPH: " + (goldLooted.getMoney() + lootWorth.getMoney() / diff));
 		
 		int totalGold = goldLooted.getMoney() + lootWorth.getMoney();
+		int[] totalParts = GoldPanel.cToGsc(totalGold);
 		
 		if (totalGold <= 0) {
 			resetGPH();
 		} else {
+			int[] timeParts = jgm.Util.msToHMS(d);
 			goldPerHour.setMoney((int) (totalGold / diff));
+			goldPerHour.setToolTipText(
+				String.format("Earned %dg %ds %dc in %dhr %dmin %dsec",
+						totalParts[0], totalParts[1], totalParts[2],
+						timeParts[0], timeParts[1], timeParts[2]));
 		}
 	}
 	
 	private void resetGPH() {
 		goldPerHour.setMoney(0);
+		goldPerHour.setToolTipText(null);
 		initialGoldTime = System.currentTimeMillis();
 	}
 	
