@@ -10,7 +10,7 @@ public abstract class Dialog extends JDialog {
 	public Dialog(Frame owner, String title) {
 		super(owner, title, true);
 		this.title = title;
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setResizable(false);
 		setLayout(new BorderLayout());
 	}
@@ -19,6 +19,5 @@ public abstract class Dialog extends JDialog {
 		validate();
 		pack();
 		setLocationRelativeTo(null); // center
-		setVisible(true);
 	}
 }

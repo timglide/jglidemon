@@ -16,10 +16,11 @@ public class About extends Dialog implements ActionListener {
 	
 	private JButton close;
 	
+	private static java.util.Random r = new java.util.Random();
+	
 	public About(Frame owner) {
 		super(owner, "About JGlideMon");
 		
-		java.util.Random r = new java.util.Random();
 		ImageIcon icon = new ImageIcon(
 			JGlideMon.class.getResource("resources/images/stitch/stitch" + r.nextInt(2) + ".jpg"));
 		iconLabel = new JLabel(icon);
@@ -36,19 +37,21 @@ public class About extends Dialog implements ActionListener {
 		);
 		textPanel.add(text);
 		
-		textPanel.add(new JLabel("Text-to-speech provided by"));
-		
-		try {
-			freeTtsLink =
-				new JLinkButton("FreeTTS",
-						new java.net.URL("http://freetts.sourceforge.net"));
-			freeTtsLink.setBorder(BorderFactory.createEmptyBorder());
-		} catch (java.net.MalformedURLException e) {}
-		
-		if (freeTtsLink != null)
-			textPanel.add(freeTtsLink);
-		
-		textPanel.add(new JLabel("<html><br></html>"));
+		// only if there is tts support
+		if (jgm.util.Speech.ready()) {
+			try {
+				freeTtsLink =
+					new JLinkButton("FreeTTS",
+							new java.net.URL("http://freetts.sourceforge.net"));
+				freeTtsLink.setBorder(BorderFactory.createEmptyBorder());
+			} catch (java.net.MalformedURLException e) {}
+			
+			if (freeTtsLink != null) {
+				textPanel.add(new JLabel("Text-to-speech provided by"));
+				textPanel.add(freeTtsLink);		
+				textPanel.add(new JLabel("<html><br></html>"));
+			}
+		}
 		
 		add(textPanel, BorderLayout.CENTER);
 		
@@ -61,7 +64,18 @@ public class About extends Dialog implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == close) {
-			dispose();
+			setVisible(false);
 		}
+	}
+	
+	public void setVisible(boolean b) {
+		if (b) {
+			ImageIcon icon = new ImageIcon(
+				JGlideMon.class.getResource("resources/images/stitch/stitch" + r.nextInt(2) + ".jpg"));
+			iconLabel.setIcon(icon);
+			iconLabel.revalidate();
+		}
+		
+		super.setVisible(b);
 	}
 }
