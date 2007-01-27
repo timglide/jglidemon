@@ -70,4 +70,26 @@ public class Util {
 		
 		return new javax.swing.ImageIcon(bi);
 	}
+	
+	/**
+	 * Convert supplied number of milliseconds into hours, 
+	 * minutes, and seconds.
+	 * @param ms The number of milliseconds
+	 * @return An array with hours, minutes, seconds
+	 */
+	public static int[] msToHMS(long ms) {
+		int[] out = new int[3];
+		
+		int sec = (int) (ms / 1000); // seconds		
+		int min = sec / 60;
+		sec -= min * 60;
+		int hr = min / 60;
+		min -= hr * 60;
+		
+		out[0] = hr;
+		out[1] = min;
+		out[2] = sec;
+		
+		return out;
+	}
 }
