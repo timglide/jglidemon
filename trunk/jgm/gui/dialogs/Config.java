@@ -8,8 +8,11 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+/* TODO Add method to update all the fields to the current value in the config */
+
 public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JButton update;
+	private JButton close;
 	
 	private JPanel net;
 	private JTextField host;
@@ -38,15 +41,23 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JCheckBox ttsGM;
 	private JCheckBox ttsStatus;
 	
-	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
+//	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
 		
 	public Config(Frame owner) {
 		super(owner, "Configuration");
 		
+		JPanel btnPanel = new JPanel(new GridLayout(1, 0));
 		update = new JButton("Save Settings");
 		update.setMnemonic(KeyEvent.VK_S);
 		update.addActionListener(this);
-		add(update, BorderLayout.NORTH);
+		btnPanel.add(update);
+		
+		close = new JButton("Cancel");
+		close.setMnemonic(KeyEvent.VK_C);
+		close.addActionListener(this);
+		btnPanel.add(close);
+		
+		add(btnPanel, BorderLayout.SOUTH);
 		
 		JPanel p = new JPanel(new GridLayout(2, 3, 10, 10));
 		
@@ -252,6 +263,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == close) {
+			setVisible(false);
+			return;
+		}
+		
 		cfg.net.host = host.getText();
 		
 		try {
