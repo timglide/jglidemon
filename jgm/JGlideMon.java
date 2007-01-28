@@ -52,7 +52,7 @@ public class JGlideMon implements ConnectionListener {
 		gui = new GUI(this);
 
 		if (!jgm.cfg.iniFileExists() || jgm.cfg.net.host.equals("")) {
-			JOptionPane.showMessageDialog(gui.frame,
+			JOptionPane.showMessageDialog(GUI.frame,
 				"Please enter the server name, port, and password.\n" +
 				"Next, click Save Settings, then click Connect.\n\n" +
 				"Remember to click Save Settings any time you change a setting.\n" +
