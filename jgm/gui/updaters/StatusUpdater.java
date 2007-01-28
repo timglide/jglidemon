@@ -19,7 +19,7 @@ public class StatusUpdater extends Observable
 	public double health         = 0.0;
 	public double mana           = 0.0;
 	public String name           = "";
-	public String clazz          = ""; // class
+	public jgm.wow.Class  clazz  = jgm.wow.Class.UNKNOWN; // class
 	public int    level          = 0;
 	public int    experience     = 0;
 	public int    nextExperience = 0;
@@ -71,7 +71,6 @@ public class StatusUpdater extends Observable
 				Thread.sleep(cfg.status.updateInterval);
 			} catch (Exception e) {
 				System.err.println("Stopping StatusUpdater, Ex: " + e.getMessage());
-				e.printStackTrace();
 				Connector.disconnect();
 				return;
 			}
@@ -111,7 +110,7 @@ public class StatusUpdater extends Observable
 		profile    = m.containsKey("Profile")     ? m.get("Profile")     : "";
 		log        = m.containsKey("Log")         ? m.get("Log")         : "None";
 		name       = m.containsKey("Name")        ? m.get("Name")        : "";
-		clazz      = m.containsKey("Class")       ? m.get("Class")       : "Unknown";
+		clazz      = m.containsKey("Class")       ? jgm.wow.Class.strToClass(m.get("Class")) : jgm.wow.Class.UNKNOWN;
 		location   = m.containsKey("Location")    ? m.get("Location")    : "";
 		targetName = m.containsKey("Target-Name") ? m.get("Target-Name") : "";
 		
@@ -143,17 +142,19 @@ public class StatusUpdater extends Observable
 			} else {
 				// "Mana: 123 (42%)"
 				// "Mana: 100 (CP = 0)"
-				// group 1: whole thing
-				//       2: mana percent
-				//       3: combo points if they exist
-				Pattern p = Pattern.compile("(.*(\\d+)%|.*?(\\d+)).*");
-				//Pattern p = Pattern.compile(".*?(:?(\\d+)%?|(\\d+) \\(CP = \\d+\\)).*");
+				Pattern p = clazz.mana.getRegex();
 				Matcher x = p.matcher(m.get("Mana"));
 
 				//System.out.println("Matching: " + m.get("Mana"));
 				
 				if (!x.matches()) throw new NumberFormatException("No Match");
 
+				//System.out.print("Matched:");
+				//for (int n = 0; n <= x.groupCount(); n++) {
+				//	System.out.print(" " + n + ": " + x.group(n));
+				//}
+				//System.out.println();
+				
 				//System.out.println("  Found: " + x.group(1));
 				mana = Double.parseDouble(x.group(1));
 			}	
