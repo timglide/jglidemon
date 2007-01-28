@@ -3,7 +3,7 @@ package jgm.wow;
 /**
  * Represents a quantity of a certain item.
  * @author Tim
- * @since 0.3
+ * @since 0.4
  */
 public class ItemSet {
 	public int quantity = 0;

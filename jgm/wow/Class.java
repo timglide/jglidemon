@@ -7,6 +7,7 @@ import java.util.*;
  * a ManaType field, which would be mana/rage/energy
  * accordingly.
  * @author Tim
+ * @since 0.4
  */
 public enum Class {	
 	UNKNOWN ("Unknown"),
