@@ -70,9 +70,12 @@ public class Connector extends Thread {
 	}
 	
 	private void connectImpl() {
+		if (state != State.DISCONNECTED) return;
+		
+		state = State.CONNECTING;
+		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-				state = State.CONNECTING;
 				jgm.gui.GUI.setStatusBarText("Connecting...", false, true);
 				jgm.gui.GUI.setStatusBarProgressIndeterminent();
 				boolean success = true;
@@ -124,13 +127,14 @@ public class Connector extends Thread {
 	private Thread disconnectImpl() {
 		if (state != State.CONNECTED) return null;
 		
+		state = State.DISCONNECTING;
+		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				runImpl();
 			}
 			
 			private synchronized void runImpl() {
-				state = State.DISCONNECTING;
 				jgm.gui.GUI.setStatusBarText("Disconnecting...", false, true);
 				jgm.gui.GUI.setStatusBarProgressIndeterminent();
 				boolean success = true;
