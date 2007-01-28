@@ -42,7 +42,13 @@ public class LootsTab extends Tab implements ActionListener {
 		resetBtn.addActionListener(this);
 		
 		add(goldPanel, BorderLayout.NORTH);
-				
+		
+		goldPerHour.addMouseListener(new MouseAdapter() {
+			public void mouseEntered(MouseEvent e) {
+				doGoldPerHour();
+			}
+		});
+		
 		JPanel jp = new JPanel(new GridLayout(1, 0, 10, 0));
 
 		for (int i = 0; i < 5; i++) {
@@ -133,11 +139,12 @@ public class LootsTab extends Tab implements ActionListener {
 	}
 	
 	public void update(jgm.gui.updaters.StatusUpdater s) {
-		doGoldPerHour();
+		//if (isCurrentTab())
+		//	doGoldPerHour();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Reset Loot")) {
+		if (e.getSource() == resetBtn) {
 			goldLooted.setMoney(0);
 			lootWorth.setMoney(0);
 			resetGPH();
