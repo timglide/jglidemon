@@ -72,6 +72,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				line = conn.readLine();
 			} catch (Exception x) {
 				System.err.println("Stopping LogUpdater, Ex: " + x.getMessage());
+				Connector.disconnect();
 				return;
 			}
 			
