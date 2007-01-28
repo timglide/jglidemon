@@ -45,6 +45,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		if (conn != null) conn.close();
 	}
 
+	private static final int MAX_SIZE = 1048576;
+	private static byte[] buff = new byte[MAX_SIZE];
+	
 	public boolean update() throws IOException {
 	  synchronized (conn) {
 		
@@ -75,7 +78,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 
 		//System.out.println(", after: " + size);
 
-		if (size < 1 || size > 1000000) { // size invalid? wtf O.o
+		if (size < 1 || size > MAX_SIZE) { // size invalid? wtf O.o
 			String s = null;
 			int z = 0;
 			System.err.println("Invalid size: " + size + ", clearing stream");
@@ -101,8 +104,6 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			
 			return false;
 		}
-
-		byte[] buff = new byte[size];
 
 		//System.out.println("Reading...");
 		while (written < size) {
@@ -130,7 +131,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 //		System.out.println("Making ss...");
 		BufferedImage img =
 			javax.imageio.ImageIO.read(
-				new ByteArrayInputStream(buff)
+				new ByteArrayInputStream(buff, 0, size)
 			);
 		ImageIcon icon = new ImageIcon(img);
 		tab.ssLabel.setIcon(icon);
