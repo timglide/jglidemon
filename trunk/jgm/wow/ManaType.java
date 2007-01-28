@@ -6,7 +6,7 @@ import java.util.regex.*;
  * Represents one of the 3 "mana" types, either
  * mana, rage, or energy. 
  * @author Tim
- *
+ * @since 0.4
  */
 public enum ManaType {
 	MANA   ("Mana"), 

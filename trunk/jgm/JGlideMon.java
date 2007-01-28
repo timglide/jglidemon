@@ -13,7 +13,8 @@ import jgm.util.*;
  * @since 0.1
  */
 public class JGlideMon implements ConnectionListener {
-	public static final String version = "0.3 dev";
+	public static final String app = "JGlideMon";
+	public static final String version = "0.4";
 	
 	public static JGlideMon instance;
 	
