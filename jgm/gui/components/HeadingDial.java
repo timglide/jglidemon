@@ -32,11 +32,18 @@ public class HeadingDial extends JComponent {
 	public HeadingDial() {
 		setMinimumSize(size);
 		setMaximumSize(size);
+		setHeading(-1.0);
 	}
 
 	public void setHeading(double newHeading) {
 		heading = newHeading;
 		repaint();
+		
+		if (heading >= 0.0) {
+			setToolTipText(String.format("Heading: %01.2f", heading));
+		} else {
+			setToolTipText(null);
+		}
 	}
 
 	private static final Dimension size = new Dimension(45, 45);
