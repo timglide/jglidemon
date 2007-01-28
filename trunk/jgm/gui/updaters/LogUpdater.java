@@ -101,9 +101,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 
 				RawChatLogEntry e2 = (RawChatLogEntry) e;
 
-				if (e2.hasItem())  {
+				if (e2.hasItemSet())  {
 //					System.out.println("Adding item: " + e2.getItem().toString());
-					lootsTab.add(e2.getItem());
+					lootsTab.add(e2.getItemSet());
 				}
 				
 				if (e2.hasMoney()) {
