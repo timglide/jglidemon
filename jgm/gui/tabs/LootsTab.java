@@ -1,7 +1,7 @@
 package jgm.gui.tabs;
 
 import jgm.gui.components.*;
-import jgm.wow.Item;
+import jgm.wow.*;
 
 import java.util.Vector;
 import java.awt.*;
@@ -86,12 +86,13 @@ public class LootsTab extends Tab implements ActionListener {
 		revalidate();
 	}
 
-	public void add(Item i) {
-		int quality = (i.quality > Item.EPIC)
+	public void add(ItemSet i) {
+		Item item = i.getItem();
+		int quality = (item.quality >= Item.EPIC)
 					  ? Item.EPIC
-					  : (i.quality < Item.POOR)
+					  : (item.quality <= Item.POOR)
 					    ? Item.POOR
-						: i.quality;
+						: item.quality;
 	
 		items[quality].add(i);
 		tables[quality].changeSelection(0, 1, false, false);
@@ -180,8 +181,7 @@ public class LootsTab extends Tab implements ActionListener {
 					scrollPane.repaint();
 					table.repaint();
 		            int row = table.rowAtPoint(e.getPoint());
-		            Item i = table.getItem(row);
-		            itemTooltip.setItem(i);
+		            itemTooltip.setItemSet(table.getItemSet(row));
 					itemTooltip.repaint();
 				}
 			});
@@ -215,15 +215,14 @@ public class LootsTab extends Tab implements ActionListener {
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
 				
-		public Item getItem(int row) {
+		public ItemSet getItemSet(int row) {
 			return ((ItemTableModel) dataModel).getItem(row);
 		}
 		
 		public void mouseEntered(MouseEvent e) {
 			//System.out.println("Entered: " + e);
             int row = this.rowAtPoint(e.getPoint());
-            Item i = getItem(row);
-            itemTooltip.setItem(i);
+            itemTooltip.setItemSet(getItemSet(row));
 			itemTooltip.setVisible(true);
 			itemTooltip.revalidate();
 		}
@@ -241,8 +240,7 @@ public class LootsTab extends Tab implements ActionListener {
 		public void mouseMoved(MouseEvent e) {
 		  try {
             int row = this.rowAtPoint(e.getPoint());
-            Item i = getItem(row);
-            itemTooltip.setItem(i);
+            itemTooltip.setItemSet(getItemSet(row));
             
 			Point p = layeredPane.getMousePosition();
 			Dimension panelSize = layeredPane.getSize();
@@ -262,45 +260,45 @@ public class LootsTab extends Tab implements ActionListener {
 		public void mouseDragged(MouseEvent e) {}
 	}
 
-	private static final java.util.Comparator<Item> comp
-		= Item.getQuantityComparator();
+	private static final java.util.Comparator<ItemSet> comp
+		= ItemSet.getQuantityComparator();
 
 	private static final String[] columnNames = {" ", "Name", "Qty"};
 	
 	private class ItemTableModel extends AbstractTableModel {
-		private Vector<Item> items;
+		private Vector<ItemSet> itemSets;
 
 		public ItemTableModel() {
 			super();
 
-			items = new Vector<Item>();
+			itemSets = new Vector<ItemSet>();
 		}
 
 		public void empty() {
-			items.clear();
+			itemSets.clear();
 			this.fireTableDataChanged();
 		}
 		
-		public void add(Item i) {
-			int index = items.indexOf(i);
+		public void add(ItemSet i) {
+			int index = itemSets.indexOf(i);
 
-			lootWorth.addMoney(i.merchentBuyPrice * i.quantity);
+			lootWorth.addMoney(i.getItem().merchentBuyPrice * i.getQuantity());
 			
 			if (index < 0) {
-				i.getIcon(); // call to init the icon the first time
-				items.add(i);
-				fireTableRowsInserted(items.size() - 1, items.size() - 1);
+				i.getItem().getIcon(); // call to init the icon the first time
+				itemSets.add(i);
+				fireTableRowsInserted(itemSets.size() - 1, itemSets.size() - 1);
 			} else {
-				items.get(index).addQuantity(i);
+				itemSets.get(index).addQuantity(i);
 			}
 
-			java.util.Collections.sort(items, comp);
+			java.util.Collections.sort(itemSets, comp);
 
-			fireTableRowsUpdated(0, items.size() - 1);
+			fireTableRowsUpdated(0, itemSets.size() - 1);
 		}
 		
-		public Item getItem(int r) {
-			return items.get(r);
+		public ItemSet getItem(int r) {
+			return itemSets.get(r);
 		}
 		
 		public int getColumnCount() {
@@ -308,7 +306,7 @@ public class LootsTab extends Tab implements ActionListener {
 		}
 
 		public int getRowCount() {
-			return items.size();
+			return itemSets.size();
 		}
 
 		public String getColumnName(int col) {
@@ -316,27 +314,27 @@ public class LootsTab extends Tab implements ActionListener {
 		}
 
 		public Object getValueAt(int row, int col) {
-			Item i = items.get(row);
+			ItemSet i = itemSets.get(row);
 			Object ret = null;
 
 			switch (col) {
 				case 0:
-					ret = i.getIcon();
+					ret = i.getItem().getIcon();
 					break;
 
 				case 1:
-					ret = i.name;
+					ret = i.getItem().name;
 					break;
 
 				case 2:
-					ret = i.quantity;
+					ret = i.getQuantity();
 					break;
 			}
 
 			return ret;
 		}
 
-		public Class<?> getColumnClass(int c) {
+		public java.lang.Class<?> getColumnClass(int c) {
 			return getValueAt(0, c).getClass();
 		}
 

@@ -1,6 +1,6 @@
 package jgm.gui.components;
 
-import jgm.wow.Item;
+import jgm.wow.*;
 
 import java.awt.*;
 
@@ -18,6 +18,7 @@ public class ItemTooltip extends JPanel {
 	private JPanel p; // internal panel
 	
 	private String title = "";
+	private ItemSet itemSet = null;
 	private Item item = null;
 	
 	private GridBagConstraints c;
@@ -42,9 +43,9 @@ public class ItemTooltip extends JPanel {
 	private JLabel descriptionLabel;
 //	private JLabel sourceLabel;
 	
-	public ItemTooltip(Item i) {
+	public ItemTooltip(ItemSet i) {
 		init();
-		setItem(i);
+		setItemSet(i);
 	}
 	
 	public ItemTooltip(String s) {
@@ -159,13 +160,16 @@ public class ItemTooltip extends JPanel {
 	
 	/**
 	 * Update the tooltip to reflect a new item.
-	 * @param i The item to update the tooltip to represent
+	 * @param item The item to update the tooltip to represent
 	 */
-	public void setItem(Item i) {
+	public void setItemSet(ItemSet i) {
 		//System.out.println("In setItem()");
-		if (item != null && i.equals(item)) return;
+		if (item != null &&
+			i.getItem().equals(item) &&
+			itemSet.quantity == i.quantity) return;
 
-		item = i;
+		itemSet = i;
+		item = i.getItem();
 		//System.out.println("Resetting item");
 		titleLabel.setText(item.name);
 		Color c = item.getLightColor();
@@ -173,54 +177,54 @@ public class ItemTooltip extends JPanel {
 		
 		String s = null;
 		
-		updateLbl(bindLabel, i.getBindText());
-		updateLbl(type1Label, i.getType1Text());
-		updateLbl(type2Label, i.getType2Text());
+		updateLbl(bindLabel, item.getBindText());
+		updateLbl(type1Label, item.getType1Text());
+		updateLbl(type2Label, item.getType2Text());
 		
-		s = i.dmgLow > 0 && i.dmgHigh > 0
-			? i.dmgLow + " - " + i.dmgHigh + " Damage  " : null;
+		s = item.dmgLow > 0 && item.dmgHigh > 0
+			? item.dmgLow + " - " + item.dmgHigh + " Damage  " : null;
 		updateLbl(damageLabel, s);
 		
-		s = i.speed > 0
-			? String.format("  Speed %01.2f", i.speed / 1000.0) : null;
+		s = item.speed > 0
+			? String.format("  Speed %01.2f", item.speed / 1000.0) : null;
 		updateLbl(speedLabel, s);
 		
-		s = i.dmgLow > 0 && i.dmgHigh > 0 && i.speed > 0
-			? String.format("(%01.1f damage per second)", ((i.dmgLow + i.dmgHigh) / 2.0) / (i.speed / 1000.0))
+		s = item.dmgLow > 0 && item.dmgHigh > 0 && item.speed > 0
+			? String.format("(%01.1f damage per second)", ((item.dmgLow + item.dmgHigh) / 2.0) / (item.speed / 1000.0))
 			: null;
 		updateLbl(dpsLabel, s);
 		
-		s = i.armor > 0 ? (i.armor + " Armor") : null;
+		s = item.armor > 0 ? (item.armor + " Armor") : null;
 		updateLbl(armorLabel, s);
 		
 		for (int n = 0; n < 5; n++) {
-			updateLbl(statLabels[n], i.getStatText(n));
+			updateLbl(statLabels[n], item.getStatText(n));
 		}
 		
-		s = i.requiredLevel > 0
-			? "Requires Level " + i.requiredLevel : null;
+		s = item.requiredLevel > 0
+			? "Requires Level " + item.requiredLevel : null;
 		updateLbl(reqLvlLabel, s);
 		
 		for (int n = 0; n < 3; n++) {
-			s = i.getEffectText(n);
+			s = item.getEffectText(n);
 			s = s != null
 				? "<html>" + lineify(s) + "</html>" : null;
 			updateLbl(effectLabels[n], s);
 		}
 		
 		merchentBuyPricePanel.setText(String.format(merchantPriceFormat1,
-			(i.quantity > 1
-			 ? String.format(merchantPriceFormat2, i.quantity) : "")));
-		merchentBuyPricePanel.setMoney(i.merchentBuyPrice * i.quantity);
+			(itemSet.quantity > 1
+			 ? String.format(merchantPriceFormat2, itemSet.quantity) : "")));
+		merchentBuyPricePanel.setMoney(item.merchentBuyPrice * itemSet.quantity);
 		
-		stackPricePanel.setText(String.format(stackPriceFormat, i.stackSize));
-		stackPricePanel.setMoney(i.merchentBuyPrice * ((i.stackSize > 1) ? i.stackSize : 0));
+		stackPricePanel.setText(String.format(stackPriceFormat, item.stackSize));
+		stackPricePanel.setMoney(item.merchentBuyPrice * ((item.stackSize > 1) ? item.stackSize : 0));
 		
-		s = i.itemLevel > 0 ? "Item Level " + i.itemLevel : null;
+		s = item.itemLevel > 0 ? "Item Level " + item.itemLevel : null;
 		updateLbl(itemLvlLabel, s);
 		
-		s = i.description != null
-			? lineify('"' + i.description + '"') : null;
+		s = item.description != null
+			? lineify('"' + item.description + '"') : null;
 		updateLbl(descriptionLabel, s);
 		
 		Point     pt   = this.getLocation();

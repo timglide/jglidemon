@@ -14,7 +14,8 @@ import java.util.*;
 public class Item implements Comparable<Item> {
 	public static final Font TITLE_FONT = new Font(null, Font.BOLD, 20);
 	
-	private static Map<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
+	private static Map<Integer, Item> itemCache = new HashMap<Integer, Item>();
+	private static Map<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
 	
 	public static final int POOR = 0;
 	public static final int COMMON = 1;
@@ -152,7 +153,6 @@ public class Item implements Comparable<Item> {
 
 	public int id = 0;
 	public int quality = POOR;
-	public int quantity = 0;
 	
 	public String name;
 	
@@ -297,8 +297,8 @@ public class Item implements Comparable<Item> {
 
 	public ImageIcon getIcon() {
 		if (icon == null) {
-			if (icons.containsKey(iconPath)) {
-				icon = icons.get(iconPath);
+			if (iconCache.containsKey(iconPath)) {
+				icon = iconCache.get(iconPath);
 				return icon;
 			}
 			
@@ -306,7 +306,7 @@ public class Item implements Comparable<Item> {
 				icon = new javax.swing.ImageIcon(
 					   new java.net.URL(ICON_BASE + iconPath));
 				icon = jgm.Util.resizeIcon(icon, 32, 32);
-				icons.put(iconPath, icon);
+				iconCache.put(iconPath, icon);
 			} catch (java.net.MalformedURLException e) {
 				System.err.println("Unable to make icon in Item: " + e.getMessage());
 				icon = null;
@@ -314,14 +314,6 @@ public class Item implements Comparable<Item> {
 		}
 
 		return icon;
-	}
-
-	public void addQuantity(int i) {
-		quantity += i;
-	}
-
-	public void addQuantity(Item i) {
-		addQuantity(i.quantity);
 	}
 	
 	public void setEffect(int i, Effect e) {
@@ -346,57 +338,21 @@ public class Item implements Comparable<Item> {
 	}
 
 	/**
-	 * @return A comparator that sorts items by quantity desc and name
-	 */
-	public static java.util.Comparator<Item> getQuantityComparator() {
-		return getQuantityComparator(-1);
-	}
-
-	/**
-	 * @param sort 1 for asc, -1 for desc by quantity
-	 * @return A comporator thats sorts items by quantity and name
-	 */
-	public static java.util.Comparator<Item> getQuantityComparator(final int sort) {
-		return new java.util.Comparator<Item>() {
-			public int compare(Item i1, Item i2) {
-				int ret = 0;
-				if (i1.quantity < i2.quantity) ret = -1; else
-				if (i1.quantity > i2.quantity) ret = 1; 
-
-				if (ret == 0) {
-					return i1.name.compareTo(i2.name);
-				}
-
-				return sort * ret;
-			}
-		};
-	}
-
-	/**
-	 * Create a new item with an initial quantity of 0.
+	 * Create a new item.
 	 * @param id The item id
 	 * @param name The item's name
 	 * @return An item representing the supplied parameters
 	 */
 	public static Item factory(int id, String name) {
-		return factory(id, name, 0);
-	}
-
-	/**
-	 * Create a new item.
-	 * @param id The item id
-	 * @param name The item's name
-	 * @param initialQuantity The initial quantity
-	 * @return An item representing the supplied parameters
-	 */
-	public static Item factory(int id, String name, int initialQuantity) {
+		if (itemCache.containsKey(id)) return itemCache.get(id);
+		
 		Item item = new Item(id, name);
 
 		if (!ItemFactory.factory(id, item)) return null;
 
-		item.quantity = initialQuantity;
-
 		Effect.factory(item);
+		
+		itemCache.put(id, item);
 		
 		return item;
 	}

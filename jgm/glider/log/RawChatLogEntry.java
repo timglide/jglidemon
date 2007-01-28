@@ -1,12 +1,12 @@
 package jgm.glider.log;
 
-import jgm.wow.Item;
+import jgm.wow.*;
 
 import java.util.regex.*;
 
 public class RawChatLogEntry extends LogEntry {
 	private String text;
-	private Item   item = null;
+	private ItemSet itemSet = null;
 	private int    money = 0;
 
 	public RawChatLogEntry(String s) {
@@ -23,12 +23,12 @@ public class RawChatLogEntry extends LogEntry {
 		return text;
 	}
 
-	public boolean hasItem() {
-		return item != null;
+	public boolean hasItemSet() {
+		return itemSet != null;
 	}
 	
-	public Item getItem() {
-		return item;
+	public ItemSet getItemSet() {
+		return itemSet;
 	}
 
 	public boolean hasMoney() {
@@ -119,7 +119,7 @@ public class RawChatLogEntry extends LogEntry {
 		} catch (NumberFormatException e) {}
 		  catch (NullPointerException e)  {}
 
-		item = Item.factory(id, name, qty);
+		itemSet = ItemSet.factory(id, name, qty);
 	}
 
 	private static final String FORMATTING_REGEX = "\\|(?:c[0-9A-Fa-f]{8}|r)";
