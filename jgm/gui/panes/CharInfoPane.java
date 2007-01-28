@@ -94,7 +94,7 @@ public class CharInfoPane extends Pane {
 				e.printStackTrace();
 			}
 			
-			manaLbl.setText(s.clazz.mana.toString());
+			manaLbl.setText(s.clazz.mana.toString() + ": ");
 		}
 
 		heading.setHeading(s.heading);
