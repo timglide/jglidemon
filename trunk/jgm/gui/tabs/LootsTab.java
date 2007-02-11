@@ -94,12 +94,14 @@ public class LootsTab extends Tab implements ActionListener {
 					    ? Item.POOR
 						: item.quality;
 	
+		//System.out.println("Adding [" + item.name + "]x" + i.getQuantity() + " to loot tab");
 		items[quality].add(i);
 		tables[quality].changeSelection(0, 1, false, false);
 		doGoldPerHour();
 	}
 
 	public void addMoney(int i) {
+		//System.out.println("Adding " + i + "c to loot tab");
 		goldLooted.addMoney(i);
 		doGoldPerHour();
 	}
@@ -288,8 +290,12 @@ public class LootsTab extends Tab implements ActionListener {
 				i.getItem().getIcon(); // call to init the icon the first time
 				itemSets.add(i);
 				fireTableRowsInserted(itemSets.size() - 1, itemSets.size() - 1);
+				
+				//System.out.println("Adding first instance of [" + i.getItem().name + "] to loot table");
 			} else {
 				itemSets.get(index).addQuantity(i);
+				
+				//System.out.println("Adding " + i.getQuantity() + " additional [" + i.getItem().name + "] to loot table");
 			}
 
 			java.util.Collections.sort(itemSets, comp);
