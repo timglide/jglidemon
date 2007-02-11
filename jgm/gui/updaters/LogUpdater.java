@@ -47,11 +47,14 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	}
 	
 	public void connectionEstablished() {
+		stop = false;
 		thread = new Thread(this, "LogUpdater");
 		thread.start();
 	}
 	
-	public void connectionDied() {}
+	public void connectionDied() {
+		stop = true;
+	}
 	
 	public void run() {
 		try {
@@ -68,6 +71,8 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		LogEntry e    = null;
 
 		while (true) {
+			if (stop) return;
+			
 			try {
 				line = conn.readLine();
 			} catch (Exception x) {
@@ -86,6 +91,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 
 			if (e instanceof GliderLogEntry) {
 				gliderLog.add(e);
+				
+				if (((GliderLogEntry) e).isAlert()) {
+					urgentChatLog.add(e, true);
+				}
 			} else if (e instanceof StatusEntry) {
 				statusLog.add(e);
 			} else if (e instanceof ChatLogEntry) {

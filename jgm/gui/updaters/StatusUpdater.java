@@ -52,6 +52,7 @@ public class StatusUpdater extends Observable
 	}
 	
 	public void connectionEstablished() {
+		stop = false;
 		thread = new Thread(this, "StatusUpdater");
 		thread.start();
 	}
@@ -59,6 +60,7 @@ public class StatusUpdater extends Observable
 	public void connectionDied() {
 		attached = false;
 		setChanged();
+		stop = true;
 		notifyObservers(this);
 	}
 	
