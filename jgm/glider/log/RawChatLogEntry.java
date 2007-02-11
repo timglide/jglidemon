@@ -17,6 +17,22 @@ public class RawChatLogEntry extends LogEntry {
 		removeFormatting();
 		parseMoney();
 		parseItem();
+		
+		if (money > 0) {
+			int[] parts = jgm.gui.components.GoldPanel.cToGsc(money);
+			System.out.printf("Received %dg %ds %dc\n", parts[0], parts[1], parts[2]);
+		}
+		
+		if (itemSet != null) {
+			System.out.print("Received item [" + itemSet.getItem().name + "]");
+			
+			int qty = itemSet.getQuantity(); 
+			if (qty > 0) {
+				System.out.print("x" + qty);
+			}
+			
+			System.out.println();
+		}
 	}
 
 	public String getText() {
@@ -88,9 +104,12 @@ public class RawChatLogEntry extends LogEntry {
 	
 	private static Pattern ITEM_PATTERN = null;
 
+	/* From http://www.wowwiki.com/ItemString
+	 * item:itemId:enchantId:jewelId1:jewelId2:jewelId3:jewelId4:suffixId:uniqueId
+	 */
 	static {
 		ITEM_PATTERN = Pattern.compile(
-			".*You\\s+(?:receive\\s+(?:loot|item)|create):\\s+\\|Hitem:(\\d+)(?::\\d+)*?\\|h\\[(.*?)\\]\\|h(?:x(\\d+))?\\.*"
+			".*You\\s+(?:receive\\s+(?:loot|item)|create):\\s+\\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h(?:x(\\d+))?\\.*"
 		);
 
 		/* group 1: item id
