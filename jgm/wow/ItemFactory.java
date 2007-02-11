@@ -75,6 +75,8 @@ public class ItemFactory {
 			item.stat_values[i] = getIntValue(doc, "stat" + i + "_value");
 		}
 		
+		item.retrievedInfo = true;
+		
 		return true;
 	}
 
