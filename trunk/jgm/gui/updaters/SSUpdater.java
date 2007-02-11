@@ -33,11 +33,14 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	}
 	
 	public void connectionEstablished() {
+		stop = false;
 		thread = new Thread(this, "SSUpdater");
 		thread.start();
 	}
 	
-	public void connectionDied() {}
+	public void connectionDied() {
+		stop = true;
+	}
 	
 	public void close() {
 		stop = true;
