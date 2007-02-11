@@ -5,17 +5,18 @@ import java.awt.Font;
 
 import javax.swing.ImageIcon;
 import java.util.*;
+import java.io.*;
 
 /**
  * Represents an in-game item.
  * @author Tim
  * @since 0.1
  */
-public class Item implements Comparable<Item> {
+public class Item implements Comparable<Item>, Serializable {
 	public static final Font TITLE_FONT = new Font(null, Font.BOLD, 20);
 	
-	private static Map<Integer, Item> itemCache = new HashMap<Integer, Item>();
-	private static Map<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
+	private transient static Map<Integer, Item> itemCache = new HashMap<Integer, Item>();
+	private transient static Map<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
 	
 	public static final int POOR = 0;
 	public static final int COMMON = 1;
@@ -151,6 +152,11 @@ public class Item implements Comparable<Item> {
 	public static final String ICON_BASE
 		= "http://wow.allakhazam.com";
 
+	/* whether we were able to connect to allakhazam
+	 * to retrieve the item info
+	 */
+	public boolean retrievedInfo = false;
+	
 	public int id = 0;
 	public int quality = POOR;
 	
@@ -181,7 +187,7 @@ public class Item implements Comparable<Item> {
 	public Effect[] effects = new Effect[MAX_EFFECTS];
 	
 	public String iconPath = "/images/icons/INV_Misc_QuestionMark.png";
-	private ImageIcon icon = null;
+	private transient ImageIcon icon = null;
 
 	private Item(int i, String s) {
 		name = s;
@@ -355,5 +361,97 @@ public class Item implements Comparable<Item> {
 		itemCache.put(id, item);
 		
 		return item;
+	}
+	
+	public static class Cache {
+		public static final File iconFile = new File("icons.cache");
+		public static final File itemFile = new File("items.cache");
+		
+		public static void saveIcons() {
+			try {
+				ObjectOutputStream os = new ObjectOutputStream(
+					new FileOutputStream(iconFile)
+				);
+				
+				os.writeObject(iconCache);
+				os.close();
+				
+				System.out.println("Saving icon cache to " + iconFile.getName());
+			} catch (IOException e) {
+				System.err.println("Error saving icon cache: " + e.getMessage());
+			}
+		}
+		
+		public static void loadIcons() {
+			try {
+				ObjectInputStream is = new ObjectInputStream(
+					new FileInputStream(iconFile)
+				);
+				
+				Object o = is.readObject();
+				
+				if (o instanceof HashMap) {
+					iconCache = (HashMap) o;
+				}
+				
+				is.close();
+				
+				System.out.println("Loading icon cache from " + iconFile.getName());
+			} catch (ClassNotFoundException e) {
+				System.err.println("Error loading icon cache: " + e.getMessage());
+			} catch (IOException e) {
+				System.err.println("Error loading icon cache: " + e.getMessage());
+			}
+		}
+		
+		public static void saveItems() {
+			Item cur = null;
+			
+			/* only cache items that we've actually
+			 * gotten the info for
+			 */
+			for (Integer i : itemCache.keySet()) {
+				cur = itemCache.get(i);
+				
+				if (!cur.retrievedInfo) {
+					itemCache.remove(cur);
+				}
+			}
+			
+			try {
+				ObjectOutputStream os = new ObjectOutputStream(
+					new FileOutputStream(itemFile)
+				);
+				
+				os.writeObject(itemCache);
+				os.close();
+				
+				System.out.println("Saving item cache to " + itemFile.getName());
+			} catch (IOException e) {
+				System.err.println("Error saving item cache: " + e.getMessage());
+			}
+		}
+		
+		public static void loadItems() {
+			try {
+				ObjectInputStream is = new ObjectInputStream(
+					new FileInputStream(itemFile)
+				);
+				
+				Object o = is.readObject();
+				
+				if (o instanceof HashMap) {
+					itemCache = (HashMap) o;
+				}
+				
+				is.close();
+				
+				System.out.println("Loading item cache from " + itemFile.getName());
+			} catch (ClassNotFoundException e) {
+				System.err.println("Error loading item cache: " + e.getMessage());
+			} catch (IOException e) {
+				System.err.println("Error loading iten cache: " + e.getMessage());
+			}
+		}
 	}
 }

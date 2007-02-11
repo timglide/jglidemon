@@ -6,7 +6,7 @@ package jgm.wow;
  * @author Tim
  * @since 0.1
  */
-public class Effect {
+public class Effect implements java.io.Serializable {
 	public enum Type {
 		UNKNOWN       ("Unknown"),
 		USE           ("Use"),

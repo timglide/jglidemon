@@ -14,7 +14,7 @@ import jgm.util.*;
  */
 public class JGlideMon implements ConnectionListener {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.4";
+	public static final String version = "0.5 beta";
 	
 	public static JGlideMon instance;
 	
@@ -50,7 +50,7 @@ public class JGlideMon implements ConnectionListener {
 		}
 		
 	  	connector = new Connector();
-		gui = new GUI(this);
+		gui = new GUI();
 
 		if (!jgm.cfg.iniFileExists() || jgm.cfg.net.host.equals("")) {
 			JOptionPane.showMessageDialog(GUI.frame,
@@ -88,6 +88,9 @@ public class JGlideMon implements ConnectionListener {
 		};
 
 		new Thread(r, "JGlideMon.Init").start();
+		
+		jgm.wow.Item.Cache.loadIcons();
+		jgm.wow.Item.Cache.loadItems();
 	}
 
 	public void destroy() {
@@ -102,6 +105,8 @@ public class JGlideMon implements ConnectionListener {
 		}
 		
 		Speech.destroy();
+		jgm.wow.Item.Cache.saveIcons();
+		jgm.wow.Item.Cache.saveItems();
 		cfg.writeIni();
 		
 		System.exit(0);
