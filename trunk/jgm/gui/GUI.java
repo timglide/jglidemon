@@ -18,7 +18,6 @@ public class GUI
 	
 	public static GUI instance;
 	
-	private JGlideMon     jgm;
 	public static JFrame        frame;
 
 	private JPanel        mainPane;
@@ -123,9 +122,8 @@ public class GUI
 		frame.setTitle((s != null && !s.equals("") ? s + " - " : "") + BASE_TITLE);
 	}
 
-	public GUI(JGlideMon j) {
+	public GUI() {
 		instance = this;
-		jgm = j;
 		
 		frame = new JFrame(BASE_TITLE);
 
@@ -139,7 +137,7 @@ public class GUI
 		frame.addWindowListener(
 			new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
-					jgm.destroy();
+					JGlideMon.instance.destroy();
 				} // end WindowClosing
 			}
 		);
@@ -230,6 +228,14 @@ public class GUI
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(fileMenu);
 
+		JMenuItem saveIcons = new JMenuItem("Save Icon Cache");
+		saveIcons.addActionListener(this);
+		fileMenu.add(saveIcons);
+		
+		saveIcons = new JMenuItem("Load Icon Cache");
+		saveIcons.addActionListener(this);
+		fileMenu.add(saveIcons);
+		
 		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
 		configItem.addActionListener(this);
 		fileMenu.add(configItem);
@@ -311,9 +317,13 @@ public class GUI
 		if (cmd.equals("Configuration")) {
 			showConfig();
 		} else if (cmd.equals("Exit")) {
-			jgm.destroy();
+			JGlideMon.instance.destroy();
 		} else if (cmd.equals("About")) {
 			showAbout();
+		} else if (cmd.equals("Save Icon Cache")) {
+			jgm.wow.Item.Cache.saveIcons();
+		} else if (cmd.equals("Load Icon Cache")) {
+			jgm.wow.Item.Cache.loadIcons();
 		}
 	}
 	
