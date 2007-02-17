@@ -1,5 +1,22 @@
 JGlideMon ChangeLog
 
+Version 0.5
+-----------
+- Added item/icon caching. *.cache files will be created that
+  will reduce the number of connections made to wow.allakhazam.com.
+  These files can be deleted without causing any problems
+- Fixed error in parsing items from the chatlog that was causing
+  some items to not be recognized
+- Each log tab now has an upper limit on the number of entries that
+  will be displayed. By defualt this is 500 and can be changed in
+  the [log] section of JGlideMon.ini. I have not had time to create
+  a section in the configuration dialog for this.
+- Fixed error that was not terminating updater threads upon disconnect
+  from Glider, which was causing sporadic behavior when you reconnected
+- Added sounds on being followed, being attacked, stuck too many times
+- Log entries starting with a ! will be added to the urgent log tab
+  and that tab will be selected
+
 Version 0.4
 -----------
 - Fixed detection of mana/rage/energy for all classes

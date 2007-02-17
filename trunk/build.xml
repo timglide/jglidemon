@@ -17,7 +17,7 @@
     <!-- * Where to find things...                                * -->
     <!-- *                                                        * -->
     <!-- ********************************************************** -->
-	<property name="version"		value="0.5beta"/>
+	<property name="version"		value="0.5"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/componentset.jar,**/freetts.jar"/>
@@ -75,19 +75,25 @@
 			description="Copy sound/image resources">
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}/jgm/resources">
-				<fileset dir="${src_dir}/jgm/resources" includes="images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GliderStop.wav" excludes="**/psd/,**/gif/"/>
+				<fileset dir="${src_dir}/jgm/resources" includes="images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav" excludes="**/psd/,**/gif/"/>
 		</copy>
 	</target>
 
 	<target name="libs"
-			description="Copy libraries">
-			<mkdir dir="${bin_dir}"/>
-			<copy todir="${bin_dir}/lib">
-				<fileset dir="${src_dir}/lib" includes="**/*"/>
-			</copy>
+		description="Copy libraries">
+		<mkdir dir="${bin_dir}"/>
+		<copy todir="${bin_dir}/lib">
+			<fileset dir="${src_dir}/lib" includes="**/*"/>
+		</copy>
 	</target>
 
-
+	<target name="docs"
+		description="Documentation">
+		<mkdir dir="${bin_dir}"/>
+		<copy todir="${bin_dir}">
+			<fileset dir="${src_dir}" includes="ChangeLog.txt"/>
+		</copy>
+	</target>
 
     <target name="jars"
 	    depends="JGlideMon_jar"
@@ -115,10 +121,10 @@
 
 	<property name="core_zip" value="${bin_dir}/JGlideMon_v${version}_core.zip"/>
 
-	<target name="core_zip" depends="jars,libs"
+	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="JGlideMon.jar,lib/componentset.jar"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,JGlideMon.jar,lib/componentset.jar"/>
 		</zip>
 	</target>
 
