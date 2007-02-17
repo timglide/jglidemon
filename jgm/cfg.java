@@ -44,6 +44,12 @@ public class cfg extends Thread {
 	}
 	
 	public synchronized void readIni() {
+		log.maxEntries = ini.getIntegerProperty("log", "maxentries", 500);
+		
+		if (log.maxEntries < 1) {
+			log.maxEntries = 500;
+		}
+		
 		net.host = ini.getStringProperty("network", "host", "");
 		net.port = ini.getIntegerProperty("network", "port", 0);
 		net.password = ini.getStringProperty("network", "password", "");
@@ -85,6 +91,7 @@ public class cfg extends Thread {
 	public static void writeIni() {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
+				ini.setIntegerProperty("log", "maxentries", log.maxEntries);
 				ini.setStringProperty("network", "host", net.host);
 				ini.setIntegerProperty("network", "port", net.port);
 				ini.setStringProperty("network", "password", net.password);
@@ -118,6 +125,10 @@ public class cfg extends Thread {
 			}
 		});
 		t.start();
+	}
+	
+	public static class log {
+		public static int maxEntries = 500;
 	}
 	
 	public static class net {

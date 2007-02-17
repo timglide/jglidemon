@@ -17,7 +17,7 @@
     <!-- * Where to find things...                                * -->
     <!-- *                                                        * -->
     <!-- ********************************************************** -->
-	<property name="version"		value="0.4"/>
+	<property name="version"		value="0.5beta"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/componentset.jar,**/freetts.jar"/>
@@ -75,7 +75,7 @@
 			description="Copy sound/image resources">
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}/jgm/resources">
-			<fileset dir="${src_dir}/jgm/resources" includes="images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav" excludes="**/psd/,**/gif/"/>
+				<fileset dir="${src_dir}/jgm/resources" includes="images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GliderStop.wav" excludes="**/psd/,**/gif/"/>
 		</copy>
 	</target>
 
