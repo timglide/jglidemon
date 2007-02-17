@@ -1,0 +1,51 @@
+JGlideMon ChangeLog
+
+Version 0.5
+-----------
+- Added item/icon caching. *.cache files will be created that
+  will reduce the number of connections made to wow.allakhazam.com.
+  These files can be deleted without causing any problems
+- Fixed error in parsing items from the chatlog that was causing
+  some items to not be recognized
+- Each log tab now has an upper limit on the number of entries that
+  will be displayed. By defualt this is 500 and can be changed in
+  the [log] section of JGlideMon.ini. I have not had time to create
+  a section in the configuration dialog for this.
+- Fixed error that was not terminating updater threads upon disconnect
+  from Glider, which was causing sporadic behavior when you reconnected
+- Added sounds on being followed, being attacked, stuck too many times
+- Log entries starting with a ! will be added to the urgent log tab
+  and that tab will be selected
+
+Version 0.4
+-----------
+- Fixed detection of mana/rage/energy for all classes
+  (druids not yet tested)
+- Moved configuration from a tab to a dialog (accessible via
+  File -> Configuration)
+- Reduced item icon size to 32x32 on the loot tab
+- Added sell price per stack (and stack quantity) of an item
+  on the item tooltip
+- Added Gold/Hour estimate to loot tab
+- Various internal improvements to use less memory (hopefully)
+- Improved use of the window title
+
+Version 0.3
+-----------
+- Added text-to-speech support
+- Improved use of the status bar
+- Connect/Disconnect buttons now work
+- Improved detection of being disconencted from Glider/
+  not being able to connect
+
+Version 0.2
+-----------
+- Added sounds when whispered/someone said something nearby
+- Added sending keys to Glider/replying to people who whisper you
+- Added sending mouse clicks when you click on the screenshot
+- Added forcing keys from the screenshot tab (i.e. press C to
+  make your character frame show)
+
+Version 0.1
+-----------
+- Initial Release
