@@ -87,7 +87,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 
 			if (e == null) continue;
 
-			rawLog.add(e);
+			if (jgm.JGlideMon.debug && rawLog != null) {
+				rawLog.add(e);
+			}
 
 			if (e instanceof GliderLogEntry) {
 				gliderLog.add(e);
@@ -106,7 +108,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				
 				chatLog.add(e);
 			} else if (e instanceof RawChatLogEntry) {
-				rawChatLog.add(e);
+				if (jgm.JGlideMon.debug && rawChatLog != null) {
+					rawChatLog.add(e);
+				}
 
 				RawChatLogEntry e2 = (RawChatLogEntry) e;
 

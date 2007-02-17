@@ -1,5 +1,6 @@
 package jgm.gui.tabs;
 
+import jgm.cfg;
 import jgm.glider.log.*;
 
 import java.util.Vector;
@@ -12,7 +13,7 @@ public class LogTab extends Tab {
 	private JTabbedPane   parent;
 	private LogTable      logTable;
 	private LogTableModel logEntries;
-
+	
 	public LogTab(String s, JTabbedPane tp) {
 		super(new BorderLayout(), s);
 
@@ -34,8 +35,7 @@ public class LogTab extends Tab {
 		);
 		
 		if (select) {
-			parent.setSelectedIndex(
-					parent.indexOfTab(name));
+			parent.setSelectedIndex(getIndex());
 		}
 	}
 
@@ -104,9 +104,13 @@ public class LogTab extends Tab {
 		}
 
 		public void add(LogEntry i) {
+			if (entries.size() > cfg.log.maxEntries) {
+				entries.clear();
+				fireTableDataChanged();
+			}
+			
 			entries.add(i);
 			fireTableRowsInserted(entries.size() - 1, entries.size() - 1);
-
 		}
 
 		public LogEntry get(int row) {

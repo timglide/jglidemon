@@ -13,8 +13,11 @@ public class Sound {
 	 * @author Tim
 	 */
 	public enum File {
-		WHISPER    ("Whisper.wav",   1309),
-		GM_WHISPER ("GMWhisper.wav", 3400);
+		WHISPER        ("Whisper.wav",      1309),
+		GM_WHISPER     ("GMWhisper.wav",    3400),
+		BEING_ATTACK   ("PlayerAttack.wav", 295),
+		BEING_FOLLOWED ("PlayerNear.wav",   484),
+		STOP           ("GlideStop.wav",    1040);
 		
 		private final AudioClip clip;
 		private final int length;

@@ -228,13 +228,15 @@ public class GUI
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(fileMenu);
 
-		JMenuItem saveIcons = new JMenuItem("Save Icon Cache");
-		saveIcons.addActionListener(this);
-		fileMenu.add(saveIcons);
+		if (jgm.JGlideMon.debug) {
+			JMenuItem saveIcons = new JMenuItem("Save Cache");
+			saveIcons.addActionListener(this);
+			fileMenu.add(saveIcons);
 		
-		saveIcons = new JMenuItem("Load Icon Cache");
-		saveIcons.addActionListener(this);
-		fileMenu.add(saveIcons);
+			saveIcons = new JMenuItem("Load Cache");
+			saveIcons.addActionListener(this);
+			fileMenu.add(saveIcons);
+		}
 		
 		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
 		configItem.addActionListener(this);
@@ -320,10 +322,12 @@ public class GUI
 			JGlideMon.instance.destroy();
 		} else if (cmd.equals("About")) {
 			showAbout();
-		} else if (cmd.equals("Save Icon Cache")) {
+		} else if (cmd.equals("Save Cache")) {
 			jgm.wow.Item.Cache.saveIcons();
-		} else if (cmd.equals("Load Icon Cache")) {
+			jgm.wow.Item.Cache.saveItems();
+		} else if (cmd.equals("Load Cache")) {
 			jgm.wow.Item.Cache.loadIcons();
+			jgm.wow.Item.Cache.loadItems();
 		}
 	}
 	

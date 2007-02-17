@@ -31,18 +31,30 @@ public class TabsPane extends Pane {
 
 		statusLog  = new LogTab("Status", tabbedPane);
 		chatLog    = new LogTab("Chat Log", tabbedPane);
-		urgentChatLog = new LogTab("Urgent Chat", tabbedPane);
+		urgentChatLog = new LogTab("Urgent Log", tabbedPane);
 		sendKeys   = new SendKeysTab();
-		rawChatLog = new LogTab("Raw Chat Log", tabbedPane);
 		combatLog  = new LogTab("Combat Log", tabbedPane);
 		gliderLog  = new LogTab("Glider Log", tabbedPane);
-		rawLog     = new LogTab("Raw Log", tabbedPane);
+		
+		if (jgm.JGlideMon.debug) {
+			rawChatLog = new LogTab("Raw Chat Log", tabbedPane);
+			rawLog     = new LogTab("Raw Log", tabbedPane);
+		}
 
 		addTab(statusLog);
 		addTab(chatLog); addTab(urgentChatLog);
 		addTab(sendKeys);
-		addTab(rawChatLog); addTab(combatLog);
-		addTab(gliderLog); addTab(rawLog);
+		
+		if (jgm.JGlideMon.debug) {
+			addTab(rawChatLog);
+		}
+		
+		addTab(combatLog);
+		addTab(gliderLog); 
+		
+		if (jgm.JGlideMon.debug) {
+			addTab(rawLog);
+		}
 
 		lootsTab = new LootsTab();
 		addTab(lootsTab);

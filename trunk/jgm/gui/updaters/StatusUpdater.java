@@ -161,8 +161,8 @@ public class StatusUpdater extends Observable
 				mana = Double.parseDouble(x.group(1));
 			}	
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Did not match mana");
+			//e.printStackTrace();
+			//System.err.println("Did not match mana");
 			mana = 0.0;
 		}
 

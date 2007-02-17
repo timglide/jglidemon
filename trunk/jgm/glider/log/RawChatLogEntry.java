@@ -18,12 +18,12 @@ public class RawChatLogEntry extends LogEntry {
 		parseMoney();
 		parseItem();
 		
-		if (money > 0) {
+		/*if (money > 0) {
 			int[] parts = jgm.gui.components.GoldPanel.cToGsc(money);
 			System.out.printf("Received %dg %ds %dc\n", parts[0], parts[1], parts[2]);
-		}
+		}*/
 		
-		if (itemSet != null) {
+		/*if (itemSet != null) {
 			System.out.print("Received item [" + itemSet.getItem().name + "]");
 			
 			int qty = itemSet.getQuantity(); 
@@ -32,7 +32,7 @@ public class RawChatLogEntry extends LogEntry {
 			}
 			
 			System.out.println();
-		}
+		}*/
 	}
 
 	public String getText() {
