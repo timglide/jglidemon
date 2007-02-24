@@ -1,6 +1,7 @@
 package jgm.glider.log;
 
 import java.util.Date;
+import java.util.regex.*;
 import java.text.SimpleDateFormat;
 
 /**
@@ -62,6 +63,9 @@ public class LogEntry implements Comparable<LogEntry> {
 		return df.format(timestamp);
 	}
 
+	private static Pattern TIMESTAMP_PATTERN =
+		Pattern.compile("^\\s*\\[\\d+(?::\\d\\d)+\\s*(?:AM|PM)?\\]\\s*(.*)$", Pattern.CASE_INSENSITIVE);
+	
 	/**
 	 * Create a subclass of LogEntry depending on the
 	 * content of s.
@@ -79,6 +83,14 @@ public class LogEntry implements Comparable<LogEntry> {
 		String type    = parts[0].substring(1, parts[0].length() - 1);
 		String rawText = parts[1];
 
+		// remove leading timestamp in case user has a timestamp mod
+		Matcher m = TIMESTAMP_PATTERN.matcher(rawText);
+		
+		if (m.matches()) {
+			rawText = m.group(1);
+			//System.out.println("Matched timestamp, removing...");
+		}
+		
 		//System.out.println("Found: '" + type + "'->'" + rawText + "'");
 		
 		LogEntry ret = null;
