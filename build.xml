@@ -17,7 +17,7 @@
     <!-- * Where to find things...                                * -->
     <!-- *                                                        * -->
     <!-- ********************************************************** -->
-	<property name="version"		value="0.5"/>
+	<property name="version"		value="0.6beta"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/componentset.jar,**/freetts.jar"/>
@@ -96,7 +96,7 @@
 	</target>
 
     <target name="jars"
-	    depends="JGlideMon_jar"
+	    depends="JGlideMon_jar,Profiler_jar"
 	    description="Builds all the jar files"/>
 
 
@@ -110,12 +110,25 @@
 		<jar destfile="${JGlideMon_jar}" 
 				manifest="${src_dir}/JGlideMon.mf"
 				compress="true">
-			<fileset dir="${bin_dir}" includes="jgm/**"/>
+			<fileset dir="${bin_dir}" includes="jgm/**" excludes="jgm/Profiler*.class"/>
+        </jar>
+    </target>
+
+    <property name="Profiler_jar" value="${bin_dir}/Profiler.jar"/>
+
+    <target name="Profiler_jar" 
+			depends="compile_src"
+			description="Create ${Profiler_jar}">
+		<mkdir dir="${bin_dir}"/>
+		<jar destfile="${Profiler_jar}" 
+				manifest="${src_dir}/Profiler.mf"
+				compress="true">
+			<fileset dir="${bin_dir}" includes="jgm/Profiler*.class,jgm/glider/Profile*.class"/>
         </jar>
     </target>
 
 
-	<target name="zips" depends="core_zip,tts_zip"
+	<target name="zips" depends="core_zip,profiler_zip,tts_zip"
 			description="Build all zip files"/>
 
 
@@ -124,7 +137,17 @@
 	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="ChangeLog.txt,JGlideMon.jar,lib/componentset.jar"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,JGlideMon.jar,Profiler.jar,lib/componentset.jar"/>
+		</zip>
+	</target>
+
+
+	<property name="profiler_zip" value="${bin_dir}/JGlideMon_v${version}_Profiler.zip"/>
+
+	<target name="profiler_zip" depends="Profiler_jar"
+			description="Create ${profiler_zip}">
+		<zip destfile="${profiler_zip}">
+			<fileset dir="${bin_dir}" includes="Profiler.jar"/>
 		</zip>
 	</target>
 

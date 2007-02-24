@@ -14,8 +14,8 @@ import jgm.util.*;
  */
 public class JGlideMon implements ConnectionListener {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.5";
-	public static final boolean debug = false;
+	public static final String version = "0.6 beta";
+	public static final boolean debug = true;
 	
 	public static JGlideMon instance;
 	
@@ -49,6 +49,8 @@ public class JGlideMon implements ConnectionListener {
 			} catch (InterruptedException e) {}
 		}
 		}
+		
+		jgm.glider.Profile.Cache.loadProfiles();
 		
 	  	connector = new Connector();
 		gui = new GUI();
@@ -90,6 +92,7 @@ public class JGlideMon implements ConnectionListener {
 
 		new Thread(r, "JGlideMon.Init").start();
 		
+		// not critical to get these loaded before the gui shows
 		jgm.wow.Item.Cache.loadIcons();
 		jgm.wow.Item.Cache.loadItems();
 	}

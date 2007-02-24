@@ -1,12 +1,15 @@
 package jgm.gui.tabs;
 
 import jgm.JGlideMon;
-import jgm.glider.GliderConn;
+import jgm.gui.components.*;
+import jgm.glider.*;
 
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 
-public class SendKeysTab extends Tab implements ActionListener {	
+public class SendKeysTab extends Tab implements ActionListener, TreeSelectionListener {	
 	private JLabel toLbl;
 	public  JComboBox type;
 	public  JTextField to;
@@ -15,59 +18,97 @@ public class SendKeysTab extends Tab implements ActionListener {
 	private JButton reset;
 	private JButton clear;
 	
+	private ProfileTree profiles;
+	private JButton loadProfile;
+	private JButton refreshProfiles;
+	private JButton manualLoad;
+	
 	private GliderConn conn;
 	
 	public SendKeysTab() {
-		super("Send Keys");
+		super(new BorderLayout(), "Keys/Profiles");
+
+		JPanel keysPanel = new JPanel(new GridBagLayout());
 		
-		c.weightx = 0.0;
-		add(new JLabel("Type "), c);
+		c.weightx = 0.0; c.weighty = 0.0;
+		keysPanel.add(new JLabel("Type "), c);
 		
 		toLbl = new JLabel("To                           ");
 		c.gridx++;
-		add(toLbl, c);
+		keysPanel.add(toLbl, c);
 		
 		c.gridx++; c.weightx = 1.0;
-		add(new JLabel("Keys"), c);
+		keysPanel.add(new JLabel("Keys"), c);
 		
 		String[] ss = {"Whisper", "Say", "Raw"};
 		type = new JComboBox(ss);
 		type.addActionListener(this);
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
-		add(type, c);
+		keysPanel.add(type, c);
 		
 		to = new JTextField();
 		c.gridx++;
-		add(to, c);
+		keysPanel.add(to, c);
 		
 		keys = new JTextField();
 		c.gridx++; c.weightx = 1.0;
-		add(keys, c);
+		keysPanel.add(keys, c);
 		
 		send = new JButton("Send Keys");
 		send.addActionListener(this);
 		c.gridx = 0; c.gridy++; c.weightx = 1.0; c.gridwidth = 3;
-		add(send, c);
+		keysPanel.add(send, c);
 		
 		reset = new JButton("Reset");
 		reset.addActionListener(this);
 		c.gridy++;
-		add(reset, c);
+		keysPanel.add(reset, c);
 		
 		clear = new JButton("Clear Queue");
 		send.addActionListener(this);
 		c.gridy++;
-		add(clear, c);
+		keysPanel.add(clear, c);
 		
 		c.gridy++;
-		add(new JLabel(
+		keysPanel.add(new JLabel(
 			"<html>Whisper and Say will both add the slash command and a carriage return.<br>" +
 			"You must add everything for Raw, | = CR, #VK# = VK</html>",
 			JLabel.CENTER
 		), c);
 		
-		c.gridy++; c.weighty = 1.0;
-		add(new JLabel(), c);
+		keysPanel.setBorder(BorderFactory.createTitledBorder("Send Keys"));
+				
+		JPanel prosPanel = new JPanel(new BorderLayout(10, 10));
+		
+		profiles = new ProfileTree();
+		profiles.addTreeSelectionListener(this);
+
+		c = new GridBagConstraints();
+		prosPanel.add(profiles, BorderLayout.CENTER);
+		
+		JPanel btns = new JPanel(new GridLayout(0, 1));
+		
+		loadProfile = new JButton("Load Selected Profile");
+		loadProfile.setEnabled(false);
+		loadProfile.addActionListener(this);
+		btns.add(loadProfile);
+		
+		manualLoad = new JButton("Manually Enter Profile To Load");
+		manualLoad.addActionListener(this);
+		btns.add(manualLoad);
+		
+		refreshProfiles = new JButton("Reload Profile List from " + Profile.Cache.profileFile.getName());
+		refreshProfiles.addActionListener(this);
+		btns.add(refreshProfiles);
+		
+		prosPanel.add(btns, BorderLayout.SOUTH);
+		
+		prosPanel.setBorder(BorderFactory.createTitledBorder("Load Profile"));
+
+		add(keysPanel, BorderLayout.NORTH);
+		add(prosPanel, BorderLayout.CENTER);
+		
+		validate();
 	}
 	
 	public void resetFields() {
@@ -81,6 +122,10 @@ public class SendKeysTab extends Tab implements ActionListener {
 		keys.setEnabled(b);
 		send.setEnabled(b);
 		reset.setEnabled(b);
+		
+		// should only be enabled upon selection of
+		// a leaf node
+		if (!b) loadProfile.setEnabled(false);
 	}
 	
 	public boolean isEnabled() {
@@ -91,9 +136,9 @@ public class SendKeysTab extends Tab implements ActionListener {
 		if (conn == null) conn = JGlideMon.instance.keysConn;
 		Object source = e.getSource();
 		
-		if (source instanceof JComboBox) {
+		if (source == type) {
 			String selected =
-				(String) ((JComboBox) source).getSelectedItem();
+				(String) type.getSelectedItem();
 			
 			boolean test = selected.equals("Whisper");
 			toLbl.setVisible(test);
@@ -102,8 +147,8 @@ public class SendKeysTab extends Tab implements ActionListener {
 			JButton btn = (JButton) source;
 			
 			String s = btn.getText();
-			
-			if (s.equals("Send Keys")) {
+
+			if (source == send) {
 				if (!isEnabled()) return;
 				
 				setEnabled(false);
@@ -133,31 +178,105 @@ public class SendKeysTab extends Tab implements ActionListener {
 					sb.append('|');
 				}
 				
-			try {
-				System.out.println("Sending: " + sb.toString());
-				conn.send("/queuekeys " + sb.toString());
-				conn.readLine(); // queued keys
-				conn.readLine(); // ---
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+				try {
+					System.out.println("Sending: " + sb.toString());
+					conn.send("/queuekeys " + sb.toString());
+					conn.readLine(); // queued keys
+					conn.readLine(); // ---
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 				
 				resetFields();
 				setEnabled(true);
-			} else if (s.equals("Reset")) {
+			} else if (source == reset) {
 				resetFields();
-			} else if (s.equals("Clear Queue")) {
-			try {
-				System.out.println("Clearing key queue");
-				conn.send("/clearsay");
-				conn.readLine(); // status
-				conn.readLine(); // ---
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			} else if (source == clear) {
+				try {
+					System.out.println("Clearing key queue");
+					conn.send("/clearsay");
+					conn.readLine(); // status
+					conn.readLine(); // ---
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				
 				resetFields();
 				setEnabled(true);
+			} else if (source == loadProfile) {				
+				Profile p = profiles.getSelectedProfile();
+				loadProfile(p.toFullString());
+			} else if (source == manualLoad) {
+				String path =
+					JOptionPane.showInputDialog(
+						jgm.gui.GUI.frame,
+						"Enter full profile path to load:",
+						"Load Profile",
+						JOptionPane.QUESTION_MESSAGE
+					);
+				
+				if (path == null) return;
+				
+				loadProfile(path);
+			} else if (source == refreshProfiles) {
+				profiles.reloadProfiles();
 			}
+		}
+	}
+	
+	public void valueChanged(TreeSelectionEvent e) {
+		Profile p = (Profile) e.getPath().getLastPathComponent();
+		loadProfile.setEnabled(p.isLeaf() && Connector.isConnected());
+	}
+	
+	public void loadProfile(String path) {
+		if (!Connector.isConnected()) {
+			JOptionPane.showMessageDialog(
+				jgm.gui.GUI.frame,
+				"You must be connected to Glider.",
+				"Error",
+				JOptionPane.ERROR_MESSAGE
+			);
+			
+			return;
+		}
+		
+		int groupIndex = path.indexOf("groups\\");
+		int profileIndex = path.indexOf("profiles\\");
+		
+		// glider seems to load the profile relative to
+		// the profiles folder instead of the folder where
+		// glider.exe is when given a relative path
+		if (groupIndex == 0) {
+			path = "..\\" + path;
+		} else if (profileIndex == 0) {
+			path = path.substring(9);
+		}
+		
+		try {
+			System.out.println("Loading profile: " + path);
+			conn.send("/loadprofile " + path);
+			String ret = conn.readLine(); // queued keys
+			System.out.println(ret);
+			conn.readLine(); // ---
+			
+			if (ret.toLowerCase().contains("failed")) {
+				JOptionPane.showMessageDialog(
+					jgm.gui.GUI.frame,
+					ret,
+					"Error",
+					JOptionPane.ERROR_MESSAGE
+				);
+			} else if (ret.contains("ok")) {
+				JOptionPane.showMessageDialog(
+					jgm.gui.GUI.frame,
+					ret + ".\nDon't forget to start gliding.",
+					"Profile Loaded",
+					JOptionPane.INFORMATION_MESSAGE
+				);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 }
