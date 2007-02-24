@@ -14,7 +14,7 @@ public class ChatLogEntry extends LogEntry {
 	private static Pattern PATTERN = null;
 
 	static {
-		PATTERN = Pattern.compile("(<GM>|)\\[([^]]+)\\] (whisper|say)s: (.*)");
+		PATTERN = Pattern.compile(".*?(<GM>|)\\[([^]]+)\\] (whisper|say)s: (.*)");
 
 		/* group 1: <GM>?
 		 *       2: from
