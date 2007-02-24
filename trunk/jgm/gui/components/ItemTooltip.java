@@ -224,7 +224,7 @@ public class ItemTooltip extends JPanel {
 		updateLbl(itemLvlLabel, s);
 		
 		s = item.description != null
-			? lineify('"' + item.description + '"') : null;
+			? "<html>" + lineify('"' + item.description + '"') + "</html>" : null;
 		updateLbl(descriptionLabel, s);
 		
 		Point     pt   = this.getLocation();
