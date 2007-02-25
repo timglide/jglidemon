@@ -17,9 +17,14 @@ public class GliderConn {
 	private PrintWriter    out;
 	private InputStream    inStream;
 	private BufferedReader in;
-
+	private static cfg cfg;
+	
 	public GliderConn() {
 		++instances;
+		
+		if (cfg == null) {
+			cfg = jgm.cfg.getInstance();
+		}
 	}
 	
 	public synchronized void connect()
@@ -27,13 +32,13 @@ public class GliderConn {
 		s = null; out = null; inStream = null; in = null;
 		
 		//try {
-			System.out.println("Connecting to " + cfg.net.host + "...");
-			s   = new Socket(cfg.net.host, cfg.net.port);
+			System.out.println("Connecting to " + cfg.getString("net", "host") + "...");
+			s   = new Socket(cfg.getString("net", "host"), cfg.getInt("net", "port"));
 			out = new PrintWriter(s.getOutputStream(), true);
 			inStream = new BufferedInputStream(s.getInputStream());
 			in  = new BufferedReader(
 			          new InputStreamReader(inStream));
-			send(cfg.net.password);
+			send(cfg.getString("net", "password"));
 			in.readLine(); // ignore Authenticated OK line
 			
 			notifyAll();

@@ -1,5 +1,7 @@
 package jgm.sound;
 
+import jgm.cfg;
+
 /**
  * Represents something that can be heard.
  * @author Tim
@@ -13,10 +15,11 @@ public abstract class Audible {
 	 * @since 0.3
 	 */
 	public enum Type {
-		STATUS, WHISPER, SAY, GM
+		STATUS, WHISPER, SAY, GM, FOLLOW, PVP, STUCK
 	}
 	
 	protected Type type;
+	protected static cfg cfg;
 	
 	/**
 	 * Construct an Audible object
@@ -24,6 +27,7 @@ public abstract class Audible {
 	 */
 	public Audible(Type type) {
 		this.type = type;
+		if (cfg == null) cfg = jgm.cfg.getInstance();
 	}
 	
 	/**

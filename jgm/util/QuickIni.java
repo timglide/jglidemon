@@ -52,7 +52,7 @@ import java.util.Set;
  * @author Mike Wallace
  * @version 1.0
  */
-public final class QuickIni
+public class QuickIni
 {
   /**
    * Whether the input file has been read.
@@ -359,12 +359,12 @@ public final class QuickIni
     // Uncomment this block if an exception should be
     // thrown when an error occurs reading the file
     // Check for an error
-    /*
+    
     if (errMsg != null)
     {
       throw new RuntimeException(errMsg);
     }
-    */
+    
   }
   
   
@@ -693,6 +693,8 @@ public final class QuickIni
         (sectionName == null) || (sectionName.length() < 1) ||
         (propertyName == null) || (propertyName.length() < 1))
     {
+    	if (jgm.JGlideMon.debug)
+    		System.out.println(sectionName + "." + propertyName + " def val 1");
       return defaultValue;
     }
     
@@ -701,6 +703,8 @@ public final class QuickIni
     if ((props == null) || (props.size() < 1))
     {
       // Return
+    	if (jgm.JGlideMon.debug)
+    		System.out.println(sectionName + "." + propertyName + " def val 2");
       return defaultValue;
     }
     
@@ -709,6 +713,8 @@ public final class QuickIni
     if (value == null)
     {
       // It was null, so it wasn't found
+    	if (jgm.JGlideMon.debug)
+    		System.out.println(sectionName + "." + propertyName + " def val 3");
       return defaultValue;
     }
     

@@ -23,7 +23,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
  
 	public Thread thread;
 	
+	private cfg cfg;
+	
 	public SSUpdater(ScreenshotTab t) {
+		cfg = jgm.cfg.getInstance();
 		tab  = t;
 		conn = new GliderConn();
 	}
@@ -59,10 +62,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		GUI.setStatusBarText("Updating screenshot...", true, false);
 		GUI.setStatusBarProgress(0);
 		
-		conn.send("/capturescale " + cfg.screenshot.scale);
+		conn.send("/capturescale " + cfg.get("screenshot", "scale"));
 		conn.readLine(); // set scale successfully
 		conn.readLine(); // ---
-		conn.send("/capturequality " + cfg.screenshot.quality);
+		conn.send("/capturequality " + cfg.get("screenshot", "quality"));
 		conn.readLine(); // set quality successfully
 		conn.readLine(); // ---
 		conn.send("/capture");
@@ -167,7 +170,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				}
 				
 				idle = true;
-				Thread.sleep(cfg.screenshot.updateInterval);
+				Thread.sleep(cfg.getInt("screenshot", "updateInterval"));
 			} catch (InterruptedException e) {
 				System.out.println(thread.getName() + " interrupted");
 				Thread.interrupted();

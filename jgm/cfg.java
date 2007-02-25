@@ -2,6 +2,7 @@ package jgm;
 
 import jgm.util.*;
 
+import java.lang.reflect.*;
 import java.io.File;
 
 /**
@@ -10,165 +11,271 @@ import java.io.File;
  * @author Tim
  * @since 0.1
  */
-public class cfg extends Thread {
-	private volatile boolean set = false;
+public class cfg extends QuickIni {
+	public static cfg instance;
 	private static final File iniFile = new File("JGlideMon.ini");
-	private static QuickIni ini = new QuickIni(iniFile.getName());
-	private static int instances = 0;
+	//private static QuickIni ini = new QuickIni(iniFile.getName());
 	
 	public static boolean iniFileExists() {
 		return iniFile.exists();
 	}
 	
+	public static cfg getInstance() {
+		return instance;
+	}
+	
 	public cfg() {
-		if (++instances > 1) {
-			System.err.println("Too many cfg instances:");
-			
-			try {
-				throw new Exception();
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
+		super(iniFile.getName());
+		instance = this;
+		
+		if (iniFileExists()) {
+			validate();
 		}
-		start();
 	}
 	
-	public boolean isSet() {
-		return set;
+	private static final String DEF = "jgm.cfg$defaults$";
+	
+	private String getClass(String section) {
+		return DEF + section.replace('.', '$');
 	}
 	
-	public void run() {
-		readIni();
-		set = true;
-	}
-	
-	public synchronized void readIni() {
-		log.maxEntries = ini.getIntegerProperty("log", "maxentries", 500);
+	public int getInt(final String sectionName,
+					  String propertyName) {
+		Class c; Field f; int defaultValue = 0;
+		propertyName = propertyName.toLowerCase();
 		
-		if (log.maxEntries < 1) {
-			log.maxEntries = 500;
+		try {
+			c = Class.forName(getClass(sectionName));
+			f = c.getField(propertyName);
+			defaultValue = f.getInt(null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 		
-		net.host = ini.getStringProperty("network", "host", "");
-		net.port = ini.getIntegerProperty("network", "port", 0);
-		net.password = ini.getStringProperty("network", "password", "");
-		//net.autoReconnect = ini.getBooleanProperty("network", "autoreconnect", true);
-		net.autoReconnect = false;
+		return super.getIntegerProperty(sectionName, propertyName, defaultValue);
+	}
+	
+	public boolean getBool(final String sectionName,
+						   String propertyName) {
+		Class c; Field f; boolean defaultValue = false;
+		propertyName = propertyName.toLowerCase();
 		
-		status.updateInterval = ini.getIntegerProperty("status", "updateInterval", 500);
+		try {
+			c = Class.forName(getClass(sectionName));
+			f = c.getField(propertyName);
+			defaultValue = f.getBoolean(null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
-		screenshot.autoUpdate = ini.getBooleanProperty("screenshot", "autoupdate", true);
-		screenshot.updateInterval = ini.getIntegerProperty("screenshot", "updateinterval", 5000);
-		screenshot.scale = ini.getIntegerProperty("screenshot", "scale", 100);
-		screenshot.quality = ini.getIntegerProperty("screenshot", "quality", 50);
+		return super.getBooleanProperty(sectionName, propertyName, defaultValue);
+	}
+	
+	public long getLong(final String sectionName,
+						String propertyName) {
+		Class c; Field f; long defaultValue = 0;
+		propertyName = propertyName.toLowerCase();
 		
-		if (screenshot.scale > 100) screenshot.scale = 100; else
-		if (screenshot.scale < 10)  screenshot.scale = 10;
+		try {
+			c = Class.forName(getClass(sectionName));
+			f = c.getField(propertyName);
+			defaultValue = f.getLong(null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
-		if (screenshot.quality > 100) screenshot.quality = 100; else
-		if (screenshot.quality < 10)  screenshot.quality = 10;
+		return super.getLongProperty(sectionName, propertyName, defaultValue);
+	}
+	
+	public double getDouble(final String sectionName,
+							String propertyName) {
+		Class c; Field f; double defaultValue = 0.0;
+		propertyName = propertyName.toLowerCase();
 		
-		window.x = ini.getIntegerProperty("window", "x", 50);
-		window.y = ini.getIntegerProperty("window", "y", 50);
-		window.maximized = ini.getBooleanProperty("window", "maximized", true);
-		window.width = ini.getIntegerProperty("window", "width", 1000);
-		window.height = ini.getIntegerProperty("window", "height", 700);
+		try {
+			c = Class.forName(getClass(sectionName));
+			f = c.getField(propertyName);
+			defaultValue = f.getDouble(null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return super.getDoubleProperty(sectionName, propertyName, defaultValue);
+	}
+	
+	public String getString(final String sectionName,
+							String propertyName) {
+		Class c; Field f; String defaultValue = null;
+		propertyName = propertyName.toLowerCase();
 		
-		sound.enabled = ini.getBooleanProperty("sound", "enabled", true);
-		sound.whisper = ini.getBooleanProperty("sound", "whisper", true);
-		sound.say = ini.getBooleanProperty("sound", "say", true);
-		sound.gm = ini.getBooleanProperty("sound", "gm", true);
-		sound.tts.enabled = ini.getBooleanProperty("sound.tts", "enabled", true);
-		sound.tts.whisper = ini.getBooleanProperty("sound.tts", "whisper", true);
-		sound.tts.say = ini.getBooleanProperty("sound.tts", "say", false);
-		sound.tts.gm = ini.getBooleanProperty("sound.tts", "gm", true);
-		sound.tts.status = ini.getBooleanProperty("sound.tts", "status", true);
-				
-		notifyAll();
+		try {
+			c = Class.forName(getClass(sectionName));
+			f = c.getField(propertyName);
+			defaultValue = (String) f.get(null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return super.getStringProperty(sectionName, propertyName, defaultValue);
+	}
+	
+	public String get(final String sectionName,
+					  String propertyName) {
+		Class c; Field f; Object defaultValue = null;
+		propertyName = propertyName.toLowerCase();
+		
+		try {
+			c = Class.forName(getClass(sectionName));
+			f = c.getField(propertyName);
+			defaultValue = f.get(null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return super.getStringProperty(sectionName, propertyName, defaultValue.toString());
+	}
+
+	public boolean setBool(final String sectionName,
+						   String propertyName,
+						   final boolean value) {
+		propertyName = propertyName.toLowerCase();
+		return super.setBooleanProperty(sectionName, propertyName, value);
+	}
+	
+	public boolean setInt(final String sectionName,
+						  String propertyName,
+						  final int value) {
+		propertyName = propertyName.toLowerCase();
+		return super.setIntegerProperty(sectionName, propertyName, value);
+	}
+	
+	public boolean setLong(final String sectionName,
+						   String propertyName,
+						   final long value) {
+		propertyName = propertyName.toLowerCase();
+		return super.setLongProperty(sectionName, propertyName, value);
+	}
+	
+	public boolean setDouble(final String sectionName,
+							 String propertyName,
+							 final double value) {
+		propertyName = propertyName.toLowerCase();
+		return super.setDoubleProperty(sectionName, propertyName, value);
+	}
+	
+	public boolean setString(final String sectionName,
+							 String propertyName,
+							 final String value) {
+		propertyName = propertyName.toLowerCase();
+		return super.setStringProperty(sectionName, propertyName, value);
+	}
+	
+	public boolean set(final String sectionName,
+					   final String propertyName,
+					   final Object value) {
+		/*Class c; Field f; String defaultValue = null;
+		
+		try {
+			c = Class.forName(DEF + sectionName);
+			f = c.getField(propertyName);
+			defaultValue = (String) f.get(null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		Class c = f.getType();
+		c.getCanonicalName()*/
+						   
+		if (value instanceof Integer) {
+			return setInt(sectionName, propertyName, (Integer) value);
+		} else if (value instanceof Double) {
+			return setDouble(sectionName, propertyName, (Double) value);
+		} else if (value instanceof Boolean) {
+			return setBool(sectionName, propertyName, (Boolean) value);
+		} else if (value instanceof String) {
+			return setString(sectionName, propertyName, (String) value);
+		}
+		
+		return false;
+	}
+	
+	public void validate() {
+		if (getInt("log", "maxEntries") < 1) {
+			setInt("log", "maxEntries", 500);
+		}
+
+		int i = getInt("screenshot", "scale");
+		if (i > 100) setInt("screenshot", "scale", 100); else
+		if (i < 10)  setInt("screenshot", "scale", 10);
+		
+		i = getInt("screenshot", "quality");
+		if (i > 100) setInt("screenshot", "quality", 100); else
+		if (i < 10)  setInt("screenshot", "quality", 10);
 	}
 	
 	public static void writeIni() {
-		Thread t = new Thread(new Runnable() {
-			public void run() {
-				ini.setIntegerProperty("log", "maxentries", log.maxEntries);
-				ini.setStringProperty("network", "host", net.host);
-				ini.setIntegerProperty("network", "port", net.port);
-				ini.setStringProperty("network", "password", net.password);
-				ini.setBooleanProperty("network", "autoreconnect", net.autoReconnect);
-		
-				ini.setIntegerProperty("status", "updateinterval", status.updateInterval);
-		
-				ini.setBooleanProperty("screenshot", "autoupdate", screenshot.autoUpdate);
-				ini.setIntegerProperty("screenshot", "updateinterval", screenshot.updateInterval);
-				ini.setIntegerProperty("screenshot", "scale", screenshot.scale);
-				ini.setIntegerProperty("screenshot", "quality", screenshot.quality);
-		
-				ini.setIntegerProperty("window", "x", window.x);
-				ini.setIntegerProperty("window", "y", window.y);
-				ini.setBooleanProperty("window", "maximized", window.maximized);
-				ini.setIntegerProperty("window", "width", window.width);
-				ini.setIntegerProperty("window", "height", window.height);				
-				
-				ini.setBooleanProperty("sound", "enabled", sound.enabled);
-				ini.setBooleanProperty("sound", "whisper", sound.whisper);
-				ini.setBooleanProperty("sound", "say", sound.say);
-				ini.setBooleanProperty("sound", "gm", sound.gm);
-				ini.setBooleanProperty("sound.tts", "enabled", sound.tts.enabled);
-				ini.setBooleanProperty("sound.tts", "whisper", sound.tts.whisper);
-				ini.setBooleanProperty("sound.tts", "say", sound.tts.say);
-				ini.setBooleanProperty("sound.tts", "gm", sound.tts.gm);
-				ini.setBooleanProperty("sound.tts", "status", sound.tts.status);
-				
+//		Thread t = new Thread(new Runnable() {
+//			public void run() {
 				System.out.println("Saving configuration to " + iniFile.getName());
-				ini.updateFile();
-			}
-		});
-		t.start();
+				instance.updateFile();
+//			}
+//		});
+//		t.start();
 	}
 	
-	public static class log {
-		public static int maxEntries = 500;
-	}
-	
-	public static class net {
-		public static String host;
-		public static int    port;
-		public static String password;
-		public static boolean autoReconnect = true;
-	}
-	
-	public static class status {
-		public static int updateInterval = 500;
-	}
-	
-	public static class screenshot {
-		public static boolean autoUpdate = true;
-		public static int updateInterval = 5000;
-		public static int scale = 100;
-		public static int quality = 100;
-	}
-	
-	public static class window {
-		public static int x = 50;
-		public static int y = 50;
-		public static boolean maximized = true;
-		public static int width = 1000;
-		public static int height = 700;
-	}
-	
-	public static class sound {
-		public static boolean enabled = true;
-		public static boolean whisper = true;
-		public static boolean say = true;
-		public static boolean gm = true;
+	public static class defaults {
+		public static class log {
+			public static final int maxentries = 500;
+		}
 		
-		public static class tts {
-			public static boolean enabled = true;
-			public static boolean whisper = true;
-			public static boolean say = true;
-			public static boolean gm = true;
-			public static boolean status = true;
+		public static class net {
+			public static final String host = "localhost";
+			public static final int    port = 3200;
+			public static final String password = "";
+			public static final boolean autoreconnect = false;
+		}
+		
+		public static class status {
+			public static final int updateinterval = 500;
+		}
+		
+		public static class screenshot {
+			public static final boolean autoupdate = true;
+			public static final int updateinterval = 5000;
+			public static final int scale = 100;
+			public static final int quality = 100;
+		}
+		
+		public static class window {
+			public static final int x = 50;
+			public static final int y = 50;
+			public static final boolean maximized = true;
+			public static final int width = 900;
+			public static final int height = 650;
+		}
+		
+		public static class sound {
+			public static final boolean enabled = true;
+			public static final boolean whisper = true;
+			public static final boolean say = true;
+			public static final boolean gm = true;
+			public static final boolean follow = true;
+			public static final boolean pvp = true;
+			public static final boolean stuck = true;
+			
+			public static class tts {
+				public static final boolean enabled = true;
+				public static final boolean whisper = true;
+				public static final boolean say = true;
+				public static final boolean gm = true;
+				public static final boolean status = true;
+			}
 		}
 	}
 }

@@ -37,8 +37,11 @@ public class StatusUpdater extends Observable
 	private Thread thread;
 	private volatile boolean stop = false;
 
+	private cfg cfg;
+	
 	public StatusUpdater() {
 		conn = new GliderConn();
+		cfg = jgm.cfg.getInstance();
 	}
 
 	public void close() {
@@ -70,7 +73,7 @@ public class StatusUpdater extends Observable
 			
 			try {
 				update();
-				Thread.sleep(cfg.status.updateInterval);
+				Thread.sleep(cfg.getLong("status", "updateInterval"));
 			} catch (Exception e) {
 				System.err.println("Stopping StatusUpdater, Ex: " + e.getMessage());
 				Connector.disconnect();

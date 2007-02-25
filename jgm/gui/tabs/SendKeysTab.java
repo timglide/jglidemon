@@ -146,8 +146,6 @@ public class SendKeysTab extends Tab implements ActionListener, TreeSelectionLis
 		} else if (source instanceof JButton) {			
 			JButton btn = (JButton) source;
 			
-			String s = btn.getText();
-
 			if (source == send) {
 				if (!isEnabled()) return;
 				

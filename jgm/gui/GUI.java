@@ -35,6 +35,8 @@ public class GUI
 	private About aboutFrame;
 	private Config configDialog;
 	
+	private cfg cfg;
+	
 	public static void setTitleBorder(JComponent c, String text) {
 		c.setBorder(
 			BorderFactory.createTitledBorder(text)
@@ -124,13 +126,14 @@ public class GUI
 
 	public GUI() {
 		instance = this;
+		cfg = jgm.cfg.getInstance();
 		
 		frame = new JFrame(BASE_TITLE);
 
-		frame.setSize(cfg.window.width, cfg.window.height);
-		frame.setLocation(cfg.window.x, cfg.window.y);
+		frame.setSize(cfg.getInt("window", "width"), cfg.getInt("window", "height"));
+		frame.setLocation(cfg.getInt("window", "x"), cfg.getInt("window", "y"));
 		
-		if (cfg.window.maximized) {
+		if (cfg.getBool("window", "maximized")) {
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		}
 		
@@ -147,10 +150,10 @@ public class GUI
 				if (JFrame.MAXIMIZED_BOTH ==
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
 					//System.out.println("Window is maximized");
-					cfg.window.maximized = true;
+					cfg.setBool("window", "maximized", true);
 				} else {
 					//System.out.println("Window not maximized");
-					cfg.window.maximized = false;
+					cfg.setBool("window", "maximized", false);
 				}
 			}
 		});
@@ -163,8 +166,8 @@ public class GUI
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
-					cfg.window.width = s.width;
-					cfg.window.height = s.height;
+					cfg.setInt("window", "width", s.width);					
+					cfg.setInt("window", "height", s.height);
 				}
 			}
 			
@@ -175,8 +178,8 @@ public class GUI
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
-					cfg.window.x = p.x;
-					cfg.window.y = p.y;
+					cfg.setInt("window", "x", p.x);
+					cfg.setInt("window", "y", p.y);
 				}
 			}
 		});
