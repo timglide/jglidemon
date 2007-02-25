@@ -104,7 +104,7 @@ public class LogTab extends Tab {
 		}
 
 		public void add(LogEntry i) {
-			if (entries.size() > cfg.log.maxEntries) {
+			if (entries.size() > cfg.getInstance().getInt("log", "maxentries")) {
 				entries.clear();
 				fireTableDataChanged();
 			}

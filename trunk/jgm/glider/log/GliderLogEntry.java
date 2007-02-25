@@ -20,16 +20,16 @@ public class GliderLogEntry extends LogEntry {
 		if (isAlert) {
 			if (s.contains("Being attacked")) {
 				type = Type.BEING_ATTACKED;
-				new Sound(Audible.Type.GM, jgm.util.Sound.File.BEING_ATTACK).play(true);
+				new Sound(Audible.Type.PVP, jgm.util.Sound.File.BEING_ATTACK).play(true);
 			} else if (s.contains("Being followed")) {
 				type = Type.BEING_FOLLOWED;
-				new Sound(Audible.Type.GM, jgm.util.Sound.File.BEING_FOLLOWED).play(true);
+				new Sound(Audible.Type.FOLLOW, jgm.util.Sound.File.BEING_FOLLOWED).play(true);
 			}
 		} else {
 			if (s.contains("Stuck too many times")) {
 				isAlert = true;
 				type = Type.STUCK;
-				new Sound(Audible.Type.GM, jgm.util.Sound.File.STOP).play(true);
+				new Sound(Audible.Type.STUCK, jgm.util.Sound.File.STOP).play(true);
 			}
 		}
 	}

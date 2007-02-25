@@ -1,7 +1,5 @@
 package jgm.sound;
 
-import jgm.cfg;
-
 /**
  * Represents a sound file to be played.
  * @author Tim
@@ -24,15 +22,8 @@ public class Sound extends Audible {
 	}
 
 	public boolean isAudible() {
-		if (!cfg.sound.enabled) return false;
-		
-		switch (type) {
-			case WHISPER: return cfg.sound.whisper;
-			case SAY:     return cfg.sound.say;
-			case GM:      return cfg.sound.gm;
-		}
-		
-		return false;
+		if (!cfg.getBool("sound", "enabled")) return false;
+		return cfg.getBool("sound", type.toString().toLowerCase());
 	}
 
 }

@@ -1,6 +1,5 @@
 package jgm.sound;
 
-import jgm.cfg;
 import jgm.util.Speech;
 
 /**
@@ -26,15 +25,7 @@ public class Phrase extends Audible {
 	}
 	
 	public boolean isAudible() {
-		if (!cfg.sound.tts.enabled) return false;
-		
-		switch (type) {
-			case WHISPER: return cfg.sound.tts.whisper;
-			case SAY:     return cfg.sound.tts.say;
-			case GM:      return cfg.sound.tts.gm;
-			case STATUS:  return cfg.sound.tts.status;
-		}
-		
-		return false;
+		if (!cfg.getBool("sound.tts", "enabled")) return false;
+		return cfg.getBool("sound.tts", type.toString().toLowerCase());
 	}
 }

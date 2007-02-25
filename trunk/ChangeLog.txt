@@ -1,5 +1,27 @@
 JGlideMon ChangeLog
 
+Version 0.6
+-----------
+- Added support for loading profiles. Run Profiler.jar on the
+  computer where Glider is running to create a "profiles.dat"
+  file and copy that file to the same directory as JGlideMon.jar
+  on the remote computer you will run JGlideMon on. JGlideMon will
+  detect profiles.dat and read it into a list of profiles that
+  can be loaded. (The whole point of this is so you don't have
+  to remember the exact paths of all your profiles or type them
+  in manually, but that option is available if you wish)
+- Added the removal of timestamps from in-game chat timestamp mods
+  (CTMod style at least [hh:mm:ss] or [h:mm] for example)
+- Internal changes to improve the storage of configuration data have
+  required that you delete your current JGlideMon.ini file. While
+  it won't hurt anything to not delete it, you will have to re-enter
+  your network settings anyway and it will clutter your ini file.
+  If you really don't want to delete it, change the "[network]" line
+  to "[net]" and change all keys to be lowercase, i.e. "updateInterval=..."
+  would become "updateinterval=...".
+- Values in the configuration dialog should now be correctly refreshed
+  when you cancel changes and reopen the dialog
+
 Version 0.5
 -----------
 - Added item/icon caching. *.cache files will be created that

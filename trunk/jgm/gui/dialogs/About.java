@@ -67,15 +67,11 @@ public class About extends Dialog implements ActionListener {
 			setVisible(false);
 		}
 	}
-	
-	public void setVisible(boolean b) {
-		if (b) {
-			ImageIcon icon = new ImageIcon(
-				JGlideMon.class.getResource("resources/images/stitch/stitch" + r.nextInt(2) + ".jpg"));
-			iconLabel.setIcon(icon);
-			iconLabel.revalidate();
-		}
-		
-		super.setVisible(b);
+
+	protected void onShow() {
+		ImageIcon icon = new ImageIcon(
+			JGlideMon.class.getResource("resources/images/stitch/stitch" + r.nextInt(2) + ".jpg"));
+		iconLabel.setIcon(icon);
+		iconLabel.revalidate();
 	}
 }

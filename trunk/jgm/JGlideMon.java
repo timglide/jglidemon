@@ -20,7 +20,7 @@ public class JGlideMon implements ConnectionListener {
 	public static JGlideMon instance;
 	
 	public  GliderConn    keysConn;
-	private cfg           c;
+	private cfg           cfg;
 	public  GUI           gui;
 	private StatusUpdater status;
 	private LogUpdater    logUpdater;
@@ -30,7 +30,7 @@ public class JGlideMon implements ConnectionListener {
 	
 	public JGlideMon() {
 		instance = this;
-		c = new cfg();
+		cfg = new cfg();		
 		init();
 	}
 	
@@ -42,20 +42,12 @@ public class JGlideMon implements ConnectionListener {
 	public void connectionDied() {}
 	
 	private void init() {
-		synchronized (c) {
-		if (!c.isSet()) {
-			try {
-				c.wait();
-			} catch (InterruptedException e) {}
-		}
-		}
-		
 		jgm.glider.Profile.Cache.loadProfiles();
 		
 	  	connector = new Connector();
 		gui = new GUI();
 
-		if (!jgm.cfg.iniFileExists() || jgm.cfg.net.host.equals("")) {
+		if (!cfg.iniFileExists() || cfg.getString("net", "host").equals("")) {
 			JOptionPane.showMessageDialog(GUI.frame,
 				"Please enter the server name, port, and password.\n" +
 				"Next, click Save Settings, then click Connect.\n\n" +

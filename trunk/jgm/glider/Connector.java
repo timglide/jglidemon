@@ -13,6 +13,7 @@ public class Connector extends Thread {
 	public volatile boolean stop = false;
 	
 	private static Connector instance;
+	private cfg cfg;
 	
 	private static Vector<ConnectionListener> listeners
 		= new Vector<ConnectionListener>();
@@ -22,6 +23,7 @@ public class Connector extends Thread {
 	public Connector() {
 		super("Connector");
 		instance = this;
+		cfg = jgm.cfg.getInstance();
 	}
 	
 	public static boolean isConnected() {
@@ -31,7 +33,7 @@ public class Connector extends Thread {
 	public void run() {
 		int ticks = 0;
 		
-		while (!stop && cfg.net.autoReconnect) {
+		while (!stop && cfg.getBool("net", "autoReconnect")) {
 			System.out.println("Connector tick " + (++ticks));
 			
 			for (final ConnectionListener c : listeners) {
@@ -84,13 +86,13 @@ public class Connector extends Thread {
 					try {
 						c.getConn().connect();
 					} catch (java.net.UnknownHostException e) {
-						System.err.println("Error connecting to " + cfg.net.host + ": " + e.getMessage());
-						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.net.host + ":" + cfg.net.port + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
+						System.err.println("Error connecting to " + cfg.getString("net", "host") + ": " + e.getMessage());
+						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.getString("net", "host") + ":" + cfg.getInt("net", "port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
 						success = false;
 						break;
 					} catch (Exception e) {
-						System.err.println("Error connecting to " + cfg.net.host + ": " + e.getMessage());
-						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.net.host + ":" + cfg.net.port + " - " + e.getMessage(), true, true);						
+						System.err.println("Error connecting to " + cfg.getString("net", "host") + ": " + e.getMessage());
+						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.getString("net", "host") + ":" + cfg.getInt("net", "port") + " - " + e.getMessage(), true, true);						
 						success = false;
 						break;
 					}
@@ -101,10 +103,10 @@ public class Connector extends Thread {
 				
 				if (success) {
 					jgm.gui.GUI.setStatusBarText("Connected", false, true);
-					jgm.gui.GUI.setTitle(cfg.net.host + ':' + cfg.net.port);
+					jgm.gui.GUI.setTitle(cfg.getString("net", "host") + ":" + cfg.getInt("net", "port"));
 					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 					
-					if (cfg.net.autoReconnect)
+					if (cfg.getBool("net" , "autoReconnect"))
 						Connector.this.start(); // start auto-reconnector
 					notifyConnectionEstablished();
 				} else {
