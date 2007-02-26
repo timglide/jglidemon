@@ -5,15 +5,13 @@ import jgm.sound.*;
 
 import java.util.*;
 
-public class Connector extends Thread {
+public class Connector {
 	public enum State {
 		DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING
 	}
-	
-	public volatile boolean stop = false;
-	
+		
 	private static Connector instance;
-	private cfg cfg;
+	private static cfg cfg;
 	
 	private static Vector<ConnectionListener> listeners
 		= new Vector<ConnectionListener>();
@@ -21,7 +19,6 @@ public class Connector extends Thread {
 	public static volatile State state = State.DISCONNECTED;
 	
 	public Connector() {
-		super("Connector");
 		instance = this;
 		cfg = jgm.cfg.getInstance();
 	}
@@ -30,69 +27,49 @@ public class Connector extends Thread {
 		return state == State.CONNECTED;
 	}
 	
-	public void run() {
-		int ticks = 0;
-		
-		while (!stop && cfg.getBool("net", "autoReconnect")) {
-			System.out.println("Connector tick " + (++ticks));
-			
-			for (final ConnectionListener c : listeners) {
-				final GliderConn conn = c.getConn();
-				
-				if (!conn.isConnected()) {
-					System.out.println("Reconecting conn " + conn.hashCode());
-					Thread t = new Thread(new Runnable() {
-						public void run() {
-							try {
-								conn.connect();
-								c.connectionEstablished();
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					}, "Reconnector" + c.hashCode());
-					t.start();
-				}
-			}
-			
-			try {
-				sleep(30000);
-			} catch (InterruptedException e) {
-				break;
-			}
-		}
-		
-		System.out.println("Auto-reconnector terminating");
+	public static void connect() {
+		connect(false);
 	}
 	
-	public static void connect() {
+	/**
+	 * @param interactive True if the user pressed the connect button
+	 */
+	public static void connect(boolean interactive) {
 		if (instance == null) return;
 		
-		instance.connectImpl();
+		instance.connectImpl(interactive);
 	}
 	
-	private void connectImpl() {
+	private void connectImpl(final boolean interactive) {
 		if (state != State.DISCONNECTED) return;
+		
+		if (interactive)
+			reconnectTries = cfg.getInt("net", "autoreconnecttries");
 		
 		state = State.CONNECTING;
 		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
+				if (interactive) cancelReconnect();
+				
+				jgm.gui.GUI.instance.ctrlPane.connecting();
+				
 				jgm.gui.GUI.setStatusBarText("Connecting...", false, true);
 				jgm.gui.GUI.setStatusBarProgressIndeterminent();
 				boolean success = true;
 				
 				for (ConnectionListener c : listeners) {
 					try {
+						if (c.getConn() == null) continue;
 						c.getConn().connect();
 					} catch (java.net.UnknownHostException e) {
-						System.err.println("Error connecting to " + cfg.getString("net", "host") + ": " + e.getMessage());
-						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.getString("net", "host") + ":" + cfg.getInt("net", "port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
+						System.err.println("Error connecting to " + cfg.get("net", "host") + ": " + e.getMessage());
+						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
 						success = false;
 						break;
 					} catch (Exception e) {
 						System.err.println("Error connecting to " + cfg.getString("net", "host") + ": " + e.getMessage());
-						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.getString("net", "host") + ":" + cfg.getInt("net", "port") + " - " + e.getMessage(), true, true);						
+						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - " + e.getMessage(), true, true);						
 						success = false;
 						break;
 					}
@@ -102,16 +79,19 @@ public class Connector extends Thread {
 				jgm.gui.GUI.hideStatusBarProgress();
 				
 				if (success) {
-					jgm.gui.GUI.setStatusBarText("Connected", false, true);
-					jgm.gui.GUI.setTitle(cfg.getString("net", "host") + ":" + cfg.getInt("net", "port"));
-					new Phrase(Audible.Type.STATUS, "Connection established.").play();
+					reconnectTries = cfg.getInt("net", "autoreconnecttries");
 					
-					if (cfg.getBool("net" , "autoReconnect"))
-						Connector.this.start(); // start auto-reconnector
+					jgm.gui.GUI.setStatusBarText("Connected", false, true);
+					jgm.gui.GUI.setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
+					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 					notifyConnectionEstablished();
 				} else {
 					jgm.gui.GUI.setTitle();
 					notifyConnectionDied();
+					
+					if (cfg.getBool("net" , "autoReconnect")) {
+						createReconnector();
+					}
 				}
 			}
 		}, "Connector.connect");
@@ -119,14 +99,22 @@ public class Connector extends Thread {
 		System.out.println("Attempting to connect...");
 		t.start();
 	}
-	
+
 	public static Thread disconnect() {
-		if (instance == null) return null;
-		
-		return instance.disconnectImpl();
+		return disconnect(false);
 	}
 	
-	private Thread disconnectImpl() {
+	/**
+	 * @param forced True if the user pressed the Disconnect button
+	 * @return
+	 */
+	public static Thread disconnect(boolean interactive) {
+		if (instance == null) return null;
+		
+		return instance.disconnectImpl(interactive);
+	}
+	
+	private Thread disconnectImpl(final boolean interactive) {
 		if (state != State.CONNECTED) return null;
 		
 		state = State.DISCONNECTING;
@@ -137,12 +125,15 @@ public class Connector extends Thread {
 			}
 			
 			private synchronized void runImpl() {
+				jgm.gui.GUI.instance.ctrlPane.disconnecting();
+				
 				jgm.gui.GUI.setStatusBarText("Disconnecting...", false, true);
 				jgm.gui.GUI.setStatusBarProgressIndeterminent();
 				boolean success = true;
 				
 				for (ConnectionListener c : listeners) {
 					try {
+						if (c.getConn() == null) continue;
 						c.getConn().close();
 					} catch (Exception e) {
 						System.err.println("Error closing a connection: " + e.getMessage());
@@ -159,6 +150,10 @@ public class Connector extends Thread {
 					System.out.println("Notifying of disconnect");
 					notifyConnectionDied();
 					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
+					
+					if (!interactive && cfg.getBool("net" , "autoReconnect")) {
+						createReconnector();
+					}
 				}
 
 				jgm.gui.GUI.setTitle();
@@ -190,5 +185,49 @@ public class Connector extends Thread {
 		for (ConnectionListener c : listeners) {
 			c.connectionDied();
 		}
-	}	
+	}
+	
+	private static Thread reconnector;
+	private static int reconnectTries = Integer.MIN_VALUE;
+	
+	private static void createReconnector() {
+		final int delay = cfg.getInt("net", "autoreconnectdelay");
+		
+		if (reconnectTries == Integer.MIN_VALUE) {
+			reconnectTries = cfg.getInt("net", "autoreconnecttries");
+		}
+		
+		reconnectTries--;
+		
+		if (reconnectTries < 0) {
+			reconnector = null;
+			return;
+		}
+		
+		reconnector = new Thread(new Runnable() {
+			public void run() {
+				int i = delay;
+				try {
+					System.out.println("Reconnecting in " + i);
+					while (i > 0) {
+						jgm.gui.GUI.setStatusBarText("Reconnecting in " + i + "...", false, true);
+						Thread.sleep(1000);
+						i--;
+					}
+				} catch (InterruptedException e) {
+					System.out.println("Cancelling auto-reconnect.");
+					return;
+				}
+				Connector.connect();
+			}
+		}, "AutoReconnector");
+		reconnector.start();
+	}
+	
+	public static void cancelReconnect() {
+		if (reconnector == null) return;
+		
+		reconnector.interrupt();
+		reconnector = null;
+	}
 }

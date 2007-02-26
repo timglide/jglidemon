@@ -21,6 +21,9 @@ Version 0.6
   would become "updateinterval=...".
 - Values in the configuration dialog should now be correctly refreshed
   when you cancel changes and reopen the dialog
+- Implemented auto-reconnection to Glider. Settings for delay between
+  attemps and number of attemps can be found in the Network config
+  section.
 
 Version 0.5
 -----------

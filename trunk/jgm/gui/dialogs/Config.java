@@ -11,6 +11,7 @@ import javax.swing.event.*;
 /* TODO Add method to update all the fields to the current value in the config */
 
 public class Config extends Dialog implements ActionListener, ChangeListener {
+	private JTabbedPane tabs;
 	private JButton update;
 	private JButton close;
 	
@@ -19,6 +20,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JTextField port;
 	private JTextField password;
 	private JCheckBox netReconnect;
+	private JTextField netReconnectDelay;
+	private JTextField netReconnectTries;
 	
 	private JPanel status;
 	private JTextField statusInterval;
@@ -52,6 +55,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		super(owner, "Configuration");
 		cfg = jgm.cfg.getInstance();
 		
+		tabs = new JTabbedPane(JTabbedPane.LEFT);
+		
 		JPanel btnPanel = new JPanel(new GridLayout(1, 0));
 		update = new JButton("Save Settings");
 		update.setMnemonic(KeyEvent.VK_S);
@@ -65,12 +70,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		add(btnPanel, BorderLayout.SOUTH);
 		
-		JPanel p = new JPanel(new GridLayout(2, 3, 10, 10));
+		//JPanel p = new JPanel(new GridLayout(2, 3, 10, 10));
 		
 		
 		// net config pane
 		net = new JPanel(new GridBagLayout());
-		GUI.setTitleBorder(net, "Network");
+		//GUI.setTitleBorder(net, "Network");
 		//net.setBorder(
 		//	BorderFactory.createTitledBorder(lineBorder, "Network"));
 		
@@ -99,22 +104,36 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++;
 		net.add(password, c);
 		
-		//netReconnect = new JCheckBox("Auto Reconnect", cfg.getBool("net", "autoreconnect"));
-		netReconnect = new JCheckBox("Auto Reconnect");
-		netReconnect.setEnabled(false);
+		netReconnect = new JCheckBox("Auto Reconnect", cfg.getBool("net", "autoreconnect"));
+		netReconnect.addChangeListener(this);
 		c.gridx = 0; c.gridy++;	c.gridwidth = 2;
 		net.add(netReconnect, c);
+
+		c.gridy++; c.gridwidth = 1;
+		net.add(new JLabel("    Delay between tries (s): "), c);
+		
+		netReconnectDelay = new JTextField(cfg.get("net", "autoreconnectdelay"));
+		c.gridx++;
+		net.add(netReconnectDelay, c);
+		
+		c.gridx = 0; c.gridy++;
+		net.add(new JLabel("    Max number of tries: "), c);
+		
+		netReconnectTries = new JTextField(cfg.get("net", "autoreconnecttries"));
+		c.gridx++;
+		net.add(netReconnectTries, c);
 		
 		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 1;
 		net.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
-		p.add(net);
+		tabs.addTab("Network", net);
+		//p.add(net);
 		
 		
 		// status config pane
 		status = new JPanel(new GridBagLayout());
-		GUI.setTitleBorder(status, "Status/Logging");
+		//GUI.setTitleBorder(status, "Status/Logging");
 		
 		c.gridx = 0; c.gridy = 0;
 		status.add(new JLabel("Refresh (ms): "), c);
@@ -136,12 +155,13 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		status.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
-		p.add(status);
+		tabs.addTab("Status", status);
+		//p.add(status);
 		
 		
 		// screenshot panel
 		screenshot = new JPanel(new GridBagLayout());
-		GUI.setTitleBorder(screenshot, "Screenshot");
+		//GUI.setTitleBorder(screenshot, "Screenshot");
 		//screenshot.setBorder(
 		//	BorderFactory.createTitledBorder(lineBorder, "Screenshot"));
 		
@@ -182,12 +202,13 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
-		p.add(screenshot);
+		tabs.addTab("Screenshot", screenshot);
+		//p.add(screenshot);
 		
 		
 		// sound config
 		JPanel tmp = new JPanel(new GridLayout(1, 0, 10, 10));
-		GUI.setTitleBorder(tmp, "Sound");
+		//GUI.setTitleBorder(tmp, "Sound");
 		//tmp.setBorder(
 		//		BorderFactory.createTitledBorder(lineBorder, "Sound"));
 			
@@ -285,11 +306,13 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		tmp.add(sound);
 		sound = tmp;
 		
-		p.add(sound);
+		tabs.addTab("Sound/TTS", sound);
+		//p.add(sound);
 		
-		add(p, BorderLayout.CENTER);
+		add(tabs, BorderLayout.CENTER);
 		
 		// to initialize enabled/disabled states
+		stateChanged(new ChangeEvent(netReconnect));
 		stateChanged(new ChangeEvent(enableSound));
 		stateChanged(new ChangeEvent(enableTTS));
 		
@@ -316,6 +339,24 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		cfg.set("net", "password", password.getText());
 		cfg.set("net", "autoreconnect", netReconnect.isSelected());			
+		
+		try {
+			cfg.set("net", "autoreconnectdelay", Integer.parseInt(netReconnectDelay.getText()));
+			
+			if (cfg.getInt("net", "autoreconnectdelay") < 0)
+				throw new NumberFormatException("Auto reconnect delay must be > 0");
+		} catch (NumberFormatException x) {
+			System.err.println("Invalid auto reconnect delay: " + netReconnectDelay.getText());
+		}
+		
+		try {
+			cfg.set("net", "autoreconnecttries", Integer.parseInt(netReconnectTries.getText()));
+			
+			if (cfg.getInt("net", "autoreconnecttries") < 1)
+				throw new NumberFormatException("Auto reconnect tries must be positive");
+		} catch (NumberFormatException x) {
+			System.err.println("Invalid auto reconnect tries: " + netReconnectTries.getText());
+		}
 		
 		try {
 			cfg.set("status", "updateinterval", Integer.parseInt(statusInterval.getText()));
@@ -357,7 +398,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	}
 	
 	public void stateChanged(ChangeEvent e) {
-		if (e.getSource() == enableSound) {
+		if (e.getSource() == netReconnect) {
+			boolean state = netReconnect.isEnabled() && netReconnect.isSelected();
+			
+			netReconnectDelay.setEnabled(state);
+			netReconnectTries.setEnabled(state);
+		} else if (e.getSource() == enableSound) {
 			boolean state = enableSound.isEnabled() && enableSound.isSelected();
 			
 			soundWhisper.setEnabled(state);
@@ -386,7 +432,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		host.setText(cfg.get("net", "host"));
 		port.setText(cfg.get("net", "port"));
 		password.setText(cfg.get("net", "password"));
-		//netReconnect.setSelected(cfg.getBool("net", "autoreconnect"));
+		netReconnect.setSelected(cfg.getBool("net", "autoreconnect"));
+		netReconnectDelay.setText(cfg.get("net", "autoreconnectdelay"));
 		
 		statusInterval.setText(cfg.get("status", "updateinterval"));
 		maxLogEntries.setText(cfg.get("log", "maxentries"));
