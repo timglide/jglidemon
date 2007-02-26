@@ -7,10 +7,10 @@ import jgm.gui.updaters.StatusUpdater;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class ControlPane extends Pane implements ActionListener {
+public class ControlPane extends Pane implements ActionListener, ConnectionListener {
 	private static GliderConn conn;
 	
-	private JButton connect;
+	public JButton connect;
 	private JButton attach;
 	private JButton start;
 	private JButton stop;
@@ -51,28 +51,8 @@ public class ControlPane extends Pane implements ActionListener {
 			start.setEnabled(true);
 			stop.setEnabled(true);
 		} else {
-			attach.setEnabled(true);
-			start.setEnabled(false);
-			stop.setEnabled(false);
-		}
-		
-		//System.out.println(Connector.state);
-		switch (Connector.state) {
-			case CONNECTED:
-			case DISCONNECTED:
-				connect.setEnabled(true);
-				break;
-				
-			default:
-				connect.setEnabled(false);
-				break;
-		}
-		
-		if (Connector.isConnected()) {
-			connect.setText("Disconnect");
-		} else {
-			connect.setText("Connect");
-			attach.setEnabled(false);
+			if (Connector.isConnected())
+				attach.setEnabled(true);
 			start.setEnabled(false);
 			stop.setEnabled(false);
 		}
@@ -92,10 +72,10 @@ public class ControlPane extends Pane implements ActionListener {
 			s = "/stopglide";
 		} else if (cmd.equals("Disconnect")) {
 			connect.setEnabled(false);
-			Connector.disconnect();
+			Connector.disconnect(true);
 		} else if (cmd.equals("Connect")) {
 			connect.setEnabled(false);
-			Connector.connect();
+			Connector.connect(true);
 		}
 		
 		if (s != null) {
@@ -109,5 +89,32 @@ public class ControlPane extends Pane implements ActionListener {
 				x.printStackTrace();
 			}
 		}
+	}
+	
+	public GliderConn getConn() {
+		return null;
+	}
+	
+	public void connectionEstablished() {
+		connect.setText("Disconnect");
+		connect.setEnabled(true);
+	}
+	
+	public void connectionDied() {
+		connect.setText("Connect");
+		connect.setEnabled(true);
+		attach.setEnabled(false);
+		start.setEnabled(false);
+		stop.setEnabled(false);
+	}
+	
+	public void connecting() {
+		connect.setText("Connecting...");
+		connect.setEnabled(false);
+	}
+	
+	public void disconnecting() {
+		connect.setText("Disconnecting...");
+		connect.setEnabled(false);
 	}
 }

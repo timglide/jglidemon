@@ -207,6 +207,7 @@ public class GUI
 		mainPane.add(mobInfo, c);
 
 		ctrlPane = new ControlPane();
+		Connector.addListener(ctrlPane);
 		c.gridx = 2; c.gridy = 0; c.weightx = 0.0;
 		mainPane.add(ctrlPane, c);
 
