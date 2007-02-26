@@ -239,7 +239,7 @@ public class cfg extends QuickIni {
 			public static final int    port = 3200;
 			public static final String password = "";
 			public static final boolean autoreconnect = true;
-			public static final int     autoreconnectdelay = 5000;
+			public static final int     autoreconnectdelay = 5;
 			public static final int     autoreconnecttries = 10;
 		}
 		
