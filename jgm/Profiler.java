@@ -98,8 +98,9 @@ public class Profiler {
 		
 		JOptionPane.showMessageDialog(
 			null,
-			"Profiles saved to \"" + Profile.Cache.profileFile.getName() + "\" successfully.\n" +
-			"Copy this file to the folder where JGlideMon.jar is located on the remote computer.",
+			"Profiles saved to \"" + Profile.Cache.profileFile.getName() + "\" successfully.\n\n" +
+			"Copy this file to the folder where JGlideMon.jar\n" +
+			"is located on the remote computer.",
 			app,
 			JOptionPane.INFORMATION_MESSAGE
 		);
