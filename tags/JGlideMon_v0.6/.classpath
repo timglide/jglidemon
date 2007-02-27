@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.*|**/.*/|JGlideMon.jar|componentset-1_5-eval/demo/src/|jgm/resources/images/classes/psd/|jgm/resources/images/psd/|lib_/|releases/|screenshots/" kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/componentset.jar"/>
+	<classpathentry kind="lib" path="lib/speech/freetts.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
