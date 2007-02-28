@@ -1,5 +1,9 @@
 JGlideMon ChangeLog
 
+Version 0.7
+-----------
+- Fixed connection issues with non-Windows operating systems
+
 Version 0.6
 -----------
 - Added support for loading profiles. Run Profiler.jar on the
