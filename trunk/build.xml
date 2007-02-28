@@ -17,7 +17,7 @@
     <!-- * Where to find things...                                * -->
     <!-- *                                                        * -->
     <!-- ********************************************************** -->
-	<property name="version"		value="0.6"/>
+	<property name="version"		value="0.7"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/componentset.jar,**/freetts.jar"/>
@@ -96,7 +96,7 @@
 	</target>
 
     <target name="jars"
-	    depends="JGlideMon_jar,Profiler_jar"
+	    depends="JGlideMon_jar,Profiler_jar,ConnTest_jar"
 	    description="Builds all the jar files"/>
 
 
@@ -126,6 +126,20 @@
 			<fileset dir="${bin_dir}" includes="jgm/Profiler*.class,jgm/glider/Profile*.class"/>
         </jar>
     </target>
+
+    <property name="ConnTest_jar" value="${bin_dir}/ConnTest.jar"/>
+
+    <target name="ConnTest_jar" 
+			depends="compile_src"
+			description="Create ${ConnTest_jar}">
+		<mkdir dir="${bin_dir}"/>
+		<jar destfile="${ConnTest_jar}" 
+				manifest="${src_dir}/ConnTest.mf"
+				compress="true">
+			<fileset dir="${bin_dir}" includes="jgm/test/ConnTest.*"/>
+			<fileset dir="${src_dir}" includes="jgm/test/ConnTest.*"/>
+        </jar>
+	</target>
 
 
 	<target name="zips" depends="core_zip,profiler_zip,tts_zip"
