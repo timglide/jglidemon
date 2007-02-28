@@ -34,7 +34,7 @@ public class GliderConn {
 		//try {
 			System.out.println("Connecting to " + cfg.getString("net", "host") + "...");
 			s   = new Socket(cfg.getString("net", "host"), cfg.getInt("net", "port"));
-			out = new PrintWriter(s.getOutputStream(), true);
+			out = new PrintWriter(s.getOutputStream(), false);
 			inStream = new BufferedInputStream(s.getInputStream());
 			in  = new BufferedReader(
 			          new InputStreamReader(inStream));
@@ -66,15 +66,15 @@ public class GliderConn {
 		return in;
 	}
 
-	public PrintWriter getOut() {
-		return out;
-	}
+//	public PrintWriter getOut() {
+//		return out;
+//	}
 
 	public void send(String str) {
 		while (!isConnected()) {}
 		
 		//try {
-			out.println(str);
+			out.print(str + "\r\n"); out.flush();
 		/*} catch (Exception e) {
 			System.err.println("Error sending '" + str + "'. " + e.getMessage());
 		}*/
