@@ -9,7 +9,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-public class SendKeysTab extends Tab implements ActionListener, TreeSelectionListener {	
+public class SendKeysTab extends Tab
+	implements ActionListener, TreeSelectionListener {	
 	private JLabel toLbl;
 	public  JComboBox type;
 	public  JTextField to;
@@ -24,6 +25,8 @@ public class SendKeysTab extends Tab implements ActionListener, TreeSelectionLis
 	private JButton manualLoad;
 	
 	private GliderConn conn;
+	
+	private volatile boolean connected = false;
 	
 	public SendKeysTab() {
 		super(new BorderLayout(), "Keys/Profiles");
@@ -76,8 +79,8 @@ public class SendKeysTab extends Tab implements ActionListener, TreeSelectionLis
 			JLabel.CENTER
 		), c);
 		
-		keysPanel.setBorder(BorderFactory.createTitledBorder("Send Keys"));
-				
+		jgm.gui.GUI.setTitleBorder(keysPanel, "Send Keys");
+						
 		JPanel prosPanel = new JPanel(new BorderLayout(10, 10));
 		
 		profiles = new ProfileTree();
@@ -103,12 +106,26 @@ public class SendKeysTab extends Tab implements ActionListener, TreeSelectionLis
 		
 		prosPanel.add(btns, BorderLayout.SOUTH);
 		
-		prosPanel.setBorder(BorderFactory.createTitledBorder("Load Profile"));
+		jgm.gui.GUI.setTitleBorder(prosPanel, "Load Profile");
 
 		add(keysPanel, BorderLayout.NORTH);
 		add(prosPanel, BorderLayout.CENTER);
 		
+		setEnabled(false);
+		
 		validate();
+		
+		Connector.addListener(new ConnectionAdapter() {
+			public void connectionEstablished() {
+				connected = true;
+				setEnabled(true);
+			}
+			
+			public void disconnecting() {
+				connected = false;
+				setEnabled(false);
+			}
+		});
 	}
 	
 	public void resetFields() {
@@ -122,10 +139,19 @@ public class SendKeysTab extends Tab implements ActionListener, TreeSelectionLis
 		keys.setEnabled(b);
 		send.setEnabled(b);
 		reset.setEnabled(b);
+		clear.setEnabled(b);
 		
 		// should only be enabled upon selection of
 		// a leaf node
-		if (!b) loadProfile.setEnabled(false);
+		Profile p = profiles.getSelected();
+		
+		if (p != null) {
+			loadProfile.setEnabled(b && p.isLeaf());
+		} else {
+			loadProfile.setEnabled(false);
+		}
+		
+		manualLoad.setEnabled(b);
 	}
 	
 	public boolean isEnabled() {
@@ -215,21 +241,42 @@ public class SendKeysTab extends Tab implements ActionListener, TreeSelectionLis
 				
 				loadProfile(path);
 			} else if (source == refreshProfiles) {
-				profiles.reloadProfiles();
+				try {
+					profiles.reloadProfiles();
+				} catch (Throwable x) {
+					String extra = "";
+					
+					if (x instanceof java.io.InvalidClassException) {
+						extra = "\n\nYou may have to run Profiler.jar and copy " + Profile.Cache.profileFile.getName() + " again.";
+					} else if (x instanceof java.io.FileNotFoundException) {
+						extra = "\n\nEnsure you've copied " + Profile.Cache.profileFile.getName() + " to the directory\n" +
+								"where JGlideMon.jar is located, which appears to be\n" +
+								(new java.io.File("")).getAbsolutePath();
+					}
+					
+					JOptionPane.showMessageDialog(
+						jgm.gui.GUI.frame, 
+						"There was an error loading the profiles:\n\n" +
+						x.getClass().getName() + "\n" +
+						x.getMessage() + extra,
+						"Error",
+						JOptionPane.ERROR_MESSAGE
+					);
+				}
 			}
 		}
 	}
 	
 	public void valueChanged(TreeSelectionEvent e) {
 		Profile p = (Profile) e.getPath().getLastPathComponent();
-		loadProfile.setEnabled(p.isLeaf() && Connector.isConnected());
+		loadProfile.setEnabled(p.isLeaf() && connected);
 	}
 	
 	public void loadProfile(String path) {
-		if (!Connector.isConnected()) {
+		if (path.trim().equals("")) {
 			JOptionPane.showMessageDialog(
 				jgm.gui.GUI.frame,
-				"You must be connected to Glider.",
+				"You must enter a profile to load.",
 				"Error",
 				JOptionPane.ERROR_MESSAGE
 			);
