@@ -1,7 +1,6 @@
 package jgm.gui.dialogs;
 
 import jgm.cfg;
-import jgm.gui.GUI;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -15,6 +14,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JButton update;
 	private JButton close;
 	
+	private JPanel status;
+	private JTextField statusInterval;
+	private JTextField maxLogEntries;
+	private JCheckBox minToTray;
+	
 	private JPanel net;
 	private JTextField host;
 	private JTextField port;
@@ -22,10 +26,6 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JCheckBox netReconnect;
 	private JTextField netReconnectDelay;
 	private JTextField netReconnectTries;
-	
-	private JPanel status;
-	private JTextField statusInterval;
-	private JTextField maxLogEntries;
 	
 	private JPanel screenshot;
 	private JTextField screenshotInterval;
@@ -71,6 +71,39 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		add(btnPanel, BorderLayout.SOUTH);
 		
 		//JPanel p = new JPanel(new GridLayout(2, 3, 10, 10));
+		
+		
+//		 status config pane
+		status = new JPanel(new GridBagLayout());
+		//GUI.setTitleBorder(status, "Status/Logging");
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0; c.gridy = 0; c.weightx = 1.0;
+		status.add(new JLabel("Status Refresh Interval (ms): "), c);
+		
+		statusInterval = new JTextField(cfg.get("status", "updateInterval"));
+		statusInterval.addActionListener(this);
+		c.gridx++;
+		status.add(statusInterval, c);
+		
+		c.gridx = 0; c.gridy++;
+		status.add(new JLabel("Max Entries Per Log Tab: "), c);
+		
+		maxLogEntries = new JTextField(cfg.get("log", "maxentries"));
+		maxLogEntries.addActionListener(this);
+		c.gridx++;
+		status.add(maxLogEntries, c);
+		
+		minToTray = new JCheckBox("Minimize To Tray", cfg.getBool("general", "mintotray"));
+		c.gridy++; c.gridx = 0; c.gridwidth = 2;
+		status.add(minToTray, c);
+		
+		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 1;
+		status.add(new JLabel(), c);
+		c.weighty = 0.0;
+		
+		tabs.addTab("General", status);
+		//p.add(status);
 		
 		
 		// net config pane
@@ -129,34 +162,6 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		tabs.addTab("Network", net);
 		//p.add(net);
-		
-		
-		// status config pane
-		status = new JPanel(new GridBagLayout());
-		//GUI.setTitleBorder(status, "Status/Logging");
-		
-		c.gridx = 0; c.gridy = 0;
-		status.add(new JLabel("Refresh (ms): "), c);
-		
-		statusInterval = new JTextField(cfg.get("status", "updateInterval"));
-		statusInterval.addActionListener(this);
-		c.gridx++;
-		status.add(statusInterval, c);
-		
-		c.gridx = 0; c.gridy++;
-		status.add(new JLabel("Max Entries Per Log Tab: "), c);
-		
-		maxLogEntries = new JTextField(cfg.get("log", "maxentries"));
-		maxLogEntries.addActionListener(this);
-		c.gridx++;
-		status.add(maxLogEntries, c);
-		
-		c.gridx = 0; c.gridy++; c.weighty = 1.0;
-		status.add(new JLabel(), c);
-		c.weighty = 0.0;
-		
-		tabs.addTab("Status", status);
-		//p.add(status);
 		
 		
 		// screenshot panel
@@ -311,10 +316,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		add(tabs, BorderLayout.CENTER);
 		
-		// to initialize enabled/disabled states
-		stateChanged(new ChangeEvent(netReconnect));
-		stateChanged(new ChangeEvent(enableSound));
-		stateChanged(new ChangeEvent(enableTTS));
+		// ensuring appropriate groups are enabled/disabled
+		// is taken care of in onShow()
 		
 		makeVisible();
 	}
@@ -369,6 +372,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		} catch (NumberFormatException x) {
 			System.err.println("Invalid max entries: " + maxLogEntries.getText());
 		}
+		
+		cfg.set("general", "mintotray", minToTray.isSelected());
 		
 		try {
 			cfg.set("screenshot", "updateinterval", Integer.parseInt(screenshotInterval.getText()));
@@ -428,15 +433,17 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	
 	protected void onShow() {
 		//super.onShow();
+
+		statusInterval.setText(cfg.get("status", "updateinterval"));
+		maxLogEntries.setText(cfg.get("log", "maxentries"));
+		minToTray.setEnabled(jgm.gui.Tray.isSupported());
+		minToTray.setSelected(cfg.getBool("general", "mintotray"));
 		
 		host.setText(cfg.get("net", "host"));
 		port.setText(cfg.get("net", "port"));
 		password.setText(cfg.get("net", "password"));
 		netReconnect.setSelected(cfg.getBool("net", "autoreconnect"));
 		netReconnectDelay.setText(cfg.get("net", "autoreconnectdelay"));
-		
-		statusInterval.setText(cfg.get("status", "updateinterval"));
-		maxLogEntries.setText(cfg.get("log", "maxentries"));
 		
 		screenshotInterval.setText(cfg.get("screenshot", "updateinterval"));
 		screenshotScale.setValue(cfg.getInt("screenshot", "scale"));
@@ -450,10 +457,20 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		soundPVP.setSelected(cfg.getBool("sound", "pvp"));
 		soundStuck.setSelected(cfg.getBool("sound", "stuck"));
 		
+		enableTTS.setEnabled(jgm.util.Speech.isSupported());
 		enableTTS.setSelected(cfg.getBool("sound.tts", "enabled"));
 		ttsWhisper.setSelected(cfg.getBool("sound.tts", "whisper"));
 		ttsSay.setSelected(cfg.getBool("sound.tts", "say"));
 		ttsGM.setSelected(cfg.getBool("sound.tts", "gm"));
 		ttsStatus.setSelected(cfg.getBool("sound.tts", "status"));
+		
+		// to initialize enabled/disabled states
+		stateChanged(new ChangeEvent(netReconnect));
+		stateChanged(new ChangeEvent(enableSound));
+		stateChanged(new ChangeEvent(enableTTS));
+	}
+	
+	public void selectTab(int index) {
+		tabs.setSelectedIndex(index);
 	}
 }

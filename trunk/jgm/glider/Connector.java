@@ -52,10 +52,8 @@ public class Connector {
 			public void run() {
 				if (interactive) cancelReconnect();
 				
-				jgm.gui.GUI.instance.ctrlPane.connecting();
+				notifyConnecting();
 				
-				jgm.gui.GUI.setStatusBarText("Connecting...", false, true);
-				jgm.gui.GUI.setStatusBarProgressIndeterminent();
 				boolean success = true;
 				
 				for (ConnectionListener c : listeners) {
@@ -76,17 +74,13 @@ public class Connector {
 				}
 				
 				state = (success) ? State.CONNECTED : State.DISCONNECTED;
-				jgm.gui.GUI.hideStatusBarProgress();
 				
 				if (success) {
 					reconnectTries = cfg.getInt("net", "autoreconnecttries");
-					
-					jgm.gui.GUI.setStatusBarText("Connected", false, true);
-					jgm.gui.GUI.setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
-					new Phrase(Audible.Type.STATUS, "Connection established.").play();
+
 					notifyConnectionEstablished();
+					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 				} else {
-					jgm.gui.GUI.setTitle();
 					notifyConnectionDied();
 					
 					if (cfg.getBool("net" , "autoReconnect")) {
@@ -125,10 +119,8 @@ public class Connector {
 			}
 			
 			private synchronized void runImpl() {
-				jgm.gui.GUI.instance.ctrlPane.disconnecting();
-				
-				jgm.gui.GUI.setStatusBarText("Disconnecting...", false, true);
-				jgm.gui.GUI.setStatusBarProgressIndeterminent();
+				notifyDisconnecting();
+
 				boolean success = true;
 				
 				for (ConnectionListener c : listeners) {
@@ -156,7 +148,6 @@ public class Connector {
 					}
 				}
 
-				jgm.gui.GUI.setTitle();
 				notifyAll();
 			}
 		}, "Connector.disconnect");
@@ -175,9 +166,21 @@ public class Connector {
 		listeners.remove(cl);
 	}
 	
+	private void notifyConnecting() {
+		for (ConnectionListener c : listeners) {
+			c.connecting();
+		}
+	}
+	
 	private void notifyConnectionEstablished() {
 		for (ConnectionListener c : listeners) {
 			c.connectionEstablished();
+		}
+	}
+	
+	private void notifyDisconnecting() {
+		for (ConnectionListener c : listeners) {
+			c.disconnecting();
 		}
 	}
 	

@@ -144,8 +144,6 @@ public class SendKeysTab extends Tab implements ActionListener, TreeSelectionLis
 			toLbl.setVisible(test);
 			to.setVisible(test);
 		} else if (source instanceof JButton) {			
-			JButton btn = (JButton) source;
-			
 			if (source == send) {
 				if (!isEnabled()) return;
 				

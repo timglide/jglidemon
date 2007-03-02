@@ -3,7 +3,6 @@ package jgm;
 import jgm.glider.Profile;
 
 import java.io.*;
-import java.awt.*;
 import javax.swing.*;
 
 public class Profiler {

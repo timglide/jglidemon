@@ -46,11 +46,15 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		return conn;
 	}
 	
+	public void connecting() {}
+	
 	public void connectionEstablished() {
 		stop = false;
 		thread = new Thread(this, "LogUpdater");
 		thread.start();
 	}
+	
+	public void disconnecting() {}
 	
 	public void connectionDied() {
 		stop = true;

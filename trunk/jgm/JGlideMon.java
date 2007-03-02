@@ -12,10 +12,10 @@ import jgm.util.*;
  * @author Tim
  * @since 0.1
  */
-public class JGlideMon implements ConnectionListener {
+public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.7";
-	public static final boolean debug = false;
+	public static final String version = "0.8 beta";
+	public static final boolean debug = true;
 	
 	public static JGlideMon instance;
 	
@@ -34,13 +34,6 @@ public class JGlideMon implements ConnectionListener {
 		init();
 	}
 	
-	public GliderConn getConn() {
-		return keysConn;
-	}
-	
-	public void connectionEstablished() {}
-	public void connectionDied() {}
-	
 	private void init() {
 		jgm.glider.Profile.Cache.loadProfiles();
 		
@@ -56,7 +49,7 @@ public class JGlideMon implements ConnectionListener {
 				"Configuration Required",
 				JOptionPane.INFORMATION_MESSAGE);
 			
-			gui.showConfig();
+			gui.showConfig(1);
 		}
 		
 		gui.makeVisible();
@@ -68,7 +61,11 @@ public class JGlideMon implements ConnectionListener {
 				Sound.init();
 				Speech.init();
 				keysConn   = new GliderConn();
-				Connector.addListener(JGlideMon.this);
+				Connector.addListener(new ConnectionAdapter() {
+					public GliderConn getConn() {
+						return keysConn;
+					}
+				});
 				logUpdater = new LogUpdater(gui.tabsPane);
 				Connector.addListener(logUpdater);
 				ssUpdater  = new SSUpdater(gui.tabsPane.screenshotTab);

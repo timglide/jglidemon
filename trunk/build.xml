@@ -17,7 +17,7 @@
     <!-- * Where to find things...                                * -->
     <!-- *                                                        * -->
     <!-- ********************************************************** -->
-	<property name="version"		value="0.7"/>
+	<property name="version"		value="0.8beta"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/componentset.jar,**/freetts.jar"/>

@@ -9,7 +9,7 @@ public class GliderLogEntry extends LogEntry {
 		NORMAL, BEING_ATTACKED, BEING_FOLLOWED, STUCK
 	}
 	
-	private Type type = Type.NORMAL;
+	public  Type    type    = Type.NORMAL;
 	private boolean isAlert = false;
 	
 	public GliderLogEntry(String s) {
