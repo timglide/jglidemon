@@ -34,7 +34,7 @@ public class Speech implements Runnable {
 	 * Determines if speech may be spoken at the current time
 	 * @return Whether speech can be spoken currently
 	 */
-	public static boolean ready() {
+	public static boolean isSupported() {
 		return (voice != null && instance != null && instance.thread != null);
 	}
 	
@@ -55,7 +55,7 @@ public class Speech implements Runnable {
 		
 		// allow the TTS libraries to be optional
 		try {
-			Class<?> contextClass = Class.forName("com.sun.speech.freetts.VoiceManager");
+			Class.forName("com.sun.speech.freetts.VoiceManager");
 			voiceManager = VoiceManager.getInstance();
 		} catch (Exception e) {
 			voice = null;

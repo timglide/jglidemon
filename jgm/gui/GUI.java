@@ -22,6 +22,8 @@ public class GUI
 
 	private JPanel        mainPane;
 
+	public Tray tray;
+	
 	public CharInfoPane   charInfo;
 	public MobInfoPane    mobInfo;
 	public ControlPane    ctrlPane;
@@ -36,93 +38,8 @@ public class GUI
 	private Config configDialog;
 	
 	private cfg cfg;
-	
-	public static void setTitleBorder(JComponent c, String text) {
-		c.setBorder(
-			BorderFactory.createTitledBorder(text)
-		);
-	}
-	
-	private static volatile boolean lockStatusText = false;
-	
-	public static void unlockStatusBarText() {
-		lockStatusText = false;
-	}
-	
-	/**
-	 * Set the status bar's text.
-	 * @param s The String to set the text to
-	 */
-	public static void setStatusBarText(String s) {
-		setStatusBarText(s, false, false);
-	}
-	
-	/**
-	 * Set the status bar's text and possibly lock it
-	 * afterward.
-	 * @param s The String to set the text to
-	 * @param lock Whether to lock the text after setting it
-	 * @param force Whether to ignore if the text is locked
-	 */
-	public static void setStatusBarText(String s, boolean lock, boolean force) {
-		if (statusBar == null || (lockStatusText && !force)) return;
 
-		// if locking set the lock
-		if (lock)
-			lockStatusText = true;
-		// else not locking and forcing unset the lock
-		else if (force)
-			lockStatusText = false;
-		
-		
-		lastStatusText = currentStatusText;
-		currentStatusText = s;
-		statusBar.setText(s);
-	}
-	
-	private static String lastStatusText = "";
-	private static String currentStatusText = "";
-	
-	public static void revertStatusBarText() {
-		if (statusBar == null) return;
-		
-		statusBar.setText(lastStatusText);
-	}
-	
-	public static void setStatusBarProgressIndeterminent() {
-		if (statusBar == null) return;
-		
-		statusBar.getProgressBar().setIndeterminate(true);
-		statusBar.getProgressBar().setVisible(true);
-	}
-	
-	public static void setStatusBarProgress(int i) {
-		if (statusBar == null) return;
-		
-		statusBar.getProgressBar().setIndeterminate(false);
-		statusBar.getProgressBar().setValue(i);
-		statusBar.getProgressBar().setVisible(true);
-	}
-	
-	public static void hideStatusBarProgress() {
-		if (statusBar == null) return;
-		
-		statusBar.getProgressBar().setIndeterminate(false);
-		statusBar.getProgressBar().setValue(0);
-		statusBar.getProgressBar().setVisible(false);
-	}
-	
 	public static final String BASE_TITLE = "JGlideMon " + JGlideMon.version;
-
-	public static void setTitle() {
-		setTitle(null);
-	}
-
-	public static void setTitle(String s) {
-		if (frame == null) return;
-
-		frame.setTitle((s != null && !s.equals("") ? s + " - " : "") + BASE_TITLE);
-	}
 
 	public GUI() {
 		instance = this;
@@ -130,8 +47,15 @@ public class GUI
 		
 		frame = new JFrame(BASE_TITLE);
 
+		ImageIcon img = new ImageIcon(
+				JGlideMon.class.getResource("resources/images/stitch/icon.png"));
+		
+		frame.setIconImage(img.getImage());
+		
 		frame.setSize(cfg.getInt("window", "width"), cfg.getInt("window", "height"));
 		frame.setLocation(cfg.getInt("window", "x"), cfg.getInt("window", "y"));
+
+		tray = new Tray();
 		
 		if (cfg.getBool("window", "maximized")) {
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -154,6 +78,15 @@ public class GUI
 				} else {
 					//System.out.println("Window not maximized");
 					cfg.setBool("window", "maximized", false);
+				}
+				
+				if (JFrame.ICONIFIED ==
+					(frame.getExtendedState() & JFrame.ICONIFIED)) {
+					
+					// minimize to tray
+					if (cfg.getBool("general", "mintotray") && Tray.isSupported()) {
+						frame.setVisible(false);
+					}
 				}
 			}
 		});
@@ -277,6 +210,28 @@ public class GUI
 
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
+	    
+	    Connector.addListener(new ConnectionAdapter() {
+	    	public void connecting() {
+				setStatusBarText("Connecting...", false, true);
+				setStatusBarProgressIndeterminent();
+	    	}
+	    	
+	    	public void connectionEstablished() {
+				setStatusBarText("Connected", false, true);
+				setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
+	    	}
+	    	
+	    	public void disconnecting() {
+				setStatusBarText("Disconnecting...", false, true);
+				setStatusBarProgressIndeterminent();
+	    	}
+	    	
+	    	public void connectionDied() {
+				hideStatusBarProgress();
+				setTitle();
+	    	}
+	    });
 	}
 	
 	public void makeVisible() {
@@ -336,12 +291,110 @@ public class GUI
 	}
 	
 	public void showConfig() {
+		showConfig(-1);
+	}
+	
+	public void showConfig(int selectTab) {
 		if (configDialog == null) configDialog = new Config(frame);
+		if (selectTab >= 0) configDialog.selectTab(selectTab);
 		configDialog.setVisible(true);
 	}
 	
 	public void showAbout() {
 		if (aboutFrame == null) aboutFrame = new About(frame);
 		aboutFrame.setVisible(true);
+	}
+	
+	
+	/////////////////
+	// static methods
+	
+	private static volatile boolean lockStatusText = false;
+	
+	public static void unlockStatusBarText() {
+		lockStatusText = false;
+	}
+	
+	/**
+	 * Set the status bar's text.
+	 * @param s The String to set the text to
+	 */
+	public static void setStatusBarText(String s) {
+		setStatusBarText(s, false, false);
+	}
+	
+	/**
+	 * Set the status bar's text and possibly lock it
+	 * afterward.
+	 * @param s The String to set the text to
+	 * @param lock Whether to lock the text after setting it
+	 * @param force Whether to ignore if the text is locked
+	 */
+	public static void setStatusBarText(String s, boolean lock, boolean force) {
+		if (statusBar == null || (lockStatusText && !force)) return;
+
+		// if locking set the lock
+		if (lock)
+			lockStatusText = true;
+		// else not locking and forcing unset the lock
+		else if (force)
+			lockStatusText = false;
+		
+		
+		lastStatusText = currentStatusText;
+		currentStatusText = s;
+		statusBar.setText(s);
+	}
+	
+	private static String lastStatusText = "";
+	private static String currentStatusText = "";
+	
+	public static void revertStatusBarText() {
+		if (statusBar == null) return;
+		
+		statusBar.setText(lastStatusText);
+	}
+	
+	public static void setStatusBarProgressIndeterminent() {
+		if (statusBar == null) return;
+		
+		statusBar.getProgressBar().setIndeterminate(true);
+		statusBar.getProgressBar().setVisible(true);
+	}
+	
+	public static void setStatusBarProgress(int i) {
+		if (statusBar == null) return;
+		
+		statusBar.getProgressBar().setIndeterminate(false);
+		statusBar.getProgressBar().setValue(i);
+		statusBar.getProgressBar().setVisible(true);
+	}
+	
+	public static void hideStatusBarProgress() {
+		if (statusBar == null) return;
+		
+		statusBar.getProgressBar().setIndeterminate(false);
+		statusBar.getProgressBar().setValue(0);
+		statusBar.getProgressBar().setVisible(false);
+	}
+	
+	public static void setTitle() {
+		setTitle(null);
+	}
+
+	public static void setTitle(String s) {
+		if (frame == null) return;
+
+		frame.setTitle((s != null && !s.equals("") ? s + " - " : "") + BASE_TITLE);
+	}
+
+	
+	/////////////////////
+	// General util stuff
+	
+	public static void setTitleBorder(JComponent c, String text) {
+		c.setBorder(
+			BorderFactory.createTitledBorder(text)
+		);
 	}
 }

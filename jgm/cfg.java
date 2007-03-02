@@ -230,6 +230,10 @@ public class cfg extends QuickIni {
 	}
 	
 	public static class defaults {
+		public static class general {
+			public static final boolean mintotray = true;
+		}
+		
 		public static class log {
 			public static final int maxentries = 500;
 		}

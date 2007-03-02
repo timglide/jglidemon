@@ -54,11 +54,15 @@ public class StatusUpdater extends Observable
 		return conn;
 	}
 	
+	public void connecting() {}
+	
 	public void connectionEstablished() {
 		stop = false;
 		thread = new Thread(this, "StatusUpdater");
 		thread.start();
 	}
+	
+	public void disconnecting() {}
 	
 	public void connectionDied() {
 		attached = false;

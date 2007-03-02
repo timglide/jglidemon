@@ -38,7 +38,7 @@ public class About extends Dialog implements ActionListener {
 		textPanel.add(text);
 		
 		// only if there is tts support
-		if (jgm.util.Speech.ready()) {
+		if (jgm.util.Speech.isSupported()) {
 			try {
 				freeTtsLink =
 					new JLinkButton("FreeTTS",
