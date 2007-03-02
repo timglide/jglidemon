@@ -168,7 +168,7 @@ public final class Profile implements Comparable<Profile>, TreeModel, Serializab
 			}
 		}
 		
-		public static void loadProfiles() {
+		public static void loadProfiles() throws Throwable {
 			try {
 				ObjectInputStream is = new ObjectInputStream(
 					new FileInputStream(profileFile)
@@ -184,12 +184,15 @@ public final class Profile implements Comparable<Profile>, TreeModel, Serializab
 				is.close();
 				
 				System.out.println("Loading profiles from " + profileFile.getName());
-			} catch (ClassNotFoundException e) {
+			} catch (Throwable e) {
+				// catch the exception here so we can print something
+				// out and call reset() but throw it again so the
+				// caller knows it wasn't successful
+				
 				System.err.println("Error loading profiles: " + e.getMessage());
 				reset();
-			} catch (IOException e) {
-				System.err.println("Error loading profiles: " + e.getMessage());
-				reset();
+				
+				throw e;
 			}
 		}
 		

@@ -35,7 +35,9 @@ public class JGlideMon {
 	}
 	
 	private void init() {
-		jgm.glider.Profile.Cache.loadProfiles();
+		try {
+			jgm.glider.Profile.Cache.loadProfiles();
+		} catch (Throwable e) {} // doesn't matter here 
 		
 	  	connector = new Connector();
 		gui = new GUI();

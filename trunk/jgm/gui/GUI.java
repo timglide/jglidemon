@@ -65,7 +65,7 @@ public class GUI
 			new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
 					JGlideMon.instance.destroy();
-				} // end WindowClosing
+				}
 			}
 		);
 		
@@ -154,8 +154,6 @@ public class GUI
 		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0; c.weighty = 1.0;
 		mainPane.add(tabsPanel, c);
 
-		mainPane.setBackground(new Color(0xAA, 0, 0));
-
 		frame.setLayout(new BorderLayout());
 		frame.add(mainPane, BorderLayout.CENTER);
 
@@ -220,6 +218,7 @@ public class GUI
 	    	public void connectionEstablished() {
 				setStatusBarText("Connected", false, true);
 				setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
+				hideStatusBarProgress();
 	    	}
 	    	
 	    	public void disconnecting() {

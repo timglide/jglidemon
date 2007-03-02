@@ -139,7 +139,6 @@ public class Connector {
 				jgm.gui.GUI.hideStatusBarProgress();
 				
 				if (success) {
-					System.out.println("Notifying of disconnect");
 					notifyConnectionDied();
 					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 					
@@ -167,24 +166,28 @@ public class Connector {
 	}
 	
 	private void notifyConnecting() {
+		System.out.println("Notifying of connecting");
 		for (ConnectionListener c : listeners) {
 			c.connecting();
 		}
 	}
 	
 	private void notifyConnectionEstablished() {
+		System.out.println("Notifying of connection established");
 		for (ConnectionListener c : listeners) {
 			c.connectionEstablished();
 		}
 	}
 	
 	private void notifyDisconnecting() {
+		System.out.println("Notifying of disconnecting");
 		for (ConnectionListener c : listeners) {
 			c.disconnecting();
 		}
 	}
 	
 	private void notifyConnectionDied() {
+		System.out.println("Notifying of connection died");
 		for (ConnectionListener c : listeners) {
 			c.connectionDied();
 		}

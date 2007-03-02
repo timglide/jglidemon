@@ -116,5 +116,8 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public void disconnecting() {
 		connect.setText("Disconnecting...");
 		connect.setEnabled(false);
+		attach.setEnabled(false);
+		start.setEnabled(false);
+		stop.setEnabled(false);
 	}
 }

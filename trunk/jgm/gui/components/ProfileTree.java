@@ -23,7 +23,7 @@ public class ProfileTree extends JPanel {
 		add(sp, BorderLayout.CENTER);
 	}
 	
-	public void reloadProfiles() {
+	public void reloadProfiles() throws Throwable {
 		Profile.Cache.loadProfiles();
 		tree.setModel(Profile.root);
 	}
@@ -33,6 +33,12 @@ public class ProfileTree extends JPanel {
 	}
 	
 	public Profile getSelectedProfile() {
+		return (Profile) tree.getSelectionPath().getLastPathComponent();
+	}
+	
+	// fake a selection change
+	public Profile getSelected() {
+		if (tree.getSelectionCount() < 1) return null;
 		return (Profile) tree.getSelectionPath().getLastPathComponent();
 	}
 }
