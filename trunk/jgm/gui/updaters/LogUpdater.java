@@ -16,7 +16,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	private LogTab rawLog;
 	private LogTab gliderLog;
 	private LogTab rawChatLog;
-	private LogTab chatLog;
+	private ChatTab chatLog;
 	private LogTab urgentChatLog;
 	private LogTab combatLog;
 	private LootsTab lootsTab;
@@ -106,11 +106,11 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			} else if (e instanceof ChatLogEntry) {
 				ChatLogEntry e2 = (ChatLogEntry) e;
 				
-				if (e2 instanceof WhisperEntry) {
+				if (e2.isUrgent()) {
 					urgentChatLog.add(e, true);
 				}
 				
-				chatLog.add(e);
+				chatLog.add(e2);
 			} else if (e instanceof RawChatLogEntry) {
 				if (jgm.JGlideMon.debug && rawChatLog != null) {
 					rawChatLog.add(e);
