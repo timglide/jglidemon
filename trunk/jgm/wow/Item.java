@@ -363,6 +363,10 @@ public class Item implements Comparable<Item>, Serializable {
 		return item;
 	}
 	
+	@SuppressWarnings("unchecked")
+	// unavoidable when reading a serialized
+	// generic object
+	
 	public static class Cache {
 		public static final File iconFile = new File("icons.cache");
 		public static final File itemFile = new File("items.cache");
