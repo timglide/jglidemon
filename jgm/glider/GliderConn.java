@@ -1,6 +1,6 @@
 package jgm.glider;
 
-import jgm.cfg;
+import jgm.Config;
 
 import java.io.*;
 import java.net.*;
@@ -17,13 +17,13 @@ public class GliderConn {
 	private PrintWriter    out;
 	private InputStream    inStream;
 	private BufferedReader in;
-	private static cfg cfg;
+	private static Config cfg;
 	
 	public GliderConn() {
 		++instances;
 		
 		if (cfg == null) {
-			cfg = jgm.cfg.getInstance();
+			cfg = jgm.Config.getInstance();
 		}
 	}
 	

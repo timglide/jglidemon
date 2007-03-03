@@ -26,7 +26,7 @@ public class Tray implements ActionListener {
 			item.addActionListener(this);
 			menu.add(item);
 			
-			icon = new TrayIcon(jgm.gui.GUI.frame.getIconImage(), jgm.gui.GUI.BASE_TITLE, menu);
+			icon = new TrayIcon(jgm.GUI.frame.getIconImage(), jgm.GUI.BASE_TITLE, menu);
 			icon.setImageAutoSize(true);
 			
 			tray.add(icon);
@@ -34,7 +34,7 @@ public class Tray implements ActionListener {
 			icon.addMouseListener(new MouseAdapter() {
 				// when the tray icon is clicked
 				public void mouseClicked(MouseEvent e) {
-					JFrame f = jgm.gui.GUI.frame;
+					JFrame f = jgm.GUI.frame;
 					
 					// restore if we were minimized
 					if (e.getButton() == MouseEvent.BUTTON1 &&
