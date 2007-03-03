@@ -60,7 +60,7 @@ public class LogTab extends Tab {
 		public void mousePressed(MouseEvent e) {}
 		public void mouseReleased(MouseEvent e) {}
 		
-		// upon double clicking a whisper or say entry,
+		// upon double clicking a chat entry
 		// switch to the send keys tab and fill in the 
 		// fields to whisper that person
 		public void mouseClicked(MouseEvent e) {
@@ -74,20 +74,18 @@ public class LogTab extends Tab {
 			LogTableModel tm = (LogTableModel) this.dataModel;
 			LogEntry entry = tm.get(row);
 			
-			if (entry instanceof WhisperEntry) {
-				WhisperEntry wentry = (WhisperEntry) entry;
-				String t = wentry.getType();
-				
-				if (t.contains("Whisper") || t.contains("Say")) {
-					SendKeysTab skt =
-						jgm.JGlideMon.instance.gui.tabsPane.sendKeys;
+			if (entry instanceof ChatLogEntry) {
+				ChatLogEntry centry = (ChatLogEntry) entry;
+				if (centry.getSender() == null) return;
 
-					skt.type.setSelectedItem("Whisper");
-					skt.to.setText(wentry.from);
-					skt.keys.setText("");
-					parent.setSelectedIndex(skt.getIndex());
-					skt.keys.requestFocus();
-				}
+				SendKeysTab skt =
+					jgm.JGlideMon.instance.gui.tabsPane.sendKeys;
+	
+				skt.type.setSelectedItem("Whisper");
+				skt.to.setText(centry.getSender());
+				skt.keys.setText("");
+				((JTabbedPane) skt.getParent()).setSelectedIndex(skt.getIndex());
+				skt.keys.requestFocus();
 			}
 		}
 	}

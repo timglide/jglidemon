@@ -12,7 +12,9 @@ public class TabsPane extends Pane {
 	public ScreenshotTab screenshotTab;
 	public LogTab        statusLog;
 	public LootsTab      lootsTab;
-	public LogTab        chatLog;
+	
+	public ChatTab       chatLog;
+	
 	public LogTab        urgentChatLog;
 	public SendKeysTab   sendKeys;
 	public LogTab        rawChatLog;
@@ -30,7 +32,7 @@ public class TabsPane extends Pane {
 		addTab(screenshotTab);
 
 		statusLog  = new LogTab("Status", tabbedPane);
-		chatLog    = new LogTab("Chat Log", tabbedPane);
+		chatLog    = new ChatTab();
 		urgentChatLog = new LogTab("Urgent Log", tabbedPane);
 		sendKeys   = new SendKeysTab();
 		combatLog  = new LogTab("Combat Log", tabbedPane);
