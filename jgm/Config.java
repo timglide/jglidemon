@@ -33,7 +33,7 @@ public class Config extends QuickIni {
 		}
 	}
 	
-	private static final String DEF = "jgm.cfg$defaults$";
+	private static final String DEF = defaults.class.getName() + "$";
 	
 	private String getClass(String section) {
 		return DEF + section.replace('.', '$');
