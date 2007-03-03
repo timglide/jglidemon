@@ -1,6 +1,6 @@
 package jgm.sound;
 
-import jgm.cfg;
+import jgm.Config;
 
 /**
  * Represents something that can be heard.
@@ -19,7 +19,7 @@ public abstract class Audible {
 	}
 	
 	protected Type type;
-	protected static cfg cfg;
+	protected static Config cfg;
 	
 	/**
 	 * Construct an Audible object
@@ -27,7 +27,7 @@ public abstract class Audible {
 	 */
 	public Audible(Type type) {
 		this.type = type;
-		if (cfg == null) cfg = jgm.cfg.getInstance();
+		if (cfg == null) cfg = jgm.Config.getInstance();
 	}
 	
 	/**

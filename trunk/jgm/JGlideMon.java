@@ -3,7 +3,6 @@ package jgm;
 import javax.swing.JOptionPane;
 
 import jgm.glider.*;
-import jgm.gui.GUI;
 import jgm.gui.updaters.*;
 import jgm.util.*;
 
@@ -20,7 +19,7 @@ public class JGlideMon {
 	public static JGlideMon instance;
 	
 	public  GliderConn    keysConn;
-	private cfg           cfg;
+	private Config        cfg;
 	public  GUI           gui;
 	private StatusUpdater status;
 	private LogUpdater    logUpdater;
@@ -30,7 +29,7 @@ public class JGlideMon {
 	
 	public JGlideMon() {
 		instance = this;
-		cfg = new cfg();		
+		cfg = new Config();		
 		init();
 	}
 	
@@ -42,7 +41,7 @@ public class JGlideMon {
 	  	connector = new Connector();
 		gui = new GUI();
 
-		if (!cfg.iniFileExists() || cfg.getString("net", "host").equals("")) {
+		if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
 			JOptionPane.showMessageDialog(GUI.frame,
 				"Please enter the server name, port, and password.\n" +
 				"Next, click Save Settings, then click Connect.\n\n" +
@@ -51,6 +50,7 @@ public class JGlideMon {
 				"Configuration Required",
 				JOptionPane.INFORMATION_MESSAGE);
 			
+			// select the network tab
 			gui.showConfig(1);
 		}
 		
@@ -62,7 +62,7 @@ public class JGlideMon {
 			public void run() {
 				Sound.init();
 				Speech.init();
-				keysConn   = new GliderConn();
+				keysConn = new GliderConn();
 				Connector.addListener(new ConnectionAdapter() {
 					public GliderConn getConn() {
 						return keysConn;
@@ -102,7 +102,7 @@ public class JGlideMon {
 		Speech.destroy();
 		jgm.wow.Item.Cache.saveIcons();
 		jgm.wow.Item.Cache.saveItems();
-		cfg.writeIni();
+		jgm.Config.writeIni();
 		
 		System.exit(0);
 	}

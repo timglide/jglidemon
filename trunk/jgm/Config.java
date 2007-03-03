@@ -11,8 +11,8 @@ import java.io.File;
  * @author Tim
  * @since 0.1
  */
-public class cfg extends QuickIni {
-	public static cfg instance;
+public class Config extends QuickIni {
+	public static Config instance;
 	private static final File iniFile = new File("JGlideMon.ini");
 	//private static QuickIni ini = new QuickIni(iniFile.getName());
 	
@@ -20,11 +20,11 @@ public class cfg extends QuickIni {
 		return iniFile.exists();
 	}
 	
-	public static cfg getInstance() {
+	public static Config getInstance() {
 		return instance;
 	}
 	
-	public cfg() {
+	public Config() {
 		super(iniFile.getName());
 		instance = this;
 		

@@ -79,7 +79,7 @@ public class SendKeysTab extends Tab
 			JLabel.CENTER
 		), c);
 		
-		jgm.gui.GUI.setTitleBorder(keysPanel, "Send Keys");
+		jgm.GUI.setTitleBorder(keysPanel, "Send Keys");
 						
 		JPanel prosPanel = new JPanel(new BorderLayout(10, 10));
 		
@@ -106,7 +106,7 @@ public class SendKeysTab extends Tab
 		
 		prosPanel.add(btns, BorderLayout.SOUTH);
 		
-		jgm.gui.GUI.setTitleBorder(prosPanel, "Load Profile");
+		jgm.GUI.setTitleBorder(prosPanel, "Load Profile");
 
 		add(keysPanel, BorderLayout.NORTH);
 		add(prosPanel, BorderLayout.CENTER);
@@ -231,7 +231,7 @@ public class SendKeysTab extends Tab
 			} else if (source == manualLoad) {
 				String path =
 					JOptionPane.showInputDialog(
-						jgm.gui.GUI.frame,
+						jgm.GUI.frame,
 						"Enter full profile path to load:",
 						"Load Profile",
 						JOptionPane.QUESTION_MESSAGE
@@ -255,7 +255,7 @@ public class SendKeysTab extends Tab
 					}
 					
 					JOptionPane.showMessageDialog(
-						jgm.gui.GUI.frame, 
+						jgm.GUI.frame, 
 						"There was an error loading the profiles:\n\n" +
 						x.getClass().getName() + "\n" +
 						x.getMessage() + extra,
@@ -275,7 +275,7 @@ public class SendKeysTab extends Tab
 	public void loadProfile(String path) {
 		if (path.trim().equals("")) {
 			JOptionPane.showMessageDialog(
-				jgm.gui.GUI.frame,
+				jgm.GUI.frame,
 				"You must enter a profile to load.",
 				"Error",
 				JOptionPane.ERROR_MESSAGE
@@ -305,14 +305,14 @@ public class SendKeysTab extends Tab
 			
 			if (ret.toLowerCase().contains("failed")) {
 				JOptionPane.showMessageDialog(
-					jgm.gui.GUI.frame,
+					jgm.GUI.frame,
 					ret,
 					"Error",
 					JOptionPane.ERROR_MESSAGE
 				);
 			} else if (ret.contains("ok")) {
 				JOptionPane.showMessageDialog(
-					jgm.gui.GUI.frame,
+					jgm.GUI.frame,
 					ret + ".\nDon't forget to start gliding.",
 					"Profile Loaded",
 					JOptionPane.INFORMATION_MESSAGE

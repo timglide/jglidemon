@@ -1,8 +1,7 @@
-package jgm.gui;
+package jgm;
 
-import jgm.*;
 import jgm.glider.*;
-import jgm.gui.dialogs.*;
+import jgm.gui.Tray;
 import jgm.gui.panes.*;
 import jgm.gui.updaters.*;
 
@@ -17,12 +16,10 @@ public class GUI
 	implements java.util.Observer, ActionListener {
 	
 	public static GUI instance;
-	
-	public static JFrame        frame;
+	public static JFrame frame;
+	public static Tray tray;
 
-	private JPanel        mainPane;
-
-	public Tray tray;
+	private JPanel mainPane;
 	
 	public CharInfoPane   charInfo;
 	public MobInfoPane    mobInfo;
@@ -34,16 +31,16 @@ public class GUI
 
 	private static JStatusBar    statusBar;
 
-	private About aboutFrame;
-	private Config configDialog;
+	private jgm.gui.dialogs.About aboutFrame;
+	private jgm.gui.dialogs.Config configDialog;
 	
-	private cfg cfg;
+	private Config cfg;
 
 	public static final String BASE_TITLE = "JGlideMon " + JGlideMon.version;
 
 	public GUI() {
 		instance = this;
-		cfg = jgm.cfg.getInstance();
+		cfg = jgm.Config.getInstance();
 		
 		frame = new JFrame(BASE_TITLE);
 
@@ -294,13 +291,13 @@ public class GUI
 	}
 	
 	public void showConfig(int selectTab) {
-		if (configDialog == null) configDialog = new Config(frame);
+		if (configDialog == null) configDialog = new jgm.gui.dialogs.Config(frame);
 		if (selectTab >= 0) configDialog.selectTab(selectTab);
 		configDialog.setVisible(true);
 	}
 	
 	public void showAbout() {
-		if (aboutFrame == null) aboutFrame = new About(frame);
+		if (aboutFrame == null) aboutFrame = new jgm.gui.dialogs.About(frame);
 		aboutFrame.setVisible(true);
 	}
 	

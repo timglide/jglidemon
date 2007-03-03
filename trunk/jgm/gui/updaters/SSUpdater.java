@@ -1,9 +1,9 @@
 package jgm.gui.updaters;
 
-import jgm.cfg;
+import jgm.Config;
+import jgm.GUI;
 
 import jgm.glider.*;
-import jgm.gui.GUI;
 import jgm.gui.tabs.*;
 
 import java.util.Observer;
@@ -23,10 +23,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
  
 	public Thread thread;
 	
-	private cfg cfg;
+	private Config cfg;
 	
 	public SSUpdater(ScreenshotTab t) {
-		cfg = jgm.cfg.getInstance();
+		cfg = jgm.Config.getInstance();
 		tab  = t;
 		conn = new GliderConn();
 	}

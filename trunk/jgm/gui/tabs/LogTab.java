@@ -1,6 +1,6 @@
 package jgm.gui.tabs;
 
-import jgm.cfg;
+import jgm.Config;
 import jgm.glider.log.*;
 
 import java.util.Vector;
@@ -104,7 +104,7 @@ public class LogTab extends Tab {
 		}
 
 		public void add(LogEntry i) {
-			if (entries.size() > cfg.getInstance().getInt("log", "maxentries")) {
+			if (entries.size() > Config.getInstance().getInt("log", "maxentries")) {
 				entries.clear();
 				fireTableDataChanged();
 			}

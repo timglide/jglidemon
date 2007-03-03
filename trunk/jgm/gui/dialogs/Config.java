@@ -1,7 +1,5 @@
 package jgm.gui.dialogs;
 
-import jgm.cfg;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -48,12 +46,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JCheckBox ttsGM;
 	private JCheckBox ttsStatus;
 	
-	private cfg cfg;
+	private jgm.Config cfg;
 //	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
 		
 	public Config(Frame owner) {
 		super(owner, "Configuration");
-		cfg = jgm.cfg.getInstance();
+		cfg = jgm.Config.getInstance();
 		
 		tabs = new JTabbedPane(JTabbedPane.LEFT);
 		
@@ -397,7 +395,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("sound.tts", "gm", ttsGM.isSelected());
 		cfg.set("sound.tts", "status", ttsStatus.isSelected());
 		
-		cfg.writeIni();
+		jgm.Config.writeIni();
 		
 		setVisible(false);
 	}

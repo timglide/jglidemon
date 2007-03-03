@@ -1,6 +1,6 @@
 package jgm.gui.updaters;
 
-import jgm.cfg;
+import jgm.Config;
 
 import jgm.glider.*;
 
@@ -37,11 +37,11 @@ public class StatusUpdater extends Observable
 	private Thread thread;
 	private volatile boolean stop = false;
 
-	private cfg cfg;
+	private Config cfg;
 	
 	public StatusUpdater() {
 		conn = new GliderConn();
-		cfg = jgm.cfg.getInstance();
+		cfg = jgm.Config.getInstance();
 	}
 
 	public void close() {

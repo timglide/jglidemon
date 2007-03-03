@@ -1,6 +1,6 @@
 package jgm.glider;
 
-import jgm.cfg;
+import jgm.Config;
 import jgm.sound.*;
 
 import java.util.*;
@@ -11,7 +11,7 @@ public class Connector {
 	}
 		
 	private static Connector instance;
-	private static cfg cfg;
+	private static Config cfg;
 	
 	private static Vector<ConnectionListener> listeners
 		= new Vector<ConnectionListener>();
@@ -20,7 +20,7 @@ public class Connector {
 	
 	public Connector() {
 		instance = this;
-		cfg = jgm.cfg.getInstance();
+		cfg = jgm.Config.getInstance();
 	}
 	
 	public static boolean isConnected() {
@@ -62,12 +62,12 @@ public class Connector {
 						c.getConn().connect();
 					} catch (java.net.UnknownHostException e) {
 						System.err.println("Error connecting to " + cfg.get("net", "host") + ": " + e.getMessage());
-						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
+						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
 						success = false;
 						break;
 					} catch (Exception e) {
 						System.err.println("Error connecting to " + cfg.getString("net", "host") + ": " + e.getMessage());
-						jgm.gui.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - " + e.getMessage(), true, true);						
+						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - " + e.getMessage(), true, true);						
 						success = false;
 						break;
 					}
@@ -135,8 +135,8 @@ public class Connector {
 				}
 				
 				state = State.DISCONNECTED;
-				jgm.gui.GUI.setStatusBarText("Disconnected", false, true);
-				jgm.gui.GUI.hideStatusBarProgress();
+				jgm.GUI.setStatusBarText("Disconnected", false, true);
+				jgm.GUI.hideStatusBarProgress();
 				
 				if (success) {
 					notifyConnectionDied();
@@ -216,7 +216,7 @@ public class Connector {
 				try {
 					System.out.println("Reconnecting in " + i);
 					while (i > 0) {
-						jgm.gui.GUI.setStatusBarText("Reconnecting in " + i + "...", false, true);
+						jgm.GUI.setStatusBarText("Reconnecting in " + i + "...", false, true);
 						Thread.sleep(1000);
 						i--;
 					}
