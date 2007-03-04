@@ -17,7 +17,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	private volatile boolean stop = false;
 	private volatile boolean attached = false;
 
-	private GliderConn conn = null;
+	private Conn conn = null;
 
 	private ScreenshotTab tab;
  
@@ -28,10 +28,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	public SSUpdater(ScreenshotTab t) {
 		cfg = jgm.Config.getInstance();
 		tab  = t;
-		conn = new GliderConn();
+		conn = new Conn();
 	}
 
-	public GliderConn getConn() {
+	public Conn getConn() {
 		return conn;
 	}
 	

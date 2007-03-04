@@ -33,14 +33,14 @@ public class StatusUpdater extends Observable
 	public int    targetLevel    = 0;
 	public double targetHealth   = 0.0;
 
-	private GliderConn conn;
+	private Conn conn;
 	private Thread thread;
 	private volatile boolean stop = false;
 
 	private Config cfg;
 	
 	public StatusUpdater() {
-		conn = new GliderConn();
+		conn = new Conn();
 		cfg = jgm.Config.getInstance();
 	}
 
@@ -50,7 +50,7 @@ public class StatusUpdater extends Observable
 		if (conn != null) conn.close();
 	}
 
-	public GliderConn getConn() {
+	public Conn getConn() {
 		return conn;
 	}
 	
