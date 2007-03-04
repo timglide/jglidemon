@@ -10,7 +10,7 @@ import java.io.*;
 public class LogUpdater implements Runnable, ConnectionListener {
 	private volatile boolean stop = false;
 
-	private GliderConn conn;
+	private Conn conn;
 
 	private LogTab statusLog;
 	private LogTab rawLog;
@@ -33,7 +33,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		combatLog  = t.combatLog;
 		lootsTab   = t.lootsTab;
 		
-		conn = new GliderConn();
+		conn = new Conn();
  	}
 
 	public void close() {
@@ -42,7 +42,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		if (conn != null) conn.close();
 	}
 
-	public GliderConn getConn() {
+	public Conn getConn() {
 		return conn;
 	}
 	

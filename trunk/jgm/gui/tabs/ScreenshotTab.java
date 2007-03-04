@@ -14,7 +14,7 @@ import javax.swing.*;
 
 public class ScreenshotTab extends Tab
 	implements ActionListener, ChangeListener, MouseListener, KeyListener {
-	private static GliderConn conn = null;
+	private static Conn conn = null;
 	private static SSUpdater updater = null;
 	
 	public JTextField keysField;

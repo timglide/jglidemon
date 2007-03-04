@@ -24,7 +24,7 @@ public class SendKeysTab extends Tab
 	private JButton refreshProfiles;
 	private JButton manualLoad;
 	
-	private GliderConn conn;
+	private Conn conn;
 	
 	private volatile boolean connected = false;
 	

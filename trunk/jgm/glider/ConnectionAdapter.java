@@ -1,7 +1,7 @@
 package jgm.glider;
 
 public class ConnectionAdapter implements ConnectionListener {
-	public GliderConn getConn() {
+	public Conn getConn() {
 		return null;
 	}
 	

@@ -8,7 +8,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class ControlPane extends Pane implements ActionListener, ConnectionListener {
-	private static GliderConn conn;
+	private static Conn conn;
 	
 	public JButton connect;
 	private JButton attach;
@@ -91,7 +91,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		}
 	}
 	
-	public GliderConn getConn() {
+	public Conn getConn() {
 		return null;
 	}
 	

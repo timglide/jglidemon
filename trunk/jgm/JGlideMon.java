@@ -18,7 +18,7 @@ public class JGlideMon {
 	
 	public static JGlideMon instance;
 	
-	public  GliderConn    keysConn;
+	public  Conn          keysConn;
 	private Config        cfg;
 	public  GUI           gui;
 	private StatusUpdater status;
@@ -62,9 +62,9 @@ public class JGlideMon {
 			public void run() {
 				Sound.init();
 				Speech.init();
-				keysConn = new GliderConn();
+				keysConn = new Conn();
 				Connector.addListener(new ConnectionAdapter() {
-					public GliderConn getConn() {
+					public Conn getConn() {
 						return keysConn;
 					}
 				});

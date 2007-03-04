@@ -10,7 +10,7 @@ import java.net.*;
  * @author Tim
  * @since 0.1
  */
-public class GliderConn {
+public class Conn {
 	private static int instances = 0;
 	
 	private Socket         s;
@@ -19,7 +19,7 @@ public class GliderConn {
 	private BufferedReader in;
 	private static Config cfg;
 	
-	public GliderConn() {
+	public Conn() {
 		++instances;
 		
 		if (cfg == null) {
