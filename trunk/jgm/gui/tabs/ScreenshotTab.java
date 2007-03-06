@@ -55,11 +55,29 @@ public class ScreenshotTab extends Tab
 		add(refresh, BorderLayout.SOUTH);
 		
 		checkNulls();
+		
+		setEnabled(false);
+		
+		Connector.addListener(new ConnectionAdapter() {
+			public void connectionEstablished() {
+				setEnabled(true);
+			}
+			
+			public void disconnecting() {
+				setEnabled(false);
+			}
+		});
 	}
 	
 	private void checkNulls() {
 		if (conn == null) conn = JGlideMon.instance.keysConn;
 		if (updater == null) updater = JGlideMon.instance.ssUpdater;
+	}
+	
+	public void setEnabled(boolean b) {
+		//super.setEnabled(b);
+		keysField.setEnabled(b);
+		refresh.setEnabled(b);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
