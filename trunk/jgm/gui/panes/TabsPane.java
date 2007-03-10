@@ -29,8 +29,9 @@ public class TabsPane extends Pane {
 
 		screenshotTab = new ScreenshotTab();
 		tabbedPane.addChangeListener(screenshotTab);
+		tabbedPane.addKeyListener(screenshotTab);
 		addTab(screenshotTab);
-
+		
 		statusLog  = new LogTab("Status", tabbedPane);
 		chatLog    = new ChatTab();
 		urgentChatLog = new LogTab("Urgent Log", tabbedPane);

@@ -56,21 +56,23 @@ public class SendKeysTab extends Tab
 		keys = new JTextField();
 		c.gridx++; c.weightx = 1.0;
 		keysPanel.add(keys, c);
+				
+		JPanel btns = new JPanel(new GridLayout(1, 0));
 		
 		send = new JButton("Send Keys");
 		send.addActionListener(this);
-		c.gridx = 0; c.gridy++; c.weightx = 1.0; c.gridwidth = 3;
-		keysPanel.add(send, c);
+		btns.add(send);
 		
 		reset = new JButton("Reset");
 		reset.addActionListener(this);
-		c.gridy++;
-		keysPanel.add(reset, c);
+		btns.add(reset);
 		
 		clear = new JButton("Clear Queue");
 		send.addActionListener(this);
-		c.gridy++;
-		keysPanel.add(clear, c);
+		btns.add(clear);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 1.0; c.gridwidth = 3;
+		keysPanel.add(btns, c);
 		
 		c.gridy++;
 		keysPanel.add(new JLabel(
@@ -89,7 +91,7 @@ public class SendKeysTab extends Tab
 		c = new GridBagConstraints();
 		prosPanel.add(profiles, BorderLayout.CENTER);
 		
-		JPanel btns = new JPanel(new GridLayout(0, 1));
+		btns = new JPanel(new GridLayout(0, 1));
 		
 		loadProfile = new JButton("Load Selected Profile");
 		loadProfile.setEnabled(false);

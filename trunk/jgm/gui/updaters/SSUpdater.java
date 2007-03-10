@@ -58,7 +58,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	private static final int MAX_SIZE = 1048576;
 	private static byte[] buff = new byte[MAX_SIZE];
 	
-	public boolean update() throws IOException {
+	public boolean update() throws IOException, InterruptedException {
 	  synchronized (conn) {
 		
 		if (stop) return false;
@@ -66,29 +66,75 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		GUI.setStatusBarText("Updating screenshot...", true, false);
 		GUI.setStatusBarProgress(0);
 		
+		/* This timer will interrupt the screenshot updater
+		 * in 5 seconds if it fails to update the screenshot.
+		 */
+		java.util.Timer timer = new java.util.Timer("SSWatcher");
+		timer.schedule(new java.util.TimerTask() {
+			final Thread t = Thread.currentThread();
+			
+			public void run() {
+				System.out.println("SSWatcher forcing abort of SS update...");
+				t.interrupt();
+
+				conn.close();
+				conn = new Conn();
+				
+				try {
+					//conn.getInStream().skip(conn.getInStream().available());
+					conn.connect();
+				} catch (Throwable e) {
+					System.err.println("SSWatcher: " + e.getClass().getName() + ": " + e.getMessage());
+					Connector.disconnect();
+				}
+				
+				GUI.revertStatusBarText();
+				GUI.unlockStatusBarText();
+				GUI.hideStatusBarProgress();
+				
+				this.cancel();
+			}
+		}, 5000);
+		
 		conn.send("/capturescale " + cfg.get("screenshot", "scale"));
+		//System.out.println(conn.readLine()); // set scale successfully
+		//System.out.println(conn.readLine()); // ---
 		conn.readLine(); // set scale successfully
 		conn.readLine(); // ---
 		conn.send("/capturequality " + cfg.get("screenshot", "quality"));
+		//System.out.println(conn.readLine()); // set quality successfully
+		//System.out.println(conn.readLine()); // ---
 		conn.readLine(); // set quality successfully
 		conn.readLine(); // ---
 		conn.send("/capture");
-		conn.readLine(); // info stating stuff about the datastream
-//		System.out.println("Info: _" + conn.readLine() + "_"); 
+		String line = conn.readLine(); // info stating stuff about the datastream
+		
+		if (!line.startsWith("Success")) {
+			timer.cancel();
+			
+			System.err.println("Didn't receive Success upon /capture. Got: " + line);
+			GUI.revertStatusBarText();
+			GUI.unlockStatusBarText();
+			GUI.hideStatusBarProgress();
+			return false;
+		}
+		
+		//System.out.println("Info: " + line); 
 
 		byte[] b = new byte[4];
 		conn.read(b);
-
-//		System.out.println("Read " + conn.read(b) + " for size");
+		//System.out.println("Read " + conn.read(b) + " for size");
 
 		int size = jgm.Util.byteArrayToInt(b);
-		//System.out.print("\nJPG Size before: " + size);
+		//System.out.println("\nJPG Size: " + size);
 		//size &= 0x1FFFFF; // restrict to ~2 megs 
 		int written = 0;
 
 		//System.out.println(", after: " + size);
 
 		if (size < 1 || size > MAX_SIZE) { // size invalid? wtf O.o
+			timer.cancel();
+			
 			String s = null;
 			int z = 0;
 			System.err.println("Invalid size: " + size + ", clearing stream");
@@ -109,8 +155,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 
 			System.err.println("Clear Stream done");	
 
-			GUI.hideStatusBarProgress();
+			GUI.revertStatusBarText();
 			GUI.unlockStatusBarText();
+			GUI.hideStatusBarProgress();
 			
 			return false;
 		}
@@ -134,11 +181,13 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		//System.out.println();
 
 		conn.readLine(); // ---
-//		System.out.println(conn.readLine()); // ---
+		//System.out.println(conn.readLine()); // ---
 
-//		System.out.println("Read " + written + " for image");
+		timer.cancel();
+		
+		//System.out.println("Read " + written + " for image");
 
-//		System.out.println("Making ss...");
+		//System.out.println("Making ss...");
 		BufferedImage img =
 			javax.imageio.ImageIO.read(
 				new ByteArrayInputStream(buff, 0, size)
@@ -162,7 +211,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				idle = false;
 				
 				try {
-					while (attached && tab.isCurrentTab() && !update()) {}
+					//while (attached && tab.isCurrentTab() && !update()) {}
+					if (attached && tab.isCurrentTab()) update();
+				} catch (InterruptedException e) {
+					System.out.println(thread.getName() + " interrupted within update()");
 				} catch (Exception e) {
 					System.err.println("Stopping SSUpdater, Ex: " + e.getMessage());
 					idle = true;
