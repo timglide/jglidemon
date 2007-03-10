@@ -231,6 +231,7 @@ public class Config extends QuickIni {
 	
 	public static class defaults {
 		public static class general {
+			public static final boolean showtray = true;
 			public static final boolean mintotray = true;
 		}
 		
@@ -278,7 +279,7 @@ public class Config extends QuickIni {
 			public static class tts {
 				public static final boolean enabled = true;
 				public static final boolean whisper = true;
-				public static final boolean say = true;
+				public static final boolean say = false;
 				public static final boolean gm = true;
 				public static final boolean status = true;
 			}

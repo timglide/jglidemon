@@ -15,6 +15,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JPanel status;
 	private JTextField statusInterval;
 	private JTextField maxLogEntries;
+	private JCheckBox showTray;
 	private JCheckBox minToTray;
 	
 	private JPanel net;
@@ -92,8 +93,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++;
 		status.add(maxLogEntries, c);
 		
-		minToTray = new JCheckBox("Minimize To Tray", cfg.getBool("general", "mintotray"));
+		showTray = new JCheckBox("Show Tray Icon", cfg.getBool("general", "showtray"));
+		showTray.addChangeListener(this);
 		c.gridy++; c.gridx = 0; c.gridwidth = 2;
+		status.add(showTray, c);
+		
+		minToTray = new JCheckBox("Minimize To Tray", cfg.getBool("general", "mintotray"));
+		minToTray.setMargin(new Insets(0, 25, 0, 0));
+		c.gridy++;
 		status.add(minToTray, c);
 		
 		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 1;
@@ -141,14 +148,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		net.add(netReconnect, c);
 
 		c.gridy++; c.gridwidth = 1;
-		net.add(new JLabel("    Delay between tries (s): "), c);
+		net.add(new JLabel("    Delay Between Tries (s): "), c);
 		
 		netReconnectDelay = new JTextField(cfg.get("net", "autoreconnectdelay"));
 		c.gridx++;
 		net.add(netReconnectDelay, c);
 		
 		c.gridx = 0; c.gridy++;
-		net.add(new JLabel("    Max number of tries: "), c);
+		net.add(new JLabel("    Max Number of Tries: "), c);
 		
 		netReconnectTries = new JTextField(cfg.get("net", "autoreconnecttries"));
 		c.gridx++;
@@ -371,6 +378,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			System.err.println("Invalid max entries: " + maxLogEntries.getText());
 		}
 		
+		cfg.set("general", "showtray", showTray.isSelected());
 		cfg.set("general", "mintotray", minToTray.isSelected());
 		
 		try {
@@ -401,7 +409,17 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	}
 	
 	public void stateChanged(ChangeEvent e) {
-		if (e.getSource() == netReconnect) {
+		if (e.getSource() == showTray) {
+			boolean state = showTray.isEnabled() && showTray.isSelected();
+			
+			minToTray.setEnabled(state);
+			
+			if (state) {
+				jgm.GUI.tray.enable();
+			} else {
+				jgm.GUI.tray.disable();
+			}
+		} else if (e.getSource() == netReconnect) {
 			boolean state = netReconnect.isEnabled() && netReconnect.isSelected();
 			
 			netReconnectDelay.setEnabled(state);
@@ -434,7 +452,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 
 		statusInterval.setText(cfg.get("status", "updateinterval"));
 		maxLogEntries.setText(cfg.get("log", "maxentries"));
-		minToTray.setEnabled(jgm.gui.Tray.isSupported());
+		showTray.setEnabled(jgm.gui.Tray.isSupported());
+		showTray.setSelected(cfg.getBool("general", "showtray"));
 		minToTray.setSelected(cfg.getBool("general", "mintotray"));
 		
 		host.setText(cfg.get("net", "host"));
@@ -463,6 +482,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		ttsStatus.setSelected(cfg.getBool("sound.tts", "status"));
 		
 		// to initialize enabled/disabled states
+		stateChanged(new ChangeEvent(showTray));
 		stateChanged(new ChangeEvent(netReconnect));
 		stateChanged(new ChangeEvent(enableSound));
 		stateChanged(new ChangeEvent(enableTTS));

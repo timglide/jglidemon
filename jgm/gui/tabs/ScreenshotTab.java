@@ -13,7 +13,8 @@ import javax.swing.event.*;
 import javax.swing.*;
 
 public class ScreenshotTab extends Tab
-	implements ActionListener, ChangeListener, MouseListener, KeyListener {
+	implements ActionListener, ChangeListener, MouseListener,
+				KeyListener, ContainerListener {
 	private static Conn conn = null;
 	private static SSUpdater updater = null;
 	
@@ -26,7 +27,12 @@ public class ScreenshotTab extends Tab
 	public ScreenshotTab() {
 		super(new BorderLayout(), "Screenshot");
 		
-		JPanel jp = new JPanel(new GridBagLayout());
+		// this should make it so we don't need a text field
+		// to get keystrokes.
+		// see http://www.javaworld.com/javaworld/javatips/jw-javatip69.html
+		addKeyAndContainerListenerRecursively(this);
+		
+		/*JPanel jp = new JPanel(new GridBagLayout());
 		c.weightx = 0.0;
 		jp.add(new JLabel("Chars typed in the textfield will be sent immediately: "), c);
 		keysField = new JTextField();
@@ -38,7 +44,7 @@ public class ScreenshotTab extends Tab
 		});
 		c.gridx++; c.weightx = 1.0;
 		jp.add(keysField, c);
-		add(jp, BorderLayout.NORTH);
+		add(jp, BorderLayout.NORTH);*/
 		
 		ssLabel = new JLabel();
 		ssLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -76,7 +82,7 @@ public class ScreenshotTab extends Tab
 	
 	public void setEnabled(boolean b) {
 		//super.setEnabled(b);
-		keysField.setEnabled(b);
+		//keysField.setEnabled(b);
 		refresh.setEnabled(b);
 	}
 	
@@ -128,14 +134,14 @@ public class ScreenshotTab extends Tab
 			? "left" : "right";
 		
 		//System.out.println(btn + " click @ " + x + "," + y + " (" + xp + "," + yp + ") [" + s.width + "x" + s.height + "]");
-	try {
-		conn.send("/setmouse " + xp + "/" + yp);
-		System.out.println(conn.readLine()); conn.readLine();
-		conn.send("/clickmouse " + btn);
-		System.out.println(conn.readLine()); conn.readLine();
-	} catch (Exception ex) {
-		ex.printStackTrace();
-	}
+		try {
+			conn.send("/setmouse " + xp + "/" + yp);
+			System.out.println(conn.readLine()); conn.readLine();
+			conn.send("/clickmouse " + btn);
+			System.out.println(conn.readLine()); conn.readLine();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		//if (updater != null && updater.idle) {
 			updater.thread.interrupt();
 		//}
@@ -145,6 +151,8 @@ public class ScreenshotTab extends Tab
 		= new HashMap<Integer, Boolean>();
 	
 	public void keyPressed(KeyEvent e) {
+		if (!this.isCurrentTab()) return;
+		
 		checkNulls();
 		if (!Connector.isConnected()) return;
 		
@@ -166,15 +174,17 @@ public class ScreenshotTab extends Tab
 		
 		keysDown.put(code, Boolean.TRUE);
 		
-	try {
-		conn.send("/holdkey " + code);
-		System.out.println(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
-	} catch (Exception ex) {
-		ex.printStackTrace();
-	}
+		try {
+			conn.send("/holdkey " + code);
+			System.out.println(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 	public void keyReleased(KeyEvent e) {
+		if (!this.isCurrentTab()) return;
+		
 		checkNulls();
 		//System.out.println(e);
 
@@ -185,19 +195,19 @@ public class ScreenshotTab extends Tab
 		
 		int code = e.getKeyCode();
 		
-		keysDown.remove(code);
+		if (null == keysDown.remove(code)) return;
 		
 		if (!isGoodKey(code)) {
 			//System.out.println("Bad key: " + code + ", " + KeyEvent.getKeyText(code));
 			return;
 		}
 
-	try {
-		conn.send("/releasekey " + code);
-		System.out.println(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
-	} catch (Exception ex) {
-		ex.printStackTrace();
-	}
+		try {
+			conn.send("/releasekey " + code);
+			System.out.println(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 	public void keyTyped(KeyEvent e) {}
@@ -233,5 +243,43 @@ public class ScreenshotTab extends Tab
 		}
 				
 		return false;
+	}
+	
+	
+	//////////////////////////////
+	// Implement ContainerListener
+	public void componentAdded(ContainerEvent e) {
+		addKeyAndContainerListenerRecursively(e.getChild());
+	}
+
+	public void componentRemoved(ContainerEvent e) {
+		removeKeyAndContainerListenerRecursively(e.getChild());
+	}
+
+    private void addKeyAndContainerListenerRecursively(Component c) {
+    	c.addKeyListener(this);
+    	System.out.println("Adding lstnr: " + c);
+    	
+		if (c instanceof Container) {
+			Container cont = (Container) c;
+			cont.addContainerListener(this);
+			
+			for (Component child : cont.getComponents()){
+				addKeyAndContainerListenerRecursively(child);
+			}
+		}
+    }
+    
+    private void removeKeyAndContainerListenerRecursively(Component c) {
+		c.removeKeyListener(this);
+		
+		if (c instanceof Container){
+			Container cont = (Container) c;
+			cont.removeContainerListener(this);
+		
+			for (Component child : cont.getComponents()){
+				removeKeyAndContainerListenerRecursively(child);
+			}
+		}
 	}
 }

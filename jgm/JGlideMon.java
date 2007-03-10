@@ -43,7 +43,7 @@ public class JGlideMon {
 
 		if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
 			JOptionPane.showMessageDialog(GUI.frame,
-				"Please enter the server name, port, and password.\n" +
+				"Please enter the remote host, port, and password.\n" +
 				"Next, click Save Settings, then click Connect.\n\n" +
 				"Remember to click Save Settings any time you change a setting.\n" +
 				"You may access the configuration screen later via the File menu.",

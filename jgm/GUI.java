@@ -81,7 +81,9 @@ public class GUI
 					(frame.getExtendedState() & JFrame.ICONIFIED)) {
 					
 					// minimize to tray
-					if (cfg.getBool("general", "mintotray") && Tray.isSupported()) {
+					if (Tray.isSupported() &&
+						cfg.getBool("general", "showtray") &&
+						cfg.getBool("general", "mintotray")) {
 						frame.setVisible(false);
 					}
 				}
