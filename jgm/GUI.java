@@ -4,8 +4,7 @@ import jgm.glider.*;
 import jgm.gui.Tray;
 import jgm.gui.panes.*;
 import jgm.gui.updaters.*;
-
-import com.zfqjava.swing.JStatusBar;
+import jgm.gui.components.JStatusBar;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -29,7 +28,7 @@ public class GUI
 
 	private JMenuBar      menuBar;
 
-	private static JStatusBar    statusBar;
+	private static JStatusBar statusBar;
 
 	private jgm.gui.dialogs.About aboutFrame;
 	private jgm.gui.dialogs.Config configDialog;
@@ -45,7 +44,7 @@ public class GUI
 		frame = new JFrame(BASE_TITLE);
 
 		ImageIcon img = new ImageIcon(
-				JGlideMon.class.getResource("resources/images/stitch/icon.png"));
+			JGlideMon.class.getResource("resources/images/stitch/icon.png"));
 		
 		frame.setIconImage(img.getImage());
 		
@@ -192,8 +191,7 @@ public class GUI
 
 		
 		// set up status bar
-		statusBar = new JStatusBar(JStatusBar.EXPLORER);
-		statusBar.putClientProperty("JStatusBar.clientBorder", "Flat");
+		statusBar = new JStatusBar();
 		statusBar.setText("Disconnected");
 
 		JProgressBar tmp = statusBar.getProgressBar();
@@ -394,5 +392,45 @@ public class GUI
 		c.setBorder(
 			BorderFactory.createTitledBorder(text)
 		);
+	}
+	
+    public static void addKeyAndContainerListenerRecursively(Object listener, Component c) {
+    	if (!(listener instanceof KeyListener &&
+    			listener instanceof ContainerListener)) {
+    		System.err.println("Trying to add object that isn't key and container listener: \n" + listener);
+    		return;
+    	}
+    	
+    	c.addKeyListener((KeyListener) listener);
+    	System.out.println("Adding lstnr: " + c);
+    	
+		if (c instanceof Container) {
+			Container cont = (Container) c;
+			
+			cont.addContainerListener((ContainerListener) listener);
+			
+			for (Component child : cont.getComponents()){
+				addKeyAndContainerListenerRecursively(listener, child);
+			}
+		}
+    }
+    
+    public static void removeKeyAndContainerListenerRecursively(Object listener, Component c) {
+    	if (!(listener instanceof KeyListener &&
+    			listener instanceof ContainerListener)) {
+    		System.err.println("Trying to remove object that isn't key and container listener: \n" + listener);
+    		return;
+    	}
+    	
+		c.removeKeyListener((KeyListener) listener);
+		
+		if (c instanceof Container){
+			Container cont = (Container) c;
+			cont.removeContainerListener((ContainerListener) listener);
+		
+			for (Component child : cont.getComponents()){
+				removeKeyAndContainerListenerRecursively(listener, child);
+			}
+		}
 	}
 }

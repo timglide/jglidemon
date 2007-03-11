@@ -5,6 +5,17 @@ Version 0.8
 - Added support for a tray icon and minimizing to the tray
   if Java 1.6+ is installed (JGlideMon will still function
   with Java 1.5+, there just won't be a tray icon)
+- Removed the need for a textfield to have focus to send keys
+  in the screenshot tab. Now keys are sent as long as the
+  screenshot tab is the current tab. Note that you are not able
+  to send the 4 arrow keys as this would cause you to change
+  the selected tab. Use WASD instead.
+- Added some code to try to help cope with when the screenshot
+  fails to update
+- Removed dependency on lib/componentset.jar, you may delete this
+  file manually if you wish, though it won't harm anything if it
+  remains. This library was 500kb and I was only using 2 features
+  that I was able to replicate myself.
 
 Version 0.7
 -----------

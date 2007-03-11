@@ -30,7 +30,7 @@ public class ScreenshotTab extends Tab
 		// this should make it so we don't need a text field
 		// to get keystrokes.
 		// see http://www.javaworld.com/javaworld/javatips/jw-javatip69.html
-		addKeyAndContainerListenerRecursively(this);
+		jgm.GUI.addKeyAndContainerListenerRecursively(this, this);
 		
 		/*JPanel jp = new JPanel(new GridBagLayout());
 		c.weightx = 0.0;
@@ -213,11 +213,12 @@ public class ScreenshotTab extends Tab
 	public void keyTyped(KeyEvent e) {}
 	
 	private boolean isGoodKey(int code) {
-		// A-Z, 0-9, F1-F12, 4 arrows
+		// A-Z, 0-9, F1-F12, NOT arrows because left/right will
+		// end up switching tabs
 		if (KeyEvent.VK_A <= code && code <= KeyEvent.VK_Z ||
 			KeyEvent.VK_0 <= code && code <= KeyEvent.VK_9 || 
-			KeyEvent.VK_F1 <= code && code <= KeyEvent.VK_F12 ||
-			KeyEvent.VK_LEFT <= code && code <= KeyEvent.VK_DOWN) {
+			KeyEvent.VK_F1 <= code && code <= KeyEvent.VK_F12 /*||
+			KeyEvent.VK_LEFT <= code && code <= KeyEvent.VK_DOWN*/) {
 			return true;
 		}
 		
@@ -249,37 +250,10 @@ public class ScreenshotTab extends Tab
 	//////////////////////////////
 	// Implement ContainerListener
 	public void componentAdded(ContainerEvent e) {
-		addKeyAndContainerListenerRecursively(e.getChild());
+		jgm.GUI.addKeyAndContainerListenerRecursively(this, e.getChild());
 	}
 
 	public void componentRemoved(ContainerEvent e) {
-		removeKeyAndContainerListenerRecursively(e.getChild());
-	}
-
-    private void addKeyAndContainerListenerRecursively(Component c) {
-    	c.addKeyListener(this);
-    	System.out.println("Adding lstnr: " + c);
-    	
-		if (c instanceof Container) {
-			Container cont = (Container) c;
-			cont.addContainerListener(this);
-			
-			for (Component child : cont.getComponents()){
-				addKeyAndContainerListenerRecursively(child);
-			}
-		}
-    }
-    
-    private void removeKeyAndContainerListenerRecursively(Component c) {
-		c.removeKeyListener(this);
-		
-		if (c instanceof Container){
-			Container cont = (Container) c;
-			cont.removeContainerListener(this);
-		
-			for (Component child : cont.getComponents()){
-				removeKeyAndContainerListenerRecursively(child);
-			}
-		}
+		jgm.GUI.removeKeyAndContainerListenerRecursively(this, e.getChild());
 	}
 }
