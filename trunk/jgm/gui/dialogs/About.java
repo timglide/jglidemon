@@ -1,12 +1,11 @@
 package jgm.gui.dialogs;
 
 import jgm.JGlideMon;
+import jgm.gui.components.JLinkButton;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
-import com.zfqjava.swing.JLinkButton;
 
 public class About extends Dialog implements ActionListener {
 	private JLabel iconLabel;
@@ -43,6 +42,7 @@ public class About extends Dialog implements ActionListener {
 				freeTtsLink =
 					new JLinkButton("FreeTTS",
 							new java.net.URL("http://freetts.sourceforge.net"));
+				//	new JLinkButton("http://freetts.sourceforge.net");
 				freeTtsLink.setBorder(BorderFactory.createEmptyBorder());
 			} catch (java.net.MalformedURLException e) {}
 			
