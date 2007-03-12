@@ -18,7 +18,7 @@
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="version"		value="0.8beta"/>
+	<property name="version"		value="0.8"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/freetts.jar"/>
@@ -130,8 +130,7 @@
 			depends="compile_src"
 			description="Create ${Profiler_jar}">
 		<mkdir dir="${bin_dir}"/>
-		<jar destfile="${Profiler_jar}" 
-				manifest="${src_dir}/Profiler.mf"
+		<jar destfile="${Profiler_jar}"
 				compress="true">
 			<fileset dir="${bin_dir}" includes="jgm/Profiler*.class,jgm/glider/Profile*.class"/>
 
@@ -147,8 +146,7 @@
 			depends="compile_src"
 			description="Create ${ConnTest_jar}">
 		<mkdir dir="${bin_dir}"/>
-		<jar destfile="${ConnTest_jar}" 
-				manifest="${src_dir}/ConnTest.mf"
+		<jar destfile="${ConnTest_jar}"
 				compress="true">
 			<fileset dir="${bin_dir}" includes="jgm/test/ConnTest.*"/>
 			<fileset dir="${src_dir}" includes="jgm/test/ConnTest.*"/>

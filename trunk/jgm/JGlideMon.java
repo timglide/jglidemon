@@ -13,8 +13,8 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.8 beta";
-	public static final boolean debug = true;
+	public static final String version = "0.8";
+	public static final boolean debug = false;
 	
 	public static JGlideMon instance;
 	

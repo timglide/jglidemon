@@ -107,7 +107,7 @@ public class ScreenshotTab extends Tab
 		if (this.isCurrentTab()) {
 			System.out.println("Want to update SS");
 			
-			if (updater != null && updater.idle) {
+			if (updater != null && updater.thread != null && updater.idle) {
 				System.out.println("Updating SS");
 				updater.thread.interrupt();
 			}
