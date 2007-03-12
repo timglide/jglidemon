@@ -402,7 +402,7 @@ public class GUI
     	}
     	
     	c.addKeyListener((KeyListener) listener);
-    	System.out.println("Adding lstnr: " + c);
+    	//System.out.println("Adding lstnr: " + c);
     	
 		if (c instanceof Container) {
 			Container cont = (Container) c;

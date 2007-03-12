@@ -41,6 +41,12 @@ public class JGlideMon {
 	  	connector = new Connector();
 		gui = new GUI();
 
+		// put this here so that the tts config options will
+		// be enabled if tts is available and JGM has yet to
+		// be configured for the first time
+		Sound.init();
+		Speech.init();
+		
 		if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
 			JOptionPane.showMessageDialog(GUI.frame,
 				"Please enter the remote host, port, and password.\n" +
@@ -60,8 +66,6 @@ public class JGlideMon {
 		// takes a while to connect it won't slow the gui
 		Runnable r = new Runnable() {
 			public void run() {
-				Sound.init();
-				Speech.init();
 				keysConn = new Conn();
 				Connector.addListener(new ConnectionAdapter() {
 					public Conn getConn() {
@@ -92,10 +96,7 @@ public class JGlideMon {
 		if (Connector.isConnected()) {
 			try {
 				Thread t = Connector.disconnect();
-				
-				synchronized (t) {
-					t.wait();
-				}
+				t.join();
 			} catch (InterruptedException e) {}
 		}
 		
