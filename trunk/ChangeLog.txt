@@ -11,7 +11,7 @@ Version 0.8
   to send the 4 arrow keys as this would cause you to change
   the selected tab. Use WASD instead.
 - Added some code to try to help cope with when the screenshot
-  fails to update
+  fails to update. This is still a work in progress.
 - Removed dependency on lib/componentset.jar, you may delete this
   file manually if you wish, though it won't harm anything if it
   remains. This library was 500kb and I was only using 2 features

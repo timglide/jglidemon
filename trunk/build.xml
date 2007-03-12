@@ -16,7 +16,8 @@
     <!-- *                                                        * -->
     <!-- * Where to find things...                                * -->
     <!-- *                                                        * -->
-    <!-- ********************************************************** -->
+	<!-- ********************************************************** -->
+	<property name="title"          value="JGlideMon"/>
 	<property name="version"		value="0.8beta"/>
 
     <path id="classpath">
@@ -101,16 +102,25 @@
 
 
 
-    <property name="JGlideMon_jar" value="${bin_dir}/JGlideMon.jar"/>
+	<property name="JGlideMon_jar" value="${bin_dir}/${title}.jar"/>
 
     <target name="JGlideMon_jar" 
 			depends="compile_src"
 			description="Create ${JGlideMon_jar}">
 		<mkdir dir="${bin_dir}"/>
 		<jar destfile="${JGlideMon_jar}" 
-				manifest="${src_dir}/JGlideMon.mf"
 				compress="true">
 			<fileset dir="${bin_dir}" includes="jgm/**" excludes="jgm/Profiler*.class"/>
+
+			<manifest>
+				<attribute name="Main-Class" value="jgm.JGlideMon"/>
+				<attribute name="Class-Path" value="lib/speech/freetts.jar"/>
+
+				<section name="jgm">
+					<attribute name="Specification-Title" value="${title}"/>
+					<attribute name="Specification-Version" value="${version}"/>
+				</section>
+			</manifest>
         </jar>
     </target>
 
@@ -124,6 +134,10 @@
 				manifest="${src_dir}/Profiler.mf"
 				compress="true">
 			<fileset dir="${bin_dir}" includes="jgm/Profiler*.class,jgm/glider/Profile*.class"/>
+
+			<manifest>
+				<attribute name="Main-Class" value="jgm.Profiler"/>
+			</manifest>
         </jar>
     </target>
 
@@ -138,6 +152,10 @@
 				compress="true">
 			<fileset dir="${bin_dir}" includes="jgm/test/ConnTest.*"/>
 			<fileset dir="${src_dir}" includes="jgm/test/ConnTest.*"/>
+
+			<manifest>
+				<attribute name="Main-Class" value="jgm.test.ConnTest"/>
+			</manifest>
         </jar>
 	</target>
 
@@ -146,7 +164,7 @@
 			description="Build all zip files"/>
 
 
-	<property name="core_zip" value="${bin_dir}/JGlideMon_v${version}_core.zip"/>
+	<property name="core_zip" value="${bin_dir}/${title}_v${version}_core.zip"/>
 
 	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
@@ -156,7 +174,7 @@
 	</target>
 
 
-	<property name="profiler_zip" value="${bin_dir}/JGlideMon_v${version}_Profiler.zip"/>
+	<property name="profiler_zip" value="${bin_dir}/${title}_v${version}_Profiler.zip"/>
 
 	<target name="profiler_zip" depends="Profiler_jar"
 			description="Create ${profiler_zip}">
@@ -166,7 +184,7 @@
 	</target>
 
 
-	<property name="tts_zip" value="${bin_dir}/JGlideMon_v${version}_tts.zip"/>
+	<property name="tts_zip" value="${bin_dir}/${title}_v${version}_tts.zip"/>
 
 	<target name="tts_zip" depends="libs"
 			description="Create ${tts_zip}">

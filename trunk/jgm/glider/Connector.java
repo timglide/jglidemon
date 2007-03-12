@@ -115,10 +115,6 @@ public class Connector {
 		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-				runImpl();
-			}
-			
-			private synchronized void runImpl() {
 				notifyDisconnecting();
 
 				boolean success = true;
@@ -128,7 +124,7 @@ public class Connector {
 						if (c.getConn() == null) continue;
 						c.getConn().close();
 					} catch (Exception e) {
-						System.err.println("Error closing a connection: " + e.getMessage());
+						System.err.println("Error closing a connection: " + e.getClass().getName() + ":" + e.getMessage());
 						//success = false;
 						//break;
 					}
@@ -146,8 +142,6 @@ public class Connector {
 						createReconnector();
 					}
 				}
-
-				notifyAll();
 			}
 		}, "Connector.disconnect");
 		
