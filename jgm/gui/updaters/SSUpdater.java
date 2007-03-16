@@ -144,8 +144,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 //					System.out.println(s);
 				z++;
 
-				int l = s.length();
-				if (l >= 3 && s.lastIndexOf("---") == l - 3) {
+				//int l = s.length();
+				//if (l >= 3 && s.lastIndexOf("---") == l - 3) {
+				if (s.endsWith("---")) {
 //					System.out.println("Found ---");
 					break;
 				}

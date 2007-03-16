@@ -17,6 +17,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JTextField maxLogEntries;
 	private JCheckBox showTray;
 	private JCheckBox minToTray;
+	private JComboBox lang;
 	
 	private JPanel net;
 	private JTextField host;
@@ -78,6 +79,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0; c.gridy = 0; c.weightx = 1.0;
+		status.add(new JLabel("Language: "), c);
+		
+		lang = new JComboBox(jgm.Locale.getLocales());
+		lang.addActionListener(this);
+		c.gridx++;
+		status.add(lang, c);
+		
+		c.gridx = 0; c.gridy++;
 		status.add(new JLabel("Status Refresh Interval (ms): "), c);
 		
 		statusInterval = new JTextField(cfg.get("status", "updateInterval"));
@@ -331,6 +340,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		if (e.getSource() == close) {
 			System.out.println("Canceling config changes");
 			setVisible(false);
+			return;
+		} else if (e.getSource() == lang) {
+			Object o = ((JComboBox) lang).getSelectedItem();
+			jgm.Locale.setLocale((java.util.Locale) o);
 			return;
 		}
 		

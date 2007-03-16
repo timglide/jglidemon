@@ -12,7 +12,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class GUI 
-	implements java.util.Observer, ActionListener {
+	implements java.util.Observer, ActionListener, jgm.locale.LocaleListener {
 	
 	public static GUI instance;
 	public static JFrame frame;
@@ -27,6 +27,8 @@ public class GUI
 	public TabsPane       tabsPane;
 
 	private JMenuBar      menuBar;
+	private JMenu         fileMenu, helpMenu;
+	private JMenuItem     saveCache, loadCache, configItem, exitItem, aboutItem;
 
 	private static JStatusBar statusBar;
 
@@ -156,43 +158,41 @@ public class GUI
 		frame.add(mainPane, BorderLayout.CENTER);
 
 		// set up menu
-		         menuBar  = new JMenuBar();
-		JMenu    fileMenu = new JMenu("File");
-		fileMenu.setMnemonic(KeyEvent.VK_F);
+		menuBar  = new JMenuBar();
+		fileMenu = new JMenu();
 		menuBar.add(fileMenu);
 
 		if (jgm.JGlideMon.debug) {
-			JMenuItem saveIcons = new JMenuItem("Save Cache");
-			saveIcons.addActionListener(this);
-			fileMenu.add(saveIcons);
+			saveCache = new JMenuItem();
+			saveCache.addActionListener(this);
+			fileMenu.add(saveCache);
 		
-			saveIcons = new JMenuItem("Load Cache");
-			saveIcons.addActionListener(this);
-			fileMenu.add(saveIcons);
+			loadCache = new JMenuItem();
+			loadCache.addActionListener(this);
+			fileMenu.add(loadCache);
 		}
 		
-		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
+		configItem = new JMenuItem();
 		configItem.addActionListener(this);
 		fileMenu.add(configItem);
 		
 		fileMenu.addSeparator();
 		
-		JMenuItem exitItem = new JMenuItem("Exit", KeyEvent.VK_X);
+		exitItem = new JMenuItem();
 		exitItem.addActionListener(this);
 		fileMenu.add(exitItem);
 		
-		JMenu    helpMenu = new JMenu("Help");
-		helpMenu.setMnemonic(KeyEvent.VK_H);
+		helpMenu = new JMenu();
 		menuBar.add(helpMenu);
 		
-		JMenuItem aboutItem = new JMenuItem("About", KeyEvent.VK_A);
+		aboutItem = new JMenuItem();
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
 
 		
 		// set up status bar
 		statusBar = new JStatusBar();
-		statusBar.setText("Disconnected");
+		statusBar.setText(Locale._("status.disconnected"));
 
 		JProgressBar tmp = statusBar.getProgressBar();
 		tmp.setStringPainted(false);
@@ -203,23 +203,26 @@ public class GUI
 
 		frame.setJMenuBar(menuBar);
 
+		localeChanged();
+		Locale.addListener(this);
+		
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
 	    
 	    Connector.addListener(new ConnectionAdapter() {
 	    	public void connecting() {
-				setStatusBarText("Connecting...", false, true);
+				setStatusBarText(Locale._("status.disconnecting"), false, true);
 				setStatusBarProgressIndeterminent();
 	    	}
 	    	
 	    	public void connectionEstablished() {
-				setStatusBarText("Connected", false, true);
+				setStatusBarText(Locale._("status.connecting"), false, true);
 				setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
 				hideStatusBarProgress();
 	    	}
 	    	
 	    	public void disconnecting() {
-				setStatusBarText("Disconnecting...", false, true);
+				setStatusBarText(Locale._("status.disconnecting"), false, true);
 				setStatusBarProgressIndeterminent();
 	    	}
 	    	
@@ -235,7 +238,24 @@ public class GUI
 		frame.setVisible(true);
 	}
 	
+	public void localeChanged() {
+		Locale.setBase("MainWindow");
+		
+		Locale._(fileMenu, "menu.file");
+		Locale._(saveCache, "menu.file.savecache");
+		Locale._(loadCache, "menu.file.loadcache");
+		Locale._(configItem, "menu.file.config");
+		Locale._(exitItem, "menu.file.exit");
+
+		Locale._(helpMenu, "menu.help");
+		Locale._(aboutItem, "menu.help.about");
+		
+		tray.localeChanged();
+	}
+
 	public void update(java.util.Observable obs, Object o) {
+		Locale.clearBase();
+		
 //		System.out.println("GUI.update() called");
 		StatusUpdater s = (StatusUpdater) o;
 
@@ -248,39 +268,39 @@ public class GUI
 		String version = "";
 		
 		if (!s.version.equals("")) {
-			version = "Connected to Glider v" + s.version + " - ";
+			version = Locale._("status.connectedto") + " " + s.version + " - ";
 		}
 		
 		if (!Connector.isConnected()) {
 			String st;
 			
 			switch (Connector.state) {
-				case CONNECTING: st = "Connecting..."; break;
-				case DISCONNECTING: st = "Disconnecting..."; break;
-				default: st = "Disconnected"; break;
+				case CONNECTING: st = Locale._("status.connecting"); break;
+				case DISCONNECTING: st = Locale._("status.disconnecting"); break;
+				default: st = Locale._("status.disconnected"); break;
 			}
 			
 			setStatusBarText(st);
 		} else if (s.attached) {
-			setStatusBarText(version + "Attached: " + s.profile);
+			setStatusBarText(version + Locale._("status.attached") + ": " + s.profile);
 		} else {
-			setStatusBarText(version + "Not Attached");
+			setStatusBarText(version + Locale._("status.notattached"));
 		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		String cmd = e.getActionCommand();
+		Object src = e.getSource();
 		
-		if (cmd.equals("Configuration")) {
+		if (src == configItem) {
 			showConfig();
-		} else if (cmd.equals("Exit")) {
+		} else if (src == exitItem) {
 			JGlideMon.instance.destroy();
-		} else if (cmd.equals("About")) {
+		} else if (src == aboutItem) {
 			showAbout();
-		} else if (cmd.equals("Save Cache")) {
+		} else if (src == saveCache) {
 			jgm.wow.Item.Cache.saveIcons();
 			jgm.wow.Item.Cache.saveItems();
-		} else if (cmd.equals("Load Cache")) {
+		} else if (src == loadCache) {
 			jgm.wow.Item.Cache.loadIcons();
 			jgm.wow.Item.Cache.loadItems();
 		}

@@ -5,13 +5,14 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-public class Tray implements ActionListener {
+public class Tray implements ActionListener, jgm.locale.LocaleListener {
 	// whether the icon has been added to the tray or not
 	private volatile boolean enabled = false;
 	
 	private static SystemTray tray;
 	private static TrayIcon icon;
 	private static PopupMenu menu;
+	private static MenuItem exit;
 
 	public Tray() {		
 		try {
@@ -25,9 +26,9 @@ public class Tray implements ActionListener {
 			
 			// apparantly can't use a JPopupMenu....
 			menu = new PopupMenu();
-			MenuItem item = new MenuItem("Exit");
-			item.addActionListener(this);
-			menu.add(item);
+			exit = new MenuItem("Exit");
+			exit.addActionListener(this);
+			menu.add(exit);
 			
 			icon = new TrayIcon(jgm.GUI.frame.getIconImage(), jgm.GUI.BASE_TITLE, menu);
 			icon.setImageAutoSize(true);
@@ -67,9 +68,16 @@ public class Tray implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Exit")) {
+		if (e.getSource() == exit) {
 			jgm.JGlideMon.instance.destroy();
 		}
+	}
+	
+	public void localeChanged() {
+		if (!isSupported()) return;
+		
+		jgm.Locale.setBase("MainWindow");
+		jgm.Locale._(exit, "menu.file.exit");
 	}
 	
 	private class MyMouseListener extends MouseAdapter {
