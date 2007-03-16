@@ -1,12 +1,13 @@
 package jgm.gui.panes;
 
+import jgm.Locale;
 import jgm.gui.tabs.*;
 import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.*;
 import javax.swing.*;
 
-public class TabsPane extends Pane {
+public class TabsPane extends Pane implements jgm.locale.LocaleListener {
 	public JTabbedPane  tabbedPane;
 
 	public ScreenshotTab screenshotTab;
@@ -63,12 +64,39 @@ public class TabsPane extends Pane {
 		addTab(lootsTab);
 
 		add(tabbedPane, BorderLayout.CENTER);
+		
+		localeChanged();
+		Locale.addListener(this);
 	}
 
 	private void addTab(Tab t) {
 		tabbedPane.addTab(t.name, t);
 	}
 
+	public void localeChanged() {
+		Locale.setBase("MainWindow");
+		
+		//screenshotTab.localeChanged();
+		statusLog.localeChanged("tab.status");
+		//lootsTab.localeChanged();
+		
+		chatLog.localeChanged();
+		
+		urgentChatLog.localeChanged("tab.urgentlog");
+		//sendKeys.localeChanged();
+		
+		if (rawChatLog != null)
+			rawChatLog.localeChanged("tab.rawchat");
+		
+		combatLog.localeChanged("tab.combatlog");
+		gliderLog.localeChanged("tab.gliderlog");
+		
+		if (rawLog != null)
+			rawLog.localeChanged("tab.rawlog");
+		
+		Locale.clearBase();
+	}
+	
 	public void update(StatusUpdater s) {
 		lootsTab.update(s);
 	}

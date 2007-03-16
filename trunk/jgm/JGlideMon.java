@@ -13,8 +13,8 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.8";
-	public static final boolean debug = false;
+	public static final String version = "0.9 beta";
+	public static final boolean debug = true;
 	
 	public static JGlideMon instance;
 	
@@ -34,6 +34,8 @@ public class JGlideMon {
 	}
 	
 	private void init() {
+		new Locale();
+		
 		try {
 			jgm.glider.Profile.Cache.loadProfiles();
 		} catch (Throwable e) {} // doesn't matter here 
@@ -49,11 +51,13 @@ public class JGlideMon {
 		
 		if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
 			JOptionPane.showMessageDialog(GUI.frame,
-				"Please enter the remote host, port, and password.\n" +
+				Locale._("Main.notconfiguredtext"),
+				Locale._("Main.configrequired"),
+				/*"Please enter the remote host, port, and password.\n" +
 				"Next, click Save Settings, then click Connect.\n\n" +
 				"Remember to click Save Settings any time you change a setting.\n" +
 				"You may access the configuration screen later via the File menu.",
-				"Configuration Required",
+				"Configuration Required",*/
 				JOptionPane.INFORMATION_MESSAGE);
 			
 			// select the network tab

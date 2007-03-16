@@ -41,7 +41,11 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * @return The index of this Tab
 	 */
 	public final int getIndex() {
-		return ((JTabbedPane) this.getParent()).indexOfTab(name);
+		//return -1;
+		return (name == null || getParent() == null)
+				? -1 : ((JTabbedPane) this.getParent())
+						.indexOfComponent(this);
+						//.indexOfTab(name);
 	}
 	
 	/**
@@ -58,4 +62,23 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * for when the StatusUpdater has updated.
 	 */
 	public void update(StatusUpdater s) {}
+	
+	public void localeChanged(String key) {
+		setName(jgm.Locale._(key));
+	}
+	
+	public void setName(String s) {
+		super.setName(s);
+		//System.err.printf("name: %s, parent: %s\n", name, getParent());
+		
+		/*if (name == null) {
+			name = s;
+			return;
+		}*/
+		
+		if (getParent() != null && getIndex() >= 0)
+			//System.err.println("YES");
+			((JTabbedPane) this.getParent()).setTitleAt(getIndex(), s);
+		name = s;
+	}
 }

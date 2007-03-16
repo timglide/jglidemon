@@ -1,5 +1,9 @@
 JGlideMon ChangeLog
 
+Version 0.9
+-----------
+- Initial framework for multi-lingual support added
+
 Version 0.8
 -----------
 - Added support for a tray icon and minimizing to the tray
