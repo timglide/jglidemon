@@ -185,6 +185,11 @@ public class GUI
 		helpMenu.setMnemonic(KeyEvent.VK_H);
 		menuBar.add(helpMenu);
 		
+		JMenuItem debugItem = new JMenuItem("Generate Debug Info", KeyEvent.VK_D);
+		debugItem.addActionListener(this);
+		helpMenu.add(debugItem);
+		helpMenu.addSeparator();
+		
 		JMenuItem aboutItem = new JMenuItem("About", KeyEvent.VK_A);
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
@@ -277,6 +282,32 @@ public class GUI
 			JGlideMon.instance.destroy();
 		} else if (cmd.equals("About")) {
 			showAbout();
+		} else if (cmd.equals("Generate Debug Info")) {
+			Util.generateDebugInfo();
+			
+			String path = null;
+			
+			try {
+				path = Util.debugInfoFile.getCanonicalPath();
+			} catch (java.io.IOException x) {
+				x.printStackTrace();
+			}
+			
+			if (path != null) {
+				JOptionPane.showMessageDialog(
+					frame,
+					"Debug info saved to\n" + path,
+					"Debug Info Generated",
+					JOptionPane.INFORMATION_MESSAGE
+				);
+			} else {
+				JOptionPane.showMessageDialog(
+						frame,
+						"Error saving debug info.",
+						"Error",
+						JOptionPane.ERROR_MESSAGE
+					);
+			}
 		} else if (cmd.equals("Save Cache")) {
 			jgm.wow.Item.Cache.saveIcons();
 			jgm.wow.Item.Cache.saveItems();

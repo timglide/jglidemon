@@ -1,5 +1,13 @@
 JGlideMon ChangeLog
 
+Version 0.8.1
+-------------
+- Added some extra debugging features, namely Help->Generate Debug Info,
+  and File->Configuration->General->Log Debugging Info. Logs are also
+  saved to Log.txt
+- Added config options for the screenshot updater's buffer
+  size and the timeout for updating a screenshot
+
 Version 0.8
 -----------
 - Added support for a tray icon and minimizing to the tray

@@ -1,7 +1,8 @@
 package jgm.glider;
 
-import jgm.Config;
+import jgm.*;
 
+import java.util.logging.*;
 import java.io.*;
 import java.net.*;
 
@@ -11,6 +12,8 @@ import java.net.*;
  * @since 0.1
  */
 public class Conn {
+	static Logger log = Logger.getLogger(Conn.class.getName());
+	
 	private static int instances = 0;
 	
 	private Socket         s;
@@ -32,7 +35,7 @@ public class Conn {
 		s = null; out = null; inStream = null; in = null;
 		
 		//try {
-			System.out.println("Connecting to " + cfg.getString("net", "host") + "...");
+			log.info("Connecting to " + cfg.getString("net", "host") + "...");
 			s   = new Socket(cfg.getString("net", "host"), cfg.getInt("net", "port"));
 			out = new PrintWriter(s.getOutputStream(), false);
 			inStream = new BufferedInputStream(s.getInputStream());
@@ -113,10 +116,14 @@ public class Conn {
 			if (in != null) in.close();
 			if (out != null) out.close();
 			if (s != null) s.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Throwable e) {
+			log.log(Level.SEVERE, "Exception during close", e);
 		}
 		
 		in = null; out = null; s = null;
+	}
+	
+	protected void finalize() {
+		close();
 	}
 }

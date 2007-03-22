@@ -18,7 +18,7 @@
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="version"		value="0.8"/>
+	<property name="version"		value="0.8.1beta"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/freetts.jar"/>
@@ -85,6 +85,9 @@
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}/lib">
 			<fileset dir="${src_dir}/lib" includes="**/*"/>
+		</copy>
+		<copy todir="${bin_dir}">
+			<fileset dir="${src_dir}" includes="**/*.properties"/>
 		</copy>
 	</target>
 
@@ -202,6 +205,7 @@
 				   jgm.gui.panes,
 				   jgm.gui.tabs,
 				   jgm.gui.updaters,
+				   jgm.logging,
 				   jgm.sound,
 				   jgm.test,
 				   jgm.util,
@@ -214,7 +218,6 @@
 				additionalparam="-breakiterator"
 				destdir="${javadoc_dir}" 
 				packagenames="${javadoc_pkgs}"
-
 				windowtitle="${javadoc_desc}"
 				doctitle="${javadoc_desc}"
 				access="protected">

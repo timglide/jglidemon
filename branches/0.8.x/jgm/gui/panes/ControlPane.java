@@ -63,7 +63,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		
 		String cmd = e.getActionCommand();
 		String s = null;
-		System.out.println("Cmd: " + cmd);
+		//System.out.println("Cmd: " + cmd);
 		if (cmd.equals("Attach")) {
 			s = "/attach";
 		} else if (cmd.equals("Start Glide")) {

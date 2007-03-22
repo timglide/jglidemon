@@ -1,11 +1,15 @@
 package jgm.gui;
 
+import java.util.logging.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
 public class Tray implements ActionListener {
+	static Logger log = Logger.getLogger(Tray.class.getName());
+	
 	// whether the icon has been added to the tray or not
 	private volatile boolean enabled = false;
 	
@@ -18,7 +22,7 @@ public class Tray implements ActionListener {
 			Class.forName("java.awt.SystemTray");
 			
 			if (!SystemTray.isSupported()) {
-				throw new Exception("System tray not supported");
+				throw new Throwable("System tray not supported");
 			}
 			
 			tray = SystemTray.getSystemTray();
@@ -36,11 +40,11 @@ public class Tray implements ActionListener {
 			if (jgm.Config.getInstance().getBool("general", "showtray")) {
 				enable();
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			tray = null;
 			icon = null;
 			
-			System.err.println("Unable to initialize system tray. " + e.getMessage());
+			log.log(Level.WARNING, "Unable to initialize system tray", e);
 			return;
 		}
 	}
@@ -52,7 +56,7 @@ public class Tray implements ActionListener {
 			tray.add(icon);
 			enabled = true;
 		} catch (AWTException e) {
-			e.printStackTrace();
+			log.log(Level.WARNING, "Error trying to enable tray", e);
 		}
 	}
 	

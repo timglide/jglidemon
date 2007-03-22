@@ -30,6 +30,6 @@ public abstract class Dialog extends JDialog {
 
 	protected void onShow() {
 		if (jgm.JGlideMon.debug)
-			System.out.println("Showing dialog " + getClass().getName());
+			java.util.logging.Logger.getLogger("jgm").fine("Showing dialog " + getClass().getName());
 	}
 }

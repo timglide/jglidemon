@@ -1,10 +1,11 @@
 package jgm.gui.tabs;
 
-import jgm.JGlideMon;
+import jgm.*;
 import jgm.glider.*;
 import jgm.gui.updaters.SSUpdater;
 
 import java.util.*;
+import java.util.logging.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -15,6 +16,8 @@ import javax.swing.*;
 public class ScreenshotTab extends Tab
 	implements ActionListener, ChangeListener, MouseListener,
 				KeyListener, ContainerListener {
+	static Logger log = Logger.getLogger(ScreenshotTab.class.getName());
+	
 	private static Conn conn = null;
 	private static SSUpdater updater = null;
 	
@@ -90,10 +93,10 @@ public class ScreenshotTab extends Tab
 		checkNulls();
 		
 		if (e.getSource() == refresh) {
-			System.out.println("Want to update SS");
+			log.finer("Want to update SS");
 			
 			if (updater != null && updater.idle) {
-				System.out.println("Updating SS");
+				log.finer("Updating SS");
 				updater.thread.interrupt();
 			}	
 		}
@@ -105,10 +108,10 @@ public class ScreenshotTab extends Tab
 		// if user switches to this tab, force an update
 		// since we stopped updating when the tab wasn't selected
 		if (this.isCurrentTab()) {
-			System.out.println("Want to update SS");
+			log.finer("Want to update SS");
 			
 			if (updater != null && updater.thread != null && updater.idle) {
-				System.out.println("Updating SS");
+				log.finer("Updating SS");
 				updater.thread.interrupt();
 			}
 		}
@@ -136,9 +139,9 @@ public class ScreenshotTab extends Tab
 		//System.out.println(btn + " click @ " + x + "," + y + " (" + xp + "," + yp + ") [" + s.width + "x" + s.height + "]");
 		try {
 			conn.send("/setmouse " + xp + "/" + yp);
-			System.out.println(conn.readLine()); conn.readLine();
+			log.fine(conn.readLine()); conn.readLine();
 			conn.send("/clickmouse " + btn);
-			System.out.println(conn.readLine()); conn.readLine();
+			log.fine(conn.readLine()); conn.readLine();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -159,12 +162,12 @@ public class ScreenshotTab extends Tab
 		int code = e.getKeyCode();
 		
 		if (!isGoodKey(code)) {
-			System.out.println("Bad key: " + code + ", " + KeyEvent.getKeyText(code));
+			log.fine("Bad key: " + code + ", " + KeyEvent.getKeyText(code));
 			return;
 		}
 		
 		if (e.isAltDown() && code == KeyEvent.VK_F4) {
-			System.out.println("NOT sending Alt+F4!");
+			log.fine("NOT sending Alt+F4!");
 			return;
 		}
 		
@@ -176,7 +179,7 @@ public class ScreenshotTab extends Tab
 		
 		try {
 			conn.send("/holdkey " + code);
-			System.out.println(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+			log.fine(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -204,7 +207,7 @@ public class ScreenshotTab extends Tab
 
 		try {
 			conn.send("/releasekey " + code);
-			System.out.println(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+			log.fine(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

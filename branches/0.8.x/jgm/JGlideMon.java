@@ -13,8 +13,8 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.8";
-	public static final boolean debug = false;
+	public static final String version = "0.8.1 beta";
+	public static boolean debug = true;
 	
 	public static JGlideMon instance;
 	
@@ -34,6 +34,9 @@ public class JGlideMon {
 	}
 	
 	private void init() {
+		// initialize logger
+		Log.reloadConfig();
+		
 		try {
 			jgm.glider.Profile.Cache.loadProfiles();
 		} catch (Throwable e) {} // doesn't matter here 

@@ -48,14 +48,14 @@ public class TabsPane extends Pane {
 		addTab(chatLog); addTab(urgentChatLog);
 		addTab(sendKeys);
 		
-		if (jgm.JGlideMon.debug) {
+		if (rawChatLog != null) {
 			addTab(rawChatLog);
 		}
 		
 		addTab(combatLog);
 		addTab(gliderLog); 
 		
-		if (jgm.JGlideMon.debug) {
+		if (rawLog != null) {
 			addTab(rawLog);
 		}
 

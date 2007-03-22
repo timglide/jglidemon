@@ -7,15 +7,17 @@ import jgm.glider.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import java.util.logging.*;
 
 public class StatusUpdater extends Observable
 	implements Runnable, ConnectionListener {
+	static Logger log = Logger.getLogger(StatusUpdater.class.getName());
 	
 	public String version        = "";
 	public boolean attached      = false;
 	public String mode           = "Auto";
 	public String profile        = "";
-	public String log            = "None";
+	public String logMode        = "None";
 	public double health         = 0.0;
 	public double mana           = 0.0;
 	public String name           = "";
@@ -79,7 +81,7 @@ public class StatusUpdater extends Observable
 				update();
 				Thread.sleep(cfg.getLong("status", "updateInterval"));
 			} catch (Exception e) {
-				System.err.println("Stopping StatusUpdater, Ex: " + e.getMessage());
+				log.fine("Stopping StatusUpdater, Ex: " + e.getMessage());
 				Connector.disconnect();
 				return;
 			}
@@ -117,7 +119,7 @@ public class StatusUpdater extends Observable
 					 							  ? true                 : false;
 		mode       = m.containsKey("Mode")        ? m.get("Mode")        : "Auto";
 		profile    = m.containsKey("Profile")     ? m.get("Profile")     : "";
-		log        = m.containsKey("Log")         ? m.get("Log")         : "None";
+		logMode    = m.containsKey("Log")         ? m.get("Log")         : "None";
 		name       = m.containsKey("Name")        ? m.get("Name")        : "";
 		clazz      = m.containsKey("Class")       ? jgm.wow.Class.strToClass(m.get("Class")) : jgm.wow.Class.UNKNOWN;
 		location   = m.containsKey("Location")    ? m.get("Location")    : "";
