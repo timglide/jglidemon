@@ -33,28 +33,17 @@ public class Conn {
 	public synchronized void connect()
 		throws UnknownHostException, IOException {
 		s = null; out = null; inStream = null; in = null;
+
+		log.info("Connecting to " + cfg.getString("net", "host") + "...");
+		s   = new Socket(cfg.getString("net", "host"), cfg.getInt("net", "port"));
+		out = new PrintWriter(s.getOutputStream(), false);
+		inStream = new BufferedInputStream(s.getInputStream());
+		in  = new BufferedReader(
+		          new InputStreamReader(inStream, "UTF-8"));
+		send(cfg.getString("net", "password"));
+		in.readLine(); // ignore Authenticated OK line
 		
-		//try {
-			log.info("Connecting to " + cfg.getString("net", "host") + "...");
-			s   = new Socket(cfg.getString("net", "host"), cfg.getInt("net", "port"));
-			out = new PrintWriter(s.getOutputStream(), false);
-			inStream = new BufferedInputStream(s.getInputStream());
-			in  = new BufferedReader(
-			          new InputStreamReader(inStream));
-			send(cfg.getString("net", "password"));
-			in.readLine(); // ignore Authenticated OK line
-			
-			notifyAll();
-		/*} catch (UnknownHostException e) {
-			s = null; out = null; inStream = null; in = null;
-			System.err.println("Cannot connect to " + cfg.net.host);
-			//System.exit(1);
-		} catch (IOException e) {
-			s = null; out = null; inStream = null; in = null;
-			System.err.println("Cannot initialize socket to " + cfg.net.host);
-			System.err.println("  Error initializing I/O " + e.getMessage());
-			//System.exit(1);
-		}*/
+		notifyAll();
 	}
 
 	public boolean isConnected() {

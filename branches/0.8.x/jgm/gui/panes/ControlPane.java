@@ -4,10 +4,13 @@ import jgm.JGlideMon;
 import jgm.glider.*;
 import jgm.gui.updaters.StatusUpdater;
 
+import java.util.logging.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 public class ControlPane extends Pane implements ActionListener, ConnectionListener {
+	static Logger log = Logger.getLogger(ControlPane.class.getName());
+	
 	private static Conn conn;
 	
 	public JButton connect;
@@ -19,24 +22,28 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		super();
 
 		connect = new JButton("Connect");
+		connect.setFocusable(false);
 		connect.addActionListener(this);
 		//connect.setEnabled(false);
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
 		add(connect, c);
 		
 		attach = new JButton("Attach");
+		attach.setFocusable(false);
 		attach.addActionListener(this);
 		attach.setEnabled(false);
 		c.gridy++;
 		add(attach, c);
 
 		start = new JButton("Start Glide");
+		start.setFocusable(false);
 		start.addActionListener(this);
 		start.setEnabled(false);
 		c.gridy++; c.gridwidth = 1;
 		add(start, c);
 		
 		stop = new JButton("Stop Glide");
+		stop.setFocusable(false);
 		stop.addActionListener(this);
 		stop.setEnabled(false);
 		c.gridx++;
@@ -79,11 +86,11 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		}
 		
 		if (s != null) {
-			System.out.println("Sending: " + s);
+			log.fine("Sending: " + s);
 			
 			try {
 				conn.send(s);
-				System.out.println(conn.readLine()); // status
+				log.fine(conn.readLine()); // status
 				conn.readLine(); // ---
 			} catch (Exception x) {
 				x.printStackTrace();

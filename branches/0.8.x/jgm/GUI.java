@@ -11,8 +11,14 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+/* TODO: Find way to prevent certain keystrokes (i.e. space)
+ * from being sent to whatever has keyboard focus when the 
+ * screenshot tab is the current tab and sending keystrokes
+ * is enabled
+ */
+
 public class GUI 
-	implements java.util.Observer, ActionListener {
+	implements java.util.Observer, ActionListener, ContainerListener {
 	
 	public static GUI instance;
 	public static JFrame frame;
@@ -152,6 +158,8 @@ public class GUI
 		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0; c.weighty = 1.0;
 		mainPane.add(tabsPanel, c);
 
+		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, frame);
+		
 		frame.setLayout(new BorderLayout());
 		frame.add(mainPane, BorderLayout.CENTER);
 
@@ -332,6 +340,15 @@ public class GUI
 		aboutFrame.setVisible(true);
 	}
 	
+	//////////////////////////////
+	// Implement ContainerListener
+	public void componentAdded(ContainerEvent e) {
+		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
+	}
+
+	public void componentRemoved(ContainerEvent e) {
+		removeKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
+	}
 	
 	/////////////////
 	// static methods
@@ -425,42 +442,30 @@ public class GUI
 		);
 	}
 	
-    public static void addKeyAndContainerListenerRecursively(Object listener, Component c) {
-    	if (!(listener instanceof KeyListener &&
-    			listener instanceof ContainerListener)) {
-    		System.err.println("Trying to add object that isn't key and container listener: \n" + listener);
-    		return;
-    	}
-    	
-    	c.addKeyListener((KeyListener) listener);
+    public static void addKeyAndContainerListenerRecursively(KeyListener kl, ContainerListener cl, Component c) {
+    	c.addKeyListener(kl);
     	//System.out.println("Adding lstnr: " + c);
     	
 		if (c instanceof Container) {
 			Container cont = (Container) c;
 			
-			cont.addContainerListener((ContainerListener) listener);
+			cont.addContainerListener(cl);
 			
 			for (Component child : cont.getComponents()){
-				addKeyAndContainerListenerRecursively(listener, child);
+				addKeyAndContainerListenerRecursively(kl, cl, child);
 			}
 		}
     }
     
-    public static void removeKeyAndContainerListenerRecursively(Object listener, Component c) {
-    	if (!(listener instanceof KeyListener &&
-    			listener instanceof ContainerListener)) {
-    		System.err.println("Trying to remove object that isn't key and container listener: \n" + listener);
-    		return;
-    	}
-    	
-		c.removeKeyListener((KeyListener) listener);
+    public static void removeKeyAndContainerListenerRecursively(KeyListener kl, ContainerListener cl, Component c) {    	
+		c.removeKeyListener(kl);
 		
 		if (c instanceof Container){
 			Container cont = (Container) c;
-			cont.removeContainerListener((ContainerListener) listener);
+			cont.removeContainerListener(cl);
 		
 			for (Component child : cont.getComponents()){
-				removeKeyAndContainerListenerRecursively(listener, child);
+				removeKeyAndContainerListenerRecursively(kl, cl, child);
 			}
 		}
 	}

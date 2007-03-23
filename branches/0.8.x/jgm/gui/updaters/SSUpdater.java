@@ -18,7 +18,8 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	public  volatile boolean idle = true;
 	private volatile boolean stop = false;
 	private volatile boolean attached = false;
-
+	public  volatile boolean sentSettings = false;
+	
 	private Conn conn = null;
 
 	private ScreenshotTab tab;
@@ -40,6 +41,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	public void connecting() {}
 	
 	public void connectionEstablished() {
+		sentSettings = false;
 		stop = false;
 		thread = new Thread(this, "SSUpdater");
 		thread.start();
@@ -106,16 +108,20 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			}
 		}, cfg.getInt("screenshot", "timeout") * 1000);
 		
-		conn.send("/capturescale " + cfg.get("screenshot", "scale"));
-		//System.out.println(conn.readLine()); // set scale successfully
-		//System.out.println(conn.readLine()); // ---
-		conn.readLine(); // set scale successfully
-		conn.readLine(); // ---
-		conn.send("/capturequality " + cfg.get("screenshot", "quality"));
-		//System.out.println(conn.readLine()); // set quality successfully
-		//System.out.println(conn.readLine()); // ---
-		conn.readLine(); // set quality successfully
-		conn.readLine(); // ---
+		if (!sentSettings) {
+			log.finer("Sending screenshot settings");
+			conn.send("/capturescale " + cfg.get("screenshot", "scale"));
+			//System.out.println(conn.readLine()); // set scale successfully
+			//System.out.println(conn.readLine()); // ---
+			log.finer(conn.readLine()); // set scale successfully
+			conn.readLine(); // ---
+			conn.send("/capturequality " + cfg.get("screenshot", "quality"));
+			//System.out.println(conn.readLine()); // set quality successfully
+			//System.out.println(conn.readLine()); // ---
+			log.finer(conn.readLine()); // set quality successfully
+			conn.readLine(); // ---
+		}
+		
 		conn.send("/capture");
 		String line = conn.readLine(); // info stating stuff about the datastream
 		
@@ -204,8 +210,12 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			);
 		ImageIcon icon = new ImageIcon(img);
 		tab.ssLabel.setIcon(icon);
-		tab.ssLabel.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
-
+		
+		if (!sentSettings) {
+			tab.ssLabel.setSize(icon.getIconWidth(), icon.getIconHeight());
+			sentSettings = true;
+		}
+		
 		GUI.revertStatusBarText();
 		GUI.unlockStatusBarText();
 		GUI.hideStatusBarProgress();

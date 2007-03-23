@@ -15,13 +15,13 @@ import javax.swing.*;
 
 public class ScreenshotTab extends Tab
 	implements ActionListener, ChangeListener, MouseListener,
-				KeyListener, ContainerListener {
+				KeyListener {
 	static Logger log = Logger.getLogger(ScreenshotTab.class.getName());
 	
 	private static Conn conn = null;
 	private static SSUpdater updater = null;
 	
-	public JTextField keysField;
+	public JCheckBox keysEnabled;
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
 
@@ -30,24 +30,12 @@ public class ScreenshotTab extends Tab
 	public ScreenshotTab() {
 		super(new BorderLayout(), "Screenshot");
 		
-		// this should make it so we don't need a text field
-		// to get keystrokes.
-		// see http://www.javaworld.com/javaworld/javatips/jw-javatip69.html
-		jgm.GUI.addKeyAndContainerListenerRecursively(this, this);
-		
-		/*JPanel jp = new JPanel(new GridBagLayout());
+		JPanel jp = new JPanel(new GridBagLayout());
 		c.weightx = 0.0;
-		jp.add(new JLabel("Chars typed in the textfield will be sent immediately: "), c);
-		keysField = new JTextField();
-		keysField.addKeyListener(this);
-		keysField.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				keysField.setText("");
-			}
-		});
-		c.gridx++; c.weightx = 1.0;
-		jp.add(keysField, c);
-		add(jp, BorderLayout.NORTH);*/
+		keysEnabled = new JCheckBox("Enable Sending Keystrokes", false);
+		keysEnabled.setFocusable(false);
+		jp.add(keysEnabled, c);
+		add(jp, BorderLayout.NORTH);
 		
 		ssLabel = new JLabel();
 		ssLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -60,6 +48,7 @@ public class ScreenshotTab extends Tab
 		add(p, BorderLayout.CENTER);
 		
 		refresh = new JButton("Refresh Screenshot Immediately");
+		refresh.setFocusable(false);
 		refresh.addActionListener(this);
 		add(refresh, BorderLayout.SOUTH);
 		
@@ -124,7 +113,7 @@ public class ScreenshotTab extends Tab
 
 	public void mouseClicked(MouseEvent e) {	
 		checkNulls();
-		if (!Connector.isConnected()) return;
+		if (!Connector.isConnected() || !keysEnabled.isSelected()) return;
 		
 		Dimension s = ssLabel.getSize();
 		int x = e.getX(); int y = e.getY();
@@ -154,7 +143,7 @@ public class ScreenshotTab extends Tab
 		= new HashMap<Integer, Boolean>();
 	
 	public void keyPressed(KeyEvent e) {
-		if (!this.isCurrentTab()) return;
+		if (!this.isCurrentTab() || !keysEnabled.isSelected()) return;
 		
 		checkNulls();
 		if (!Connector.isConnected()) return;
@@ -186,7 +175,7 @@ public class ScreenshotTab extends Tab
 	}
 	
 	public void keyReleased(KeyEvent e) {
-		if (!this.isCurrentTab()) return;
+		if (!this.isCurrentTab() || !keysEnabled.isSelected()) return;
 		
 		checkNulls();
 		//System.out.println(e);
@@ -247,16 +236,5 @@ public class ScreenshotTab extends Tab
 		}
 				
 		return false;
-	}
-	
-	
-	//////////////////////////////
-	// Implement ContainerListener
-	public void componentAdded(ContainerEvent e) {
-		jgm.GUI.addKeyAndContainerListenerRecursively(this, e.getChild());
-	}
-
-	public void componentRemoved(ContainerEvent e) {
-		jgm.GUI.removeKeyAndContainerListenerRecursively(this, e.getChild());
 	}
 }

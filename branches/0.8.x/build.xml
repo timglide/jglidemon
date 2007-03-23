@@ -87,7 +87,7 @@
 			<fileset dir="${src_dir}/lib" includes="**/*"/>
 		</copy>
 		<copy todir="${bin_dir}">
-			<fileset dir="${src_dir}" includes="**/*.properties"/>
+			<fileset dir="${src_dir}" includes="*.properties"/>
 		</copy>
 	</target>
 
@@ -170,7 +170,7 @@
 	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="ChangeLog.txt,JGlideMon.jar,Profiler.jar"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,JGlideMon.jar,Profiler.jar,*.properties"/>
 		</zip>
 	</target>
 

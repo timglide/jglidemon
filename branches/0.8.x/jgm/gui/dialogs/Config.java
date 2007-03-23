@@ -363,9 +363,15 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			return;
 		}
 		
-		cfg.set("general", "debug", debug.isSelected());
-		jgm.JGlideMon.debug = debug.isSelected();
-		jgm.Log.reloadConfig();
+		boolean oldDebug = cfg.getBool("general", "debug");
+		
+		if (oldDebug != debug.isSelected()) {
+			cfg.set("general", "debug", debug.isSelected());
+			jgm.JGlideMon.debug = debug.isSelected();
+			
+			// this deletes the current log
+			jgm.Log.reloadConfig();
+		}
 		
 		cfg.set("net", "host", host.getText());
 		
@@ -430,6 +436,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		} catch (NumberFormatException x) {
 			log.warning("Invalid timeout: " + screenshotTimeout.getText());
 		}
+		
+		jgm.JGlideMon.instance.ssUpdater.sentSettings = false;
 		
 		cfg.set("sound", "enabled", enableSound.isSelected());
 		cfg.set("sound", "whisper", soundWhisper.isSelected());
