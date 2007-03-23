@@ -1,0 +1,116 @@
+JGlideMon ChangeLog
+
+Version 0.9
+-------------
+- Added some extra debugging features, namely Help->Generate Debug Info,
+  and File->Configuration->General->Log Debugging Info. Logs are also
+  saved to Log.txt
+- Added config options for the screenshot updater's buffer
+  size and the timeout for updating a screenshot. The config window
+  will tell you the size of your last screenshot and calculate the
+  maximum size that it could be. This size represents an uncompressed
+  image size. Keep in mind that the image is in fact compressed as
+  a jpeg. Setting the buffer to the calculated size should ensure
+  you won't have a problem but it is a significant over-estimate.
+- Added checkbox to disable sending of keystrokes when screenshot
+  tab is the current tab (note it is disabled when the program is first
+  launched). Also, the screenshot tab no longer requires keyboard
+  focus to send keys.
+
+Version 0.8
+-----------
+- Added support for a tray icon and minimizing to the tray
+  if Java 1.6+ is installed (JGlideMon will still function
+  with Java 1.5+, there just won't be a tray icon)
+- Removed the need for a textfield to have focus to send keys
+  in the screenshot tab. Now keys are sent as long as the
+  screenshot tab is the current tab. Note that you are not able
+  to send the 4 arrow keys as this would cause you to change
+  the selected tab. Use WASD instead. Note that the Screenshot
+  tab must still have focus, that is on most systems a dotted border
+  appears around the word Screenshot on the actual tab.
+- Added some code to try to help cope with when the screenshot
+  fails to update. This is still a work in progress.
+- Removed dependency on lib/componentset.jar, you may delete this
+  file manually if you wish, though it won't harm anything if it
+  remains. This library was 500kb and I was only using 2 features
+  that I was able to replicate myself.
+
+Version 0.7
+-----------
+- Fixed connection issues with non-Windows operating systems
+
+Version 0.6
+-----------
+- Added support for loading profiles. Run Profiler.jar on the
+  computer where Glider is running to create a "profiles.dat"
+  file and copy that file to the same directory as JGlideMon.jar
+  on the remote computer you will run JGlideMon on. JGlideMon will
+  detect profiles.dat and read it into a list of profiles that
+  can be loaded. (The whole point of this is so you don't have
+  to remember the exact paths of all your profiles or type them
+  in manually, but that option is available if you wish)
+- Added the removal of timestamps from in-game chat timestamp mods
+  (CTMod style at least [hh:mm:ss] or [h:mm] for example)
+- Internal changes to improve the storage of configuration data have
+  required that you delete your current JGlideMon.ini file. While
+  it won't hurt anything to not delete it, you will have to re-enter
+  your network settings anyway and it will clutter your ini file.
+  If you really don't want to delete it, change the "[network]" line
+  to "[net]" and change all keys to be lowercase, i.e. "updateInterval=..."
+  would become "updateinterval=...".
+- Values in the configuration dialog should now be correctly refreshed
+  when you cancel changes and reopen the dialog
+- Implemented auto-reconnection to Glider. Settings for delay between
+  attemps and number of attemps can be found in the Network config
+  section.
+
+Version 0.5
+-----------
+- Added item/icon caching. *.cache files will be created that
+  will reduce the number of connections made to wow.allakhazam.com.
+  These files can be deleted without causing any problems
+- Fixed error in parsing items from the chatlog that was causing
+  some items to not be recognized
+- Each log tab now has an upper limit on the number of entries that
+  will be displayed. By defualt this is 500 and can be changed in
+  the [log] section of JGlideMon.ini. I have not had time to create
+  a section in the configuration dialog for this.
+- Fixed error that was not terminating updater threads upon disconnect
+  from Glider, which was causing sporadic behavior when you reconnected
+- Added sounds on being followed, being attacked, stuck too many times
+- Log entries starting with a ! will be added to the urgent log tab
+  and that tab will be selected
+
+Version 0.4
+-----------
+- Fixed detection of mana/rage/energy for all classes
+  (druids not yet tested)
+- Moved configuration from a tab to a dialog (accessible via
+  File -> Configuration)
+- Reduced item icon size to 32x32 on the loot tab
+- Added sell price per stack (and stack quantity) of an item
+  on the item tooltip
+- Added Gold/Hour estimate to loot tab
+- Various internal improvements to use less memory (hopefully)
+- Improved use of the window title
+
+Version 0.3
+-----------
+- Added text-to-speech support
+- Improved use of the status bar
+- Connect/Disconnect buttons now work
+- Improved detection of being disconencted from Glider/
+  not being able to connect
+
+Version 0.2
+-----------
+- Added sounds when whispered/someone said something nearby
+- Added sending keys to Glider/replying to people who whisper you
+- Added sending mouse clicks when you click on the screenshot
+- Added forcing keys from the screenshot tab (i.e. press C to
+  make your character frame show)
+
+Version 0.1
+-----------
+- Initial Release
