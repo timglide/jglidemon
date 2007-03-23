@@ -1,34 +1,37 @@
 package jgm.gui;
 
+import java.util.logging.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
-public class Tray implements ActionListener, jgm.locale.LocaleListener {
+public class Tray implements ActionListener {
+	static Logger log = Logger.getLogger(Tray.class.getName());
+	
 	// whether the icon has been added to the tray or not
 	private volatile boolean enabled = false;
 	
 	private static SystemTray tray;
 	private static TrayIcon icon;
 	private static PopupMenu menu;
-	private static MenuItem exit;
 
 	public Tray() {		
 		try {
 			Class.forName("java.awt.SystemTray");
 			
 			if (!SystemTray.isSupported()) {
-				throw new Exception("System tray not supported");
+				throw new Throwable("System tray not supported");
 			}
 			
 			tray = SystemTray.getSystemTray();
 			
 			// apparantly can't use a JPopupMenu....
 			menu = new PopupMenu();
-			exit = new MenuItem("Exit");
-			exit.addActionListener(this);
-			menu.add(exit);
+			MenuItem item = new MenuItem("Exit");
+			item.addActionListener(this);
+			menu.add(item);
 			
 			icon = new TrayIcon(jgm.GUI.frame.getIconImage(), jgm.GUI.BASE_TITLE, menu);
 			icon.setImageAutoSize(true);
@@ -37,11 +40,11 @@ public class Tray implements ActionListener, jgm.locale.LocaleListener {
 			if (jgm.Config.getInstance().getBool("general", "showtray")) {
 				enable();
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			tray = null;
 			icon = null;
 			
-			System.err.println("Unable to initialize system tray. " + e.getMessage());
+			log.log(Level.WARNING, "Unable to initialize system tray", e);
 			return;
 		}
 	}
@@ -53,7 +56,7 @@ public class Tray implements ActionListener, jgm.locale.LocaleListener {
 			tray.add(icon);
 			enabled = true;
 		} catch (AWTException e) {
-			e.printStackTrace();
+			log.log(Level.WARNING, "Error trying to enable tray", e);
 		}
 	}
 	
@@ -68,16 +71,9 @@ public class Tray implements ActionListener, jgm.locale.LocaleListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == exit) {
+		if (e.getActionCommand().equals("Exit")) {
 			jgm.JGlideMon.instance.destroy();
 		}
-	}
-	
-	public void localeChanged() {
-		if (!isSupported()) return;
-		
-		jgm.Locale.setBase("MainWindow");
-		jgm.Locale._(exit, "menu.file.exit");
 	}
 	
 	private class MyMouseListener extends MouseAdapter {

@@ -1,8 +1,21 @@
 JGlideMon ChangeLog
 
 Version 0.9
------------
-- Initial framework for multi-lingual support added
+-------------
+- Added some extra debugging features, namely Help->Generate Debug Info,
+  and File->Configuration->General->Log Debugging Info. Logs are also
+  saved to Log.txt
+- Added config options for the screenshot updater's buffer
+  size and the timeout for updating a screenshot. The config window
+  will tell you the size of your last screenshot and calculate the
+  maximum size that it could be. This size represents an uncompressed
+  image size. Keep in mind that the image is in fact compressed as
+  a jpeg. Setting the buffer to the calculated size should ensure
+  you won't have a problem but it is a significant over-estimate.
+- Added checkbox to disable sending of keystrokes when screenshot
+  tab is the current tab (note it is disabled when the program is first
+  launched). Also, the screenshot tab no longer requires keyboard
+  focus to send keys.
 
 Version 0.8
 -----------

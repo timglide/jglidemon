@@ -1,11 +1,14 @@
 package jgm.glider;
 
-import jgm.Config;
+import jgm.*;
 import jgm.sound.*;
 
 import java.util.*;
+import java.util.logging.*;
 
 public class Connector {
+	static Logger log = Logger.getLogger(Connector.class.getName());
+	
 	public enum State {
 		DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING
 	}
@@ -61,12 +64,12 @@ public class Connector {
 						if (c.getConn() == null) continue;
 						c.getConn().connect();
 					} catch (java.net.UnknownHostException e) {
-						System.err.println("Error connecting to " + cfg.get("net", "host") + ": " + e.getMessage());
+						log.warning("Error connecting to " + cfg.get("net", "host") + ": " + e.getMessage());
 						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
 						success = false;
 						break;
 					} catch (Exception e) {
-						System.err.println("Error connecting to " + cfg.getString("net", "host") + ": " + e.getMessage());
+						log.warning("Error connecting to " + cfg.getString("net", "host") + ": " + e.getMessage());
 						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - " + e.getMessage(), true, true);						
 						success = false;
 						break;
@@ -90,7 +93,7 @@ public class Connector {
 			}
 		}, "Connector.connect");
 		
-		System.out.println("Attempting to connect...");
+		log.fine("Attempting to connect...");
 		t.start();
 	}
 
@@ -123,8 +126,9 @@ public class Connector {
 					try {
 						if (c.getConn() == null) continue;
 						c.getConn().close();
-					} catch (Exception e) {
-						System.err.println("Error closing a connection: " + e.getClass().getName() + ":" + e.getMessage());
+					} catch (Throwable e) {
+						log.log(Level.WARNING, "Error closing a connection", e);
+						//System.err.println("Error closing a connection: " + e.getClass().getName() + ":" + e.getMessage());
 						//success = false;
 						//break;
 					}
@@ -145,7 +149,7 @@ public class Connector {
 			}
 		}, "Connector.disconnect");
 		
-		System.out.println("Attempting to disconnect...");
+		log.fine("Attempting to disconnect...");
 		t.start();
 		
 		return t;
@@ -160,28 +164,28 @@ public class Connector {
 	}
 	
 	private void notifyConnecting() {
-		System.out.println("Notifying of connecting");
+		log.finer("Notifying of connecting");
 		for (ConnectionListener c : listeners) {
 			c.connecting();
 		}
 	}
 	
 	private void notifyConnectionEstablished() {
-		System.out.println("Notifying of connection established");
+		log.finer("Notifying of connection established");
 		for (ConnectionListener c : listeners) {
 			c.connectionEstablished();
 		}
 	}
 	
 	private void notifyDisconnecting() {
-		System.out.println("Notifying of disconnecting");
+		log.finer("Notifying of disconnecting");
 		for (ConnectionListener c : listeners) {
 			c.disconnecting();
 		}
 	}
 	
 	private void notifyConnectionDied() {
-		System.out.println("Notifying of connection died");
+		log.finer("Notifying of connection died");
 		for (ConnectionListener c : listeners) {
 			c.connectionDied();
 		}
@@ -208,14 +212,14 @@ public class Connector {
 			public void run() {
 				int i = delay;
 				try {
-					System.out.println("Reconnecting in " + i);
+					log.fine("Reconnecting in " + i);
 					while (i > 0) {
 						jgm.GUI.setStatusBarText("Reconnecting in " + i + "...", false, true);
 						Thread.sleep(1000);
 						i--;
 					}
 				} catch (InterruptedException e) {
-					System.out.println("Cancelling auto-reconnect.");
+					log.fine("Cancelling auto-reconnect.");
 					return;
 				}
 				Connector.connect();

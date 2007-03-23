@@ -1,12 +1,11 @@
 package jgm.gui.tabs;
 
-import jgm.Locale;
 import jgm.glider.log.*;
 
 import java.awt.*;
 import javax.swing.*;
 
-public class ChatTab extends Tab implements jgm.locale.LocaleListener {
+public class ChatTab extends Tab {
 	private JTabbedPane tabs;
 	public LogTab all;
 	public LogTab whisper;
@@ -42,14 +41,5 @@ public class ChatTab extends Tab implements jgm.locale.LocaleListener {
 		} else if (channel.equals("Guild") || channel.equals("Officer")) {
 			guild.add(e);
 		}
-	}
-	
-	public void localeChanged() {
-		Locale.setBase("MainWindow");
-		
-		localeChanged("tab.chat");
-		all.localeChanged("tab.chat.all");
-		whisper.localeChanged("tab.chat.whispersay");
-		guild.localeChanged("tab.chat.guild");
 	}
 }

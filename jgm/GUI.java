@@ -11,8 +11,14 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+/* TODO: Find way to prevent certain keystrokes (i.e. space)
+ * from being sent to whatever has keyboard focus when the 
+ * screenshot tab is the current tab and sending keystrokes
+ * is enabled
+ */
+
 public class GUI 
-	implements java.util.Observer, ActionListener, jgm.locale.LocaleListener {
+	implements java.util.Observer, ActionListener, ContainerListener {
 	
 	public static GUI instance;
 	public static JFrame frame;
@@ -27,8 +33,6 @@ public class GUI
 	public TabsPane       tabsPane;
 
 	private JMenuBar      menuBar;
-	private JMenu         fileMenu, helpMenu;
-	private JMenuItem     saveCache, loadCache, configItem, exitItem, aboutItem;
 
 	private static JStatusBar statusBar;
 
@@ -154,45 +158,54 @@ public class GUI
 		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0; c.weighty = 1.0;
 		mainPane.add(tabsPanel, c);
 
+		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, frame);
+		
 		frame.setLayout(new BorderLayout());
 		frame.add(mainPane, BorderLayout.CENTER);
 
 		// set up menu
-		menuBar  = new JMenuBar();
-		fileMenu = new JMenu();
+		         menuBar  = new JMenuBar();
+		JMenu    fileMenu = new JMenu("File");
+		fileMenu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(fileMenu);
 
 		if (jgm.JGlideMon.debug) {
-			saveCache = new JMenuItem();
-			saveCache.addActionListener(this);
-			fileMenu.add(saveCache);
+			JMenuItem saveIcons = new JMenuItem("Save Cache");
+			saveIcons.addActionListener(this);
+			fileMenu.add(saveIcons);
 		
-			loadCache = new JMenuItem();
-			loadCache.addActionListener(this);
-			fileMenu.add(loadCache);
+			saveIcons = new JMenuItem("Load Cache");
+			saveIcons.addActionListener(this);
+			fileMenu.add(saveIcons);
 		}
 		
-		configItem = new JMenuItem();
+		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
 		configItem.addActionListener(this);
 		fileMenu.add(configItem);
 		
 		fileMenu.addSeparator();
 		
-		exitItem = new JMenuItem();
+		JMenuItem exitItem = new JMenuItem("Exit", KeyEvent.VK_X);
 		exitItem.addActionListener(this);
 		fileMenu.add(exitItem);
 		
-		helpMenu = new JMenu();
+		JMenu    helpMenu = new JMenu("Help");
+		helpMenu.setMnemonic(KeyEvent.VK_H);
 		menuBar.add(helpMenu);
 		
-		aboutItem = new JMenuItem();
+		JMenuItem debugItem = new JMenuItem("Generate Debug Info", KeyEvent.VK_D);
+		debugItem.addActionListener(this);
+		helpMenu.add(debugItem);
+		helpMenu.addSeparator();
+		
+		JMenuItem aboutItem = new JMenuItem("About", KeyEvent.VK_A);
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
 
 		
 		// set up status bar
 		statusBar = new JStatusBar();
-		statusBar.setText(Locale._("status.disconnected"));
+		statusBar.setText("Disconnected");
 
 		JProgressBar tmp = statusBar.getProgressBar();
 		tmp.setStringPainted(false);
@@ -203,26 +216,23 @@ public class GUI
 
 		frame.setJMenuBar(menuBar);
 
-		localeChanged();
-		Locale.addListener(this);
-		
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
 	    
 	    Connector.addListener(new ConnectionAdapter() {
 	    	public void connecting() {
-				setStatusBarText(Locale._("status.disconnecting"), false, true);
+				setStatusBarText("Connecting...", false, true);
 				setStatusBarProgressIndeterminent();
 	    	}
 	    	
 	    	public void connectionEstablished() {
-				setStatusBarText(Locale._("status.connecting"), false, true);
+				setStatusBarText("Connected", false, true);
 				setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
 				hideStatusBarProgress();
 	    	}
 	    	
 	    	public void disconnecting() {
-				setStatusBarText(Locale._("status.disconnecting"), false, true);
+				setStatusBarText("Disconnecting...", false, true);
 				setStatusBarProgressIndeterminent();
 	    	}
 	    	
@@ -238,24 +248,7 @@ public class GUI
 		frame.setVisible(true);
 	}
 	
-	public void localeChanged() {
-		Locale.setBase("MainWindow");
-		
-		Locale._(fileMenu, "menu.file");
-		Locale._(saveCache, "menu.file.savecache");
-		Locale._(loadCache, "menu.file.loadcache");
-		Locale._(configItem, "menu.file.config");
-		Locale._(exitItem, "menu.file.exit");
-
-		Locale._(helpMenu, "menu.help");
-		Locale._(aboutItem, "menu.help.about");
-		
-		tray.localeChanged();
-	}
-
 	public void update(java.util.Observable obs, Object o) {
-		Locale.clearBase();
-		
 //		System.out.println("GUI.update() called");
 		StatusUpdater s = (StatusUpdater) o;
 
@@ -268,39 +261,65 @@ public class GUI
 		String version = "";
 		
 		if (!s.version.equals("")) {
-			version = Locale._("status.connectedto") + " " + s.version + " - ";
+			version = "Connected to Glider v" + s.version + " - ";
 		}
 		
 		if (!Connector.isConnected()) {
 			String st;
 			
 			switch (Connector.state) {
-				case CONNECTING: st = Locale._("status.connecting"); break;
-				case DISCONNECTING: st = Locale._("status.disconnecting"); break;
-				default: st = Locale._("status.disconnected"); break;
+				case CONNECTING: st = "Connecting..."; break;
+				case DISCONNECTING: st = "Disconnecting..."; break;
+				default: st = "Disconnected"; break;
 			}
 			
 			setStatusBarText(st);
 		} else if (s.attached) {
-			setStatusBarText(version + Locale._("status.attached") + ": " + s.profile);
+			setStatusBarText(version + "Attached: " + s.profile);
 		} else {
-			setStatusBarText(version + Locale._("status.notattached"));
+			setStatusBarText(version + "Not Attached");
 		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		Object src = e.getSource();
+		String cmd = e.getActionCommand();
 		
-		if (src == configItem) {
+		if (cmd.equals("Configuration")) {
 			showConfig();
-		} else if (src == exitItem) {
+		} else if (cmd.equals("Exit")) {
 			JGlideMon.instance.destroy();
-		} else if (src == aboutItem) {
+		} else if (cmd.equals("About")) {
 			showAbout();
-		} else if (src == saveCache) {
+		} else if (cmd.equals("Generate Debug Info")) {
+			Util.generateDebugInfo();
+			
+			String path = null;
+			
+			try {
+				path = Util.debugInfoFile.getCanonicalPath();
+			} catch (java.io.IOException x) {
+				x.printStackTrace();
+			}
+			
+			if (path != null) {
+				JOptionPane.showMessageDialog(
+					frame,
+					"Debug info saved to\n" + path,
+					"Debug Info Generated",
+					JOptionPane.INFORMATION_MESSAGE
+				);
+			} else {
+				JOptionPane.showMessageDialog(
+						frame,
+						"Error saving debug info.",
+						"Error",
+						JOptionPane.ERROR_MESSAGE
+					);
+			}
+		} else if (cmd.equals("Save Cache")) {
 			jgm.wow.Item.Cache.saveIcons();
 			jgm.wow.Item.Cache.saveItems();
-		} else if (src == loadCache) {
+		} else if (cmd.equals("Load Cache")) {
 			jgm.wow.Item.Cache.loadIcons();
 			jgm.wow.Item.Cache.loadItems();
 		}
@@ -321,6 +340,15 @@ public class GUI
 		aboutFrame.setVisible(true);
 	}
 	
+	//////////////////////////////
+	// Implement ContainerListener
+	public void componentAdded(ContainerEvent e) {
+		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
+	}
+
+	public void componentRemoved(ContainerEvent e) {
+		removeKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
+	}
 	
 	/////////////////
 	// static methods
@@ -414,42 +442,30 @@ public class GUI
 		);
 	}
 	
-    public static void addKeyAndContainerListenerRecursively(Object listener, Component c) {
-    	if (!(listener instanceof KeyListener &&
-    			listener instanceof ContainerListener)) {
-    		System.err.println("Trying to add object that isn't key and container listener: \n" + listener);
-    		return;
-    	}
-    	
-    	c.addKeyListener((KeyListener) listener);
+    public static void addKeyAndContainerListenerRecursively(KeyListener kl, ContainerListener cl, Component c) {
+    	c.addKeyListener(kl);
     	//System.out.println("Adding lstnr: " + c);
     	
 		if (c instanceof Container) {
 			Container cont = (Container) c;
 			
-			cont.addContainerListener((ContainerListener) listener);
+			cont.addContainerListener(cl);
 			
 			for (Component child : cont.getComponents()){
-				addKeyAndContainerListenerRecursively(listener, child);
+				addKeyAndContainerListenerRecursively(kl, cl, child);
 			}
 		}
     }
     
-    public static void removeKeyAndContainerListenerRecursively(Object listener, Component c) {
-    	if (!(listener instanceof KeyListener &&
-    			listener instanceof ContainerListener)) {
-    		System.err.println("Trying to remove object that isn't key and container listener: \n" + listener);
-    		return;
-    	}
-    	
-		c.removeKeyListener((KeyListener) listener);
+    public static void removeKeyAndContainerListenerRecursively(KeyListener kl, ContainerListener cl, Component c) {    	
+		c.removeKeyListener(kl);
 		
 		if (c instanceof Container){
 			Container cont = (Container) c;
-			cont.removeContainerListener((ContainerListener) listener);
+			cont.removeContainerListener(cl);
 		
 			for (Component child : cont.getComponents()){
-				removeKeyAndContainerListenerRecursively(listener, child);
+				removeKeyAndContainerListenerRecursively(kl, cl, child);
 			}
 		}
 	}

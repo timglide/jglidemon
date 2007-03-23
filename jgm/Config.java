@@ -3,6 +3,7 @@ package jgm;
 import jgm.util.*;
 
 import java.lang.reflect.*;
+import java.util.logging.*;
 import java.io.File;
 
 /**
@@ -12,6 +13,8 @@ import java.io.File;
  * @since 0.1
  */
 public class Config extends QuickIni {
+	static Logger log = Logger.getLogger(Config.class.getName());
+		
 	public static Config instance;
 	private static final File iniFile = new File("JGlideMon.ini");
 	//private static QuickIni ini = new QuickIni(iniFile.getName());
@@ -207,7 +210,7 @@ public class Config extends QuickIni {
 	
 	public void validate() {
 		if (getInt("log", "maxEntries") < 1) {
-			setInt("log", "maxEntries", 500);
+			setInt("log", "maxEntries", defaults.log.maxentries);
 		}
 
 		int i = getInt("screenshot", "scale");
@@ -217,20 +220,22 @@ public class Config extends QuickIni {
 		i = getInt("screenshot", "quality");
 		if (i > 100) setInt("screenshot", "quality", 100); else
 		if (i < 10)  setInt("screenshot", "quality", 10);
+		
+		if (getDouble("screenshot", "buffer") < 1.0)
+			setDouble("screenshot", "buffer", 1.0);
+		
+		if (getInt("screenshot", "timeout") < 5)
+			setInt("screenshot", "timeout", 5);
 	}
 	
 	public static void writeIni() {
-//		Thread t = new Thread(new Runnable() {
-//			public void run() {
-				System.out.println("Saving configuration to " + iniFile.getName());
-				instance.updateFile();
-//			}
-//		});
-//		t.start();
+		log.fine("Saving configuration to " + iniFile.getName());
+		instance.updateFile();
 	}
 	
 	public static class defaults {
 		public static class general {
+			public static final boolean debug = false;
 			public static final boolean showtray = true;
 			public static final boolean mintotray = true;
 		}
@@ -255,8 +260,11 @@ public class Config extends QuickIni {
 		public static class screenshot {
 			public static final boolean autoupdate = true;
 			public static final int updateinterval = 5000;
-			public static final int scale = 100;
+			// seems to be some weird issue if scale is 100
+			public static final int scale = 99;
 			public static final int quality = 100;
+			public static final double buffer = 1.5;
+			public static final int timeout = 10;
 		}
 		
 		public static class window {

@@ -4,10 +4,13 @@ import jgm.glider.*;
 import jgm.glider.log.*;
 import jgm.gui.panes.TabsPane;
 import jgm.gui.tabs.*;
- 
+
+import java.util.logging.*;
 import java.io.*;
 
 public class LogUpdater implements Runnable, ConnectionListener {
+	static Logger log = Logger.getLogger(LogUpdater.class.getName());
+	
 	private volatile boolean stop = false;
 
 	private Conn conn;
@@ -66,7 +69,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			conn.readLine(); // Log mode added: all
 			conn.readLine(); // ---
 		} catch (IOException e) {
-			System.err.println("Stopping LogUpdater, IOE: " + e.getMessage());
+			log.fine("Stopping LogUpdater, IOE: " + e.getMessage());
 			Connector.disconnect();
 			return; // connection died
 		}
@@ -79,8 +82,8 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			
 			try {
 				line = conn.readLine();
-			} catch (Exception x) {
-				System.err.println("Stopping LogUpdater, Ex: " + x.getMessage());
+			} catch (Throwable x) {
+				log.fine("Stopping LogUpdater, Ex: " + x.getMessage());
 				Connector.disconnect();
 				return;
 			}

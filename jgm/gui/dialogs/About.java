@@ -41,7 +41,7 @@ public class About extends Dialog implements ActionListener {
 			try {
 				freeTtsLink =
 					new JLinkButton("FreeTTS",
-							new java.net.URL("http://freetts.sourceforge.net"));
+						new java.net.URL("http://freetts.sourceforge.net"));
 				//	new JLinkButton("http://freetts.sourceforge.net");
 				freeTtsLink.setBorder(BorderFactory.createEmptyBorder());
 			} catch (java.net.MalformedURLException e) {}

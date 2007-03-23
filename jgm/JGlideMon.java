@@ -13,8 +13,8 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.9 beta";
-	public static final boolean debug = true;
+	public static final String version = "0.9";
+	public static boolean debug = false;
 	
 	public static JGlideMon instance;
 	
@@ -34,7 +34,8 @@ public class JGlideMon {
 	}
 	
 	private void init() {
-		new Locale();
+		// initialize logger
+		Log.reloadConfig();
 		
 		try {
 			jgm.glider.Profile.Cache.loadProfiles();
@@ -51,20 +52,16 @@ public class JGlideMon {
 		
 		if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
 			JOptionPane.showMessageDialog(GUI.frame,
-				Locale._("Main.notconfiguredtext"),
-				Locale._("Main.configrequired"),
-				/*"Please enter the remote host, port, and password.\n" +
+				"Please enter the remote host, port, and password.\n" +
 				"Next, click Save Settings, then click Connect.\n\n" +
 				"Remember to click Save Settings any time you change a setting.\n" +
 				"You may access the configuration screen later via the File menu.",
-				"Configuration Required",*/
+				"Configuration Required",
 				JOptionPane.INFORMATION_MESSAGE);
 			
 			// select the network tab
 			gui.showConfig(1);
 		}
-		
-		gui.makeVisible();
 		
 		// create a seperate thread to connect in case it
 		// takes a while to connect it won't slow the gui
@@ -90,6 +87,8 @@ public class JGlideMon {
 		};
 
 		new Thread(r, "JGlideMon.Init").start();
+
+		gui.makeVisible();
 		
 		// not critical to get these loaded before the gui shows
 		jgm.wow.Item.Cache.loadIcons();

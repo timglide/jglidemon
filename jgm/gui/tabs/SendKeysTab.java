@@ -4,13 +4,16 @@ import jgm.JGlideMon;
 import jgm.gui.components.*;
 import jgm.glider.*;
 
+import java.util.logging.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
 public class SendKeysTab extends Tab
-	implements ActionListener, TreeSelectionListener {	
+	implements ActionListener, TreeSelectionListener {
+	static Logger log = Logger.getLogger(SendKeysTab.class.getName());
+	
 	private JLabel toLbl;
 	public  JComboBox type;
 	public  JTextField to;
@@ -203,7 +206,7 @@ public class SendKeysTab extends Tab
 				}
 				
 				try {
-					System.out.println("Sending: " + sb.toString());
+					log.fine("Sending: " + sb.toString());
 					conn.send("/queuekeys " + sb.toString());
 					conn.readLine(); // queued keys
 					conn.readLine(); // ---
@@ -217,7 +220,7 @@ public class SendKeysTab extends Tab
 				resetFields();
 			} else if (source == clear) {
 				try {
-					System.out.println("Clearing key queue");
+					log.fine("Clearing key queue");
 					conn.send("/clearsay");
 					conn.readLine(); // status
 					conn.readLine(); // ---
@@ -299,10 +302,10 @@ public class SendKeysTab extends Tab
 		}
 		
 		try {
-			System.out.println("Loading profile: " + path);
+			log.fine("Loading profile: " + path);
 			conn.send("/loadprofile " + path);
 			String ret = conn.readLine(); // queued keys
-			System.out.println(ret);
+			log.fine(ret);
 			conn.readLine(); // ---
 			
 			if (ret.toLowerCase().contains("failed")) {

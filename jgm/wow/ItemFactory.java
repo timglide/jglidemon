@@ -1,5 +1,7 @@
 package jgm.wow;
 
+import java.util.logging.*;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 //import javax.xml.parsers.ParserConfigurationException;
@@ -10,6 +12,8 @@ import org.w3c.dom.NodeList;
 //import org.xml.sax.SAXException;
 
 public class ItemFactory {
+	static Logger log = Logger.getLogger(Item.class.getName());
+	
 	private static final String SITE_URL
 		= "http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=";
 
@@ -36,7 +40,7 @@ public class ItemFactory {
 		} catch (Exception e) {
 			// couldn't get xml from allakhazam, just return
 			// the item with the name and no additional info
-			System.err.println("Couldn't get item XML: " + e.getMessage());
+			log.warning("Couldn't get item XML: " + e.getMessage());
 			return true;
 		}
 
