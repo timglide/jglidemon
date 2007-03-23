@@ -218,7 +218,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(screenshotQuality, c);
 		
 		c.gridx = 0; c.gridy++;
-		screenshot.add(new JLabel("Buffer Size (Mb): "), c);
+		screenshot.add(new JLabel("Buffer Size (MB): "), c);
 		
 		screenshotBuffer = new JSpinner(
 			new SpinnerNumberModel(1.0, 0.5, 10.0, 0.1)
@@ -529,7 +529,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			ssInfo.setText(
 				String.format(
 					"<html><br>Your last screenshot was %sx%s pixels.<br>\n" +
-					"Uncompressed it could be at most %.2fMb.",
+					"Uncompressed it could be at most %.2fMB.",
 					width,
 					height,
 					sizeMb

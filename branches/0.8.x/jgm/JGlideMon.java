@@ -13,8 +13,8 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.8.1 beta";
-	public static boolean debug = true;
+	public static final String version = "0.9";
+	public static boolean debug = false;
 	
 	public static JGlideMon instance;
 	
@@ -63,8 +63,6 @@ public class JGlideMon {
 			gui.showConfig(1);
 		}
 		
-		gui.makeVisible();
-		
 		// create a seperate thread to connect in case it
 		// takes a while to connect it won't slow the gui
 		Runnable r = new Runnable() {
@@ -89,6 +87,8 @@ public class JGlideMon {
 		};
 
 		new Thread(r, "JGlideMon.Init").start();
+
+		gui.makeVisible();
 		
 		// not critical to get these loaded before the gui shows
 		jgm.wow.Item.Cache.loadIcons();

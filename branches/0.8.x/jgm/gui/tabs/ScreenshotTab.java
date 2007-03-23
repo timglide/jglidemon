@@ -74,7 +74,6 @@ public class ScreenshotTab extends Tab
 	
 	public void setEnabled(boolean b) {
 		//super.setEnabled(b);
-		//keysField.setEnabled(b);
 		refresh.setEnabled(b);
 	}
 	

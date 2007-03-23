@@ -1,6 +1,6 @@
 JGlideMon ChangeLog
 
-Version 0.8.1
+Version 0.9
 -------------
 - Added some extra debugging features, namely Help->Generate Debug Info,
   and File->Configuration->General->Log Debugging Info. Logs are also
