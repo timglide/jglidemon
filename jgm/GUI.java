@@ -12,7 +12,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class GUI 
-	implements java.util.Observer, ActionListener, jgm.locale.LocaleListener {
+	implements java.util.Observer, ActionListener, ContainerListener, jgm.locale.LocaleListener {
 	
 	public static GUI instance;
 	public static JFrame frame;
@@ -28,7 +28,7 @@ public class GUI
 
 	private JMenuBar      menuBar;
 	private JMenu         fileMenu, helpMenu;
-	private JMenuItem     saveCache, loadCache, configItem, exitItem, aboutItem;
+	private JMenuItem     saveCache, loadCache, configItem, exitItem, debugInfoItem, aboutItem;
 
 	private static JStatusBar statusBar;
 
@@ -154,6 +154,8 @@ public class GUI
 		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0; c.weighty = 1.0;
 		mainPane.add(tabsPanel, c);
 
+		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, frame);
+
 		frame.setLayout(new BorderLayout());
 		frame.add(mainPane, BorderLayout.CENTER);
 
@@ -185,6 +187,12 @@ public class GUI
 		helpMenu = new JMenu();
 		menuBar.add(helpMenu);
 		
+		/* TODO: localize */
+		debugInfoItem = new JMenuItem("Generate Debug Info", KeyEvent.VK_D);
+		debugInfoItem.addActionListener(this);
+		helpMenu.add(debugInfoItem);
+		helpMenu.addSeparator();
+
 		aboutItem = new JMenuItem();
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
@@ -297,6 +305,33 @@ public class GUI
 			JGlideMon.instance.destroy();
 		} else if (src == aboutItem) {
 			showAbout();
+		} else if (src == debugInfoItem) {
+			/* TODO: localize */
+			Util.generateDebugInfo();
+			
+			String path = null;
+			
+			try {
+				path = Util.debugInfoFile.getCanonicalPath();
+			} catch (java.io.IOException x) {
+				x.printStackTrace();
+			}
+			
+			if (path != null) {
+				JOptionPane.showMessageDialog(
+					frame,
+					"Debug info saved to\n" + path,
+					"Debug Info Generated",
+					JOptionPane.INFORMATION_MESSAGE
+				);
+			} else {
+				JOptionPane.showMessageDialog(
+						frame,
+						"Error saving debug info.",
+						"Error",
+						JOptionPane.ERROR_MESSAGE
+					);
+			}
 		} else if (src == saveCache) {
 			jgm.wow.Item.Cache.saveIcons();
 			jgm.wow.Item.Cache.saveItems();
@@ -320,7 +355,18 @@ public class GUI
 		if (aboutFrame == null) aboutFrame = new jgm.gui.dialogs.About(frame);
 		aboutFrame.setVisible(true);
 	}
-	
+
+
+	//////////////////////////////
+	// Implement ContainerListener
+	public void componentAdded(ContainerEvent e) {
+		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
+	}
+
+	public void componentRemoved(ContainerEvent e) {
+		removeKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
+	}
+
 	
 	/////////////////
 	// static methods
@@ -414,42 +460,30 @@ public class GUI
 		);
 	}
 	
-    public static void addKeyAndContainerListenerRecursively(Object listener, Component c) {
-    	if (!(listener instanceof KeyListener &&
-    			listener instanceof ContainerListener)) {
-    		System.err.println("Trying to add object that isn't key and container listener: \n" + listener);
-    		return;
-    	}
-    	
-    	c.addKeyListener((KeyListener) listener);
+    public static void addKeyAndContainerListenerRecursively(KeyListener kl, ContainerListener cl, Component c) {
+    	c.addKeyListener(kl);
     	//System.out.println("Adding lstnr: " + c);
     	
 		if (c instanceof Container) {
 			Container cont = (Container) c;
 			
-			cont.addContainerListener((ContainerListener) listener);
+			cont.addContainerListener(cl);
 			
 			for (Component child : cont.getComponents()){
-				addKeyAndContainerListenerRecursively(listener, child);
+				addKeyAndContainerListenerRecursively(kl, cl, child);
 			}
 		}
     }
     
-    public static void removeKeyAndContainerListenerRecursively(Object listener, Component c) {
-    	if (!(listener instanceof KeyListener &&
-    			listener instanceof ContainerListener)) {
-    		System.err.println("Trying to remove object that isn't key and container listener: \n" + listener);
-    		return;
-    	}
-    	
-		c.removeKeyListener((KeyListener) listener);
+    public static void removeKeyAndContainerListenerRecursively(KeyListener kl, ContainerListener cl, Component c) {    	
+		c.removeKeyListener(kl);
 		
 		if (c instanceof Container){
 			Container cont = (Container) c;
-			cont.removeContainerListener((ContainerListener) listener);
+			cont.removeContainerListener(cl);
 		
 			for (Component child : cont.getComponents()){
-				removeKeyAndContainerListenerRecursively(listener, child);
+				removeKeyAndContainerListenerRecursively(kl, cl, child);
 			}
 		}
 	}

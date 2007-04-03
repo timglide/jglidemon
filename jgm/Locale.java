@@ -14,19 +14,11 @@ public class Locale {
 	public static final java.util.Locale LOCALE_ENGLISH = new java.util.Locale("en", "");
 	public static final java.util.Locale LOCALE_DEFAULT = java.util.Locale.getDefault();
 	private static java.util.Locale LOCALE_CURRENT = LOCALE_DEFAULT;
-
-	public static ResourceBundle bundle;
 	
 	private static Map<String, ResourceBundle> bundles =
 		new HashMap<String, ResourceBundle>();
 	
-	public Locale() {
-		setBundle();
-	}
-	
-	private static void setBundle() {
-		//bundle = ResourceBundle.getBundle("jgm." + BUNDLE_NAME, LOCALE_CURRENT, Locale.class.getClassLoader());
-	}
+	private Locale() {}
 	
 	private static ResourceBundle getBundle(String name) {
 		if (!bundles.containsKey(name)) {
@@ -45,7 +37,6 @@ public class Locale {
 		java.util.Locale.setDefault(l);
 		LOCALE_CURRENT = l;
 		bundles.clear();
-		setBundle();
 		
 		notifyLocaleChanged();
 	}
@@ -63,6 +54,7 @@ public class Locale {
 	
 	private static void notifyLocaleChanged() {
 		for (LocaleListener l : listeners) {
+			System.out.println("Notifying " + l.getClass().getName());
 			l.localeChanged();
 		}
 	}
@@ -174,10 +166,12 @@ public class Locale {
 		final String prefix = BUNDLE_NAME.substring(BUNDLE_NAME.lastIndexOf('.') + 1);
 		final String extension = ".properties";
 
-		//System.out.println("bundleFolder: " + bundleFolder);
+		System.out.println("bundleFolder: " + bundleFolder + "; " + bundleFolder.concat(extension));
 		String urlString = jgm.JGlideMon.class.getResource(bundleFolder.concat(extension)).toExternalForm();
-		//System.out.println("urlString: " + urlString);
+		System.out.println("urlString: " + urlString);
 
+		bundleFolder = "jgm/" + bundleFolder;
+		
 		String[] bundles = null;
 
 		if (urlString.startsWith("jar:file:")) {
@@ -185,17 +179,18 @@ public class Locale {
 
 			if (jar != null) {
 				try {
-					// System.out.println("jar: " + jar.getAbsolutePath());
+					System.out.println("jar: " + jar.getAbsolutePath());
 					JarFile jarFile = new JarFile(jar);
 					Enumeration<JarEntry> entries = jarFile.entries();
 					ArrayList<String> list = new ArrayList<String>(250);
 					
 					while (entries.hasMoreElements()) {
 						JarEntry jarEntry = entries.nextElement();
+						//System.out.println("jarEntry: " + jarEntry.getName());
 						
 						if (jarEntry.getName().startsWith(bundleFolder)
 							&& jarEntry.getName().endsWith(extension)) {
-							// System.out.println("jarEntry: " + jarEntry.getName());
+							System.out.println("jarEntry: " + jarEntry.getName());
 							list.add(jarEntry.getName().substring(
 							bundleFolder.length() - prefix.length()));
 							// "MessagesBundle_de_DE.properties"
@@ -207,6 +202,8 @@ public class Locale {
 					e.printStackTrace();
 					//Debug.printStackTrace(e);
 				}
+			} else {
+				System.err.println("Jar was null trying to find locales.");
 			}
 		} else {
 			File bundleDirectory = new File(URI.create(urlString)).getParentFile();

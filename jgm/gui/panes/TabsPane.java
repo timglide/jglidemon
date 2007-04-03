@@ -49,14 +49,14 @@ public class TabsPane extends Pane implements jgm.locale.LocaleListener {
 		addTab(chatLog); addTab(urgentChatLog);
 		addTab(sendKeys);
 		
-		if (jgm.JGlideMon.debug) {
+		if (rawChatLog != null) {
 			addTab(rawChatLog);
 		}
 		
 		addTab(combatLog);
 		addTab(gliderLog); 
 		
-		if (jgm.JGlideMon.debug) {
+		if (rawLog != null) {
 			addTab(rawLog);
 		}
 
@@ -86,7 +86,7 @@ public class TabsPane extends Pane implements jgm.locale.LocaleListener {
 		//sendKeys.localeChanged();
 		
 		if (rawChatLog != null)
-			rawChatLog.localeChanged("tab.rawchat");
+			rawChatLog.localeChanged("tab.rawchatlog");
 		
 		combatLog.localeChanged("tab.combatlog");
 		gliderLog.localeChanged("tab.gliderlog");

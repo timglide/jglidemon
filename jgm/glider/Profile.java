@@ -2,11 +2,14 @@ package jgm.glider;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 
 import javax.swing.event.*;
 import javax.swing.tree.*;
 
 public final class Profile implements Comparable<Profile>, TreeModel, Serializable {
+	static Logger log = Logger.getLogger(Profile.class.getName());
+
 	public static transient Profile root = new Profile(null, "ROOT", false);
 	//public static Vector<Profile> nodes = new Vector<Profile>();
 		
@@ -162,9 +165,9 @@ public final class Profile implements Comparable<Profile>, TreeModel, Serializab
 				os.writeObject(root);
 				os.close();
 				
-				System.out.println("Saving profiles to " + profileFile.getName());
+				log.fine("Saving profiles to " + profileFile.getName());
 			} catch (IOException e) {
-				System.err.println("Error saving profiles: " + e.getMessage());
+				log.log(Level.WARNING, "Error saving profiles", e);
 			}
 		}
 		
@@ -183,13 +186,13 @@ public final class Profile implements Comparable<Profile>, TreeModel, Serializab
 				
 				is.close();
 				
-				System.out.println("Loading profiles from " + profileFile.getName());
+				log.fine("Loading profiles from " + profileFile.getName());
 			} catch (Throwable e) {
 				// catch the exception here so we can print something
 				// out and call reset() but throw it again so the
 				// caller knows it wasn't successful
 				
-				System.err.println("Error loading profiles: " + e.getMessage());
+				log.log(Level.WARNING, "Error loading profiles", e);
 				reset();
 				
 				throw e;

@@ -5,6 +5,7 @@ import java.awt.Font;
 
 import javax.swing.ImageIcon;
 import java.util.*;
+import java.util.logging.*;
 import java.io.*;
 
 /**
@@ -13,6 +14,8 @@ import java.io.*;
  * @since 0.1
  */
 public class Item implements Comparable<Item>, Serializable {
+	static Logger log = Logger.getLogger(Item.class.getName());
+
 	public static final Font TITLE_FONT = new Font(null, Font.BOLD, 20);
 	
 	private transient static Map<Integer, Item> itemCache = new HashMap<Integer, Item>();
@@ -314,6 +317,7 @@ public class Item implements Comparable<Item>, Serializable {
 				icon = jgm.Util.resizeIcon(icon, 32, 32);
 				iconCache.put(iconPath, icon);
 			} catch (java.net.MalformedURLException e) {
+				// shouldn't get here...
 				System.err.println("Unable to make icon in Item: " + e.getMessage());
 				icon = null;
 			}
@@ -380,9 +384,9 @@ public class Item implements Comparable<Item>, Serializable {
 				os.writeObject(iconCache);
 				os.close();
 				
-				System.out.println("Saving icon cache to " + iconFile.getName());
+				log.fine("Saving icon cache to " + iconFile.getName());
 			} catch (IOException e) {
-				System.err.println("Error saving icon cache: " + e.getMessage());
+				log.log(Level.SEVERE, "Error saving icon cache", e);
 			}
 		}
 		
@@ -400,11 +404,11 @@ public class Item implements Comparable<Item>, Serializable {
 				
 				is.close();
 				
-				System.out.println("Loading icon cache from " + iconFile.getName());
+				log.fine("Loading icon cache from " + iconFile.getName());
 			} catch (ClassNotFoundException e) {
-				System.err.println("Error loading icon cache: " + e.getMessage());
+				log.log(Level.WARNING, "Error loading icon cache", e);
 			} catch (IOException e) {
-				System.err.println("Error loading icon cache: " + e.getMessage());
+				log.log(Level.WARNING, "Error loading icon cache", e);
 			}
 		}
 		
@@ -430,9 +434,9 @@ public class Item implements Comparable<Item>, Serializable {
 				os.writeObject(itemCache);
 				os.close();
 				
-				System.out.println("Saving item cache to " + itemFile.getName());
+				log.fine("Saving item cache to " + itemFile.getName());
 			} catch (IOException e) {
-				System.err.println("Error saving item cache: " + e.getMessage());
+				log.log(Level.SEVERE, "Error saving item cache", e);
 			}
 		}
 		
@@ -450,11 +454,11 @@ public class Item implements Comparable<Item>, Serializable {
 				
 				is.close();
 				
-				System.out.println("Loading item cache from " + itemFile.getName());
+				log.fine("Loading item cache from " + itemFile.getName());
 			} catch (ClassNotFoundException e) {
-				System.err.println("Error loading item cache: " + e.getMessage());
+				log.log(Level.WARNING, "Error loading item cache", e);
 			} catch (IOException e) {
-				System.err.println("Error loading iten cache: " + e.getMessage());
+				log.log(Level.WARNING, "Error loading item cache", e);
 			}
 		}
 	}

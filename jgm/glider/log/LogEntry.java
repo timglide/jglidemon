@@ -2,6 +2,7 @@ package jgm.glider.log;
 
 import java.util.Date;
 import java.util.regex.*;
+import java.util.logging.*;
 import java.text.SimpleDateFormat;
 
 /**
@@ -11,6 +12,8 @@ import java.text.SimpleDateFormat;
  * @since 0.1
  */
 public class LogEntry implements Comparable<LogEntry> {
+	protected static Logger log = Logger.getLogger(LogEntry.class.getName());
+
 	protected Date timestamp = new Date();
 	protected String type = "Unknown";
 	
@@ -76,7 +79,7 @@ public class LogEntry implements Comparable<LogEntry> {
 		String[] parts = s.split(" ", 2);
 
 		if (parts.length != 2) {
-			System.err.println("Invalid LogEntry: " + s);
+			log.warning("Invalid LogEntry: " + s);
 			return null;
 		}
 

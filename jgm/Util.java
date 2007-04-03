@@ -184,4 +184,63 @@ public class Util {
     	
     	return( null );
     }
+
+
+	public static final File debugInfoFile = new File("DebugInfo.txt");
+
+	public static void generateDebugInfo() {
+		//FileWriter fw = null;
+		//BufferedWriter bw = null;
+		PrintWriter pw = null;
+
+		FileOutputStream fs = null;
+		PrintStream ps = null;
+
+		try {
+			//fw = new FileWriter(debugInfoFile);
+			//bw = new BufferedWriter(fw);
+			//pw = new PrintWriter(bw);
+
+			fs = new FileOutputStream(debugInfoFile);
+			ps = new PrintStream(fs);
+
+			ps.println("Java Properties");
+			ps.println("---------------");
+
+			for (Object key : System.getProperties().keySet()) {
+				ps.println(key + ": " + System.getProperty(key.toString()));
+			}
+
+
+			ps.println();
+			ps.println("JGlideMon Properties");
+			ps.println("--------------------");
+
+			ps.println("version: " + jgm.JGlideMon.version);
+			ps.println("debug: " + Boolean.toString(jgm.JGlideMon.debug));
+
+			ps.println();
+			ps.println("JGlideMon Config");
+			ps.println("----------------");
+
+			Config cfg = Config.getInstance();
+			java.util.Iterator<String> i = cfg.getAllSectionNames();
+
+			while (i.hasNext()) {
+				String section = i.next();
+
+				for (String prop : cfg.getAllPropertyNames(section)) {
+					ps.print(section + "." + prop + ": ");
+					ps.println(cfg.get(section, prop));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (pw != null)
+				pw.close();
+			if (ps != null)
+				ps.close();
+		}
+	}
 }

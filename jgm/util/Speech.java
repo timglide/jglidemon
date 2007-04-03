@@ -2,6 +2,7 @@ package jgm.util;
 
 import com.sun.speech.freetts.*;
 import java.util.*;
+import java.util.logging.*;
 
 /**
  * Handle the generation ot text-to-speech. This
@@ -12,6 +13,8 @@ import java.util.*;
  * @since 0.3
  */
 public class Speech implements Runnable {
+	static Logger log = Logger.getLogger(Speech.class.getName());
+
 	public static boolean destroyWhenEmpty = false;
 	public static boolean printTime = false;
 
@@ -57,11 +60,11 @@ public class Speech implements Runnable {
 		try {
 			Class.forName("com.sun.speech.freetts.VoiceManager");
 			voiceManager = VoiceManager.getInstance();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			voice = null;
 			instance = null;
 			
-			System.err.println("Unable to load TTS, libraries not available");
+			log.warning("Unable to load TTS, libraries not available");
 			return;
 		}
 		
@@ -71,7 +74,7 @@ public class Speech implements Runnable {
 			voice = null;
 			instance = null;
 			
-        	System.err.println("Unable to load TTS");
+        	log.warning("Unable to load TTS");
         	return;
         }
 
@@ -108,7 +111,7 @@ public class Speech implements Runnable {
 		if (voice == null)
 			return;
 		
-		System.out.println("Queuing \"" + phrase + "\" for TTS");
+		log.fine("Queuing \"" + phrase + "\" for TTS");
 		toSay.add(phrase);
 		
 		if (instance.idle)
@@ -136,9 +139,9 @@ public class Speech implements Runnable {
 			t2 = System.currentTimeMillis();
 		
 			if (printTime) 
-				System.out.println("Time to say \"" + phrase + "\": " + (t2 - t1) + "ms");
-		} catch (Exception e) {
-			System.err.println("Error during TTS: " + e.getMessage());
+				log.fine("Time to say \"" + phrase + "\": " + (t2 - t1) + "ms");
+		} catch (Throwable e) {
+			log.log(Level.SEVERE, "Error during TTS", e);
 		}
 	}
 	
