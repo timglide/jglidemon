@@ -693,8 +693,8 @@ public class QuickIni
         (sectionName == null) || (sectionName.length() < 1) ||
         (propertyName == null) || (propertyName.length() < 1))
     {
-    	if (jgm.JGlideMon.debug)
-    		System.out.println(sectionName + "." + propertyName + " def val 1");
+//    	if (jgm.JGlideMon.debug)
+//    		System.out.println(sectionName + "." + propertyName + " def val 1");
       return defaultValue;
     }
     
@@ -703,8 +703,8 @@ public class QuickIni
     if ((props == null) || (props.size() < 1))
     {
       // Return
-    	if (jgm.JGlideMon.debug)
-    		System.out.println(sectionName + "." + propertyName + " def val 2");
+//    	if (jgm.JGlideMon.debug)
+//    		System.out.println(sectionName + "." + propertyName + " def val 2");
       return defaultValue;
     }
     
@@ -713,8 +713,8 @@ public class QuickIni
     if (value == null)
     {
       // It was null, so it wasn't found
-    	if (jgm.JGlideMon.debug)
-    		System.out.println(sectionName + "." + propertyName + " def val 3");
+//    	if (jgm.JGlideMon.debug)
+//    		System.out.println(sectionName + "." + propertyName + " def val 3");
       return defaultValue;
     }
     

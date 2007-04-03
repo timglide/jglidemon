@@ -4,8 +4,11 @@ import jgm.util.SaveURL;
 
 import java.net.*;
 import java.util.regex.*;
+import java.util.logging.*;
 
 public class EffectFactory {
+	static Logger log = Logger.getLogger(Item.class.getName());
+
 	public static final String EFFECT_URL = 
 		"http://wow.allakhazam.com/ihtml?";
 	
@@ -31,7 +34,7 @@ public class EffectFactory {
 		try {
 			page = SaveURL.getURL(new URL(EFFECT_URL + item.id));
 		} catch (Exception x) {
-			System.err.println("Problem retrieving effect: " + x.getMessage());
+			log.warning("Problem retrieving effect: " + x.getMessage());
 			return false;
 		}
 		//System.out.println(page);

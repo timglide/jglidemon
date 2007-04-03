@@ -1,18 +1,20 @@
 package jgm.gui.dialogs;
 
+import java.util.logging.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-/* TODO Add method to update all the fields to the current value in the config */
-
 public class Config extends Dialog implements ActionListener, ChangeListener {
+	static Logger log = Logger.getLogger(Config.class.getName());
+
 	private JTabbedPane tabs;
 	private JButton update;
 	private JButton close;
 	
 	private JPanel status;
+	private JCheckBox debug;
 	private JTextField statusInterval;
 	private JTextField maxLogEntries;
 	private JCheckBox showTray;
@@ -31,6 +33,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JTextField screenshotInterval;
 	private JSlider screenshotScale;
 	private JSlider screenshotQuality;
+	private JSpinner screenshotBuffer;
+	private JTextField screenshotTimeout;
+	private JLabel ssInfo;
 	
 	
 	private JPanel sound;
@@ -78,7 +83,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		//GUI.setTitleBorder(status, "Status/Logging");
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0; c.gridy = 0; c.weightx = 1.0;
+
+		c.gridx = 0; c.gridy = 0; c.weightx = 1.0; c.gridwidth = 2;
+		debug = new JCheckBox("Log Debugging Info", jgm.JGlideMon.debug);
+		status.add(debug, c);
+
+		c.gridx = 0; c.gridy++; c.gridwidth = 1;
 		status.add(new JLabel("Language: "), c);
 		
 		lang = new JComboBox(jgm.Locale.getLocales());
@@ -217,6 +227,26 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++;
 		screenshot.add(screenshotQuality, c);
 		
+		c.gridx = 0; c.gridy++;
+		screenshot.add(new JLabel("Buffer Size (MB): "), c);
+
+		screenshotBuffer = new JSpinner(
+			new SpinnerNumberModel(1.0, 0.5, 10.0, 0.1)
+		);
+		c.gridx++;
+		screenshot.add(screenshotBuffer, c);
+
+		c.gridx = 0; c.gridy++;
+		screenshot.add(new JLabel("Update Timeout (s): "), c);
+
+		screenshotTimeout = new JTextField();
+		c.gridx++;
+		screenshot.add(screenshotTimeout, c);
+
+		c.gridx = 0; c.gridy++; c.gridwidth = 2;
+		ssInfo = new JLabel("", JLabel.CENTER);
+		screenshot.add(ssInfo, c);
+
 		c.gridx = 0; c.gridy++; c.weighty = 1.0;
 		screenshot.add(new JLabel(), c);
 		c.weighty = 0.0;
@@ -339,6 +369,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == close) {
 			System.out.println("Canceling config changes");
+			log.fine("Canceling config changes");
 			setVisible(false);
 			return;
 		} else if (e.getSource() == lang) {
@@ -347,6 +378,16 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			return;
 		}
 		
+		boolean oldDebug = cfg.getBool("general", "debug");
+
+		if (oldDebug != debug.isSelected()) {
+			cfg.set("general", "debug", debug.isSelected());
+			jgm.JGlideMon.debug = debug.isSelected();
+
+			// this deletes the current log
+			jgm.Log.reloadConfig();
+		}
+
 		cfg.set("net", "host", host.getText());
 		
 		try {
@@ -355,7 +396,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			if (cfg.getInt("net", "port") < 1) 
 				throw new NumberFormatException("Port must be positive");
 		} catch (NumberFormatException x) {
-			System.err.println("Invalid port: " + port.getText());
+			log.warning("Invalid port: " + port.getText());
 		}
 		
 		cfg.set("net", "password", password.getText());
@@ -367,7 +408,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			if (cfg.getInt("net", "autoreconnectdelay") < 0)
 				throw new NumberFormatException("Auto reconnect delay must be > 0");
 		} catch (NumberFormatException x) {
-			System.err.println("Invalid auto reconnect delay: " + netReconnectDelay.getText());
+			log.warning("Invalid auto reconnect delay: " + netReconnectDelay.getText());
 		}
 		
 		try {
@@ -376,19 +417,19 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			if (cfg.getInt("net", "autoreconnecttries") < 1)
 				throw new NumberFormatException("Auto reconnect tries must be positive");
 		} catch (NumberFormatException x) {
-			System.err.println("Invalid auto reconnect tries: " + netReconnectTries.getText());
+			log.warning("Invalid auto reconnect tries: " + netReconnectTries.getText());
 		}
 		
 		try {
 			cfg.set("status", "updateinterval", Integer.parseInt(statusInterval.getText()));
 		} catch (NumberFormatException x) {
-			System.err.println("Invalid interval: " + statusInterval.getText());
+			log.warning("Invalid interval: " + statusInterval.getText());
 		}
 		
 		try {
 			cfg.set("log", "maxentries", Integer.parseInt(maxLogEntries.getText()));
 		} catch (NumberFormatException x) {
-			System.err.println("Invalid max entries: " + maxLogEntries.getText());
+			log.warning("Invalid max entries: " + maxLogEntries.getText());
 		}
 		
 		cfg.set("general", "showtray", showTray.isSelected());
@@ -397,12 +438,22 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		try {
 			cfg.set("screenshot", "updateinterval", Integer.parseInt(screenshotInterval.getText()));
 		} catch (NumberFormatException x) {
-			System.err.println("Invalid interval: " + screenshotInterval.getText());
+			log.warning("Invalid interval: " + screenshotInterval.getText());
 		}
 		
 		cfg.set("screenshot", "scale", screenshotScale.getValue());
 		cfg.set("screenshot", "quality", screenshotQuality.getValue());
-		
+
+		cfg.set("screenshot", "buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
+
+		try {
+			cfg.set("screenshot", "timeout", Integer.parseInt(screenshotTimeout.getText()));
+		} catch (NumberFormatException x) {
+			log.warning("Invalid timeout: " + screenshotTimeout.getText());
+		}
+
+		jgm.JGlideMon.instance.ssUpdater.sentSettings = false;
+
 		cfg.set("sound", "enabled", enableSound.isSelected());
 		cfg.set("sound", "whisper", soundWhisper.isSelected());
 		cfg.set("sound", "say", soundSay.isSelected());
@@ -463,6 +514,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	protected void onShow() {
 		//super.onShow();
 
+		debug.setSelected(cfg.getBool("general", "debug"));
 		statusInterval.setText(cfg.get("status", "updateinterval"));
 		maxLogEntries.setText(cfg.get("log", "maxentries"));
 		showTray.setEnabled(jgm.gui.Tray.isSupported());
@@ -478,7 +530,31 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshotInterval.setText(cfg.get("screenshot", "updateinterval"));
 		screenshotScale.setValue(cfg.getInt("screenshot", "scale"));
 		screenshotQuality.setValue(cfg.getInt("screenshot", "quality"));
-		
+		screenshotBuffer.setValue(cfg.getDouble("screenshot", "buffer"));
+		screenshotTimeout.setText(cfg.get("screenshot", "timeout"));
+ 		
+		Icon i = jgm.GUI.instance.tabsPane.screenshotTab.ssLabel.getIcon();
+
+		if (i != null) {
+			int width = i.getIconWidth();
+			int height = i.getIconHeight();
+			int size = width * height * 3;
+			float sizeMb = (float) size / 1048576; 
+
+			ssInfo.setText(
+				String.format(
+					"<html><br>Your last screenshot was %sx%s pixels.<br>\n" +
+					"Uncompressed it could be at most %.2fMB.",
+					width,
+					height,
+					sizeMb
+				)
+			);
+
+			this.pack();
+		}
+
+
 		enableSound.setSelected(cfg.getBool("sound", "enabled"));
 		soundWhisper.setSelected(cfg.getBool("sound", "whisper"));
 		soundSay.setSelected(cfg.getBool("sound", "say"));

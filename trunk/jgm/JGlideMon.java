@@ -13,8 +13,8 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.9 beta";
-	public static final boolean debug = true;
+	public static final String version = "0.10 beta";
+	public static boolean debug = true;
 	
 	public static JGlideMon instance;
 	
@@ -34,8 +34,12 @@ public class JGlideMon {
 	}
 	
 	private void init() {
-		new Locale();
+		try {
+			Class.forName("jgm.glider.log.RawChatLogEntry");
+		} catch (Throwable e) {}
 		
+		Log.reloadConfig();
+
 		try {
 			jgm.glider.Profile.Cache.loadProfiles();
 		} catch (Throwable e) {} // doesn't matter here 
@@ -91,6 +95,8 @@ public class JGlideMon {
 
 		new Thread(r, "JGlideMon.Init").start();
 		
+		gui.makeVisible();
+
 		// not critical to get these loaded before the gui shows
 		jgm.wow.Item.Cache.loadIcons();
 		jgm.wow.Item.Cache.loadItems();

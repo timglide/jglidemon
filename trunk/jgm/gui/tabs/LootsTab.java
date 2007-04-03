@@ -62,7 +62,7 @@ public class LootsTab extends Tab implements ActionListener {
 			
 //			if (i == 3)
 //				for (int j = 0; j < 10; j++)
-//					items[i].add(Item.factory(7713 + j, "Illusionary Rod")); // for testing
+//					items[i].add(ItemSet.factory(7713 + j, "Illusionary Rod", 1)); // for testing
 		}
 
 		JPanel superLoot = new JPanel(new GridLayout(0, 1, 10, 0));
