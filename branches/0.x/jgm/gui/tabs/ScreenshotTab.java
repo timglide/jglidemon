@@ -45,7 +45,7 @@ public class ScreenshotTab extends Tab
 		JPanel p = new JPanel();
 		p.add(ssLabel);
 		
-		add(p, BorderLayout.CENTER);
+		add(new JScrollPane(p), BorderLayout.CENTER);
 		
 		refresh = new JButton("Refresh Screenshot Immediately");
 		refresh.setFocusable(false);
