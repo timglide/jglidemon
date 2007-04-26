@@ -1,5 +1,11 @@
 JGlideMon ChangeLog
 
+Version 0.9.1
+-------------
+- Added scrollbars to screenshot when image is too large to fit
+- JGlideMon now released under the GNU GPL, see License.txt for
+  more information
+
 Version 0.9
 -------------
 - Added some extra debugging features, namely Help->Generate Debug Info,
