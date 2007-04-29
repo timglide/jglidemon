@@ -192,7 +192,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="ChangeLog.txt,JGlideMon.jar,Profiler.jar,*.properties"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,Profiler.jar,*.properties"/>
 		</zip>
 	</target>
 
@@ -210,7 +210,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="profiler_zip" depends="Profiler_jar"
 			description="Create ${profiler_zip}">
 		<zip destfile="${profiler_zip}">
-			<fileset dir="${bin_dir}" includes="Profiler.jar"/>
+			<fileset dir="${bin_dir}" includes="Profiler.jar,License.txt"/>
 		</zip>
 	</target>
 
