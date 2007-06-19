@@ -45,7 +45,7 @@ public class CombatLogEntry extends LogEntry {
 	}
 	
 	private static Pattern KILLED_MOB_PATTERN = 
-		Pattern.compile("(.+) dies, you gain (\\d+) experience.(?: \\+\\d+ exp Rested bonus)?");
+		Pattern.compile("(.+) dies, you gain (\\d+) experience.(?: \\(\\+\\d+ exp Rested bonus\\))?");
 	
 	private void parseMob() {
 		Matcher m = KILLED_MOB_PATTERN.matcher(rawText);

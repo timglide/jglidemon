@@ -187,6 +187,7 @@ public class RawChatLogEntry extends LogEntry {
 		itemSet = ItemSet.factory(id, name, qty);
 	}
 
+	// "Your %s reputation has increased by %d."
 	private static final Pattern REP_REGEX =
 		Pattern.compile("Reputation with (.+) (increased|decreased) by (\\d+)\\.");
 	
