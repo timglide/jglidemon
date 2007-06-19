@@ -33,7 +33,7 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.9.1";
+	public static final String version = "0.10 beta";
 	public static boolean debug = false;
 	
 	public static JGlideMon instance;

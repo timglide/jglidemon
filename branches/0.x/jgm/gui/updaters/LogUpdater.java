@@ -42,6 +42,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	private ChatTab chatLog;
 	private LogTab urgentChatLog;
 	private LogTab combatLog;
+	private MobsTab mobsTab;
 	private LootsTab lootsTab;
  
 	private Thread thread;
@@ -54,6 +55,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		chatLog    = t.chatLog;
 		urgentChatLog = t.urgentChatLog;
 		combatLog  = t.combatLog;
+		mobsTab    = t.mobsTab;
 		lootsTab   = t.lootsTab;
 		
 		conn = new Conn();
@@ -149,8 +151,17 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				if (e2.hasMoney()) {
 					lootsTab.addMoney(e2.getMoney());
 				}
+				
+				if (e2.hasRep() || e2.hasSkill()) {
+					mobsTab.add(e);
+				}
 			} else if (e instanceof CombatLogEntry) {
-				combatLog.add(e);
+				CombatLogEntry e2 = (CombatLogEntry) e;
+				combatLog.add(e2);
+				
+				if (e2.hasMob()) {
+					mobsTab.add(e2);
+				}
 			}
 		}
 	}

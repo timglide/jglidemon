@@ -20,9 +20,41 @@
  */
 package jgm.glider.log;
 
+import java.util.regex.*;
+
 // nothing special
 public class CombatLogEntry extends LogEntry {
+	public String killedMob = null;
+	public int xp = 0;
+	
 	public CombatLogEntry(String s) {
 		super("Combat", s);
+		parseMob();
+	}
+	
+	public boolean hasMob() {
+		return killedMob != null;
+	}
+	
+	public String getMobName() {
+		return killedMob;
+	}
+	
+	public int getMobXP() {
+		return xp;
+	}
+	
+	private static Pattern KILLED_MOB_PATTERN = 
+		Pattern.compile("(.+) dies, you gain (\\d+) experience.(?: \\+\\d+ exp Rested bonus)?");
+	
+	private void parseMob() {
+		Matcher m = KILLED_MOB_PATTERN.matcher(rawText);
+		if (!m.matches()) return;
+		
+		killedMob = m.group(1);
+		
+		try {
+			xp = Integer.parseInt(m.group(2));
+		} catch (NumberFormatException e) {}
 	}
 }

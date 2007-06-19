@@ -77,6 +77,10 @@ public class LogEntry implements Comparable<LogEntry> {
 		return this.timestamp.compareTo(e.timestamp);
 	}
 
+	public Date getTimestamp() {
+		return timestamp;
+	}
+	
 	/**
 	 * Returns the timestamp in HH:mm:ss format.
 	 * @return The formatted timestamp

@@ -31,6 +31,7 @@ public class TabsPane extends Pane {
 
 	public ScreenshotTab screenshotTab;
 	public LogTab        statusLog;
+	public MobsTab       mobsTab;
 	public LootsTab      lootsTab;
 	
 	public ChatTab       chatLog;
@@ -79,9 +80,25 @@ public class TabsPane extends Pane {
 			addTab(rawLog);
 		}
 
+		mobsTab = new MobsTab();
+		addTab(mobsTab);
+		
 		lootsTab = new LootsTab();
 		addTab(lootsTab);
 
+		try {
+			tabbedPane.setSelectedIndex(jgm.Config.getInstance().getInt("general", "lasttab"));
+		} catch (IndexOutOfBoundsException e) {}
+		
+		// save current tab in the config to restore when program is restarted
+		tabbedPane.addChangeListener(
+			new javax.swing.event.ChangeListener() {
+				public void stateChanged(javax.swing.event.ChangeEvent e) {
+					jgm.Config.getInstance().set("general", "lasttab", tabbedPane.getSelectedIndex());
+				}
+			}
+		);
+		
 		add(tabbedPane, BorderLayout.CENTER);
 	}
 

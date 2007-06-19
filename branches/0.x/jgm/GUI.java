@@ -31,11 +31,6 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-/* TODO: Find way to prevent certain keystrokes (i.e. space)
- * from being sent to whatever has keyboard focus when the 
- * screenshot tab is the current tab and sending keystrokes
- * is enabled
- */
 
 public class GUI 
 	implements java.util.Observer, ActionListener, ContainerListener {

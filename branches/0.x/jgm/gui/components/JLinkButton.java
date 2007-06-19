@@ -38,6 +38,7 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.metal.MetalButtonUI;
 
+@SuppressWarnings("unused")
 public class JLinkButton extends JButton {
   private static final String uiString = "LinkButtonUI";
 
@@ -283,6 +284,7 @@ class BasicLinkButtonUI extends MetalButtonUI {
     return ui;
   }
 
+  @SuppressWarnings("unused")
   protected void paintText(Graphics g, JComponent com, Rectangle rect,
       String s) {
     JLinkButton bn = (JLinkButton) com;
