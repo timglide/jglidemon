@@ -1,5 +1,11 @@
 JGlideMon ChangeLog
 
+Version 0.10
+------------
+- Added mobs/rep/loot tab
+- The tab that was selected when you close the program will now
+  be selected when you start it the next time
+
 Version 0.9.1
 -------------
 - Added scrollbars to screenshot when image is too large to fit

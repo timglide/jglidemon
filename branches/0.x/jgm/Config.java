@@ -258,7 +258,7 @@ public class Config extends QuickIni {
 			public static final boolean debug = false;
 			public static final boolean showtray = true;
 			public static final boolean mintotray = true;
-			public static final int lasttab = 1;
+			public static final int lasttab = 0;
 		}
 		
 		public static class log {
