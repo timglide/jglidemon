@@ -34,7 +34,7 @@ import jgm.util.*;
 public class JGlideMon {
 	public static final String app = "JGlideMon";
 	public static final String version = "0.10 beta";
-	public static boolean debug = false;
+	public static boolean debug = true;
 	
 	public static JGlideMon instance;
 	

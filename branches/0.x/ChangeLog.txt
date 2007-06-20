@@ -2,11 +2,18 @@ JGlideMon ChangeLog
 
 Version 0.10
 ------------
-- Added mobs/rep/loot tab
+- Added Mobs/Rep/Skills tab
 - The tab that was selected when you close the program will now
   be selected when you start it the next time
 - Fixed error when you run the program for the first time and the
   config dialog doesn't close when you press the save button
+- Added Stuck tab to configuration dialog. Now when "Stuck too many times"
+  is received it will send the /startglide command. Note that this
+  option is disabled by default. If Glider gets stuck 'Stuck Limit' 
+  number of times within 'Limit Timeout' seconds it will give up.
+  After 'Limit Timeout' seconds without receiving the stuck message, 
+  the counter will be reset to 0. Note: this feature has not been
+  thouroughly tested!
 
 Version 0.9.1
 -------------

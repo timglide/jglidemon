@@ -33,10 +33,10 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	
 	private static Conn conn;
 	
-	public JButton connect;
-	private JButton attach;
-	private JButton start;
-	private JButton stop;
+	public final JButton connect;
+	public final JButton attach;
+	public final JButton start;
+	public final JButton stop;
 
 	public ControlPane() {
 		super();

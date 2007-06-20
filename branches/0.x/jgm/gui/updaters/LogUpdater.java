@@ -45,6 +45,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	private MobsTab mobsTab;
 	private LootsTab lootsTab;
  
+	private Long stuckTimer = null;
+	private int stuckCount = 0;
+	
 	private Thread thread;
 	
 	public LogUpdater(TabsPane t) {
@@ -123,8 +126,39 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			if (e instanceof GliderLogEntry) {
 				gliderLog.add(e);
 				
-				if (((GliderLogEntry) e).isAlert()) {
+				GliderLogEntry e2 = (GliderLogEntry) e;
+				
+				if (e2.isAlert()) {
 					urgentChatLog.add(e, true);
+					
+					if (e2.type == GliderLogEntry.Type.STUCK &&
+						jgm.Config.getInstance().getBool("stuck", "enabled")) {
+						long now = System.currentTimeMillis();
+						long timeout = 1000 * jgm.Config.getInstance().getInt("stuck", "timeout");
+						int limit = jgm.Config.getInstance().getInt("stuck", "limit");
+						
+						if (stuckTimer == null) {
+							stuckTimer = now;
+						} else if (now - stuckTimer >= timeout) {
+							// we're stuck but it's been long enough
+							// since the last time we were stuck
+							stuckTimer = now;
+							stuckCount = 0;
+						}
+						
+						log.fine("Stuck " + stuckCount + " times. Limit = " + limit);
+						
+						if (limit == 0 || stuckCount < limit) {
+							stuckCount++;
+							// simulate pressing the Start button
+							jgm.GUI.instance.ctrlPane.start.doClick();
+							log.info("Restarting glide after being stuck");
+						} else {
+							stuckTimer = null;
+							stuckCount = 0;
+							log.warning("Stuck too many times in a row, giving up");
+						}
+					}
 				}
 			} else if (e instanceof StatusEntry) {
 				statusLog.add(e);

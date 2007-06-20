@@ -71,6 +71,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JCheckBox ttsGM;
 	private JCheckBox ttsStatus;
 	
+	private JPanel stuck;
+	private JCheckBox enableStuck;
+	private JSpinner stuckLimit;
+	private JSpinner stuckTimeout;
+	
 	private jgm.Config cfg;
 //	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
 		
@@ -368,6 +373,46 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		tabs.addTab("Sound/TTS", sound);
 		//p.add(sound);
 		
+		
+		// stuck options
+		stuck = new JPanel(new GridBagLayout());
+		
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.weighty = 0.0;
+		enableStuck = new JCheckBox("Attempt To Resume When Stuck");
+		enableStuck.addChangeListener(this);
+		stuck.add(enableStuck, c);
+		
+		JLabel tmpLbl = new JLabel("  Stuck Limit");
+		tmpLbl.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
+		
+		c.gridwidth = 1; c.gridy++;
+		stuck.add(tmpLbl, c);
+		
+		stuckLimit = new JSpinner(
+			new SpinnerNumberModel(5, 0, 10000, 1)
+		);
+		stuckLimit.addChangeListener(this);
+		c.gridx++;
+		stuck.add(stuckLimit, c);
+		
+		tmpLbl = new JLabel("  Limit Timeout (s)");
+		tmpLbl.setToolTipText("Reset stuck timer after this many seconds");
+		
+		c.gridx = 0; c.gridy++;
+		stuck.add(tmpLbl, c);
+
+		stuckTimeout = new JSpinner(
+			new SpinnerNumberModel(300, 5, 10000, 1)
+		);
+		stuckTimeout.addChangeListener(this);
+		c.gridx++;
+		stuck.add(stuckTimeout, c);
+		
+		c.gridx = 0; c.gridy++; c.weighty = 1.0;
+		stuck.add(new JLabel(), c);
+		
+		tabs.addTab("Stuck", stuck);
+		
 		add(tabs, BorderLayout.CENTER);
 		
 		// ensuring appropriate groups are enabled/disabled
@@ -474,6 +519,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("sound.tts", "gm", ttsGM.isSelected());
 		cfg.set("sound.tts", "status", ttsStatus.isSelected());
 		
+		cfg.set("stuck", "enabled", enableStuck.isSelected());
+		cfg.set("stuck", "limit", ((Integer) stuckLimit.getValue()).intValue());
+		cfg.set("stuck", "timeout", ((Integer) stuckTimeout.getValue()).intValue());
+		
 		jgm.Config.writeIni();
 		
 		setVisible(false);
@@ -515,6 +564,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			ttsSay.setEnabled(state);
 			ttsGM.setEnabled(state);
 			ttsStatus.setEnabled(state);
+		} else if (e.getSource() == enableStuck) {
+			boolean state = enableStuck.isEnabled() && enableStuck.isSelected();
+			
+			stuckLimit.setEnabled(state);
+			stuckTimeout.setEnabled(state);
 		}
 	}
 	
@@ -576,11 +630,16 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		ttsGM.setSelected(cfg.getBool("sound.tts", "gm"));
 		ttsStatus.setSelected(cfg.getBool("sound.tts", "status"));
 		
+		enableStuck.setSelected(cfg.getBool("stuck", "enabled"));
+		stuckLimit.setValue(cfg.getInt("stuck", "limit"));
+		stuckTimeout.setValue(cfg.getInt("stuck", "timeout"));
+		
 		// to initialize enabled/disabled states
 		stateChanged(new ChangeEvent(showTray));
 		stateChanged(new ChangeEvent(netReconnect));
 		stateChanged(new ChangeEvent(enableSound));
 		stateChanged(new ChangeEvent(enableTTS));
+		stateChanged(new ChangeEvent(enableStuck));
 	}
 	
 	public void selectTab(int index) {

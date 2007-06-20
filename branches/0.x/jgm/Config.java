@@ -246,6 +246,12 @@ public class Config extends QuickIni {
 		
 		if (getInt("screenshot", "timeout") < 5)
 			setInt("screenshot", "timeout", 5);
+		
+		if (getInt("stuck", "limit") < 0)
+			setInt("stuck", "limit", 0);
+		
+		if (getInt("stuck", "timeout") < 5)
+			setInt("stuck", "timeout", 5);
 	}
 	
 	public static void writeIni() {
@@ -312,6 +318,12 @@ public class Config extends QuickIni {
 				public static final boolean gm = true;
 				public static final boolean status = true;
 			}
+		}
+		
+		public static class stuck {
+			public static final boolean enabled = false;
+			public static final int limit = 5;
+			public static final int timeout = 300;
 		}
 	}
 }
