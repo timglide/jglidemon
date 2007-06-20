@@ -457,7 +457,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			log.warning("Invalid timeout: " + screenshotTimeout.getText());
 		}
 		
-		jgm.JGlideMon.instance.ssUpdater.sentSettings = false;
+		// would be null on first-time startup
+		if (null != jgm.JGlideMon.instance.ssUpdater)
+			jgm.JGlideMon.instance.ssUpdater.sentSettings = false;
 		
 		cfg.set("sound", "enabled", enableSound.isSelected());
 		cfg.set("sound", "whisper", soundWhisper.isSelected());

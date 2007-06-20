@@ -5,6 +5,8 @@ Version 0.10
 - Added mobs/rep/loot tab
 - The tab that was selected when you close the program will now
   be selected when you start it the next time
+- Fixed error when you run the program for the first time and the
+  config dialog doesn't close when you press the save button
 
 Version 0.9.1
 -------------

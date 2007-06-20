@@ -70,23 +70,23 @@ public class JGlideMon {
 		Sound.init();
 		Speech.init();
 		
-		if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
-			JOptionPane.showMessageDialog(GUI.frame,
-				"Please enter the remote host, port, and password.\n" +
-				"Next, click Save Settings, then click Connect.\n\n" +
-				"Remember to click Save Settings any time you change a setting.\n" +
-				"You may access the configuration screen later via the File menu.",
-				"Configuration Required",
-				JOptionPane.INFORMATION_MESSAGE);
-			
-			// select the network tab
-			gui.showConfig(1);
-		}
-		
 		// create a seperate thread to connect in case it
 		// takes a while to connect it won't slow the gui
 		Runnable r = new Runnable() {
 			public void run() {
+				if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
+					JOptionPane.showMessageDialog(GUI.frame,
+						"Please enter the remote host, port, and password.\n" +
+						"Next, click Save Settings, then click Connect.\n\n" +
+						"Remember to click Save Settings any time you change a setting.\n" +
+						"You may access the configuration screen later via the File menu.",
+						"Configuration Required",
+						JOptionPane.INFORMATION_MESSAGE);
+					
+					// select the network tab
+					gui.showConfig(1);
+				}
+				
 				keysConn = new Conn();
 				Connector.addListener(new ConnectionAdapter() {
 					public Conn getConn() {
