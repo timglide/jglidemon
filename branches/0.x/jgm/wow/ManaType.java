@@ -31,10 +31,21 @@ import java.util.regex.*;
 public enum ManaType {
 	MANA   ("Mana"), 
 	RAGE   ("Rage"),
-	ENERGY ("Energy");
+	ENERGY ("Energy"),
+	DRUID  ("Mixed");
 
-	private static final Pattern caster = Pattern.compile(".*\\((\\d+)%\\).*");
-	private static final Pattern melee  = Pattern.compile(".*?(\\d+).*");
+	private static final Pattern caster = 
+		// find number in parantheses with a %
+		// (##%)
+		Pattern.compile(".*\\((\\d+)%\\).*");
+	private static final Pattern melee  =
+		// find the first number
+		// ##
+		Pattern.compile(".*?(\\d+).*");
+	private static final Pattern druid =
+		// find the number in parantheses with a % or the first number
+		// (##%) or ##
+		Pattern.compile("(?:.*\\((\\d+)%\\).*|.*?(\\d+).*)");
 		
 	private String type;
 	
@@ -47,8 +58,9 @@ public enum ManaType {
 	 */
 	public Pattern getRegex() {
 		switch (this) {
-			case MANA: return caster;
-			default:   return melee;
+			case MANA:  return caster;
+			case DRUID: return druid;
+			default:    return melee;
 		}
 	}
 	

@@ -39,10 +39,10 @@ public enum Class {
 	PRIEST  ("Priest"),
 	PALADIN ("Paladin"),
 	SHAMAN  ("Shaman"),
-	DRUID   ("Druid");
+	DRUID   ("Druid",   ManaType.DRUID);
 	
 	private String name;
-	public ManaType mana;
+	public final ManaType mana;
 	
 	private Class(String name) {
 		this(name, ManaType.MANA);

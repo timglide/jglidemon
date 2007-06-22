@@ -57,10 +57,17 @@ public class HeadingDial extends JComponent {
 
 	public void setHeading(double newHeading) {
 		heading = newHeading;
+		double degrees = radToDeg(heading);
 		repaint();
 		
 		if (heading >= 0.0) {
-			setToolTipText(String.format("Heading: %01.2f", heading));
+			setToolTipText(
+				String.format(
+					"%s (%01.2f deg)",
+					degToCardinal(degrees),
+					degrees
+				)
+			);
 		} else {
 			setToolTipText(null);
 		}
@@ -89,5 +96,38 @@ public class HeadingDial extends JComponent {
 		
 			g.drawImage(arrow, 25 / 2, 25 / 2, null);
 		}
+	}
+	
+	public static double radToDeg(double radians) {
+		return radians * (180.0 / Math.PI);
+	}
+	
+	// a cardinal direction would be the arc of
+	// +/- 11.25 degrees from it's absolute angle
+	public static final double ARC_SIZE
+		= 22.5;
+	public static final double HALF_ARC_SIZE
+		= ARC_SIZE / 2.0;
+	
+	private static final String[] CARD_DIRS =
+		{"N", "NNW", "NW", "WNW", 
+		"W", "WSW", "SW", "SSW", 
+		"S", "SSE", "SE", "ESE", 
+		"E", "ENE", "NE", "NNE", 
+		"N"}; 
+	
+	public static String degToCardinal(double degrees) {
+		double d = 0.0;
+		
+//		System.out.printf("deg: %s\n", degrees);
+		for (int i = 0; i < CARD_DIRS.length; i++) {
+//			System.out.printf("%s <= %s < %s\n", d, degrees, d + ARC_SIZE);
+			if (d - HALF_ARC_SIZE <= degrees && degrees < d + HALF_ARC_SIZE)
+				return CARD_DIRS[i];
+		 
+			d += ARC_SIZE;
+		}
+		
+		return "??";
 	}
 }
