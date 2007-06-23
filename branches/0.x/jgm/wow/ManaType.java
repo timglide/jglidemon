@@ -43,9 +43,9 @@ public enum ManaType {
 		// ##
 		Pattern.compile(".*?(\\d+).*");
 	private static final Pattern druid =
-		// find the number in parantheses with a % or the first number
-		// (##%) or ##
-		Pattern.compile("(?:.*\\((\\d+)%\\).*|.*?(\\d+).*)");
+		// find rage, energy, or mana, in that order
+		// R = ##, E=##, (##%)
+		Pattern.compile("(?:.*?R = (\\d+).*|.*?E=(\\d+).*|.*\\((\\d+)%\\).*)");
 		
 	private String type;
 	
@@ -61,6 +61,13 @@ public enum ManaType {
 			case MANA:  return caster;
 			case DRUID: return druid;
 			default:    return melee;
+		}
+	}
+	
+	public int numRegexGroups() {
+		switch (this) {
+			case DRUID: return 3;
+			default:    return 1;
 		}
 	}
 	

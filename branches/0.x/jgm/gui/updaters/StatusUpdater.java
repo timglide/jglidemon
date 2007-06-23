@@ -176,22 +176,33 @@ public class StatusUpdater extends Observable
 				Pattern p = clazz.mana.getRegex();
 				Matcher x = p.matcher(m.get("Mana"));
 
-				//System.out.println("Matching: " + m.get("Mana"));
+//				System.out.println("Matching: " + m.get("Mana"));
 				
 				if (!x.matches()) throw new NumberFormatException("No Match");
 
-				//System.out.print("Matched:");
-				//for (int n = 0; n <= x.groupCount(); n++) {
-				//	System.out.print(" " + n + ": " + x.group(n));
-				//}
-				//System.out.println();
+//				System.out.print("Matched:");
+//				for (int n = 0; n <= x.groupCount(); n++) {
+//					System.out.print(" " + n + ": " + x.group(n));
+//				}
+//				System.out.println();
 				
-				//System.out.println("  Found: " + x.group(1));
-				mana = Double.parseDouble(x.group(1));
+				int group = 1;
+				
+				// only check if the groups are null if there's more than 1
+				// don't check the last one because we must assume that the
+				// last one won't be null if all the others are
+				for (int j = 1; j < clazz.mana.numRegexGroups(); j++) {
+					if (x.group(group) == null) group++;
+					else break;
+				}
+				
+				mana = Double.parseDouble(x.group(group));
+				
+//				System.out.println("  Found: " + x.group(group));
 			}	
 		} catch (Exception e) {
 			//e.printStackTrace();
-			//System.err.println("Did not match mana");
+//			System.err.println("Did not match mana");
 			mana = 0.0;
 		}
 

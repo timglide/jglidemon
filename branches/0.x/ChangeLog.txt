@@ -13,7 +13,12 @@ Version 0.10
   number of times within 'Limit Timeout' seconds it will give up.
   After 'Limit Timeout' seconds without receiving the stuck message, 
   the counter will be reset to 0. Note: this feature has not been
-  thouroughly tested!
+  thouroughly tested! (Ideally you're profiles won't let you get stuck)
+- Added better detection for druid "mana". It should now display
+  the percentage of rage, energy, or mana, whichever is appropriate.
+  Note: this has only had limited testing.
+- Added cardinal directions and degrees for when you mouse over
+  the direction indicator
 
 Version 0.9.1
 -------------
