@@ -52,6 +52,8 @@ public class About extends Dialog implements ActionListener {
 		
 		text = new JLabel(
 			"<html><br>JGlideMon " + JGlideMon.version + "<br>" +
+			JGlideMon.revision + "<br>" +
+			JGlideMon.date + "<br>" +
 			"By Tim<br><br>Released under the GNU GPL<br>" +
 			"</html>"
 		);
