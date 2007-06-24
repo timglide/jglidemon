@@ -40,6 +40,7 @@ public class StatusUpdater extends Observable
 	public String logMode        = "None";
 	public double health         = 0.0;
 	public double mana           = 0.0;
+	public String manaName       = "";
 	public String name           = "";
 	public jgm.wow.Class  clazz  = jgm.wow.Class.UNKNOWN; // class
 	public int    level          = 0;
@@ -170,6 +171,7 @@ public class StatusUpdater extends Observable
 		try {
 			if (!m.containsKey("Mana")) {
 				mana = 0.0;
+				manaName = "Mana";
 			} else {
 				// "Mana: 123 (42%)"
 				// "Mana: 100 (CP = 0)"
@@ -181,9 +183,9 @@ public class StatusUpdater extends Observable
 				if (!x.matches()) throw new NumberFormatException("No Match");
 
 //				System.out.print("Matched:");
-//				for (int n = 0; n <= x.groupCount(); n++) {
+				for (int n = 0; n <= x.groupCount(); n++) {
 //					System.out.print(" " + n + ": " + x.group(n));
-//				}
+				}
 //				System.out.println();
 				
 				int group = 1;
@@ -197,13 +199,15 @@ public class StatusUpdater extends Observable
 				}
 				
 				mana = Double.parseDouble(x.group(group));
+				manaName = clazz.mana.toString(group);
 				
-//				System.out.println("  Found: " + x.group(group));
+//				System.out.println("  Found: " + x.group(group) + "; group: " + group);
 			}	
 		} catch (Exception e) {
 			//e.printStackTrace();
 //			System.err.println("Did not match mana");
 			mana = 0.0;
+			manaName = "Mana";
 		}
 
 		try {

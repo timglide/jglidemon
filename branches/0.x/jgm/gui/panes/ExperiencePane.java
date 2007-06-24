@@ -34,32 +34,22 @@ public class ExperiencePane extends Pane {
 	public ExperiencePane() {
 		super();
 
-		c.weightx = 0.0; c.weighty = 0.0;
+		c.weightx = 1.0; c.weighty = 0.0;
 
-		c.gridx = 0; c.gridy = 0;
-		add(new JLabel("Time to level: "), c);
-
-		ttl = new JLabel("Unknown");
-		c.gridx = 1; c.weightx = 1.0;
+		ttl = new JLabel("Time to level: Unknown", JLabel.CENTER);
 		add(ttl, c);
 
-		c.gridx = 2; c.weightx = 0.0;
-		add(new JLabel("Experience: "), c);
-
-		xp = new JLabel("Unknown");
-		c.gridx = 3; c.weightx = 1.0;
+		xp = new JLabel("Experience: Unknown", JLabel.CENTER);
+		c.gridx++;
 		add(xp, c);
 
-		c.gridx = 4; c.weightx = 0.0;
-		add(new JLabel("XP/Hour: "), c);
-
-		xph = new JLabel("Unknown");
-		c.gridx = 5; c.weightx = 1.0;
+		xph = new JLabel("XP/Hour: Unknown", JLabel.CENTER);
+		c.gridx++;
 		add(xph, c);
 
 		xpbar = new JProgressBar(0, 100);
-		xpbar.setValue(0); c.weightx = 0.0;
-		c.gridx = 0; c.gridy = 1; c.gridwidth = 6;
+		xpbar.setValue(0);
+		c.gridwidth = c.gridx + 1; c.gridx = 0; c.gridy++;
 		add(xpbar, c);
 	}
 
@@ -76,22 +66,24 @@ public class ExperiencePane extends Pane {
 			d = 60 * (d - minutes);
 			seconds = (int) d;
 
-			ttl.setText(hours + "hr " + minutes + "min " + seconds + "sec");
+			ttl.setText("Time to level: " + hours + "hr " + minutes + "min " + seconds + "sec");
 		} else {
-			ttl.setText("Unknown");
+			ttl.setText("Time to level: Unknown");
 		}
 
 		if (s.nextExperience > 0) {
 			xpPercent = (int) (100 * ((float) s.experience / (float) s.nextExperience));
 
 			xp.setText(
+				"Experience: " +
 				s.experience + "/" + s.nextExperience
 				+ " (" + xpPercent + "%)");
 		} else {
-			xp.setText("Unknown");
+			xp.setText("Experience: Unknown");
 		}
 
 		xpbar.setValue(xpPercent);
-		xph.setText(Integer.toString(s.xpPerHour));
+		xpbar.setToolTipText(xpPercent + "%");
+		xph.setText("XP/Hour: " + Integer.toString(s.xpPerHour));
 	}
 }

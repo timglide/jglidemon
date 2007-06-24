@@ -102,7 +102,9 @@ public class CharInfoPane extends Pane {
 		name.setText(s.name);
 		level.setText(((s.level > 0) ? Integer.toString(s.level) : ""));
 		health.setValue((int) s.health);
+		health.setToolTipText(Integer.toString((int) s.health) + "%");
 		mana.setValue((int) s.mana);
+		mana.setToolTipText(Integer.toString((int) s.mana) + "%");
 
 		if (!clazz.getText().equals(s.clazz.toString())) {
 			try {
@@ -113,9 +115,10 @@ public class CharInfoPane extends Pane {
 				System.err.println("Null when setting class icon");
 				e.printStackTrace();
 			}
-			
-			manaLbl.setText(s.clazz.mana.toString() + ": ");
 		}
+		
+		// need to update it each time to account for druids
+		manaLbl.setText(s.manaName + ": ");
 
 		heading.setHeading(s.heading);
 	}

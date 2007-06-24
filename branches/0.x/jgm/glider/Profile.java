@@ -220,7 +220,7 @@ public final class Profile implements Comparable<Profile>, TreeModel, Serializab
 		}
 		
 		public static void reset() {
-			root = new Profile(null, "ROOT", false);;
+			root = new Profile(null, "ROOT", false);
 			notifyListeners(root);
 		}
 	}

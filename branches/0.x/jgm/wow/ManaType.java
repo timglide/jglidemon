@@ -74,4 +74,17 @@ public enum ManaType {
 	public String toString() {
 		return type;
 	}
+	
+	public String toString(int regexGroup) {
+		switch (this) {
+			case DRUID:
+				switch (regexGroup) {
+					case 1:  return "Rage";
+					case 2:  return "Energy";
+					default: return "Mana";
+				}
+			
+			default: return toString();
+		}
+	}
 }

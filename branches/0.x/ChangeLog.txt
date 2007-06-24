@@ -2,7 +2,12 @@ JGlideMon ChangeLog
 
 Version 0.10
 ------------
-- Added Mobs/Rep/Skills tab
+- Added Mobs/Rep/Skills tab. Note: I have no way of testing if rep
+  is detected properly when you get rep for killing a mob (I no longer
+  have a high level character to kill mobs that would give rep). It
+  works when you turn in a quest; if you get the same message in the
+  chatlog when you kill a mob as when you turn in a quest it should
+  work.
 - The tab that was selected when you close the program will now
   be selected when you start it the next time
 - Fixed error when you run the program for the first time and the
@@ -17,8 +22,8 @@ Version 0.10
 - Added better detection for druid "mana". It should now display
   the percentage of rage, energy, or mana, whichever is appropriate.
   Note: this has only had limited testing.
-- Added cardinal directions and degrees for when you mouse over
-  the direction indicator
+- Added cardinal directions and degrees tooltip for when you mouse over
+  the direction indicator as well as tooltips for health/mana/xp bars
 
 Version 0.9.1
 -------------

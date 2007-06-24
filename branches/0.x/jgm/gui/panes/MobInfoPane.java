@@ -52,15 +52,15 @@ public class MobInfoPane extends Pane {
 		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0;
 		add(health, c);
 
-		kills = new JLabel("Kills: 0");
+		kills = new JLabel("Kills: 0", JLabel.CENTER);
 		c.gridx = 0; c.gridy = 3; c.gridwidth = 1;
 		add(kills, c);
 
-		loots = new JLabel("Loots: 0");
+		loots = new JLabel("Loots: 0", JLabel.CENTER);
 		c.gridx = 1;
 		add(loots, c);
 
-		deaths = new JLabel("Deaths: 0");
+		deaths = new JLabel("Deaths: 0", JLabel.CENTER);
 		c.gridx = 2;
 		add(deaths, c);
 	}
@@ -69,6 +69,7 @@ public class MobInfoPane extends Pane {
 		name.setText("Target Name: " + ((s.targetName.equals("")) ? "No Target" : s.targetName));
 		level.setText("Target Level: " + ((s.targetLevel > 0) ? s.targetLevel : ""));
 		health.setValue((int) s.targetHealth);
+		health.setToolTipText(Integer.toString((int) s.targetHealth) + "%");
 
 		kills.setText("Kills: " + s.kills);
 		loots.setText("Loots: " + s.loots);
