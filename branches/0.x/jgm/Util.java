@@ -196,6 +196,8 @@ public class Util {
 			
 			ps.println("version: " + jgm.JGlideMon.version);
 			ps.println("debug: " + Boolean.toString(jgm.JGlideMon.debug));
+			ps.println(jgm.JGlideMon.revision);
+			ps.println(jgm.JGlideMon.date);
 			
 			ps.println();
 			ps.println("JGlideMon Config");
