@@ -107,9 +107,20 @@ public class LogEntry implements Comparable<LogEntry> {
 			return null;
 		}
 
-		String type    = parts[0].substring(1, parts[0].length() - 1);
-		String rawText = parts[1];
+		String type    = null;
+		String rawText = null;
 
+		// i don't know why but rarely an exception is thrown here
+		// added the try/catch just to be safe
+		try {
+			type    = parts[0].substring(1, parts[0].length() - 1);
+			rawText = parts[1];
+		} catch (Throwable t) {
+			log.log(Level.WARNING, "Strange error parsing log entry", t);
+			type = "UNKNOWN";
+			rawText = t.getClass().getName() + ": " + t.getMessage();
+		}
+		
 		// remove leading timestamp in case user has a timestamp mod
 		Matcher m = TIMESTAMP_PATTERN.matcher(rawText);
 		

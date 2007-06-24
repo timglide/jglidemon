@@ -64,6 +64,11 @@ public enum ManaType {
 		}
 	}
 	
+	/**
+	 * Needed because of druids...
+	 * @return
+	 * @since 0.10
+	 */
 	public int numRegexGroups() {
 		switch (this) {
 			case DRUID: return 3;
@@ -75,6 +80,15 @@ public enum ManaType {
 		return type;
 	}
 	
+	/**
+	 * Return the correct word for this "mana" type
+	 * based on which captured group of the regex
+	 * was matched. The only reason for this is because
+	 * of druids....
+	 * @param regexGroup
+	 * @return
+	 * @since 0.10
+	 */
 	public String toString(int regexGroup) {
 		switch (this) {
 			case DRUID:

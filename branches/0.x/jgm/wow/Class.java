@@ -57,6 +57,8 @@ public enum Class {
 		return mana == ManaType.MANA;
 	}
 	
+	// i guess druids count as melee, as far as
+	// the way glider plays them anyway...
 	public boolean isMelee() {
 		return mana != ManaType.MANA;
 	}

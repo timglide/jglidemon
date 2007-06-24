@@ -24,6 +24,8 @@ Version 0.10
   Note: this has only had limited testing.
 - Added cardinal directions and degrees tooltip for when you mouse over
   the direction indicator as well as tooltips for health/mana/xp bars
+- Added color coding of target level
+- Removed Attach button since Glider automatically attaches
 
 Version 0.9.1
 -------------

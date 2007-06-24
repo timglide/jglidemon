@@ -20,6 +20,8 @@
  */
 package jgm.wow;
 
+import java.awt.Color;
+
 /**
  * 
  * @author Tim
@@ -73,5 +75,43 @@ public class Mob {
 				return sort * ret;
 			}
 		};
+	}
+	
+	
+	/**
+	 * Returns the appropriate color for a mob depending on
+	 * a player's level.
+	 * @param charLevel
+	 * @param mobLevel
+	 * @return
+	 */
+	public static Color getMobColor(int charLevel, int mobLevel) {
+		// see http://www.wowwiki.com/Formulas:Mob_XP
+		
+		int diff = mobLevel - charLevel;
+		int grayLevel = 0;
+		
+		if (6 <= charLevel && charLevel <= 39) {
+			grayLevel = charLevel - 5 - (charLevel / 10);
+		} else if (40 <= charLevel && charLevel <= 59) {
+			grayLevel = charLevel - 1 - (charLevel / 5);
+		} else if (60 <= charLevel /*&& charLevel <= 70*/) {
+			// charLevel <= 70 is commented in the exceedingly
+			// remote chance the level cap is raised, of course
+			// by that time they may change the formula.......
+			grayLevel = charLevel - 9;
+		}
+		
+		if (diff >= 5) // 5+ higher
+			return Color.RED;
+		if (diff >= 3) // 3-4 higher
+			return Color.ORANGE;
+		if (diff >= -2) // 2 lower to 2 higher
+			return Color.YELLOW;
+		
+		if (mobLevel > grayLevel)
+			return Color.GREEN;
+		
+		return Color.DARK_GRAY;
 	}
 }

@@ -48,12 +48,13 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
 		add(connect, c);
 		
+		// attach is done automatically now
 		attach = new JButton("Attach");
 		attach.setFocusable(false);
 		attach.addActionListener(this);
 		attach.setEnabled(false);
-		c.gridy++;
-		add(attach, c);
+//		c.gridy++;
+//		add(attach, c);
 
 		start = new JButton("Start Glide");
 		start.setFocusable(false);
