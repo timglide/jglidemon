@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="version"		value="0.9.1"/>
+	<property name="version"		value="0.10"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/freetts.jar"/>
