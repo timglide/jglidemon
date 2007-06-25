@@ -1,7 +1,26 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.tabs;
 
 import jgm.Config;
-import jgm.Locale;
 import jgm.glider.log.*;
 
 import java.util.Vector;
@@ -40,17 +59,6 @@ public class LogTab extends Tab {
 		}
 	}
 
-	public void localeChanged(String key) {
-		super.localeChanged(key);
-		
-		columnNames[0] = Locale._("^logging.logtab.time");
-		columnNames[1] = Locale._("^logging.logtab.type");
-		columnNames[2] = Locale._("^logging.logtab.text");
-
-		logEntries.localeChanged();
-		logTable.localeChanged();
-	}
-	
 	private class LogTable extends JTable implements MouseListener {
 		public LogTable(TableModel dm) {
 			super(dm);
@@ -65,16 +73,6 @@ public class LogTab extends Tab {
 			
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			this.addMouseListener(this);
-		}
-		
-		public void localeChanged() {
-			TableColumnModel cm = getColumnModel();
-			cm.getColumn(0).setResizable(false);
-			cm.getColumn(0).setMinWidth(75);
-			cm.getColumn(0).setMaxWidth(75);
-			cm.getColumn(1).setResizable(false);
-			cm.getColumn(1).setMinWidth(100);
-			cm.getColumn(1).setMaxWidth(100);
 		}
 		
 		public void mouseEntered(MouseEvent e) {}
@@ -112,7 +110,7 @@ public class LogTab extends Tab {
 		}
 	}
 
-	private static String[] columnNames = {"Time", "Type", "Text"};
+	private static final String[] columnNames = {"Time", "Type", "Text"};
 	
 	private class LogTableModel extends AbstractTableModel {
 		private Vector<LogEntry> entries;
@@ -176,11 +174,6 @@ public class LogTab extends Tab {
 
 		public boolean isCellEditable(int row, int col) {
 			return false;
-		}
-		
-		public void localeChanged() {
-			this.fireTableStructureChanged();
-			//this.fireTableDataChanged();
 		}
 	}
 }

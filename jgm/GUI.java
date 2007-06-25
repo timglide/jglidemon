@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm;
 
 import jgm.glider.*;
@@ -11,8 +31,9 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+
 public class GUI 
-	implements java.util.Observer, ActionListener, ContainerListener, jgm.locale.LocaleListener {
+	implements java.util.Observer, ActionListener, ContainerListener {
 	
 	public static GUI instance;
 	public static JFrame frame;
@@ -27,8 +48,6 @@ public class GUI
 	public TabsPane       tabsPane;
 
 	private JMenuBar      menuBar;
-	private JMenu         fileMenu, helpMenu;
-	private JMenuItem     saveCache, loadCache, configItem, exitItem, debugInfoItem, aboutItem;
 
 	private static JStatusBar statusBar;
 
@@ -155,52 +174,53 @@ public class GUI
 		mainPane.add(tabsPanel, c);
 
 		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, frame);
-
+		
 		frame.setLayout(new BorderLayout());
 		frame.add(mainPane, BorderLayout.CENTER);
 
 		// set up menu
-		menuBar  = new JMenuBar();
-		fileMenu = new JMenu();
+		         menuBar  = new JMenuBar();
+		JMenu    fileMenu = new JMenu("File");
+		fileMenu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(fileMenu);
 
 		if (jgm.JGlideMon.debug) {
-			saveCache = new JMenuItem();
-			saveCache.addActionListener(this);
-			fileMenu.add(saveCache);
+			JMenuItem saveIcons = new JMenuItem("Save Cache");
+			saveIcons.addActionListener(this);
+			fileMenu.add(saveIcons);
 		
-			loadCache = new JMenuItem();
-			loadCache.addActionListener(this);
-			fileMenu.add(loadCache);
+			saveIcons = new JMenuItem("Load Cache");
+			saveIcons.addActionListener(this);
+			fileMenu.add(saveIcons);
 		}
 		
-		configItem = new JMenuItem();
+		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
 		configItem.addActionListener(this);
 		fileMenu.add(configItem);
 		
 		fileMenu.addSeparator();
 		
-		exitItem = new JMenuItem();
+		JMenuItem exitItem = new JMenuItem("Exit", KeyEvent.VK_X);
 		exitItem.addActionListener(this);
 		fileMenu.add(exitItem);
 		
-		helpMenu = new JMenu();
+		JMenu    helpMenu = new JMenu("Help");
+		helpMenu.setMnemonic(KeyEvent.VK_H);
 		menuBar.add(helpMenu);
 		
-		/* TODO: localize */
-		debugInfoItem = new JMenuItem("Generate Debug Info", KeyEvent.VK_D);
-		debugInfoItem.addActionListener(this);
-		helpMenu.add(debugInfoItem);
+		JMenuItem debugItem = new JMenuItem("Generate Debug Info", KeyEvent.VK_D);
+		debugItem.addActionListener(this);
+		helpMenu.add(debugItem);
 		helpMenu.addSeparator();
-
-		aboutItem = new JMenuItem();
+		
+		JMenuItem aboutItem = new JMenuItem("About", KeyEvent.VK_A);
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
 
 		
 		// set up status bar
 		statusBar = new JStatusBar();
-		statusBar.setText(Locale._("status.disconnected"));
+		statusBar.setText("Disconnected");
 
 		JProgressBar tmp = statusBar.getProgressBar();
 		tmp.setStringPainted(false);
@@ -211,26 +231,23 @@ public class GUI
 
 		frame.setJMenuBar(menuBar);
 
-		localeChanged();
-		Locale.addListener(this);
-		
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
 	    
 	    Connector.addListener(new ConnectionAdapter() {
 	    	public void connecting() {
-				setStatusBarText(Locale._("status.disconnecting"), false, true);
+				setStatusBarText("Connecting...", false, true);
 				setStatusBarProgressIndeterminent();
 	    	}
 	    	
 	    	public void connectionEstablished() {
-				setStatusBarText(Locale._("status.connecting"), false, true);
+				setStatusBarText("Connected", false, true);
 				setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
 				hideStatusBarProgress();
 	    	}
 	    	
 	    	public void disconnecting() {
-				setStatusBarText(Locale._("status.disconnecting"), false, true);
+				setStatusBarText("Disconnecting...", false, true);
 				setStatusBarProgressIndeterminent();
 	    	}
 	    	
@@ -246,24 +263,7 @@ public class GUI
 		frame.setVisible(true);
 	}
 	
-	public void localeChanged() {
-		Locale.setBase("MainWindow");
-		
-		Locale._(fileMenu, "menu.file");
-		Locale._(saveCache, "menu.file.savecache");
-		Locale._(loadCache, "menu.file.loadcache");
-		Locale._(configItem, "menu.file.config");
-		Locale._(exitItem, "menu.file.exit");
-
-		Locale._(helpMenu, "menu.help");
-		Locale._(aboutItem, "menu.help.about");
-		
-		tray.localeChanged();
-	}
-
 	public void update(java.util.Observable obs, Object o) {
-		Locale.clearBase();
-		
 //		System.out.println("GUI.update() called");
 		StatusUpdater s = (StatusUpdater) o;
 
@@ -276,37 +276,36 @@ public class GUI
 		String version = "";
 		
 		if (!s.version.equals("")) {
-			version = Locale._("status.connectedto") + " " + s.version + " - ";
+			version = "Connected to Glider v" + s.version + " - ";
 		}
 		
 		if (!Connector.isConnected()) {
 			String st;
 			
 			switch (Connector.state) {
-				case CONNECTING: st = Locale._("status.connecting"); break;
-				case DISCONNECTING: st = Locale._("status.disconnecting"); break;
-				default: st = Locale._("status.disconnected"); break;
+				case CONNECTING: st = "Connecting..."; break;
+				case DISCONNECTING: st = "Disconnecting..."; break;
+				default: st = "Disconnected"; break;
 			}
 			
 			setStatusBarText(st);
 		} else if (s.attached) {
-			setStatusBarText(version + Locale._("status.attached") + ": " + s.profile);
+			setStatusBarText(version + "Attached: " + s.profile);
 		} else {
-			setStatusBarText(version + Locale._("status.notattached"));
+			setStatusBarText(version + "Not Attached");
 		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		Object src = e.getSource();
+		String cmd = e.getActionCommand();
 		
-		if (src == configItem) {
+		if (cmd.equals("Configuration")) {
 			showConfig();
-		} else if (src == exitItem) {
+		} else if (cmd.equals("Exit")) {
 			JGlideMon.instance.destroy();
-		} else if (src == aboutItem) {
+		} else if (cmd.equals("About")) {
 			showAbout();
-		} else if (src == debugInfoItem) {
-			/* TODO: localize */
+		} else if (cmd.equals("Generate Debug Info")) {
 			Util.generateDebugInfo();
 			
 			String path = null;
@@ -332,10 +331,10 @@ public class GUI
 						JOptionPane.ERROR_MESSAGE
 					);
 			}
-		} else if (src == saveCache) {
+		} else if (cmd.equals("Save Cache")) {
 			jgm.wow.Item.Cache.saveIcons();
 			jgm.wow.Item.Cache.saveItems();
-		} else if (src == loadCache) {
+		} else if (cmd.equals("Load Cache")) {
 			jgm.wow.Item.Cache.loadIcons();
 			jgm.wow.Item.Cache.loadItems();
 		}
@@ -355,8 +354,7 @@ public class GUI
 		if (aboutFrame == null) aboutFrame = new jgm.gui.dialogs.About(frame);
 		aboutFrame.setVisible(true);
 	}
-
-
+	
 	//////////////////////////////
 	// Implement ContainerListener
 	public void componentAdded(ContainerEvent e) {
@@ -366,7 +364,6 @@ public class GUI
 	public void componentRemoved(ContainerEvent e) {
 		removeKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
 	}
-
 	
 	/////////////////
 	// static methods

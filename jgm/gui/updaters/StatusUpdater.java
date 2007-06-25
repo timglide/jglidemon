@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.updaters;
 
 import jgm.Config;
@@ -12,7 +32,7 @@ import java.util.logging.*;
 public class StatusUpdater extends Observable
 	implements Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(StatusUpdater.class.getName());
-
+	
 	public String version        = "";
 	public boolean attached      = false;
 	public String mode           = "Auto";
@@ -20,6 +40,7 @@ public class StatusUpdater extends Observable
 	public String logMode        = "None";
 	public double health         = 0.0;
 	public double mana           = 0.0;
+	public String manaName       = "";
 	public String name           = "";
 	public jgm.wow.Class  clazz  = jgm.wow.Class.UNKNOWN; // class
 	public int    level          = 0;
@@ -150,29 +171,43 @@ public class StatusUpdater extends Observable
 		try {
 			if (!m.containsKey("Mana")) {
 				mana = 0.0;
+				manaName = "Mana";
 			} else {
 				// "Mana: 123 (42%)"
 				// "Mana: 100 (CP = 0)"
 				Pattern p = clazz.mana.getRegex();
 				Matcher x = p.matcher(m.get("Mana"));
 
-				//System.out.println("Matching: " + m.get("Mana"));
+//				System.out.println("Matching: " + m.get("Mana"));
 				
 				if (!x.matches()) throw new NumberFormatException("No Match");
 
-				//System.out.print("Matched:");
-				//for (int n = 0; n <= x.groupCount(); n++) {
-				//	System.out.print(" " + n + ": " + x.group(n));
-				//}
-				//System.out.println();
+//				System.out.print("Matched:");
+				for (int n = 0; n <= x.groupCount(); n++) {
+//					System.out.print(" " + n + ": " + x.group(n));
+				}
+//				System.out.println();
 				
-				//System.out.println("  Found: " + x.group(1));
-				mana = Double.parseDouble(x.group(1));
+				int group = 1;
+				
+				// only check if the groups are null if there's more than 1
+				// don't check the last one because we must assume that the
+				// last one won't be null if all the others are
+				for (int j = 1; j < clazz.mana.numRegexGroups(); j++) {
+					if (x.group(group) == null) group++;
+					else break;
+				}
+				
+				mana = Double.parseDouble(x.group(group));
+				manaName = clazz.mana.toString(group);
+				
+//				System.out.println("  Found: " + x.group(group) + "; group: " + group);
 			}	
 		} catch (Exception e) {
 			//e.printStackTrace();
-			//System.err.println("Did not match mana");
+//			System.err.println("Did not match mana");
 			mana = 0.0;
+			manaName = "Mana";
 		}
 
 		try {

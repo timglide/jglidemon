@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm;
 
 import javax.swing.JOptionPane;
@@ -13,8 +33,13 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.10 beta";
-	public static boolean debug = true;
+	public static final String version = "0.10";
+	public static final String _revision = "$Revision$";
+	public static final String revision = _revision.substring(1, _revision.length() - 1);
+	public static final String _date = "$Date$";
+	public static final String date = _date.substring(1, _date.length() - 1);
+	
+	public static boolean debug = false;
 	
 	public static JGlideMon instance;
 	
@@ -34,12 +59,9 @@ public class JGlideMon {
 	}
 	
 	private void init() {
-		try {
-			Class.forName("jgm.glider.log.RawChatLogEntry");
-		} catch (Throwable e) {}
-		
+		// initialize logger
 		Log.reloadConfig();
-
+		
 		try {
 			jgm.glider.Profile.Cache.loadProfiles();
 		} catch (Throwable e) {} // doesn't matter here 
@@ -53,27 +75,23 @@ public class JGlideMon {
 		Sound.init();
 		Speech.init();
 		
-		if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
-			JOptionPane.showMessageDialog(GUI.frame,
-				Locale._("Main.notconfiguredtext"),
-				Locale._("Main.configrequired"),
-				/*"Please enter the remote host, port, and password.\n" +
-				"Next, click Save Settings, then click Connect.\n\n" +
-				"Remember to click Save Settings any time you change a setting.\n" +
-				"You may access the configuration screen later via the File menu.",
-				"Configuration Required",*/
-				JOptionPane.INFORMATION_MESSAGE);
-			
-			// select the network tab
-			gui.showConfig(1);
-		}
-		
-		gui.makeVisible();
-		
 		// create a seperate thread to connect in case it
 		// takes a while to connect it won't slow the gui
 		Runnable r = new Runnable() {
 			public void run() {
+				if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
+					JOptionPane.showMessageDialog(GUI.frame,
+						"Please enter the remote host, port, and password.\n" +
+						"Next, click Save Settings, then click Connect.\n\n" +
+						"Remember to click Save Settings any time you change a setting.\n" +
+						"You may access the configuration screen later via the File menu.",
+						"Configuration Required",
+						JOptionPane.INFORMATION_MESSAGE);
+					
+					// select the network tab
+					gui.showConfig(1);
+				}
+				
 				keysConn = new Conn();
 				Connector.addListener(new ConnectionAdapter() {
 					public Conn getConn() {
@@ -94,9 +112,9 @@ public class JGlideMon {
 		};
 
 		new Thread(r, "JGlideMon.Init").start();
-		
-		gui.makeVisible();
 
+		gui.makeVisible();
+		
 		// not critical to get these loaded before the gui shows
 		jgm.wow.Item.Cache.loadIcons();
 		jgm.wow.Item.Cache.loadItems();

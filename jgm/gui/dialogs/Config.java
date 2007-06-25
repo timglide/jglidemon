@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.dialogs;
 
 import java.util.logging.*;
@@ -8,18 +28,17 @@ import javax.swing.event.*;
 
 public class Config extends Dialog implements ActionListener, ChangeListener {
 	static Logger log = Logger.getLogger(Config.class.getName());
-
+	
 	private JTabbedPane tabs;
 	private JButton update;
 	private JButton close;
 	
-	private JPanel status;
+	private JPanel general;
 	private JCheckBox debug;
 	private JTextField statusInterval;
 	private JTextField maxLogEntries;
 	private JCheckBox showTray;
 	private JCheckBox minToTray;
-	private JComboBox lang;
 	
 	private JPanel net;
 	private JTextField host;
@@ -34,9 +53,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JSlider screenshotScale;
 	private JSlider screenshotQuality;
 	private JSpinner screenshotBuffer;
-	private JTextField screenshotTimeout;
+	private JTextField screenshotTimeout;	
 	private JLabel ssInfo;
-	
 	
 	private JPanel sound;
 	private JCheckBox enableSound;
@@ -52,6 +70,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JCheckBox ttsSay;
 	private JCheckBox ttsGM;
 	private JCheckBox ttsStatus;
+	
+	private JPanel stuck;
+	private JCheckBox enableStuck;
+	private JSpinner stuckLimit;
+	private JSpinner stuckTimeout;
 	
 	private jgm.Config cfg;
 //	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
@@ -79,54 +102,46 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		
 //		 status config pane
-		status = new JPanel(new GridBagLayout());
+		general = new JPanel(new GridBagLayout());
 		//GUI.setTitleBorder(status, "Status/Logging");
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
-
 		c.gridx = 0; c.gridy = 0; c.weightx = 1.0; c.gridwidth = 2;
+		
 		debug = new JCheckBox("Log Debugging Info", jgm.JGlideMon.debug);
-		status.add(debug, c);
-
-		c.gridx = 0; c.gridy++; c.gridwidth = 1;
-		status.add(new JLabel("Language: "), c);
+		general.add(debug, c);
 		
-		lang = new JComboBox(jgm.Locale.getLocales());
-		lang.addActionListener(this);
-		c.gridx++;
-		status.add(lang, c);
-		
-		c.gridx = 0; c.gridy++;
-		status.add(new JLabel("Status Refresh Interval (ms): "), c);
+		c.gridy++; c.gridwidth = 1;
+		general.add(new JLabel("Status Refresh Interval (ms): "), c);
 		
 		statusInterval = new JTextField(cfg.get("status", "updateInterval"));
 		statusInterval.addActionListener(this);
 		c.gridx++;
-		status.add(statusInterval, c);
+		general.add(statusInterval, c);
 		
 		c.gridx = 0; c.gridy++;
-		status.add(new JLabel("Max Entries Per Log Tab: "), c);
+		general.add(new JLabel("Max Entries Per Log Tab: "), c);
 		
 		maxLogEntries = new JTextField(cfg.get("log", "maxentries"));
 		maxLogEntries.addActionListener(this);
 		c.gridx++;
-		status.add(maxLogEntries, c);
+		general.add(maxLogEntries, c);
 		
 		showTray = new JCheckBox("Show Tray Icon", cfg.getBool("general", "showtray"));
 		showTray.addChangeListener(this);
 		c.gridy++; c.gridx = 0; c.gridwidth = 2;
-		status.add(showTray, c);
+		general.add(showTray, c);
 		
 		minToTray = new JCheckBox("Minimize To Tray", cfg.getBool("general", "mintotray"));
 		minToTray.setMargin(new Insets(0, 25, 0, 0));
 		c.gridy++;
-		status.add(minToTray, c);
+		general.add(minToTray, c);
 		
 		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 1;
-		status.add(new JLabel(), c);
+		general.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
-		tabs.addTab("General", status);
+		tabs.addTab("General", general);
 		//p.add(status);
 		
 		
@@ -229,24 +244,24 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		c.gridx = 0; c.gridy++;
 		screenshot.add(new JLabel("Buffer Size (MB): "), c);
-
+		
 		screenshotBuffer = new JSpinner(
 			new SpinnerNumberModel(1.0, 0.5, 10.0, 0.1)
 		);
 		c.gridx++;
 		screenshot.add(screenshotBuffer, c);
-
+		
 		c.gridx = 0; c.gridy++;
 		screenshot.add(new JLabel("Update Timeout (s): "), c);
-
+		
 		screenshotTimeout = new JTextField();
 		c.gridx++;
 		screenshot.add(screenshotTimeout, c);
-
+		
 		c.gridx = 0; c.gridy++; c.gridwidth = 2;
 		ssInfo = new JLabel("", JLabel.CENTER);
 		screenshot.add(ssInfo, c);
-
+		
 		c.gridx = 0; c.gridy++; c.weighty = 1.0;
 		screenshot.add(new JLabel(), c);
 		c.weighty = 0.0;
@@ -358,6 +373,46 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		tabs.addTab("Sound/TTS", sound);
 		//p.add(sound);
 		
+		
+		// stuck options
+		stuck = new JPanel(new GridBagLayout());
+		
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.weighty = 0.0;
+		enableStuck = new JCheckBox("Attempt To Resume When Stuck");
+		enableStuck.addChangeListener(this);
+		stuck.add(enableStuck, c);
+		
+		JLabel tmpLbl = new JLabel("  Stuck Limit");
+		tmpLbl.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
+		
+		c.gridwidth = 1; c.gridy++;
+		stuck.add(tmpLbl, c);
+		
+		stuckLimit = new JSpinner(
+			new SpinnerNumberModel(5, 0, 10000, 1)
+		);
+		stuckLimit.addChangeListener(this);
+		c.gridx++;
+		stuck.add(stuckLimit, c);
+		
+		tmpLbl = new JLabel("  Limit Timeout (s)");
+		tmpLbl.setToolTipText("Reset stuck timer after this many seconds");
+		
+		c.gridx = 0; c.gridy++;
+		stuck.add(tmpLbl, c);
+
+		stuckTimeout = new JSpinner(
+			new SpinnerNumberModel(300, 5, 10000, 1)
+		);
+		stuckTimeout.addChangeListener(this);
+		c.gridx++;
+		stuck.add(stuckTimeout, c);
+		
+		c.gridx = 0; c.gridy++; c.weighty = 1.0;
+		stuck.add(new JLabel(), c);
+		
+		tabs.addTab("Stuck", stuck);
+		
 		add(tabs, BorderLayout.CENTER);
 		
 		// ensuring appropriate groups are enabled/disabled
@@ -368,26 +423,21 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == close) {
-			System.out.println("Canceling config changes");
 			log.fine("Canceling config changes");
 			setVisible(false);
-			return;
-		} else if (e.getSource() == lang) {
-			Object o = ((JComboBox) lang).getSelectedItem();
-			jgm.Locale.setLocale((java.util.Locale) o);
 			return;
 		}
 		
 		boolean oldDebug = cfg.getBool("general", "debug");
-
+		
 		if (oldDebug != debug.isSelected()) {
 			cfg.set("general", "debug", debug.isSelected());
 			jgm.JGlideMon.debug = debug.isSelected();
-
+			
 			// this deletes the current log
 			jgm.Log.reloadConfig();
 		}
-
+		
 		cfg.set("net", "host", host.getText());
 		
 		try {
@@ -443,17 +493,19 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		cfg.set("screenshot", "scale", screenshotScale.getValue());
 		cfg.set("screenshot", "quality", screenshotQuality.getValue());
-
-		cfg.set("screenshot", "buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
-
+		
+		cfg.set("screenshot", "buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
+		
 		try {
 			cfg.set("screenshot", "timeout", Integer.parseInt(screenshotTimeout.getText()));
 		} catch (NumberFormatException x) {
 			log.warning("Invalid timeout: " + screenshotTimeout.getText());
 		}
-
-		jgm.JGlideMon.instance.ssUpdater.sentSettings = false;
-
+		
+		// would be null on first-time startup
+		if (null != jgm.JGlideMon.instance.ssUpdater)
+			jgm.JGlideMon.instance.ssUpdater.sentSettings = false;
+		
 		cfg.set("sound", "enabled", enableSound.isSelected());
 		cfg.set("sound", "whisper", soundWhisper.isSelected());
 		cfg.set("sound", "say", soundSay.isSelected());
@@ -466,6 +518,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("sound.tts", "say", ttsSay.isSelected());
 		cfg.set("sound.tts", "gm", ttsGM.isSelected());
 		cfg.set("sound.tts", "status", ttsStatus.isSelected());
+		
+		cfg.set("stuck", "enabled", enableStuck.isSelected());
+		cfg.set("stuck", "limit", ((Integer) stuckLimit.getValue()).intValue());
+		cfg.set("stuck", "timeout", ((Integer) stuckTimeout.getValue()).intValue());
 		
 		jgm.Config.writeIni();
 		
@@ -508,6 +564,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			ttsSay.setEnabled(state);
 			ttsGM.setEnabled(state);
 			ttsStatus.setEnabled(state);
+		} else if (e.getSource() == enableStuck) {
+			boolean state = enableStuck.isEnabled() && enableStuck.isSelected();
+			
+			stuckLimit.setEnabled(state);
+			stuckTimeout.setEnabled(state);
 		}
 	}
 	
@@ -532,15 +593,15 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshotQuality.setValue(cfg.getInt("screenshot", "quality"));
 		screenshotBuffer.setValue(cfg.getDouble("screenshot", "buffer"));
 		screenshotTimeout.setText(cfg.get("screenshot", "timeout"));
- 		
+		
 		Icon i = jgm.GUI.instance.tabsPane.screenshotTab.ssLabel.getIcon();
-
+		
 		if (i != null) {
 			int width = i.getIconWidth();
 			int height = i.getIconHeight();
 			int size = width * height * 3;
 			float sizeMb = (float) size / 1048576; 
-
+			
 			ssInfo.setText(
 				String.format(
 					"<html><br>Your last screenshot was %sx%s pixels.<br>\n" +
@@ -550,11 +611,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 					sizeMb
 				)
 			);
-
+			
 			this.pack();
 		}
-
-
+		
 		enableSound.setSelected(cfg.getBool("sound", "enabled"));
 		soundWhisper.setSelected(cfg.getBool("sound", "whisper"));
 		soundSay.setSelected(cfg.getBool("sound", "say"));
@@ -570,11 +630,16 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		ttsGM.setSelected(cfg.getBool("sound.tts", "gm"));
 		ttsStatus.setSelected(cfg.getBool("sound.tts", "status"));
 		
+		enableStuck.setSelected(cfg.getBool("stuck", "enabled"));
+		stuckLimit.setValue(cfg.getInt("stuck", "limit"));
+		stuckTimeout.setValue(cfg.getInt("stuck", "timeout"));
+		
 		// to initialize enabled/disabled states
 		stateChanged(new ChangeEvent(showTray));
 		stateChanged(new ChangeEvent(netReconnect));
 		stateChanged(new ChangeEvent(enableSound));
 		stateChanged(new ChangeEvent(enableTTS));
+		stateChanged(new ChangeEvent(enableStuck));
 	}
 	
 	public void selectTab(int index) {

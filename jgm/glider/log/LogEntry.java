@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.glider.log;
 
 import java.util.Date;
@@ -13,7 +33,7 @@ import java.text.SimpleDateFormat;
  */
 public class LogEntry implements Comparable<LogEntry> {
 	protected static Logger log = Logger.getLogger(LogEntry.class.getName());
-
+	
 	protected Date timestamp = new Date();
 	protected String type = "Unknown";
 	
@@ -57,6 +77,10 @@ public class LogEntry implements Comparable<LogEntry> {
 		return this.timestamp.compareTo(e.timestamp);
 	}
 
+	public Date getTimestamp() {
+		return timestamp;
+	}
+	
 	/**
 	 * Returns the timestamp in HH:mm:ss format.
 	 * @return The formatted timestamp
@@ -83,9 +107,20 @@ public class LogEntry implements Comparable<LogEntry> {
 			return null;
 		}
 
-		String type    = parts[0].substring(1, parts[0].length() - 1);
-		String rawText = parts[1];
+		String type    = null;
+		String rawText = null;
 
+		// i don't know why but rarely an exception is thrown here
+		// added the try/catch just to be safe
+		try {
+			type    = parts[0].substring(1, parts[0].length() - 1);
+			rawText = parts[1];
+		} catch (Throwable t) {
+			log.log(Level.WARNING, "Strange error parsing log entry", t);
+			type = "UNKNOWN";
+			rawText = t.getClass().getName() + ": " + t.getMessage();
+		}
+		
 		// remove leading timestamp in case user has a timestamp mod
 		Matcher m = TIMESTAMP_PATTERN.matcher(rawText);
 		

@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.panes;
 
 import jgm.gui.components.HeadingDial;
@@ -82,7 +102,9 @@ public class CharInfoPane extends Pane {
 		name.setText(s.name);
 		level.setText(((s.level > 0) ? Integer.toString(s.level) : ""));
 		health.setValue((int) s.health);
+		health.setToolTipText(Integer.toString((int) s.health) + "%");
 		mana.setValue((int) s.mana);
+		mana.setToolTipText(Integer.toString((int) s.mana) + "%");
 
 		if (!clazz.getText().equals(s.clazz.toString())) {
 			try {
@@ -93,9 +115,10 @@ public class CharInfoPane extends Pane {
 				System.err.println("Null when setting class icon");
 				e.printStackTrace();
 			}
-			
-			manaLbl.setText(s.clazz.mana.toString() + ": ");
 		}
+		
+		// need to update it each time to account for druids
+		manaLbl.setText(s.manaName + ": ");
 
 		heading.setHeading(s.heading);
 	}

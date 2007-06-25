@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+JGlideMon - A Java based remote monitor for MMO Glider
+Copyright (C) 2007 Tim
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+-->
+
 <!-- ********************************************************** -->
 <!-- *                                                        * -->
 <!-- * Apache Ant build file used to build JGlideMon. To      * -->
 <!-- * build everything, just type the following:             * -->
 <!-- *                                                        * -->
 <!-- *     ant                                                * -->
+<!-- *                                                        * -->
+<!-- * Also, to use run.bat, you can type:                    * -->
+<!-- *     ant clean jars                                     * -->
 <!-- *                                                        * -->
 <!-- * For more information:  http://ant.apache.org/          * -->
 <!-- *                                                        * -->
@@ -18,7 +40,7 @@
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="version"		value="0.10beta"/>
+	<property name="version"		value="0.10"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/freetts.jar"/>
@@ -78,9 +100,6 @@
 		<copy todir="${bin_dir}/jgm/resources">
 				<fileset dir="${src_dir}/jgm/resources" includes="images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav" excludes="**/psd/,**/gif/"/>
 		</copy>
-		<copy todir="${bin_dir}">
-			<fileset dir="${src_dir}" includes="**/*.properties"/>
-		</copy>
 	</target>
 
 	<target name="libs"
@@ -89,13 +108,16 @@
 		<copy todir="${bin_dir}/lib">
 			<fileset dir="${src_dir}/lib" includes="**/*"/>
 		</copy>
+		<copy todir="${bin_dir}">
+			<fileset dir="${src_dir}" includes="*.properties"/>
+		</copy>
 	</target>
 
 	<target name="docs"
 		description="Documentation">
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}">
-			<fileset dir="${src_dir}" includes="ChangeLog.txt"/>
+			<fileset dir="${src_dir}" includes="ChangeLog.txt,License.txt"/>
 		</copy>
 	</target>
 
@@ -161,7 +183,7 @@
 	</target>
 
 
-	<target name="zips" depends="core_zip,profiler_zip,tts_zip"
+	<target name="zips" depends="core_zip,profiler_zip,tts_zip,src_zip"
 			description="Build all zip files"/>
 
 
@@ -170,17 +192,25 @@
 	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="ChangeLog.txt,JGlideMon.jar,Profiler.jar,*.properties"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,Profiler.jar,*.properties"/>
 		</zip>
 	</target>
 
+
+	<property name="src_zip" value="${bin_dir}/${title}_v${version}_src.zip"/>
+
+	<target name="src_zip" description="Create ${src_zip}">
+		<zip destfile="${src_zip}">
+			<fileset dir="${src_dir}" includes="**" excludes="**/*.class,lib/**,bin/**,**/.*,**/*.cache,**/*.dat,**/*.ini,DebugInfo.txt,Log.txt"/>
+		</zip>
+	</target>
 
 	<property name="profiler_zip" value="${bin_dir}/${title}_v${version}_Profiler.zip"/>
 
 	<target name="profiler_zip" depends="Profiler_jar"
 			description="Create ${profiler_zip}">
 		<zip destfile="${profiler_zip}">
-			<fileset dir="${bin_dir}" includes="Profiler.jar"/>
+			<fileset dir="${bin_dir}" includes="Profiler.jar,License.txt"/>
 		</zip>
 	</target>
 
@@ -205,7 +235,7 @@
 				   jgm.gui.panes,
 				   jgm.gui.tabs,
 				   jgm.gui.updaters,
-				   jgm.logging
+				   jgm.logging,
 				   jgm.sound,
 				   jgm.test,
 				   jgm.util,
@@ -218,7 +248,6 @@
 				additionalparam="-breakiterator"
 				destdir="${javadoc_dir}" 
 				packagenames="${javadoc_pkgs}"
-
 				windowtitle="${javadoc_desc}"
 				doctitle="${javadoc_desc}"
 				access="protected">

@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.updaters;
 
 import jgm.glider.*;
@@ -10,7 +30,7 @@ import java.io.*;
 
 public class LogUpdater implements Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(LogUpdater.class.getName());
-
+	
 	private volatile boolean stop = false;
 
 	private Conn conn;
@@ -22,8 +42,12 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	private ChatTab chatLog;
 	private LogTab urgentChatLog;
 	private LogTab combatLog;
+	private MobsTab mobsTab;
 	private LootsTab lootsTab;
  
+	private Long stuckTimer = null;
+	private int stuckCount = 0;
+	
 	private Thread thread;
 	
 	public LogUpdater(TabsPane t) {
@@ -34,6 +58,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		chatLog    = t.chatLog;
 		urgentChatLog = t.urgentChatLog;
 		combatLog  = t.combatLog;
+		mobsTab    = t.mobsTab;
 		lootsTab   = t.lootsTab;
 		
 		conn = new Conn();
@@ -82,7 +107,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			
 			try {
 				line = conn.readLine();
-			} catch (Exception x) {
+			} catch (Throwable x) {
 				log.fine("Stopping LogUpdater, Ex: " + x.getMessage());
 				Connector.disconnect();
 				return;
@@ -101,8 +126,39 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			if (e instanceof GliderLogEntry) {
 				gliderLog.add(e);
 				
-				if (((GliderLogEntry) e).isAlert()) {
+				GliderLogEntry e2 = (GliderLogEntry) e;
+				
+				if (e2.isAlert()) {
 					urgentChatLog.add(e, true);
+					
+					if (e2.type == GliderLogEntry.Type.STUCK &&
+						jgm.Config.getInstance().getBool("stuck", "enabled")) {
+						long now = System.currentTimeMillis();
+						long timeout = 1000 * jgm.Config.getInstance().getInt("stuck", "timeout");
+						int limit = jgm.Config.getInstance().getInt("stuck", "limit");
+						
+						if (stuckTimer == null) {
+							stuckTimer = now;
+						} else if (now - stuckTimer >= timeout) {
+							// we're stuck but it's been long enough
+							// since the last time we were stuck
+							stuckTimer = now;
+							stuckCount = 0;
+						}
+						
+						log.fine("Stuck " + stuckCount + " times. Limit = " + limit);
+						
+						if (limit == 0 || stuckCount < limit) {
+							stuckCount++;
+							// simulate pressing the Start button
+							jgm.GUI.instance.ctrlPane.start.doClick();
+							log.info("Restarting glide after being stuck");
+						} else {
+							stuckTimer = null;
+							stuckCount = 0;
+							log.warning("Stuck too many times in a row, giving up");
+						}
+					}
 				}
 			} else if (e instanceof StatusEntry) {
 				statusLog.add(e);
@@ -129,8 +185,17 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				if (e2.hasMoney()) {
 					lootsTab.addMoney(e2.getMoney());
 				}
+				
+				if (e2.hasRep() || e2.hasSkill()) {
+					mobsTab.add(e);
+				}
 			} else if (e instanceof CombatLogEntry) {
-				combatLog.add(e);
+				CombatLogEntry e2 = (CombatLogEntry) e;
+				combatLog.add(e2);
+				
+				if (e2.hasMob()) {
+					mobsTab.add(e2);
+				}
 			}
 		}
 	}

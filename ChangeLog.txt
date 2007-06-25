@@ -1,8 +1,37 @@
 JGlideMon ChangeLog
 
-Version 0.x
------------
-- Initial framework for multi-lingual support added
+Version 0.10
+------------
+- Added Mobs/Rep/Skills tab. Note: I have no way of testing if rep
+  is detected properly when you get rep for killing a mob (I no longer
+  have a high level character to kill mobs that would give rep). It
+  works when you turn in a quest; if you get the same message in the
+  chatlog when you kill a mob as when you turn in a quest it should
+  work.
+- The tab that was selected when you close the program will now
+  be selected when you start it the next time
+- Fixed error when you run the program for the first time and the
+  config dialog doesn't close when you press the save button
+- Added Stuck tab to configuration dialog. Now when "Stuck too many times"
+  is received it will send the /startglide command. Note that this
+  option is disabled by default. If Glider gets stuck 'Stuck Limit' 
+  number of times within 'Limit Timeout' seconds it will give up.
+  After 'Limit Timeout' seconds without receiving the stuck message, 
+  the counter will be reset to 0. Note: this feature has not been
+  thouroughly tested! (Ideally you're profiles won't let you get stuck)
+- Added better detection for druid "mana". It should now display
+  the percentage of rage, energy, or mana, whichever is appropriate.
+  Note: this has only had limited testing.
+- Added cardinal directions and degrees tooltip for when you mouse over
+  the direction indicator as well as tooltips for health/mana/xp bars
+- Added color coding of target level
+- Removed Attach button since Glider automatically attaches
+
+Version 0.9.1
+-------------
+- Added scrollbars to screenshot when image is too large to fit
+- JGlideMon now released under the GNU GPL, see License.txt for
+  more information
 
 Version 0.9
 -------------

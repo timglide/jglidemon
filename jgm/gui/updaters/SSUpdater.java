@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.updaters;
 
 import jgm.*;
@@ -8,19 +28,17 @@ import jgm.gui.tabs.*;
 import java.util.Observer;
 import java.util.logging.*;
 import java.io.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
  
 public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(SSUpdater.class.getName());
-
+	
 	public  volatile boolean idle = true;
 	private volatile boolean stop = false;
 	private volatile boolean attached = false;
-
 	public  volatile boolean sentSettings = false;
-
+	
 	private Conn conn = null;
 
 	private ScreenshotTab tab;
@@ -61,7 +79,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	}
 
 	//private static final int MAX_SIZE = 1048576;
-	private static byte[] buff = null; // new byte[MAX_SIZE];
+	private static byte[] buff = null; //new byte[MAX_SIZE];
 	
 	public boolean update() throws IOException, InterruptedException {
 	  synchronized (conn) {
@@ -72,12 +90,12 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		GUI.setStatusBarProgress(0);
 		
 		int buffSize = (int) (cfg.getDouble("screenshot", "buffer") * 1048576);
-
+		
 		if (buff == null || buff.length != buffSize) {
 			log.fine("Allocating ss buffer of size " + buffSize);
 			buff = new byte[buffSize];
 		}
-
+		
 		/* This timer will interrupt the screenshot updater
 		 * in X seconds if it fails to update the screenshot.
 		 */
@@ -97,6 +115,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					conn.connect();
 				} catch (Throwable e) {
 					log.log(Level.WARNING, "SSWatcher", e);
+					//System.err.println("SSWatcher: " + e.getClass().getName() + ": " + e.getMessage());
 					Connector.disconnect();
 				}
 				
@@ -121,7 +140,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			log.finer(conn.readLine()); // set quality successfully
 			conn.readLine(); // ---
 		}
-
+		
 		conn.send("/capture");
 		String line = conn.readLine(); // info stating stuff about the datastream
 		
@@ -160,9 +179,8 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 //					System.out.println(s);
 				z++;
 
-				//int l = s.length();
-				//if (l >= 3 && s.lastIndexOf("---") == l - 3) {
-				if (s.endsWith("---")) {
+				int l = s.length();
+				if (l >= 3 && s.lastIndexOf("---") == l - 3) {
 //					System.out.println("Found ---");
 					break;
 				}
@@ -211,12 +229,12 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			);
 		ImageIcon icon = new ImageIcon(img);
 		tab.ssLabel.setIcon(icon);
-
+		
 		if (!sentSettings) {
 			tab.ssLabel.setSize(icon.getIconWidth(), icon.getIconHeight());
 			sentSettings = true;
 		}
-
+		
 		GUI.revertStatusBarText();
 		GUI.unlockStatusBarText();
 		GUI.hideStatusBarProgress();
