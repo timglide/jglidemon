@@ -33,6 +33,8 @@ public class StatusUpdater extends Observable
 	implements Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(StatusUpdater.class.getName());
 	
+	public static StatusUpdater instance = null;
+	
 	public String version        = "";
 	public boolean attached      = false;
 	public String mode           = "Auto";
@@ -63,6 +65,7 @@ public class StatusUpdater extends Observable
 	private Config cfg;
 	
 	public StatusUpdater() {
+		instance = this;
 		conn = new Conn();
 		cfg = jgm.Config.getInstance();
 	}
