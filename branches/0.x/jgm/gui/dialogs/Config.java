@@ -26,6 +26,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import jgm.GUI;
+
 public class Config extends Dialog implements ActionListener, ChangeListener {
 	static Logger log = Logger.getLogger(Config.class.getName());
 	
@@ -75,6 +77,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JCheckBox enableStuck;
 	private JSpinner stuckLimit;
 	private JSpinner stuckTimeout;
+	
+	private JPanel web;
+	private JCheckBox enableWeb;
+	private JSpinner webPort;
 	
 	private jgm.Config cfg;
 //	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
@@ -413,6 +419,38 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		tabs.addTab("Stuck", stuck);
 		
+		
+		
+		// web server options
+		web = new JPanel(new GridBagLayout());
+		
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.gridheight = 1; c.weighty = 0.0; c.weightx = 1.0;
+		enableWeb = new JCheckBox("Enable Web-Server");
+		enableWeb.addChangeListener(this);
+		web.add(enableWeb, c);
+		
+		tmpLbl = new JLabel("  Port");
+//		tmpLbl.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
+		
+		c.gridwidth = 1; c.gridy++; c.weightx = 0.5;
+		web.add(tmpLbl, c);
+		
+		webPort = new JSpinner(
+			new SpinnerNumberModel(3201, 1, 65536, 1)
+		);
+		webPort.setEditor(new JSpinner.NumberEditor(webPort, "#")); // prevent comma grouping
+		webPort.addChangeListener(this);
+		c.gridx++;
+		web.add(webPort, c);
+		
+		c.gridx = 0; c.gridy++; c.weighty = 1.0;
+		web.add(new JLabel(), c);
+		
+		tabs.addTab("Web", web);
+		
+		
+		
+		
 		add(tabs, BorderLayout.CENTER);
 		
 		// ensuring appropriate groups are enabled/disabled
@@ -523,6 +561,34 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("stuck", "limit", ((Integer) stuckLimit.getValue()).intValue());
 		cfg.set("stuck", "timeout", ((Integer) stuckTimeout.getValue()).intValue());
 		
+		boolean oldWebEnabled = cfg.getBool("web", "enabled");
+		int oldWebPort = cfg.getInt("web", "port");
+		
+		cfg.set("web", "enabled", enableWeb.isSelected());
+		cfg.set("web", "port", webPort.getValue());
+		
+		// stop httpd if needed
+		if ((oldWebEnabled && oldWebPort != cfg.getInt("web", "port")) ||
+			(!enableWeb.isSelected())) {
+			jgm.HTTPD.instance.stop();
+		}
+		
+		// restart on different port if needed
+		if ((enableWeb.isSelected() && oldWebPort != cfg.getInt("web", "port")) ||
+			(!oldWebEnabled && enableWeb.isSelected()) ||
+			(enableWeb.isSelected() && jgm.HTTPD.thread == null)) {
+			try {
+				jgm.HTTPD.instance.start(cfg.getInt("web", "port"));
+			} catch (java.io.IOException x) {
+				JOptionPane.showMessageDialog(GUI.frame,
+					"Unable to start web-server.\n" +
+					"Port " + cfg.getInt("web", "port") + " is unavailible.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE
+				);
+			}
+		}
+		
 		jgm.Config.writeIni();
 		
 		setVisible(false);
@@ -569,6 +635,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			
 			stuckLimit.setEnabled(state);
 			stuckTimeout.setEnabled(state);
+		} else if (e.getSource() == enableWeb) {
+			boolean state = enableWeb.isEnabled() && enableWeb.isSelected();
+			
+			webPort.setEnabled(state);
 		}
 	}
 	
@@ -634,12 +704,16 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		stuckLimit.setValue(cfg.getInt("stuck", "limit"));
 		stuckTimeout.setValue(cfg.getInt("stuck", "timeout"));
 		
+		enableWeb.setSelected(cfg.getBool("web", "enabled"));
+		webPort.setValue(cfg.getInt("web", "port"));
+		
 		// to initialize enabled/disabled states
 		stateChanged(new ChangeEvent(showTray));
 		stateChanged(new ChangeEvent(netReconnect));
 		stateChanged(new ChangeEvent(enableSound));
 		stateChanged(new ChangeEvent(enableTTS));
 		stateChanged(new ChangeEvent(enableStuck));
+		stateChanged(new ChangeEvent(enableWeb));
 	}
 	
 	public void selectTab(int index) {

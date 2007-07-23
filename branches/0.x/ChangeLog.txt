@@ -1,5 +1,14 @@
 JGlideMon ChangeLog
 
+Version 0.11
+------------
+- Added an embedded webserver. It is disabled by default. See
+  the Web tab in the configuration dialog to enable it. The
+  default port is 3201; visit http://localhost:3201 to view it.
+  You will need to forward this port if you are behind a router
+  in order to view it from a remote location.
+  ...
+
 Version 0.10
 ------------
 - Added Mobs/Rep/Skills tab. Note: I have no way of testing if rep

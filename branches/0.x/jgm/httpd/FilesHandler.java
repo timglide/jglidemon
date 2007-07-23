@@ -38,9 +38,9 @@ public class FilesHandler extends Handler {
 								 "FORBIDDEN: Won't serve ../ for security reasons." );
 
 		File f = new File( baseDir, uri );
+		
 		if ( !f.exists())
-			return new Response( HTTPD.HTTP_NOTFOUND, HTTPD.MIME_PLAINTEXT,
-								 "Error 404, file not found." );
+			return Response.NOT_FOUND;
 
 		// List the directory, if necessary
 		if ( f.isDirectory())
@@ -122,7 +122,7 @@ public class FilesHandler extends Handler {
 			String mime = null;
 			int dot = f.getCanonicalPath().lastIndexOf( '.' );
 			if ( dot >= 0 )
-				mime = (String)HTTPD.theMimeTypes.get( f.getCanonicalPath().substring( dot + 1 ).toLowerCase());
+				mime = HTTPD.theMimeTypes.get( f.getCanonicalPath().substring( dot + 1 ).toLowerCase());
 			if ( mime == null )
 				mime = HTTPD.MIME_DEFAULT_BINARY;
 

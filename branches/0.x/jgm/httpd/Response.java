@@ -12,6 +12,9 @@ import java.util.Properties;
  */
 public class Response
 {
+	public static final Response NOT_FOUND =
+		new Response(HTTPD.HTTP_NOTFOUND, HTTPD.MIME_PLAINTEXT, "Error 404, file not found.");
+	
 	/**
 	 * Default constructor: response = HTTP_OK, data = mime = 'null'
 	 */

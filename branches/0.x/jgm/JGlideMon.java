@@ -33,7 +33,7 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.10";
+	public static final String version = "0.11 beta";
 	public static final String _revision = "$Revision$";
 	public static final String revision = _revision.substring(1, _revision.length() - 1);
 	public static final String _date = "$Date$";
@@ -118,6 +118,22 @@ public class JGlideMon {
 		// not critical to get these loaded before the gui shows
 		jgm.wow.Item.Cache.loadIcons();
 		jgm.wow.Item.Cache.loadItems();
+		
+		
+		new HTTPD();
+		
+		if (cfg.getBool("web", "enabled")) {
+			try {
+				HTTPD.instance.start(cfg.getInt("web", "port"));
+			} catch (java.io.IOException e) {
+				JOptionPane.showMessageDialog(GUI.frame,
+					"Unable to start web-server.\n" +
+					"Port " + cfg.getInt("web", "port") + " is unavailible.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE
+				);
+			}
+		}
 	}
 
 	public void destroy() {
@@ -131,6 +147,7 @@ public class JGlideMon {
 		Speech.destroy();
 		jgm.wow.Item.Cache.saveIcons();
 		jgm.wow.Item.Cache.saveItems();
+		HTTPD.instance.stop(); // doesn't matter if it's actually running or not
 		jgm.Config.writeIni();
 		
 		System.exit(0);

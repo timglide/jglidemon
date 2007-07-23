@@ -325,5 +325,10 @@ public class Config extends QuickIni {
 			public static final int limit = 5;
 			public static final int timeout = 300;
 		}
+		
+		public static class web {
+			public static final boolean enabled = false;
+			public static final int port = 3201;
+		}
 	}
 }

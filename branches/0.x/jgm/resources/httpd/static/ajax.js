@@ -1,13 +1,17 @@
 function refreshNifty() {
-	Nifty("#loading,#disc,#main");
+	Nifty("#main,#connected");
 	Nifty("div#content,div#nav","same-height");
 	Nifty("#loadingheader,#discheader,#mainheader");
 }
 
-function hideAll() {
-	$('loading').hide();
-	$('disc').hide();
-	$('main').hide();
+function hideAll(except) {
+	if (except != 'loadingheader') $('loadingheader').hide();
+	if (except != 'discheader')	$('discheader').hide(); 
+	if (except != 'connected') $('connected').hide();
+
+	// need this in case it's the first time making this one visible
+	if (except != null)
+		$(except).show();
 }
 
 var updater = {
@@ -43,20 +47,19 @@ var updater = {
 
 		if (!connected) {
 			mainTitle = 'Disconnected';
-			showMe = $('disc');
+			showMe = 'discheader';
 		} else {
 			mainTitle = 'Name: Level ## Class';
 			// update everything
 
-			showMe = $('main');
+			showMe = 'connected';
 		}
 
 		if (mainTitle != '') mainTitle += ' - ';
 
 		document.title = mainTitle + jgmTitle;
 
-//		refreshNifty();
-		hideAll();
-		showMe.show();
+		refreshNifty();
+		hideAll(showMe);
 	}
 };

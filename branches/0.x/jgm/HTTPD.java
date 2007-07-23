@@ -9,7 +9,8 @@ import java.net.*;
 
 /**
  * This webserver is based on NanoHTTPD by Jarno Elonen
- * but it has been heavily modified.
+ * but it has been heavily modified. Note: some of the
+ * original code has been spread out over several files.
  * http://elonen.iki.fi/code/nanohttpd/
  * @since 0.11
  */
@@ -52,14 +53,13 @@ import java.net.*;
  * See the end of the source file for distribution license
  * (Modified BSD licence)
  */
-public class HTTPD
+public class HTTPD implements Runnable
 {
 	protected static Logger log = Logger.getLogger(HTTPD.class.getName());
 	
 	protected static Map<String, Handler> handlers = new HashMap<String, Handler>();
 	
 	static {
-//		handlers.put("", new MainHandler());
 		handlers.put("static", new FilesHandler(new java.io.File("jgm/resources/httpd/static")));
 		handlers.put("", handlers.get("static"));
 		handlers.put("ajax", new AjaxHandler());
@@ -93,14 +93,13 @@ public class HTTPD
 		Response ret = null;
 		
 //		System.out.println("parts:");
-		for (int i = 0; i < parts.length; i++)
+//		for (int i = 0; i < parts.length; i++)
 //			System.out.println("\t" + parts[i]);
 		
 		if (handlers.containsKey(parts[0])) {
 			ret = handlers.get(parts[0]).handle(parts.length > 1 ? parts[1] : "", method, headers, params);
 		} else {
-			ret = new Response(HTTP_NOTFOUND, MIME_PLAINTEXT,
-								"Error 404, file not found." );
+			ret = Response.NOT_FOUND;
 		}
 		
 		return ret;
@@ -127,36 +126,73 @@ public class HTTPD
 		MIME_HTML = "text/html",
 		MIME_DEFAULT_BINARY = "application/octet-stream";
 
+	public static HTTPD instance = null;
+	public static Thread thread = null;
+	public static ServerSocket ss = null;
+	private volatile boolean run_thread = true;
+	
 	// ==================================================
 	// Socket & server code
 	// ==================================================
-
+	
 	/**
 	 * Starts a HTTP server to given port.<p>
 	 * Throws an IOException if the socket is already in use
 	 */
-	public HTTPD( int port ) throws IOException
+	public HTTPD(int port)
 	{
 		myTcpPort = port;
+		instance = this;
+	}
+	
+	public HTTPD() {
+		this(0);
+	}
+	
+	public void start() throws IOException {
+		start(myTcpPort);
+	}
+	
+	public void start(int port) throws IOException {		
+		if (thread != null) {
+			throw new IllegalStateException("Cannot start httpd with thread != null");
+		}
+		
+		if (ss != null) {
+			throw new IllegalStateException("Cannot start httpd with ss != null");
+		}
+		
+		log.info("Attempting to start httpd on port " + port);
+		
+		myTcpPort = port;
+		run_thread = true;
 
-		final ServerSocket ss = new ServerSocket( myTcpPort );
-		Thread t = new Thread( new Runnable()
-			{
-				public void run()
-				{
-					try
-					{
-						while( true )
-							new HTTPSession( ss.accept());
-					}
-					catch ( IOException ioe )
-					{}
-				}
-			});
-		t.setDaemon( true );
-		t.start();
+		ss = new ServerSocket(myTcpPort);
+		thread = new Thread(this);
+		thread.setDaemon(true);
+		thread.start();
+	}
+	
+	public void stop() {
+		if (ss != null) {
+			try {
+				ss.close();
+			} catch (IOException e) {}
+			ss = null;
+		}
+		
+		log.info("Stopping httpd");
+		run_thread = false;
+		thread = null;
 	}
 
+	public void run() {
+		try {
+			while (run_thread)
+				new HTTPSession(ss.accept());
+		} catch (IOException ioe) {}
+	}
+	
 	/**
 	 * Starts as a standalone file server and waits for Enter.
 	 */
@@ -186,6 +222,7 @@ public class HTTPD
 		try
 		{
 			new HTTPD( port );
+			HTTPD.instance.start();
 		}
 		catch( IOException ioe )
 		{
@@ -327,7 +364,7 @@ public class HTTPD
 				
 				// ensure password was provided
 				if (parms.containsKey("HTTP_PASS") &&
-					parms.getProperty("HTTP_PASS").equals("1234")) {
+					parms.getProperty("HTTP_PASS").equals(jgm.Config.getInstance().getString("net", "password"))) {
 					r = serve(uri, method, header, parms);
 				} else {
 					r = new Response(HTTPD.HTTP_UNAUTHORIZED, HTTPD.MIME_PLAINTEXT, "Authorization required");
@@ -344,21 +381,21 @@ public class HTTPD
 				
 				
 				// for debugging
-				System.out.println(logStr);
+//				System.out.println(logStr);
 				log.fine(logStr);
 				
 				Enumeration e = header.propertyNames();
 				while ( e.hasMoreElements())
 				{
 					String value = (String)e.nextElement();
-					log.finer( "  HDR: '" + value + "' = '" +
+					log.finest( "  HDR: '" + value + "' = '" +
 										header.getProperty( value ) + "'" );
 				}
 				e = parms.propertyNames();
 				while ( e.hasMoreElements())
 				{
 					String value = (String)e.nextElement();
-					log.finer( "  PRM: '" + value + "' = '" +
+					log.finest( "  PRM: '" + value + "' = '" +
 										parms.getProperty( value ) + "'" );
 				}
 				
