@@ -264,6 +264,7 @@ public class Config extends QuickIni {
 			public static final boolean debug = false;
 			public static final boolean showtray = true;
 			public static final boolean mintotray = true;
+			public static final String wowdb = "http://www.wowhead.com/?item=%s";
 			public static final int lasttab = 0;
 		}
 		

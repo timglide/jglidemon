@@ -41,6 +41,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	private JTextField maxLogEntries;
 	private JCheckBox showTray;
 	private JCheckBox minToTray;
+	private JComboBox wowDbSite;
 	
 	private JPanel net;
 	private JTextField host;
@@ -104,6 +105,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		add(btnPanel, BorderLayout.SOUTH);
 		
+		
 		//JPanel p = new JPanel(new GridLayout(2, 3, 10, 10));
 		
 		
@@ -142,6 +144,41 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		minToTray.setMargin(new Insets(0, 25, 0, 0));
 		c.gridy++;
 		general.add(minToTray, c);
+		
+		wowDbSite = new JComboBox(
+			new String[] {
+				"http://www.wowhead.com/?item=%s",
+				"http://www.thottbot.com/i%s",
+				"http://wow.allakhazam.com/db/item.html?witem=%s"
+			}
+		);
+		wowDbSite.addActionListener(new ActionListener() {
+			// make sure each item gets added to the list
+			public void actionPerformed(ActionEvent e) {
+				Object selected = wowDbSite.getSelectedItem();
+				
+				int num = wowDbSite.getItemCount();
+				boolean found = true;
+				
+				for (int i = 0; i < num; i++) {
+					Object cur = wowDbSite.getItemAt(i);
+					if (cur.equals(selected)) break;
+					found = false;
+				}
+				
+				if (!found) {
+					wowDbSite.addItem(selected);
+				}
+			}
+		});
+		wowDbSite.setEditable(true);
+		wowDbSite.setSelectedItem(cfg.get("general", "wowdb"));		
+		
+		c.gridx = 0; c.gridy++; c.gridwidth = 1;
+		general.add(new JLabel("WoW DB Site"), c);
+		
+		c.gridx++;
+		general.add(wowDbSite, c);
 		
 		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 1;
 		general.add(new JLabel(), c);
@@ -522,6 +559,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		cfg.set("general", "showtray", showTray.isSelected());
 		cfg.set("general", "mintotray", minToTray.isSelected());
+		cfg.set("general", "wowdb", wowDbSite.getSelectedItem());
 		
 		try {
 			cfg.set("screenshot", "updateinterval", Integer.parseInt(screenshotInterval.getText()));

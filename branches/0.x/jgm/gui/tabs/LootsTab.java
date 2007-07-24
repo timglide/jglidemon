@@ -80,6 +80,7 @@ public class LootsTab extends Tab implements ActionListener {
 				jp.add(panes[i]);
 			}
 			
+			// to add items for testing
 //			if (i == 3)
 //				for (int j = 0; j < 10; j++)
 //					items[i].add(ItemSet.factory(7713 + j, "Illusionary Rod", 1)); // for testing
@@ -211,6 +212,7 @@ public class LootsTab extends Tab implements ActionListener {
 		}
 	}
 
+	
 	private class ItemTable extends JTable
 		implements MouseMotionListener,
 				   MouseListener {
@@ -247,15 +249,36 @@ public class LootsTab extends Tab implements ActionListener {
             itemTooltip.setItemSet(getItemSet(row));
 			itemTooltip.setVisible(true);
 			itemTooltip.revalidate();
+			
+			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 		
 		public void mouseExited(MouseEvent e) {
 			//System.out.println("Exited: " + e);
 			itemTooltip.setVisible(false);
 			itemTooltip.revalidate();
+			
+			setCursor(Cursor.getDefaultCursor());
 		}
 		
-		public void mouseClicked(MouseEvent e) {}
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() != 1) return;
+			
+			Point pt = e.getPoint();
+			int row = this.rowAtPoint(pt);
+	
+			ItemTableModel tm = (ItemTableModel) this.dataModel;
+			ItemSet is = tm.getItem(row);
+			
+			int itemId = is.getItem().id;
+			
+			jgm.Util.openURL(
+				String.format(
+					jgm.Config.getInstance().get("general", "wowdb"),
+					itemId
+			));
+		}
+		
 		public void mousePressed(MouseEvent e) {}
 		public void mouseReleased(MouseEvent e) {}
 		

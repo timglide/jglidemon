@@ -484,4 +484,9 @@ public class GUI
 			}
 		}
 	}
+    
+    
+	public static final Cursor
+		HAND_CURSOR = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR),
+		DEFAULT_CURSOR = Cursor.getDefaultCursor();
 }

@@ -8,6 +8,11 @@ Version 0.11
   You will need to forward this port if you are behind a router
   in order to view it from a remote location.
   ...
+- Clicking on an item on the Loot tab will open a browser window
+  to the Wowhead page for that item. You can change the site that
+  is opened in the General tab of the configuration dialog. Wowhead,
+  Thottbot, and Allakhazam are already in the combo box. If you want
+  to add a different url, %s will be replaced with the item id.
 
 Version 0.10
 ------------
