@@ -42,6 +42,7 @@ public class ScreenshotTab extends Tab
 	private static SSUpdater updater = null;
 	
 	public JCheckBox keysEnabled;
+	public JScrollPane jsp;
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
 
@@ -65,7 +66,10 @@ public class ScreenshotTab extends Tab
 		JPanel p = new JPanel();
 		p.add(ssLabel);
 		
-		add(new JScrollPane(p), BorderLayout.CENTER);
+		jsp = new JScrollPane(p);
+		// jsp.setBorder(null);
+		// jsp.setBorder(BorderFactory.createLineBorder(Color.red, 10));
+		add(jsp, BorderLayout.CENTER);
 		
 		refresh = new JButton("Refresh Screenshot Immediately");
 		refresh.setFocusable(false);

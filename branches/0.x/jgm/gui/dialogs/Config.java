@@ -53,6 +53,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	
 	private JPanel screenshot;
 	private JTextField screenshotInterval;
+	private JCheckBox screenshotAutoScale;
 	private JSlider screenshotScale;
 	private JSlider screenshotQuality;
 	private JSpinner screenshotBuffer;
@@ -260,7 +261,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++;
 		screenshot.add(screenshotInterval, c);
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.gridwidth = 2;
+		screenshotAutoScale = new JCheckBox("Automatically adjust scale to fit window", cfg.getBool("screenshot", "autoscale"));
+		screenshotAutoScale.addChangeListener(this);
+		screenshot.add(screenshotAutoScale, c);
+		
+		c.gridx = 0; c.gridy++; c.gridwidth = 1;
 		screenshot.add(new JLabel("Scale: "), c);
 		
 		screenshotScale =
@@ -567,6 +573,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			log.warning("Invalid interval: " + screenshotInterval.getText());
 		}
 		
+		cfg.set("screenshot", "autoscale", screenshotAutoScale.isSelected());
 		cfg.set("screenshot", "scale", screenshotScale.getValue());
 		cfg.set("screenshot", "quality", screenshotQuality.getValue());
 		
@@ -648,6 +655,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			
 			netReconnectDelay.setEnabled(state);
 			netReconnectTries.setEnabled(state);
+		} else if (e.getSource() == screenshotAutoScale) {
+			boolean state = screenshotAutoScale.isSelected();
+			screenshotScale.setEnabled(!state);
 		} else if (e.getSource() == enableSound) {
 			boolean state = enableSound.isEnabled() && enableSound.isSelected();
 			
@@ -697,6 +707,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		netReconnectDelay.setText(cfg.get("net", "autoreconnectdelay"));
 		
 		screenshotInterval.setText(cfg.get("screenshot", "updateinterval"));
+		screenshotAutoScale.setSelected(cfg.getBool("screenshot", "autoscale"));
 		screenshotScale.setValue(cfg.getInt("screenshot", "scale"));
 		screenshotQuality.setValue(cfg.getInt("screenshot", "quality"));
 		screenshotBuffer.setValue(cfg.getDouble("screenshot", "buffer"));
@@ -748,6 +759,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		// to initialize enabled/disabled states
 		stateChanged(new ChangeEvent(showTray));
 		stateChanged(new ChangeEvent(netReconnect));
+		stateChanged(new ChangeEvent(screenshotAutoScale));
 		stateChanged(new ChangeEvent(enableSound));
 		stateChanged(new ChangeEvent(enableTTS));
 		stateChanged(new ChangeEvent(enableStuck));

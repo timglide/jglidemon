@@ -13,6 +13,10 @@ Version 0.11
   is opened in the General tab of the configuration dialog. Wowhead,
   Thottbot, and Allakhazam are already in the combo box. If you want
   to add a different url, %s will be replaced with the item id.
+- Added an auto-scale feature for the screenshot that should adjust
+  the scale whenever you resize the window. This takes effect the next
+  time the screenshot is updated. This is enabled by default and can be
+  disabled via the screenshot options tab.
 
 Version 0.10
 ------------

@@ -121,6 +121,11 @@ public class GUI
 					cfg.setInt("window", "width", s.width);					
 					cfg.setInt("window", "height", s.height);
 				}
+				
+				// request to update the screenshot's scale
+				try {
+					JGlideMon.instance.ssUpdater.redoScale = true;
+				} catch (Exception x) {}
 			}
 			
 			public void componentMoved(ComponentEvent e) {

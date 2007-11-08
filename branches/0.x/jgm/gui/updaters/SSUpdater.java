@@ -28,6 +28,7 @@ import jgm.gui.tabs.*;
 import java.util.Observer;
 import java.util.logging.*;
 import java.io.*;
+import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
  
@@ -38,6 +39,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	private volatile boolean stop = false;
 	private volatile boolean attached = false;
 	public  volatile boolean sentSettings = false;
+	public  volatile boolean redoScale = true; // so it will happen initially
 	
 	private Conn conn = null;
 
@@ -233,6 +235,54 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		if (!sentSettings) {
 			tab.ssLabel.setSize(icon.getIconWidth(), icon.getIconHeight());
 			sentSettings = true;
+		}
+		
+		if (redoScale && cfg.getBool("screenshot", "autoscale")) {
+			log.fine("Attempting to set screenshot scale...");
+			
+			double curScale = cfg.getDouble("screenshot", "scale") / 100;
+			double newScale = curScale;
+			int iwidth = icon.getIconWidth();
+			int iheight = icon.getIconHeight();
+			// double iratio = (double) iwidth / iheight;
+			
+			int realIWidth = (int) ((double) iwidth / curScale);
+			int realIHeight = (int) ((double) iheight / curScale);
+			
+			// try to account for margin and width of border
+			int pwidth = tab.jsp.getWidth() - 20;
+			int pheight = tab.jsp.getHeight() - 20;
+			
+			int dx = realIWidth - pwidth;
+			int dy = realIHeight - pheight;
+			
+			log.finer(
+				String.format(
+					"Current: scale=%s; size=%sx%s; real size=%sx%s",
+					curScale, iwidth, iheight, realIWidth, realIHeight
+				)
+			);
+			
+			if (dy >= dx) {
+				newScale = (double) pheight / (double) realIHeight;
+			} else {
+				newScale = (double) pwidth / (double) realIWidth;
+			}
+			
+			// -3 to be safe because there's a margin between the
+			// screenshot image and the jscrollpane i don't know how
+			// to 'properly' account for
+			int newScaleInt = (int) (newScale * 100) /*- 3*/;
+			
+			// ensure it's within bounds
+			newScaleInt = Math.min(newScaleInt, 99);
+			newScaleInt = Math.max(newScaleInt, 10);
+			
+			log.fine("Setting scale to " + newScaleInt + "%");
+			
+			cfg.set("screenshot", "scale", newScaleInt);
+			redoScale = false;
+			sentSettings = false;
 		}
 		
 		GUI.revertStatusBarText();

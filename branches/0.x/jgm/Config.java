@@ -288,6 +288,7 @@ public class Config extends QuickIni {
 		public static class screenshot {
 			public static final boolean autoupdate = true;
 			public static final int updateinterval = 5000;
+			public static final boolean autoscale = true;
 			// seems to be some weird issue if scale is 100
 			public static final int scale = 99;
 			public static final int quality = 100;
