@@ -60,7 +60,24 @@ public class HTTPD implements Runnable
 	protected static Map<String, Handler> handlers = new HashMap<String, Handler>();
 	
 	static {
-		handlers.put("static", new FilesHandler(new java.io.File("jgm/resources/httpd/static")));
+		File f = new File("jgm/resources/httpd/static");
+		File jf = new File("JGlideMon.jar");
+		// System.out.println("-=-=-=: " + jf.getAbsolutePath());
+		
+		try {
+			if (jf.exists()) {
+				log.finest("Reading static files from JAR");
+				handlers.put("static", new JarFilesHandler(jf));
+			} else if (f.exists()) {
+				log.finest("Reading static files from disk");
+				handlers.put("static", new FilesHandler(f));
+			} else {
+				log.warning("Unable to locate static files to serve");
+			}
+		} catch (Throwable e) {
+			log.log(java.util.logging.Level.WARNING, "Exception initiating HTTPD", e);
+		}
+		
 		handlers.put("", handlers.get("static"));
 		handlers.put("ajax", new AjaxHandler());
 		handlers.put("screenshot", new ScreenshotHandler());

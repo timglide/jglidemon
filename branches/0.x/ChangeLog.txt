@@ -6,8 +6,11 @@ Version 0.11
   the Web tab in the configuration dialog to enable it. The
   default port is 3201; visit http://localhost:3201 to view it.
   You will need to forward this port if you are behind a router
-  in order to view it from a remote location.
-  ...
+  in order to view it from a remote location. Note that this is
+  still in a very early stage and is not the highest priority
+  feature. For now it's read-only and shows your status. It is
+  based on my original PHP-based monitor, which others have
+  improved upon.
 - Clicking on an item on the Loot tab will open a browser window
   to the Wowhead page for that item. You can change the site that
   is opened in the General tab of the configuration dialog. Wowhead,

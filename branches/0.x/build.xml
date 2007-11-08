@@ -95,10 +95,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 	<target name="resources" 
-			description="Copy sound/image resources">
+			description="Copy sound/image/httpd resources">
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}/jgm/resources">
-				<fileset dir="${src_dir}/jgm/resources" includes="images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav" excludes="**/psd/,**/gif/"/>
+				<fileset dir="${src_dir}/jgm/resources" includes="httpd/**/*,images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav" excludes="**/psd/,**/gif/"/>
 		</copy>
 	</target>
 
