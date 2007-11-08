@@ -1498,27 +1498,3 @@ function _XMLNode_toString() {
 
 } // end function _XMLNode_toString
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -43,69 +43,109 @@ public class AjaxHandler extends Handler {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			xml = builder.newDocument();  // Create from whole cloth
 	
-			Element root = xml.createElement("response"); 
-			xml.appendChild(root);
+			Element root = CE(xml, "response"); 
+			AC(xml, root);
 			
 			// status
-			Element tmp = xml.createElement("status");
-			Text status = xml.createTextNode("success");
-			tmp.appendChild(status);
-			root.appendChild(tmp);
+			Element tmp = CE(xml, "status");
+			Text status = CTN(xml, "success");
+			AC(tmp, status);
+			AC(root, tmp);
 			
 			// for an error message
-			tmp = xml.createElement("message");
-			Text message = xml.createTextNode("");
-			tmp.appendChild(message);
-			root.appendChild(tmp);
+			tmp = CE(xml, "message");
+			Text message = CTN(xml, "");
+			AC(tmp, message);
+			AC(root, tmp);
 			
 			
-			Element request = xml.createElement("request");
-			root.appendChild(request);
+/*			Element request = CE(xml, "request");
+			AC(root, request);
 			
 			// url
-			tmp = xml.createElement("url");
-			tmp.appendChild(xml.createTextNode(uri));
-			request.appendChild(tmp);
+			tmp = CE(xml, "url");
+			AC(tmp, CTN(xml, uri));
+			AC(request, tmp);
 	
 			// headers
-			tmp = xml.createElement("headers");
+			tmp = CE(xml, "headers");
 			
 			for (Object key : headers.keySet()) {
-				Element tmp2 = xml.createElement("header");
+				Element tmp2 = CE(xml, "header");
 				tmp2.setAttribute("name", key.toString());
-				tmp2.appendChild(xml.createTextNode(headers.get(key).toString()));
-				tmp.appendChild(tmp2);
+				tmp2.appendChild(CTN(xml, headers.get(key).toString()));
+				AC(tmp, tmp2);
 			}
 			
-			request.appendChild(tmp);
-			
+			AC(request, tmp);
+			*/
 			
 			if (uri.equals("status")) {
 				// jgm info
-				Element jgm_ = xml.createElement("jgm");
-				tmp = xml.createElement("version");
-				tmp.appendChild(xml.createTextNode(JGlideMon.version));
-				jgm_.appendChild(tmp);
+				Element jgm_ = CE(xml, "jgm");
+				_(xml, jgm_, "version", JGlideMon.version);
 				
 				boolean connected = jgm.glider.Connector.isConnected();
-				tmp = xml.createElement("connected");
-				tmp.appendChild(xml.createTextNode(Boolean.toString(connected)));
-				jgm_.appendChild(tmp);
+				_(xml, jgm_, "connected", Boolean.toString(connected));
 				
-				root.appendChild(jgm_);
+				_(xml, jgm_, "update-interval", "1000");
+				
+				AC(root, jgm_);
 				
 				
 				// glider info
-				Element glider = xml.createElement("glider");
+				Element glider = CE(xml, "glider");
 				
 				if (connected && StatusUpdater.instance != null) {
 					StatusUpdater s = StatusUpdater.instance;
-					tmp = xml.createElement("version");
-					tmp.appendChild(xml.createTextNode(s.version));
-					// ...
+					
+					_(xml, glider, "version", s.version);
+					_(xml, glider, "attached", Boolean.toString(s.attached));
+					
+					if (s.attached) {
+						_(xml, glider, "lcclass", s.clazz.toString().toLowerCase());
+						_(xml, glider, "class", s.clazz.toString());
+						_(xml, glider, "name", s.name);
+						_(xml, glider, "level", s.level);
+						_(xml, glider, "health", (int) s.health);
+						_(xml, glider, "mana", (int) s.mana);
+						_(xml, glider, "mana-name", s.manaName.toLowerCase());
+						_(xml, glider, "xp", s.experience);
+						_(xml, glider, "next-xp", s.nextExperience);
+						_(xml, glider, "xp-percent", (int) (100.0 * ((double) s.experience) / s.nextExperience));
+						_(xml, glider, "xp-per-hour", s.xpPerHour);
+						
+						if (s.xpPerHour > 0) {
+							int seconds = 0, minutes = 0, hours = 0;
+							int xpDiff = s.nextExperience - s.experience;
+							double d = (double) xpDiff / (double) s.xpPerHour;
+							hours = (int) d;
+							d = 60 * (d - hours);
+							minutes = (int) d;
+							d = 60 * (d - minutes);
+							seconds = (int) d;
+							
+							_(xml, glider, "ttl", String.format("%d:%02d:%02d", hours, minutes, seconds));
+						} else {
+							_(xml, glider, "ttl", "Unknown");
+						}
+						
+						_(xml, glider, "mode", s.mode);
+						_(xml, glider, "profile", s.profile);
+						_(xml, glider, "kills", s.kills);
+						_(xml, glider, "loots", s.loots);
+						_(xml, glider, "deaths", s.deaths);
+						
+						_(xml, glider, "location", s.location);
+						_(xml, glider, "heading", s.heading);
+						
+						_(xml, glider, "target-name", s.targetName);
+						_(xml, glider, "target-level", s.targetLevel);
+						_(xml, glider, "target-health", (int) s.targetHealth);
+					}
 				}
 				
-				root.appendChild(glider);
+				AC(root, glider);
 			}
 			
 			
@@ -134,5 +174,52 @@ public class AjaxHandler extends Handler {
 		}
 		
 		return null;
+	}
+	
+	// cuz i don't want to have to type this out each fucking time
+	
+	/**
+	 * One liner to make a new tag with a text node and append
+	 * it to parent when you won't need to modify it later.
+	 */
+	private void _(Document xml, Element parent, String tag, Object contents) {
+		Element tmp = CE(xml, tag);
+		AC(tmp, CTN(xml, contents.toString()));
+		AC(parent, tmp);
+	}
+	
+	/**
+	 * createElement shortcut
+	 */
+	private Element CE(Document xml, String name) {
+		return xml.createElement(name);
+	}
+	
+	/**
+	 * createTextNode shortcut
+	 * @param xml
+	 * @param contents
+	 * @return
+	 */
+	private Text CTN(Document xml, String contents) {
+		return xml.createTextNode(contents);
+	}
+	
+	/**
+	 * appendChild shortcut
+	 * @param parent
+	 * @param child
+	 */
+	private void AC(Document parent, Element child) {
+		parent.appendChild(child);
+	}
+	
+	/**
+	 * appendChild shortcut
+	 * @param parent
+	 * @param child
+	 */
+	private void AC(Element parent, Node child) {
+		parent.appendChild(child);
 	}
 }

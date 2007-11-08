@@ -63,6 +63,7 @@ public class HTTPD implements Runnable
 		handlers.put("static", new FilesHandler(new java.io.File("jgm/resources/httpd/static")));
 		handlers.put("", handlers.get("static"));
 		handlers.put("ajax", new AjaxHandler());
+		handlers.put("screenshot", new ScreenshotHandler());
 	}
 	
 	// ==================================================
@@ -384,7 +385,7 @@ public class HTTPD implements Runnable
 //				System.out.println(logStr);
 				log.fine(logStr);
 				
-				Enumeration e = header.propertyNames();
+				/*Enumeration e = header.propertyNames();
 				while ( e.hasMoreElements())
 				{
 					String value = (String)e.nextElement();
@@ -397,7 +398,7 @@ public class HTTPD implements Runnable
 					String value = (String)e.nextElement();
 					log.finest( "  PRM: '" + value + "' = '" +
 										parms.getProperty( value ) + "'" );
-				}
+				}*/
 				
 				in.close();
 			}
@@ -595,7 +596,7 @@ public class HTTPD implements Runnable
 			"zip		application/octet-stream "+
 			"exe		application/octet-stream "+
 			"class		application/octet-stream "+
-			"js         text/javascript " +
+			"js         text/text " +
 			"css        text/css " + 
 			"java       text/plain " +
 			"xml        text/xml ");

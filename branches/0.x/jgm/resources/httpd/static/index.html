@@ -10,13 +10,15 @@
 
 <script type="text/javascript" src="/static/niftycube.js"></script>
 <script type="text/javascript" src="/static/prototype.js"></script>
-<script type="text/javascript" src="/static/xmldom.js"></script>
 <script type="text/javascript" src="/static/ajax.js"></script>
+<script type="text/javascript" src="/static/xmldom.js"></script>
 
 <script type="text/javascript">
 	window.onload=function() {
-		refreshNifty();
-		updater.update();
+//		refreshNifty();
+		updater.init();
+//		updater.update();
+		setInterval('updater.update();', 1000);
 	}
 </script>
 
@@ -27,9 +29,10 @@
 	<div id="loadingheader" class="header"><h1>Loading...</h1></div>
 
 	<div id="discheader" class="header" style="display: none;"><h1>Disconnected from Glider</h1></div>
+	<div id="notattached" class="header" style="display: none;"><h1>Connected to Glider, Detached</h1></div>
 
 	<div id="connected" style="display: none;">
-		<div id="mainheader" class="header"><h1><img src="/static/classes/$lcclass.png" alt="" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
+		<div id="mainheader" class="header"><h1><img src="/static/classes/$lcclass.png" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
 
 		<div id="nav">
 			<div id="attached_info">
@@ -53,9 +56,9 @@
 				<div><strong>KLD:</strong> <span id="kills_text">$kills</span>/<span id="loots_text">$loots</span>/<span id="deaths_text">$deaths</span></div>
 			</div>
 
-			<hr />
+			<!--hr /-->
 
-			<form action="" method="post" target="out"><input type="text" name="chatmsg" size="30"><input type="submit" value="&gt;"></form>
+			<!--form action="" method="post" target="out"><input type="text" name="chatmsg" size="30"><input type="submit" value="&gt;"></form-->
 			<!--hr />
 			<a href="" title="Start Gliding"><img src="" border="0" alt="Start Gliding" /></a>
 			<a href="" title="Stop Gliding"><img src="" border="0" alt="Stop Gliding" /></a>
@@ -63,11 +66,11 @@
 			<a href="" title="Refresh Page Manually"><img src="" border="0" alt="Refresh Page Manually" /></a-->
 		</div>
 
-		<div id="content"><a href=""><img src="/static/classes/unknown.png" id="capture" /></a></div>
+		<div id="content"><img src="/static/classes/unknown.png" id="screenshot" /></div>
 	</div>
 
 	<div class="footer">
-		<iframe name="out" id="out" width="0" height="0" frameborder="0" scrolling="no">Your Browser does not support IFrames.</iframe>
+		<!--iframe name="out" id="out" width="0" height="0" frameborder="0" scrolling="no">Your Browser does not support IFrames.</iframe-->
 		<a href="http://www.mmoglider.com/" target="_new" title="MMOGlider"><img src="/static/glogo.gif" alt="MMOGlider" border="0" /></a>
 	</div>
 </div>

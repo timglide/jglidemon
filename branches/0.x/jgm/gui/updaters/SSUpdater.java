@@ -79,7 +79,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	}
 
 	//private static final int MAX_SIZE = 1048576;
-	private static byte[] buff = null; //new byte[MAX_SIZE];
+	public static byte[] buff = null; //new byte[MAX_SIZE];
 	
 	public boolean update() throws IOException, InterruptedException {
 	  synchronized (conn) {
