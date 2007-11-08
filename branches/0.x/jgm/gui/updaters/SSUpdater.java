@@ -251,7 +251,11 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				
 				try {
 					//while (attached && tab.isCurrentTab() && !update()) {}
-					if (attached && tab.isCurrentTab()) update();
+					
+					// update if either the screenshot tab is viewable or if the
+					// webserver is enabled so that only one thread ever tries to
+					// update the screenshot
+					if (attached && (tab.isCurrentTab() || cfg.getBool("web", "enabled"))) update();
 				} catch (InterruptedException e) {
 					log.fine(thread.getName() + " interrupted within update()");
 				} catch (Exception e) {

@@ -11,17 +11,8 @@ public class ScreenshotHandler extends Handler {
 	
 	@Override
 	public Response handle(String uri, String method, Properties headers, Properties params) {
-		// force an invisible update if the tab isn't the current
-		// tab, in which case it's already updating
-		if (!tab.isCurrentTab()) {
-			try {
-				log.fine("Updating screenshot from HTTPD::ScreenshotHandler");
-				jgm.JGlideMon.instance.ssUpdater.update();
-			} catch (Throwable t) {
-				log.log(java.util.logging.Level.WARNING, "Error updating screenshot from HTTPD::ScreenshotHandler", t);
-				return Response.NOT_FOUND;
-			}
-		}
+		// updating of the screenshot is only done withon SSUpdater
+		// otherwise very bad things could happen....
 		
 		if (SSUpdater.buff != null) {
 			synchronized(SSUpdater.buff) {
