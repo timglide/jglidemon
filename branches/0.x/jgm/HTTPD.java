@@ -60,16 +60,29 @@ public class HTTPD implements Runnable
 	protected static Map<String, Handler> handlers = new HashMap<String, Handler>();
 	
 	static {
+		File jf = null;
+		
+		// this should account for the jar file being named
+		// anything, not that people should be renaming stuff
+		try {
+			URI tmp = JGlideMon.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+			
+			if (!tmp.toString().endsWith(".jar")) throw new Exception();
+			
+			jf = new File(tmp);
+		} catch (Throwable t) {
+			jf = new File("JGlideMon.jar");
+		}
+		
 		File f = new File("jgm/resources/httpd/static");
-		File jf = new File("JGlideMon.jar");
 		// System.out.println("-=-=-=: " + jf.getAbsolutePath());
 		
 		try {
 			if (jf.exists()) {
-				log.finest("Reading static files from JAR");
+				log.finest("Reading static files from JAR: " + jf.getCanonicalPath());
 				handlers.put("static", new JarFilesHandler(jf));
 			} else if (f.exists()) {
-				log.finest("Reading static files from disk");
+				log.finest("Reading static files from folder: " + f.getCanonicalPath());
 				handlers.put("static", new FilesHandler(f));
 			} else {
 				log.warning("Unable to locate static files to serve");

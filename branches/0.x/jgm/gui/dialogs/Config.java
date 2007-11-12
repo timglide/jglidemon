@@ -31,61 +31,61 @@ import jgm.GUI;
 public class Config extends Dialog implements ActionListener, ChangeListener {
 	static Logger log = Logger.getLogger(Config.class.getName());
 	
-	private JTabbedPane tabs;
-	private JButton update;
-	private JButton close;
+	JTabbedPane tabs;
+	JButton update;
+	JButton close;
 	
-	private JPanel general;
-	private JCheckBox debug;
-	private JTextField statusInterval;
-	private JTextField maxLogEntries;
-	private JCheckBox showTray;
-	private JCheckBox minToTray;
-	private JComboBox wowDbSite;
+	JPanel general;
+	JCheckBox debug;
+	JTextField statusInterval;
+	JTextField maxLogEntries;
+	JCheckBox showTray;
+	JCheckBox minToTray;
+	JComboBox wowDbSite;
 	
-	private JPanel net;
-	private JTextField host;
-	private JTextField port;
-	private JTextField password;
-	private JCheckBox netReconnect;
-	private JTextField netReconnectDelay;
-	private JTextField netReconnectTries;
+	JPanel net;
+	JTextField host;
+	JTextField port;
+	JTextField password;
+	JCheckBox netReconnect;
+	JTextField netReconnectDelay;
+	JTextField netReconnectTries;
 	
-	private JPanel screenshot;
-	private JTextField screenshotInterval;
-	private JCheckBox screenshotAutoScale;
-	private JSlider screenshotScale;
-	private JSlider screenshotQuality;
-	private JSpinner screenshotBuffer;
-	private JTextField screenshotTimeout;	
-	private JLabel ssInfo;
+	JPanel screenshot;
+	JTextField screenshotInterval;
+	JCheckBox screenshotAutoScale;
+	JSlider screenshotScale;
+	JSlider screenshotQuality;
+	JSpinner screenshotBuffer;
+	JTextField screenshotTimeout;	
+	JLabel ssInfo;
 	
-	private JPanel sound;
-	private JCheckBox enableSound;
-	private JCheckBox soundWhisper;
-	private JCheckBox soundSay;
-	private JCheckBox soundGM;
-	private JCheckBox soundFollow;
-	private JCheckBox soundPVP;
-	private JCheckBox soundStuck;
+	JPanel sound;
+	JCheckBox enableSound;
+	JCheckBox soundWhisper;
+	JCheckBox soundSay;
+	JCheckBox soundGM;
+	JCheckBox soundFollow;
+	JCheckBox soundPVP;
+	JCheckBox soundStuck;
 	
-	private JCheckBox enableTTS;
-	private JCheckBox ttsWhisper;
-	private JCheckBox ttsSay;
-	private JCheckBox ttsGM;
-	private JCheckBox ttsStatus;
+	JCheckBox enableTTS;
+	JCheckBox ttsWhisper;
+	JCheckBox ttsSay;
+	JCheckBox ttsGM;
+	JCheckBox ttsStatus;
 	
-	private JPanel stuck;
-	private JCheckBox enableStuck;
-	private JSpinner stuckLimit;
-	private JSpinner stuckTimeout;
+	JPanel stuck;
+	JCheckBox enableStuck;
+	JSpinner stuckLimit;
+	JSpinner stuckTimeout;
 	
-	private JPanel web;
-	private JCheckBox enableWeb;
-	private JSpinner webPort;
+	JPanel web;
+	JCheckBox enableWeb;
+	JSpinner webPort;
 	
-	private jgm.Config cfg;
-//	private static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
+	jgm.Config cfg;
+//	static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
 		
 	public Config(Frame owner) {
 		super(owner, "Configuration");

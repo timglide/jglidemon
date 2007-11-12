@@ -81,13 +81,19 @@ public class LogEntry implements Comparable<LogEntry> {
 		return timestamp;
 	}
 	
+	
+	private static SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+	
 	/**
 	 * Returns the timestamp in HH:mm:ss format.
 	 * @return The formatted timestamp
 	 */
+	public static String getFormattedTimestamp(Date d) {
+		return df.format(d);
+	}
+	
 	public String getFormattedTimestamp() {
-		SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-		return df.format(timestamp);
+		return getFormattedTimestamp(timestamp);
 	}
 
 	private static Pattern TIMESTAMP_PATTERN =

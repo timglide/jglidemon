@@ -35,28 +35,28 @@ public class StatusUpdater extends Observable
 	
 	public static StatusUpdater instance = null;
 	
-	public String version        = "";
-	public boolean attached      = false;
-	public String mode           = "Auto";
-	public String profile        = "";
-	public String logMode        = "None";
-	public double health         = 0.0;
-	public double mana           = 0.0;
-	public String manaName       = "";
-	public String name           = "";
-	public jgm.wow.Class  clazz  = jgm.wow.Class.UNKNOWN; // class
-	public int    level          = 0;
-	public int    experience     = 0;
-	public int    nextExperience = 0;
-	public int    xpPerHour      = 0;
-	public String location       = "";
-	public double heading        = -1.0;
-	public int    kills          = 0;
-	public int    loots          = 0;
-	public int    deaths         = 0;
-	public String targetName     = "";
-	public int    targetLevel    = 0;
-	public double targetHealth   = 0.0;
+	public String version;
+	public boolean attached;
+	public String mode;
+	public String profile;
+	public String logMode;
+	public double health;
+	public double mana;
+	public String manaName;
+	public String name;
+	public jgm.wow.Class  clazz; // class
+	public int    level;
+	public int    experience;
+	public int    nextExperience;
+	public int    xpPerHour;
+	public String location;
+	public double heading;
+	public int    kills;
+	public int    loots;
+	public int    deaths;
+	public String targetName;
+	public int    targetLevel;
+	public double targetHealth;
 
 	private Conn conn;
 	private Thread thread;
@@ -65,11 +65,37 @@ public class StatusUpdater extends Observable
 	private Config cfg;
 	
 	public StatusUpdater() {
+		resetData();
 		instance = this;
 		conn = new Conn();
 		cfg = jgm.Config.getInstance();
 	}
 
+	private void resetData() {
+		version        = "";
+		attached      = false;
+		mode           = "Auto";
+		profile        = "";
+		logMode        = "None";
+		health         = 0.0;
+		mana           = 0.0;
+		manaName       = "";
+		name           = "";
+		clazz          = jgm.wow.Class.UNKNOWN; // class
+		level          = 0;
+		experience     = 0;
+		nextExperience = 0;
+		xpPerHour      = 0;
+		location       = "";
+		heading        = -1.0;
+		kills          = 0;
+		loots          = 0;
+		deaths         = 0;
+		targetName     = "";
+		targetLevel    = 0;
+		targetHealth   = 0.0;
+	}
+	
 	public void close() {
 		stop = true;
 		if (thread != null) thread.interrupt();
@@ -91,6 +117,7 @@ public class StatusUpdater extends Observable
 	public void disconnecting() {}
 	
 	public void connectionDied() {
+		resetData();
 		attached = false;
 		setChanged();
 		stop = true;

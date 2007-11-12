@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<property name="version"		value="0.11beta"/>
 
     <path id="classpath">
-		<fileset dir="lib" includes="**/freetts.jar"/>
+		<fileset dir="lib" includes="**/openchart2-1.2.1.jar,**/freetts.jar"/>
 	</path>
 
     <property name="src_dir"		value="."/>

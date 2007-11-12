@@ -31,6 +31,7 @@ public class TabsPane extends Pane {
 
 	public ScreenshotTab screenshotTab;
 	public LogTab        statusLog;
+	public PlayerChartTab chartTab;
 	public MobsTab       mobsTab;
 	public LootsTab      lootsTab;
 	
@@ -80,6 +81,9 @@ public class TabsPane extends Pane {
 			addTab(rawLog);
 		}
 
+		chartTab = new PlayerChartTab();
+		addTab(chartTab);
+		
 		mobsTab = new MobsTab();
 		addTab(mobsTab);
 		

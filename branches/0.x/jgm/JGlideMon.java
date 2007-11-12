@@ -46,10 +46,11 @@ public class JGlideMon {
 	public  Conn          keysConn;
 	private Config        cfg;
 	public  GUI           gui;
-	private StatusUpdater status;
+	public  StatusUpdater status;
 	private LogUpdater    logUpdater;
 	public  SSUpdater     ssUpdater;
-
+	private PlayerChartUpdater chartUpdater;
+	
 	public Connector connector;
 	
 	public JGlideMon() {
@@ -106,6 +107,8 @@ public class JGlideMon {
 				Connector.addListener(status);
 				status.addObserver(gui);
 				status.addObserver(ssUpdater);
+				
+				chartUpdater = new PlayerChartUpdater();
 				
 				Connector.connect();
 			}
