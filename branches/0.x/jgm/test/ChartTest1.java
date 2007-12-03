@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.test;
 
 import javax.swing.*;
@@ -6,7 +26,7 @@ import java.awt.event.*;
 
 import jgm.gui.components.PlayerChart;
 
-public class ChartTest1 extends JDialog implements ActionListener {
+public class ChartTest1 extends JFrame implements ActionListener {
 	/** A menu item for closing the dialog */
 	JMenuItem m_exit = null;
 	
@@ -50,12 +70,17 @@ public class ChartTest1 extends JDialog implements ActionListener {
 		this.setJMenuBar(menu_bar);
 		
 		// Make sure that on window close, we dispose of this dialog
-		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
 		
 		// Set up this class as the action listener for our one menu item
 		m_exit.addActionListener(this);
 		
-		chart = new PlayerChart();
+		
+		
+		chart = new PlayerChart(500);
+		chart.startDummyData(10);
+		
+		
 		contentPane.add(chart, BorderLayout.CENTER);
 	}
 		
@@ -63,9 +88,9 @@ public class ChartTest1 extends JDialog implements ActionListener {
 	 * is taken based on which component caused the event to occur.
 	 */
 	public void actionPerformed(java.awt.event.ActionEvent e) {
-		// If this was our exit button responding, dispose of the dialog
-		if(e.getSource() == m_exit)
-			dispose();
+		if(e.getSource() == m_exit) {
+			System.exit(0);
+		}
 	}
 	
 
