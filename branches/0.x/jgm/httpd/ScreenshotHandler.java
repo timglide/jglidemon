@@ -37,7 +37,10 @@ public class ScreenshotHandler extends Handler {
 		if (SSUpdater.buff != null) {
 			synchronized(SSUpdater.buff) {
 				InputStream data = new ByteArrayInputStream(SSUpdater.buff);
-				return new Response(HTTPD.HTTP_OK, "image/jpeg", data);
+				Response ret = new Response(HTTPD.HTTP_OK, "image/jpeg", data);
+				ret.addHeader("Cache-Control", "no-cache, must-revalidate");
+				ret.addHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
+				return ret;
 			}
 		}
 		

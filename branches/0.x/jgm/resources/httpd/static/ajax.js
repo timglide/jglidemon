@@ -1,18 +1,11 @@
-function refreshNifty() {
-	Nifty("#main,#connected");
-	Nifty("div#content,div#nav","same-height");
-	Nifty("#loadingheader,#discheader,#mainheader");
-}
-
-function hideAll(except) {
-	/*if (except != 'loadingheader')*/ els.loadingheader.hide();
-	if (except != els.notattached) 	els.notattached.hide();
-	if (except != els.discheader)	els.discheader.hide(); 
-	if (except != els.connected) 	els.connected.hide();
-
-	// need this in case it's the first time making this one visible
-	if (except != null)
-		except.show();
+function setHeader(newHeader) {
+	// remove current header and place it in the hidden headers div
+	els.hiddenheaders.appendChild(
+		els.headerdiv.childElements()[0].remove());
+	// remove newHeader from the hidden headers div and place it in headerdiv
+	// thus making it the current header
+	els.headerdiv.appendChild(
+		newHeader.remove());
 }
 
 
@@ -49,11 +42,15 @@ var vars = {
 var updater = {
 	init: function() {
 		els = {
-			loadingheader:			$('loadingheader'),
-			notattached:			$('notattached'),
-			discheader:				$('discheader'),
-			connected:				$('connected'),
+			headerdiv:				$('headerdiv'),
+			hiddenheaders:			$('hiddenheaders'),
 
+			loadingheader:			$('loadingheader'),
+			discheader:				$('discheader'),
+			notattached:			$('notattached'),
+			mainheader:				$('mainheader'),
+
+			connected:				$('connected'),
 
 			classimage: 			$('classimage'),
 			name_text: 				$('name_text'),
@@ -75,7 +72,6 @@ var updater = {
 
 			screenshot:				$('screenshot')
 		};
-
 	},
 
 	update: function() {
@@ -88,8 +84,11 @@ var updater = {
 	},
 
 	url: '/ajax/status',
+	imageUrl: '/static/',
+	screenshotUrl: '/screenshot?',
+
 	fail: function(t) {
-	    alert('AJAX Error: ' + t.status + ' -- ' + t.statusText);
+		alert('AJAX Error: ' + t.status + "\n" + t.statusText);
 	},
 
 	handle: function(t) {
@@ -107,17 +106,17 @@ var updater = {
 		var connected = SNT(xml, '/jgm/connected') == 'true';
 		var attached = false;
 
-		var showMe = null;
-
 		if (!connected) {
 			mainTitle = 'Disconnected';
-			showMe = els.discheader;
+			setHeader(els.discheader);
+			els.connected.hide();
 		} else {
 			attached = SNT(xml, '/glider/attached') == 'true';
 
 			if (!attached) {
 				mainTitle = 'Connected, Detached';
-				showMe = els.notattached;
+				setHeader(els.notattached);
+				els.connected.hide();
 			} else {
 				vars.name = SNT(xml, '/glider/name');
 				vars.level = SNT(xml, '/glider/level');
@@ -143,8 +142,7 @@ var updater = {
 
 				mainTitle = vars.name + ': Level ' + vars.level + ' ' + vars.clazz;
 				
-				
-				els.classimage.src = '/static/classes/' + vars.lcclazz + '.png';
+				els.classimage.src = updater.imageUrl + 'classes/' + vars.lcclazz + '.png';
 				IH(els.name_text,						vars.name);
 				IH(els.level_text, 						vars.level);
 				IH(els.class_text, 						vars.clazz);
@@ -164,17 +162,16 @@ var updater = {
 				IH(els.deaths_text, 					vars.deaths);
 
 
-				els.screenshot.src =						'/screenshot?rand=' + (new Date()).getTime();
+				els.screenshot.src =					updater.screenshotUrl + 'rand=' + (new Date()).getTime();
 
-				showMe = els.connected;
+				setHeader(els.mainheader);
+				els.connected.show();
 			}
 		}
 
 		if (mainTitle != '') mainTitle += ' - ';
 
 		document.title = mainTitle + jgmTitle;
-//		refreshNifty();	
-		hideAll(showMe);
 	}
 };
 
@@ -184,5 +181,7 @@ function SNT(xml, path) {
 }
 
 function IH(element, content) {
+//	alert("before: " + element.innerHTML);
 	element.innerHTML = content;
+//	alert("after: " + element.innerHTML);
 }

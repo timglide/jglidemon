@@ -5,7 +5,7 @@ body {
 	padding: 20px;
 	background: #707883;
 	color: #222;
-	text-align: center;
+/*	text-align: center;*/
 	font: 85% "Trebuchet MS", "Arial", sans-serif;
 }
 
@@ -20,7 +20,6 @@ p { padding: 0 10px 15px }
 h1 {
 	font-size: 250%;
 	color: #FFF;
-	letter-spacing: 1px;
 }
 
 h2 {
@@ -38,38 +37,49 @@ img {
 }
 
 .container {
-	margin: 0 auto;
-	padding: 0.25em;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
 	background: #fff;
 }
 
 .header {
+	position: relative;
+	border: 10px solid white;
+	border-top: none;
 	background: #000;
-	padding: 10px;
-	text-align: center;
 	color: #fff;
 }
 
 .header img {
-	vertical-align: middle;
+	/*vertical-align: middle;*/
 }
 
 #content {
-	padding: 10px 0;
-	margin: 0.25em 0;
-	margin-right: 19em;
+	position: relative;
+	border: 10px solid white;
+	border-top: none;
+	margin: 0;
 	background: #a0a0a0;
-	text-align: center;
+
+	margin-right: 19em;
+/*	width: 40em;*/
 }
 
 #nav {
+	position: relative;
+	border: 10px solid white;
+	border-top: none;
 	float: right;
-	width: 18em;
-	padding: 10px;
-	margin: 0.25em 0 0 0.25em;
+	width: 18.5em;
 	background: #000;
-	text-align: center;
 	color: #fff;
+}
+
+#navpad {
+	text-align: center;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 #nav h2 {
@@ -81,9 +91,12 @@ img {
 	clear: both;
 /*	width: 800px;*/
 	background: #fff;
-	padding: 5px 0;
 	text-align: right;
 	border: 0;
+}
+
+.footer img {
+	margin-right: 10px;
 }
 
 .info_bar {
@@ -132,3 +145,31 @@ img {
 	background-color: #800080;
 }
 
+.roundtop {
+	background: url(/static/corners/tr.png) no-repeat top right; 
+}
+
+.roundbottom {
+	background: url(/static/corners/br.png) no-repeat top right; 
+}
+
+.roundtopw {
+	background: url(/static/corners/trw.png) no-repeat top right; 
+}
+
+.roundbottomw {
+	background: url(/static/corners/brw.png) no-repeat top right; 
+}
+
+img.corner {
+	display: block;
+}
+
+#ssdiv {
+	text-align: center;
+}
+
+#screenshot {
+	margin-left: auto;
+	margin-right: auto;
+}

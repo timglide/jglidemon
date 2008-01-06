@@ -6,19 +6,21 @@
 
 <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" type="text/css" href="/static/main.css" />
-<!--link rel="stylesheet" type="text/css" href="/static/niftycube.css" /-->
 
-<script type="text/javascript" src="/static/niftycube.js"></script>
 <script type="text/javascript" src="/static/prototype.js"></script>
 <script type="text/javascript" src="/static/ajax.js"></script>
 <script type="text/javascript" src="/static/xmldom.js"></script>
 
 <script type="text/javascript">
 	window.onload=function() {
-//		refreshNifty();
 		updater.init();
 //		updater.update();
-		setInterval('updater.update();', 1000);
+//		setInterval('updater.update();', 1000);
+		new PeriodicalExecuter(updater.update, 1);
+	
+//		setTimeout("setHeader(els.discheader);", 1000);
+//		setTimeout("setHeader(els.notattached);", 2000);
+//		setTimeout("setHeader(els.mainheader);", 3000);
 	}
 </script>
 
@@ -26,52 +28,104 @@
 
 <body>
 <div id="main" class="container">
-	<div id="loadingheader" class="header"><h1>Loading...</h1></div>
-
-	<div id="discheader" class="header" style="display: none;"><h1>Disconnected from Glider</h1></div>
-	<div id="notattached" class="header" style="display: none;"><h1>Connected to Glider, Detached</h1></div>
-
-	<div id="connected" style="display: none;">
-		<div id="mainheader" class="header"><h1><img src="/static/classes/$lcclass.png" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
-
-		<div id="nav">
-			<div id="attached_info">
-				<div class="info_bar" id="health_bar">
-					<div class="info_text" id="health_text">$health%</div>
-					<div class="info_percent" id="health_percent"></div>
-				</div>
-				<div class="info_bar" id="secondary_bar">
-					<div class="info_text" id="secondary_text">$mana%</div>
-					<div class="info_percent mana" id="secondary_percent"></div>
-				</div>
-				<div class="info_bar" id="xp_bar">
-					<div class="info_text" id="xp_text">$xptext</div>
-					<div class="info_percent" id="xp_percent"></div>
-				</div>
-				<div><strong>XP/Hour:</strong> <span id="xp_per_hour_text">$xpperhour</span></div>
-				<div><strong>Time To Level:</strong> <span id="ttl_text">$ttl</span></div>
-				<hr />
-				<div><strong>Mode:</strong> <span id="mode_text">$mode</span></div>
-				<div><strong>Profile:</strong> <span id="profile_text">$profile</span></div>
-				<div><strong>KLD:</strong> <span id="kills_text">$kills</span>/<span id="loots_text">$loots</span>/<span id="deaths_text">$deaths</span></div>
-			</div>
-
-			<!--hr /-->
-
-			<!--form action="" method="post" target="out"><input type="text" name="chatmsg" size="30"><input type="submit" value="&gt;"></form-->
-			<!--hr />
-			<a href="" title="Start Gliding"><img src="" border="0" alt="Start Gliding" /></a>
-			<a href="" title="Stop Gliding"><img src="" border="0" alt="Stop Gliding" /></a>
-			<a href="" title="Attach Glider"><img src="" border="0" alt="Attach Glider" /></a>
-			<a href="" title="Refresh Page Manually"><img src="" border="0" alt="Refresh Page Manually" /></a-->
-		</div>
-
-		<div id="content"><img src="/static/classes/unknown.png" id="screenshot" /></div>
+	<div class="roundtopw">
+		<img src="/static/corners/tlw.png" alt="" class="corner" />
 	</div>
 
-	<div class="footer">
+	<div class="header">
+		<div class="roundtop">
+			<img src="/static/corners/tl.png" alt="" class="corner" />
+		</div>
+
+		<div id="headerdiv">
+			<div id="loadingheader"><h1>Loading...</h1></div>
+		</div>
+
+		<div class="roundbottom">
+			<img src="/static/corners/bl.png" alt="" class="corner" />
+		</div>
+
+	</div>
+
+	<div id="hiddenheaders" style="display: none;">
+		<div id="discheader"><h1>Disconnected from Glider</h1></div>
+		<div id="notattached"><h1>Connected to Glider, Detached</h1></div>
+		<div id="mainheader"><h1><img src="/static/classes/$lcclass.png" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
+	</div>
+
+	<div id="connected" style="display: none;">
+		<div id="nav">
+			<div class="roundtop">
+				<img src="/static/corners/tl.png" alt="" class="corner" />
+			</div>
+
+			<div id="navpad">
+				<div id="attached_info">
+					<div class="info_bar" id="health_bar">
+						<div class="info_text" id="health_text">$health%</div>
+						<div class="info_percent" id="health_percent"></div>
+					</div>
+					<div class="info_bar" id="secondary_bar">
+						<div class="info_text" id="secondary_text">$mana%</div>
+						<div class="info_percent mana" id="secondary_percent"></div>
+					</div>
+					<div class="info_bar" id="xp_bar">
+						<div class="info_text" id="xp_text">$xptext</div>
+						<div class="info_percent" id="xp_percent"></div>
+					</div>
+					<div><strong>XP/Hour:</strong> <span id="xp_per_hour_text">$xpperhour</span></div>
+					<div><strong>Time To Level:</strong> <span id="ttl_text">$ttl</span></div>
+					<hr />
+					<div><strong>Mode:</strong> <span id="mode_text">$mode</span></div>
+					<div><strong>Profile:</strong> <span id="profile_text">$profile</span></div>
+					<div><strong>KLD:</strong> <span id="kills_text">$kills</span>/<span id="loots_text">$loots</span>/<span id="deaths_text">$deaths</span></div>
+				</div>
+
+				<hr />
+
+				<!--form id="theform">
+					<input type="text" name="cmd" size="30" />
+					<input type="image" src="/static/buttons/play.png" alt="Send" title="Send" />
+				</form>
+
+				<hr />
+
+				<a href="#" title="Start Gliding"><img src="/static/buttons/play.png" alt="Start Gliding" /></a>
+				<a href="#" title="Stop Gliding"><img src="/static/buttons/stop.png" alt="Stop Gliding" /></a>
+				<a href="javascript:window.location.reload(false)" title="Refresh Page Manually"><img src="/static/buttons/refresh.png" alt="Refresh Page Manually" /></a>
+				-->
+			</div>
+
+			<div class="roundbottom">
+				<img src="/static/corners/bl.png" alt="" class="corner" />
+			</div>
+		</div>
+
+		<div>
+			<div id="content">
+				<div class="roundtop">
+					<img src="/static/corners/tl.png" alt="" class="corner" />
+				</div>
+
+				<div id="ssdiv">
+					<img src="/static/classes/unknown.png" id="screenshot" />
+				</div>
+
+				<div class="roundbottom">
+					<img src="/static/corners/bl.png" alt="" class="corner" />
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div id="footer" class="footer">
 		<!--iframe name="out" id="out" width="0" height="0" frameborder="0" scrolling="no">Your Browser does not support IFrames.</iframe-->
-		<a href="http://www.mmoglider.com/" target="_new" title="MMOGlider"><img src="/static/glogo.gif" alt="MMOGlider" border="0" /></a>
+		<a href="http://www.mmoglider.com/" target="_new" title="MMOGlider"><img src="/static/glogo.gif" alt="MMOGlider" /></a>
+	</div>
+
+	<div class="roundbottomw">
+		<img src="/static/corners/blw.png" alt="" class="corner" />
 	</div>
 </div>
 </body>

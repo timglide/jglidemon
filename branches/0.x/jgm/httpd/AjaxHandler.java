@@ -51,6 +51,10 @@ public class AjaxHandler extends Handler {
 		ret = new Response(HTTPD.HTTP_OK, HTTPD.MIME_HTML, out);
 		ret.addHeader("Content-type", "text/xml");
 		
+		// add no-cache headers
+		ret.addHeader("Cache-Control", "no-cache, must-revalidate");
+		ret.addHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
+		
 		return ret;
 	}
 
