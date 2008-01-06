@@ -5,6 +5,6 @@ var settings = {
 var urls = {
 	ajax: '/ajax/',
 	command: '/ajax/command?',
-	image: '/static/',
+	image: '/static/img/',
 	screenshot: '/screenshot?'
 };

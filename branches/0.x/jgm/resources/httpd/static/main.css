@@ -146,19 +146,19 @@ img {
 }
 
 .roundtop {
-	background: url(/static/corners/tr.png) no-repeat top right; 
+	background: url(/static/img/corners/tr.png) no-repeat top right; 
 }
 
 .roundbottom {
-	background: url(/static/corners/br.png) no-repeat top right; 
+	background: url(/static/img/corners/br.png) no-repeat top right; 
 }
 
 .roundtopw {
-	background: url(/static/corners/trw.png) no-repeat top right; 
+	background: url(/static/img/corners/trw.png) no-repeat top right; 
 }
 
 .roundbottomw {
-	background: url(/static/corners/brw.png) no-repeat top right; 
+	background: url(/static/img/corners/brw.png) no-repeat top right; 
 }
 
 img.corner {
