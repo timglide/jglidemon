@@ -143,6 +143,8 @@ public class ChatLogEntry extends LogEntry {
 		return ret;
 	}
 	
+
+	
 	public static ChatLogEntry factory(String rawText) {
 		return parse(rawText);
 	}

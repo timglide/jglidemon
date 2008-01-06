@@ -219,11 +219,21 @@ public class RawChatLogEntry extends LogEntry {
 			skillLevel = Integer.parseInt(m.group(2));
 		} catch (NumberFormatException e) {}
 	}
-		
+	
+	private static final String LINK_REGEX = "\\|H[^|]+(?=|h)";
+	
+	public static String removeLinks(String str) {
+		return str.replaceAll(LINK_REGEX, "").replace("|h", "");
+	}
+	
 	private static final String FORMATTING_REGEX = "\\|(?:c[0-9A-Fa-f]{8}|r)";
 
+	public static String removeFormatting(String str) {
+		return str.replaceAll(FORMATTING_REGEX, "");
+	}
+	
 	private void removeFormatting() {
 		 // |cFFFFFFFFWhite
-		text = text.replaceAll(FORMATTING_REGEX, "");
+		text = removeFormatting(text);
 	}
 }

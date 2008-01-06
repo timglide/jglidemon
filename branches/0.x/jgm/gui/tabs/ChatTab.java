@@ -28,6 +28,7 @@ import javax.swing.*;
 public class ChatTab extends Tab {
 	private JTabbedPane tabs;
 	public LogTab all;
+	public LogTab pub;
 	public LogTab whisper;
 	public LogTab guild;
 	
@@ -36,10 +37,12 @@ public class ChatTab extends Tab {
 		
 		tabs = new JTabbedPane();
 		all = new LogTab("All Chat", tabs);
+		pub = new LogTab("Public Chat", tabs);
 		whisper = new LogTab("Whisper/Say", tabs);
 		guild = new LogTab("Guild", tabs);
 		
 		addTab(all);
+		addTab(pub);
 		addTab(whisper);
 		addTab(guild);
 		
@@ -60,6 +63,8 @@ public class ChatTab extends Tab {
 			whisper.add(e);
 		} else if (channel.equals("Guild") || channel.equals("Officer")) {
 			guild.add(e);
+		} else if (e.getType().equals("Public Chat")) {
+			pub.add(e);
 		}
 	}
 }

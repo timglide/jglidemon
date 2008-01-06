@@ -100,7 +100,6 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		}
 
 		String   line = null;
-		LogEntry e    = null;
 
 		while (true) {
 			if (stop) return;
@@ -115,88 +114,141 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			
 			if (null == line || stop) return;
 
-			e = LogEntry.factory(line);
-
-			if (e == null) continue;
-
-			if (jgm.JGlideMon.debug && rawLog != null) {
-				rawLog.add(e);
+			handleLine(line);
+		}
+	}
+	
+	public void parseFile(String filename, LogFile logFile) throws IOException {
+		parseFile(new File(filename), logFile);
+	}
+	
+	public void parseFile(File f, LogFile logFile) throws IOException {
+		BufferedReader in = new BufferedReader(new FileReader(f));
+		
+		String line = null;
+		
+		while (null != (line = in.readLine())) {
+			handleLine(line, logFile);
+			
+			// since the chat log file is tecnically
+			// raw, we have to create a non-raw line
+			// to get whispers and stuff
+			if (logFile.equals(LogFile.Chat)) {
+				line = RawChatLogEntry.removeFormatting(line);
+				line = RawChatLogEntry.removeLinks(line);
+				handleLine(line, LogFile._NormalChat);
 			}
+		}
+	}
+	
+	private void handleLine(String line) {
+		handleLine(line, LogFile.None);
+	}
+	
+	/**
+	 * Parse the line and add it to the appropriate tab(s)
+	 * @param line
+	 * @param logFile The type of log file we're parsing the
+	 *                line from, if applicable
+	 */
+	private void handleLine(String line, LogFile logFile) {
+		boolean fromLog = !logFile.equals(LogFile.None);
+		
+		if (fromLog) {
+			jgm.sound.Audible.ENABLE_SOUNDS = false;
+		}
+		
+		LogEntry e = LogEntry.factory(line, logFile);
 
-			if (e instanceof GliderLogEntry) {
-				gliderLog.add(e);
+		if (e == null) {
+			if (!logFile.equals(LogFile.None)) {
+				jgm.sound.Audible.ENABLE_SOUNDS = true;
+			}
+			
+			return;
+		}
+		
+		if (jgm.JGlideMon.debug && rawLog != null) {
+			rawLog.add(e);
+		}
+
+		if (e instanceof GliderLogEntry) {
+			gliderLog.add(e);
+			
+			GliderLogEntry e2 = (GliderLogEntry) e;
+			
+			if (e2.isAlert()) {
+				urgentChatLog.add(e, true);
 				
-				GliderLogEntry e2 = (GliderLogEntry) e;
-				
-				if (e2.isAlert()) {
-					urgentChatLog.add(e, true);
+				if (!fromLog && e2.type == GliderLogEntry.Type.STUCK &&
+					jgm.Config.getInstance().getBool("stuck", "enabled")) {
+					long now = System.currentTimeMillis();
+					long timeout = 1000 * jgm.Config.getInstance().getInt("stuck", "timeout");
+					int limit = jgm.Config.getInstance().getInt("stuck", "limit");
 					
-					if (e2.type == GliderLogEntry.Type.STUCK &&
-						jgm.Config.getInstance().getBool("stuck", "enabled")) {
-						long now = System.currentTimeMillis();
-						long timeout = 1000 * jgm.Config.getInstance().getInt("stuck", "timeout");
-						int limit = jgm.Config.getInstance().getInt("stuck", "limit");
-						
-						if (stuckTimer == null) {
-							stuckTimer = now;
-						} else if (now - stuckTimer >= timeout) {
-							// we're stuck but it's been long enough
-							// since the last time we were stuck
-							stuckTimer = now;
-							stuckCount = 0;
-						}
-						
-						log.fine("Stuck " + stuckCount + " times. Limit = " + limit);
-						
-						if (limit == 0 || stuckCount < limit) {
-							stuckCount++;
-							// simulate pressing the Start button
-							jgm.GUI.instance.ctrlPane.start.doClick();
-							log.info("Restarting glide after being stuck");
-						} else {
-							stuckTimer = null;
-							stuckCount = 0;
-							log.warning("Stuck too many times in a row, giving up");
-						}
+					if (stuckTimer == null) {
+						stuckTimer = now;
+					} else if (now - stuckTimer >= timeout) {
+						// we're stuck but it's been long enough
+						// since the last time we were stuck
+						stuckTimer = now;
+						stuckCount = 0;
+					}
+					
+					log.fine("Stuck " + stuckCount + " times. Limit = " + limit);
+					
+					if (limit == 0 || stuckCount < limit) {
+						stuckCount++;
+						// simulate pressing the Start button
+						jgm.GUI.instance.ctrlPane.start.doClick();
+						log.info("Restarting glide after being stuck");
+					} else {
+						stuckTimer = null;
+						stuckCount = 0;
+						log.warning("Stuck too many times in a row, giving up");
 					}
 				}
-			} else if (e instanceof StatusEntry) {
-				statusLog.add(e);
-			} else if (e instanceof ChatLogEntry) {
-				ChatLogEntry e2 = (ChatLogEntry) e;
-				
-				if (e2.isUrgent()) {
-					urgentChatLog.add(e, true);
-				}
-				
-				chatLog.add(e2);
-			} else if (e instanceof RawChatLogEntry) {
-				if (jgm.JGlideMon.debug && rawChatLog != null) {
-					rawChatLog.add(e);
-				}
-
-				RawChatLogEntry e2 = (RawChatLogEntry) e;
-
-				if (e2.hasItemSet())  {
-//					System.out.println("Adding item: " + e2.getItem().toString());
-					lootsTab.add(e2.getItemSet());
-				}
-				
-				if (e2.hasMoney()) {
-					lootsTab.addMoney(e2.getMoney());
-				}
-				
-				if (e2.hasRep() || e2.hasSkill()) {
-					mobsTab.add(e);
-				}
-			} else if (e instanceof CombatLogEntry) {
-				CombatLogEntry e2 = (CombatLogEntry) e;
-				combatLog.add(e2);
-				
-				if (e2.hasMob()) {
-					mobsTab.add(e2);
-				}
 			}
+		} else if (e instanceof StatusEntry) {
+			statusLog.add(e);
+		} else if (e instanceof ChatLogEntry) {
+			ChatLogEntry e2 = (ChatLogEntry) e;
+			
+			if (e2.isUrgent()) {
+				urgentChatLog.add(e, true);
+			}
+			
+			chatLog.add(e2);
+		} else if (e instanceof RawChatLogEntry) {
+			if (jgm.JGlideMon.debug && rawChatLog != null) {
+				rawChatLog.add(e);
+			}
+
+			RawChatLogEntry e2 = (RawChatLogEntry) e;
+
+			if (e2.hasItemSet())  {
+//				System.out.println("Adding item: " + e2.getItem().toString());
+				lootsTab.add(e2.getItemSet());
+			}
+			
+			if (e2.hasMoney()) {
+				lootsTab.addMoney(e2.getMoney());
+			}
+			
+			if (e2.hasRep() || e2.hasSkill()) {
+				mobsTab.add(e);
+			}
+		} else if (e instanceof CombatLogEntry) {
+			CombatLogEntry e2 = (CombatLogEntry) e;
+			combatLog.add(e2);
+			
+			if (e2.hasMob()) {
+				mobsTab.add(e2);
+			}
+		}
+		
+		if (fromLog) {
+			jgm.sound.Audible.ENABLE_SOUNDS = true;
 		}
 	}
 }

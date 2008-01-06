@@ -29,6 +29,13 @@ import jgm.Config;
  */
 public abstract class Audible {
 	/**
+	 * Master control for making sounds. Will
+	 * be used for parsing log files to not
+	 * make the usual noises.
+	 */
+	public static boolean ENABLE_SOUNDS = true;
+	
+	/**
 	 * Represents the type of an audible indication of
 	 * some event.
 	 * @author Tim
@@ -79,7 +86,7 @@ public abstract class Audible {
 	 * @param wait Whether to block the current thread until the sound has finished playing
 	 */
 	public final void play(boolean wait) {
-		if (!isAudible()) return;
+		if (!(ENABLE_SOUNDS && isAudible())) return;
 		
 		createSound(wait);
 	}

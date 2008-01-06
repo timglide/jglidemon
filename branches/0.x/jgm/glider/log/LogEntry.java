@@ -20,7 +20,7 @@
  */
 package jgm.glider.log;
 
-import java.util.Date;
+import java.util.*;
 import java.util.regex.*;
 import java.util.logging.*;
 import java.text.SimpleDateFormat;
@@ -99,13 +99,85 @@ public class LogEntry implements Comparable<LogEntry> {
 	private static Pattern TIMESTAMP_PATTERN =
 		Pattern.compile("^\\s*\\[\\d+(?::\\d\\d)+\\s*(?:AM|PM)?\\]\\s*(.*)$", Pattern.CASE_INSENSITIVE);
 	
+	private static Pattern LOGFILE_TIMESTAMP_PATTERN =
+		Pattern.compile("^(\\d+):(\\d+)\\s+(AM|PM)\\s+(.*)$");
+	
+	private static Pattern LOGFILE_DEBUG_TIMESTAMP_PATTERN =
+		Pattern.compile("^\\d+:\\d+:\\d+\\.\\d+\\s+.*$");
+	
+	private static Calendar cal = new GregorianCalendar();
+	private static Date today = new Date();
+	
+	public static LogEntry factory(String s) {
+		return factory(s, LogFile.None);
+	}
+	
 	/**
 	 * Create a subclass of LogEntry depending on the
 	 * content of s.
 	 * @param s The raw String to parse
+	 * @param logFile The type of log file s is from, if applicable
+	 *                (it's format slightly different than from the telnet)
 	 * @return The appropriate subclass of LogEntry
 	 */
-	public static LogEntry factory(String s) {
+	public static LogEntry factory(String s, LogFile logFile) {
+		Date overrideDate = null;
+		Matcher m = null;
+		
+		switch (logFile) {
+			case Chat:
+			case _NormalChat:
+			case Combat:
+//				System.out.println("PARSING: " + s);
+				// parse the timestamp
+				m = LOGFILE_TIMESTAMP_PATTERN.matcher(s);
+				
+				if (!m.matches()) {
+					m = LOGFILE_DEBUG_TIMESTAMP_PATTERN.matcher(s);
+					
+					if (m.matches()) {
+						log.finer("Ignoring debug line while parsing log file");
+					} else {
+						log.finer("Ignoring malformed line while parsing log file: " + s);
+					}
+					
+					return null;
+				}
+				
+//				System.out.println("  Parsed Time");
+				
+				cal.setTime(today);
+				cal.set(Calendar.AM_PM, m.group(3).equals("AM") ? Calendar.AM : Calendar.PM);
+				cal.set(Calendar.HOUR, Integer.parseInt(m.group(1)));
+				cal.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
+				cal.set(Calendar.SECOND, 0);
+				overrideDate = cal.getTime();
+				
+				// remove the timestamp;
+				s = m.group(4);
+				
+//				System.out.println("  1st: " + s);
+				// add the correct type
+				String prepend = "";
+				
+				switch (logFile) {
+					case Chat: prepend = "[ChatRaw] "; break;
+					case _NormalChat: prepend = "[Chat] "; break;
+					case Combat: prepend = "[Combat] "; break;
+				}
+				
+				s = prepend + s;
+//				System.out.println("  final: " + s);
+				break;
+				
+			case None:
+				break;
+				
+			default:
+				log.warning("Invalid LogFile type while parsing line: " + logFile.toString());
+				return null;
+		}
+				
 		String[] parts = s.split(" ", 2);
 
 		if (parts.length != 2) {
@@ -128,7 +200,7 @@ public class LogEntry implements Comparable<LogEntry> {
 		}
 		
 		// remove leading timestamp in case user has a timestamp mod
-		Matcher m = TIMESTAMP_PATTERN.matcher(rawText);
+		m = TIMESTAMP_PATTERN.matcher(rawText);
 		
 		if (m.matches()) {
 			rawText = m.group(1);
@@ -151,6 +223,10 @@ public class LogEntry implements Comparable<LogEntry> {
 			ret = ChatLogEntry.factory(rawText);
 		} else {
 			ret = new LogEntry(type, rawText);
+		}
+		
+		if (overrideDate != null) {
+			ret.timestamp = overrideDate;
 		}
 
 		return ret;

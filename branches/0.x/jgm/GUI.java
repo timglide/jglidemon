@@ -53,6 +53,7 @@ public class GUI
 
 	private jgm.gui.dialogs.About aboutFrame;
 	private jgm.gui.dialogs.Config configDialog;
+	private jgm.gui.dialogs.ParseLogFile parseLogDialog;
 	
 	private Config cfg;
 
@@ -197,7 +198,13 @@ public class GUI
 			saveIcons = new JMenuItem("Load Cache");
 			saveIcons.addActionListener(this);
 			fileMenu.add(saveIcons);
+			
+			fileMenu.addSeparator();
 		}
+		
+		JMenuItem parseItem = new JMenuItem("Parse Log File", KeyEvent.VK_P);
+		parseItem.addActionListener(this);
+		fileMenu.add(parseItem);
 		
 		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
 		configItem.addActionListener(this);
@@ -304,7 +311,9 @@ public class GUI
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		
-		if (cmd.equals("Configuration")) {
+		if (cmd.equals("Parse Log File")) {
+			showParse();
+		} else if (cmd.equals("Configuration")) {
 			showConfig();
 		} else if (cmd.equals("Exit")) {
 			JGlideMon.instance.destroy();
@@ -343,6 +352,12 @@ public class GUI
 			jgm.wow.Item.Cache.loadIcons();
 			jgm.wow.Item.Cache.loadItems();
 		}
+	}
+	
+	public void showParse() {
+		if (this.parseLogDialog == null)
+			parseLogDialog = new jgm.gui.dialogs.ParseLogFile(frame);
+		parseLogDialog.setVisible(true);
 	}
 	
 	public void showConfig() {

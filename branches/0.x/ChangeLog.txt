@@ -1,5 +1,20 @@
 JGlideMon ChangeLog
 
+Version 0.12
+------------
+- Added Public Chat tab to the Chat tab that contains only
+  chat from the public channels (i.e. General/Trade)
+- Added ability to parse Glider chat and combat log files.
+  Accessed via File->Parse Log File. After you select a file
+  from the file chooser, it will automatically select Chat or
+  Combat as the log type if the file name contains the word 
+  Chat or Combat. If the log file is named something else,
+  you will need to manually select the correct type. Note 
+  that the timestamps are only accurate to the minute, since
+  this is how they are stored when Glider makes the log files.
+  Also, the estimated gold/hour on the loot tab wil not be
+  accurate since that is calculated in realtime.
+
 Version 0.11
 ------------
 - Added an embedded webserver. It is disabled by default. See
