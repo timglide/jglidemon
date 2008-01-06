@@ -8,25 +8,26 @@
 <link rel="stylesheet" type="text/css" href="/static/main.css" />
 
 <script type="text/javascript" src="/static/prototype.js"></script>
+<script type="text/javascript" src="/static/ajaxsettings.js"></script>
 <script type="text/javascript" src="/static/ajax.js"></script>
 <script type="text/javascript" src="/static/xmldom.js"></script>
 
 <script type="text/javascript">
 	window.onload=function() {
 		updater.init();
-//		updater.update();
 //		setInterval('updater.update();', 1000);
-		new PeriodicalExecuter(updater.update, 1);
-	
-//		setTimeout("setHeader(els.discheader);", 1000);
-//		setTimeout("setHeader(els.notattached);", 2000);
-//		setTimeout("setHeader(els.mainheader);", 3000);
+
+		setTimeout("updater.update();", settings.updateInterval);
+
+		commands.typeChange(); // to ensure it's correct if the page is refreshed
 	}
 </script>
 
 </head>
 
 <body>
+<script type="text/javascript" src="/static/wz_tooltip.js"></script>
+
 <div id="main" class="container">
 	<div class="roundtopw">
 		<img src="/static/corners/tlw.png" alt="" class="corner" />
@@ -50,7 +51,7 @@
 	<div id="hiddenheaders" style="display: none;">
 		<div id="discheader"><h1>Disconnected from Glider</h1></div>
 		<div id="notattached"><h1>Connected to Glider, Detached</h1></div>
-		<div id="mainheader"><h1><img src="/static/classes/$lcclass.png" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
+		<div id="mainheader"><h1><img src="/static/classes/$lcclass.png" align="absmiddle" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
 	</div>
 
 	<div id="connected" style="display: none;">
@@ -77,23 +78,34 @@
 					<div><strong>Time To Level:</strong> <span id="ttl_text">$ttl</span></div>
 					<hr />
 					<div><strong>Mode:</strong> <span id="mode_text">$mode</span></div>
-					<div><strong>Profile:</strong> <span id="profile_text">$profile</span></div>
+					<div id="profilediv"><strong>Profile:</strong> <span id="profile_text">$profile</span></div>
 					<div><strong>KLD:</strong> <span id="kills_text">$kills</span>/<span id="loots_text">$loots</span>/<span id="deaths_text">$deaths</span></div>
 				</div>
 
 				<hr />
 
-				<!--form id="theform">
-					<input type="text" name="cmd" size="30" />
-					<input type="image" src="/static/buttons/play.png" alt="Send" title="Send" />
+				<form id="theform">
+					<label for="chattype">Type: </label>
+					<select id="chattype" onchange="commands.typeChange();" onmouseover="TagToTip('typetooltip');">
+						<option>Whisper</option>
+						<option>Say</option>
+						<option>Raw</option>
+					</select>
+					<span id="chattospan">
+						<label for="chatto">To: </label>
+						<input id="chatto" type="text" size="10" />
+					</span>
+					<br />
+					<input id="chattext" type="text" size="25" onmouseover="TagToTip('typetooltip');" />
+					<input onclick="commands.chat(); return false;" type="image" src="/static/buttons/play.png" alt="Send" align="absmiddle" title="Send Chat" />
 				</form>
 
 				<hr />
 
-				<a href="#" title="Start Gliding"><img src="/static/buttons/play.png" alt="Start Gliding" /></a>
-				<a href="#" title="Stop Gliding"><img src="/static/buttons/stop.png" alt="Stop Gliding" /></a>
+				<a href="javascript:commands.start()" title="Start Gliding"><img src="/static/buttons/play.png" alt="Start Gliding" /></a>
+				<a href="javascript:commands.stop()" title="Stop Gliding"><img src="/static/buttons/stop.png" alt="Stop Gliding" /></a>
 				<a href="javascript:window.location.reload(false)" title="Refresh Page Manually"><img src="/static/buttons/refresh.png" alt="Refresh Page Manually" /></a>
-				-->
+				
 			</div>
 
 			<div class="roundbottom">
@@ -128,5 +140,14 @@
 		<img src="/static/corners/blw.png" alt="" class="corner" />
 	</div>
 </div>
+
+<!-- tooltip divs that will be hidden -->
+<div id="typetooltip">
+	Whisper and Say will both add the<br />
+	slash command and a carraige return.<br />
+	You must add everything for Raw.<br />
+	| = Enter, #VK# = VK
+</div>
+
 </body>
 </html>
