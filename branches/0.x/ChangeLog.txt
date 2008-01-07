@@ -3,7 +3,7 @@ JGlideMon ChangeLog
 Version 0.12
 ------------
 - Added Public Chat tab to the Chat tab that contains only
-  chat from the public channels (i.e. General/Trade)
+  chat from the public channels (i.e. General/Trade).
 - Added ability to parse Glider chat and combat log files.
   Accessed via File->Parse Log File. After you select a file
   from the file chooser, it will automatically select Chat or
@@ -14,6 +14,7 @@ Version 0.12
   this is how they are stored when Glider makes the log files.
   Also, the estimated gold/hour on the loot tab wil not be
   accurate since that is calculated in realtime.
+- Moved the Load Profiles section into its own tab. 
 
 Version 0.11
 ------------

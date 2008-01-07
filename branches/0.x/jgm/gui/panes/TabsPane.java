@@ -39,6 +39,7 @@ public class TabsPane extends Pane {
 	
 	public LogTab        urgentChatLog;
 	public SendKeysTab   sendKeys;
+	public ProfilesTab   profiles;
 	public LogTab        rawChatLog;
 	public LogTab        combatLog;
 	public LogTab        gliderLog;
@@ -58,6 +59,7 @@ public class TabsPane extends Pane {
 		chatLog    = new ChatTab();
 		urgentChatLog = new LogTab("Urgent Log", tabbedPane);
 		sendKeys   = new SendKeysTab();
+		profiles   = new ProfilesTab();
 		combatLog  = new LogTab("Combat Log", tabbedPane);
 		gliderLog  = new LogTab("Glider Log", tabbedPane);
 		
@@ -68,7 +70,7 @@ public class TabsPane extends Pane {
 
 		addTab(statusLog);
 		addTab(chatLog); addTab(urgentChatLog);
-		addTab(sendKeys);
+		addTab(sendKeys); addTab(profiles);
 		
 		if (rawChatLog != null) {
 			addTab(rawChatLog);
