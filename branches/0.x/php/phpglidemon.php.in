@@ -138,7 +138,7 @@ function handleFile($url) {
 	}
 
 	fseek($fp, __COMPILER_HALT_OFFSET__ + $files[$url][0]);
-	$data = gzinflate(fread($fp, $files[$url][1]));
+	$data = gzinflate(base64_decode(fread($fp, $files[$url][1])));
 
 	fclose($fp);
 

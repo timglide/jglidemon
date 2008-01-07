@@ -80,7 +80,7 @@ foreach (array_keys($files) as $key) {
 	if (in_array($key, $replaceThese))
 		$data = replaceUrls($data);
 	
-	$data = gzdeflate($data);
+	$data = base64_encode(gzdeflate($data));
 	$files[$key][0] = $totalLength;
 	$files[$key][1] = strlen($data);
 	$totalLength += $files[$key][1];
