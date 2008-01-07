@@ -29,11 +29,13 @@ echo "---- Building PHPGlideMon ----\n\n";
 $version = $_SERVER['argc'] > 1 ? $_SERVER['argv'][1] : '0.0';
 
 $here = dirname(__FILE__);
-$outFile = $here . '/phpglidemon.php';
+$fname = 'phpglidemon.php';
+$binDir = $here . '/../bin/';
+$resourcePath = 'jgm/resources/httpd/static/';
+$resourcesDir = $binDir . $resourcePath;
+$outFile = $here . '/' . $fname;
 $tmpFile = $outFile . '.tmp';
 $inFile = $outFile . '.in';
-
-$resourcesDir = $here . '/../jgm/resources/httpd/static/';
 
 if (!file_exists($inFile)) {
 	echo "Unable to find $inFile\n";
@@ -164,6 +166,11 @@ function doDir($path = '') {
 	global $resourcesDir, $files, $exts;
 
 	$d = dir($resourcesDir . $path);
+
+	if (false === $d || !is_resource($d->handle)) {
+		echo "Unable to open dir: $resourceDir$path\n";
+		exit (1);
+	}
 
 	while (false !== ($file = $d->read())) {
 		if ($file{0} == '.') continue; // ignore ., .., .files

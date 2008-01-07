@@ -81,7 +81,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
     <target name="compile_src"
 			description="Build just the srcs"
-			depends="resources,libs">
+			depends="all_resources,libs">
 		<mkdir dir="${bin_dir}"/>
 		<javac debug="true"
 				target="1.5"
@@ -93,13 +93,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</javac>
     </target>
 
+	<target name="all_resources" depends="resources, compress_httpd_resources" />
 
 	<target name="resources" 
 			description="Copy sound/image/httpd resources">
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}/jgm/resources">
-				<fileset dir="${src_dir}/jgm/resources" includes="httpd/**/*,images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav" excludes="**/psd/,**/gif/"/>
+			<fileset dir="${src_dir}/jgm/resources" includes="httpd/**/*,images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav" excludes="**/psd/,**/gif/"/>
 		</copy>
+	</target>
+
+	<target name="compress_httpd_resources"
+			description="Compress js files to be smaller"
+			depends="resources">
+		<!-- TODO Figure out how to do this more automatically -->
+		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/prototype.js"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/prototype.js"/>
+		</java>
+		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/wz_tooltip.js"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/wz_tooltip.js"/>
+		</java>
+		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/xmldom.js"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/xmldom.js"/>
+		</java>
 	</target>
 
 	<target name="libs"
