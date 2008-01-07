@@ -85,8 +85,6 @@ var updater = {
 			onSuccess: updater.handle,
 			onFailure: updater.fail
 		});
-
-		setTimeout("updater.update();", settings.updateInterval);
 	},
 
 
@@ -110,10 +108,10 @@ var updater = {
 		if (!updater.checkStatus(xml)) return;
 
 		var mainTitle = '';
-		var jgmTitle = 'JGlideMon ' + SNT(xml, '/jgm/version');
-		vars.connected = SNT(xml, '/jgm/connected') == 'true';
+		var appTitle = SNT(xml, '/app/name') + ' ' + SNT(xml, '/app/version');
+		vars.connected = SNT(xml, '/app/connected') == 'true';
 
-		settings.updateInterval = SNT(xml, '/jgm/update-interval');
+		settings.updateInterval = SNT(xml, '/app/update-interval');
 
 		if (!vars.connected) {
 			vars.attached = false;
@@ -187,7 +185,9 @@ var updater = {
 
 		if (mainTitle != '') mainTitle += ' - ';
 
-		document.title = mainTitle + jgmTitle;
+		document.title = mainTitle + appTitle;
+
+		setTimeout("updater.update();", settings.updateInterval);
 	}
 };
 

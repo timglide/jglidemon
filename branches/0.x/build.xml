@@ -2,7 +2,7 @@
 
 <!--
 JGlideMon - A Java based remote monitor for MMO Glider
-Copyright (C) 2007 Tim
+Copyright (C) 2007 - 2008 Tim
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="version"		value="0.11"/>
+	<property name="version"		value="0.12"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/openchart2-1.2.1.jar,**/freetts.jar"/>
@@ -62,7 +62,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <!-- *                                                        * -->
     <!-- ********************************************************** -->
 	<target name="all"
-			depends="compile,libs"
+			depends="compile,libs,phpglidemon"
 			description="Build everything">
 		<echo message="Build complete."/>
 	</target>
@@ -111,6 +111,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<copy todir="${bin_dir}">
 			<fileset dir="${src_dir}" includes="*.properties"/>
 		</copy>
+	</target>
+
+	<!-- this would need to be changed in order to build on *nix -->
+	<target name="phpglidemon" description="Compile PHPGlideMon files">
+		<exec executable="cmd" osfamily="Windows">
+			<arg value="/c"/>
+			<arg value="php"/>
+			<arg value="php/build.php"/>
+			<arg value="${version}"/>
+		</exec>
 	</target>
 
 	<target name="docs"
@@ -183,7 +193,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 
-	<target name="zips" depends="core_zip,profiler_zip,tts_zip,src_zip"
+	<target name="zips" depends="core_zip,profiler_zip,tts_zip,src_zip,phpglidemon_zip"
 			description="Build all zip files"/>
 
 
@@ -221,6 +231,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			description="Create ${tts_zip}">
 		<zip destfile="${tts_zip}">
 			<fileset dir="${bin_dir}" includes="lib/speech/**/*"/>
+		</zip>
+	</target>
+
+
+	<property name="phpglidemon_zip" value="${bin_dir}/PHPGlideMon_v${version}.zip"/>
+
+	<target name="phpglidemon_zip" depends="phpglidemon"
+			description="Create ${phpglidemon_zip}">
+		<zip destfile="${phpglidemon_zip}">
+			<fileset dir="php" includes="phpglidemon.php"/>
 		</zip>
 	</target>
 

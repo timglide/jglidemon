@@ -135,7 +135,7 @@ public class AjaxHandler extends Handler {
 							};
 						} else {
 							status.setTextContent("error");
-							message.setTextContent("No keys sent");
+							message.setTextContent("No keys provided for sending");
 						}
 					} else {
 						status.setTextContent("error");
@@ -151,7 +151,8 @@ public class AjaxHandler extends Handler {
 				}
 			} else if (uri.equals("status")) {
 				// jgm info
-				Element jgm_ = CE(xml, "jgm");
+				Element jgm_ = CE(xml, "app");
+				_(xml, jgm_, "name", JGlideMon.app);
 				_(xml, jgm_, "version", JGlideMon.version);
 				
 				boolean connected = jgm.glider.Connector.isConnected();
