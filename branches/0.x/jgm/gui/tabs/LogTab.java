@@ -59,6 +59,11 @@ public class LogTab extends Tab {
 		}
 	}
 
+	public void clear() {
+		logEntries.entries.clear();
+		logEntries.fireTableDataChanged();
+	}
+	
 	private class LogTable extends JTable implements MouseListener {
 		public LogTable(TableModel dm) {
 			super(dm);

@@ -669,6 +669,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			boolean state = enableWeb.isEnabled() && enableWeb.isSelected();
 			
 			webPort.setEnabled(state);
+			webInterval.setEnabled(state);
 		}
 	}
 	

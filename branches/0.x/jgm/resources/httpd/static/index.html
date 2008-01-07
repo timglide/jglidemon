@@ -15,10 +15,7 @@
 <script type="text/javascript">
 	window.onload=function() {
 		updater.init();
-//		setInterval('updater.update();', 1000);
-
 		setTimeout("updater.update();", settings.updateInterval);
-
 		commands.typeChange(); // to ensure it's correct if the page is refreshed
 	}
 </script>

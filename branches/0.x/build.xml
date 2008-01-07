@@ -241,6 +241,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			description="Create ${phpglidemon_zip}">
 		<zip destfile="${phpglidemon_zip}">
 			<fileset dir="php" includes="phpglidemon.php"/>
+			<fileset dir="${bin_dir}" includes="License.txt"/>
 		</zip>
 	</target>
 

@@ -206,6 +206,12 @@ public class GUI
 		parseItem.addActionListener(this);
 		fileMenu.add(parseItem);
 		
+		JMenuItem clearLogItem = new JMenuItem("Clear All Log Tabs", KeyEvent.VK_R);
+		clearLogItem.addActionListener(this);
+		fileMenu.add(clearLogItem);
+		
+		fileMenu.addSeparator();
+		
 		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
 		configItem.addActionListener(this);
 		fileMenu.add(configItem);
@@ -313,6 +319,14 @@ public class GUI
 		
 		if (cmd.equals("Parse Log File")) {
 			showParse();
+		} else if (cmd.equals("Clear All Log Tabs")) {
+			tabsPane.statusLog.clear();
+			tabsPane.chatLog.clear();
+			tabsPane.urgentChatLog.clear();
+			tabsPane.combatLog.clear();
+			tabsPane.gliderLog.clear();
+			tabsPane.mobsTab.resetBtn.doClick();
+			tabsPane.lootsTab.resetBtn.doClick();
 		} else if (cmd.equals("Configuration")) {
 			showConfig();
 		} else if (cmd.equals("Exit")) {

@@ -67,4 +67,11 @@ public class ChatTab extends Tab {
 			pub.add(e);
 		}
 	}
+	
+	public void clear() {
+		all.clear();
+		pub.clear();
+		whisper.clear();
+		guild.clear();
+	}
 }

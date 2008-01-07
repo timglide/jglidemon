@@ -31,7 +31,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 public class MobsTab extends Tab implements ActionListener {	
-	private JButton          resetBtn   = new JButton("Reset All");
+	public  JButton       resetBtn   = new JButton("Reset All");
 	
 	private MobTable      mobTable;
 	private MobTableModel mobEntries;

@@ -34,7 +34,7 @@ public class LootsTab extends Tab implements ActionListener {
 	private GoldPanel        lootWorth  = new GoldPanel("Loot Worth: ");
 	private GoldPanel        goldPerHour = new GoldPanel("Gold/Hour: ");
 	
-	private JButton          resetBtn   = new JButton("Reset Loot");
+	public  JButton          resetBtn   = new JButton("Reset Loot");
 	
 	private long initialGoldTime = System.currentTimeMillis();
 	

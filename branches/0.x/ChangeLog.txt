@@ -14,7 +14,12 @@ Version 0.12
   this is how they are stored when Glider makes the log files.
   Also, the estimated gold/hour on the loot tab wil not be
   accurate since that is calculated in realtime.
-- Moved the Load Profiles section into its own tab. 
+- Moved the Load Profiles section into its own tab.
+- Made the Configuration dialog more consistent.
+- Completely revamped the web server. Added an update
+  interval option on the Web tab in the Confiuration dialog.
+  Additionally, I have merged my PHP based monitor (now PHPGlideMon)
+  with this project.
 
 Version 0.11
 ------------
