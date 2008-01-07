@@ -109,17 +109,26 @@ if (!$fp) {
 	exit (1);
 }
 
+
 echo "  Inserting Files Array...\n";
+
 while (!feof($fp) && false !== ($line = rtrim(fgets($fp)))) {
 	if (false !== strpos($line, '@@version@@'))
 		$line = str_replace('@@version@@', $version, $line);
 
-	fwrite($fpout, $line . "\n");
+	if ($line != '')
+		fwrite($fpout, $line);
+
+	if (false !== strpos($line, '__halt_compiler();'))
+		break; // don't add extra newlines or anything 
+			
+	fwrite($fpout, "\n");
 
 	if (false !== strpos($line, '//----FILE_LIST_START----')) {
 		fwrite($fpout, "\t" . '$files = ' . var_export($files, true) . ';' . "\n");
 	}
 }
+
 
 fclose($fp);
 
