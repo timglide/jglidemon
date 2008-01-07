@@ -116,7 +116,7 @@ public class AjaxHandler extends Handler {
 								javax.swing.JButton btn = 
 									cmd.equals("start")
 									? jgm.JGlideMon.instance.gui.ctrlPane.start
-									: jgm.JGlideMon.instance.gui.ctrlPane.start;
+									: jgm.JGlideMon.instance.gui.ctrlPane.stop;
 								btn.doClick();
 							}
 						};
