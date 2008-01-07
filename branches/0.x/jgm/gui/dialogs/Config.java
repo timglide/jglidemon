@@ -31,33 +31,45 @@ import jgm.GUI;
 public class Config extends Dialog implements ActionListener, ChangeListener {
 	static Logger log = Logger.getLogger(Config.class.getName());
 	
+	static SpinnerNumberModel PORT_SPINNER
+		= new SpinnerNumberModel(1, 1, 65536, 1);
+	static SpinnerNumberModel INT_SPINNER
+		= new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
+	
+	static JSpinner makeSpinner(SpinnerNumberModel sm) {
+		return new JSpinner(
+			new SpinnerNumberModel(
+				(Integer) sm.getValue(), sm.getMinimum(), sm.getMaximum(), sm.getStepSize())
+		);
+	}
+	
 	JTabbedPane tabs;
 	JButton update;
 	JButton close;
 	
 	JPanel general;
 	JCheckBox debug;
-	JTextField statusInterval;
-	JTextField maxLogEntries;
+	JSpinner statusInterval;
+	JSpinner maxLogEntries;
 	JCheckBox showTray;
 	JCheckBox minToTray;
 	JComboBox wowDbSite;
 	
 	JPanel net;
 	JTextField host;
-	JTextField port;
+	JSpinner port;
 	JTextField password;
 	JCheckBox netReconnect;
-	JTextField netReconnectDelay;
-	JTextField netReconnectTries;
+	JSpinner netReconnectDelay;
+	JSpinner netReconnectTries;
 	
 	JPanel screenshot;
-	JTextField screenshotInterval;
+	JSpinner screenshotInterval;
 	JCheckBox screenshotAutoScale;
 	JSlider screenshotScale;
 	JSlider screenshotQuality;
 	JSpinner screenshotBuffer;
-	JTextField screenshotTimeout;	
+	JSpinner screenshotTimeout;	
 	JLabel ssInfo;
 	
 	JPanel sound;
@@ -83,6 +95,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JPanel web;
 	JCheckBox enableWeb;
 	JSpinner webPort;
+	JSpinner webInterval;
 	
 	jgm.Config cfg;
 //	static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
@@ -120,20 +133,20 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		debug = new JCheckBox("Log Debugging Info", jgm.JGlideMon.debug);
 		general.add(debug, c);
 		
-		c.gridy++; c.gridwidth = 1;
+		c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
 		general.add(new JLabel("Status Refresh Interval (ms): "), c);
 		
-		statusInterval = new JTextField(cfg.get("status", "updateInterval"));
-		statusInterval.addActionListener(this);
-		c.gridx++;
+		statusInterval = makeSpinner(INT_SPINNER);
+//		statusInterval.addActionListener(this);
+		c.gridx++; c.weightx = 1.0;
 		general.add(statusInterval, c);
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		general.add(new JLabel("Max Entries Per Log Tab: "), c);
 		
-		maxLogEntries = new JTextField(cfg.get("log", "maxentries"));
-		maxLogEntries.addActionListener(this);
-		c.gridx++;
+		maxLogEntries = makeSpinner(INT_SPINNER);
+//		maxLogEntries.addActionListener(this);
+		c.gridx++; c.weightx = 1.0;
 		general.add(maxLogEntries, c);
 		
 		showTray = new JCheckBox("Show Tray Icon", cfg.getBool("general", "showtray"));
@@ -153,7 +166,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 				"http://wow.allakhazam.com/db/item.html?witem=%s"
 			}
 		);
-		wowDbSite.addActionListener(new ActionListener() {
+/*		wowDbSite.addActionListener(new ActionListener() {
 			// make sure each item gets added to the list
 			public void actionPerformed(ActionEvent e) {
 				Object selected = wowDbSite.getSelectedItem();
@@ -171,17 +184,17 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 					wowDbSite.addItem(selected);
 				}
 			}
-		});
+		});*/
 		wowDbSite.setEditable(true);
 		wowDbSite.setSelectedItem(cfg.get("general", "wowdb"));		
 		
-		c.gridx = 0; c.gridy++; c.gridwidth = 1;
-		general.add(new JLabel("WoW DB Site"), c);
+		c.gridx = 0; c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
+		general.add(new JLabel("WoW DB Site: "), c);
 		
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		general.add(wowDbSite, c);
 		
-		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 1;
+		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 2;
 		general.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
@@ -196,28 +209,29 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		//	BorderFactory.createTitledBorder(lineBorder, "Network"));
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0; c.gridy = 0; c.weightx = 1.0;
+		c.gridx = 0; c.gridy = 0; c.weightx = 0.0;
 		net.add(new JLabel("Host: "), c);
 		
 		host = new JTextField(cfg.getString("net", "host"));
 		host.addActionListener(this);
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		net.add(host, c);
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		net.add(new JLabel("Port: " ), c);
 		
-		port = new JTextField(((cfg.getInt("net", "port") > 0) ? Integer.toString(cfg.getInt("net", "port")) : ""));
-		port.addActionListener(this);
-		c.gridx++;
+		port = makeSpinner(PORT_SPINNER);
+		port.setEditor(new JSpinner.NumberEditor(port, "#")); // prevent comma grouping
+//		port.addActionListener(this);
+		c.gridx++; c.weightx = 1.0;
 		net.add(port, c);
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		net.add(new JLabel("Password: " ), c);
 		
 		password = new JPasswordField(cfg.getString("net", "password"));
 		password.addActionListener(this);
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		net.add(password, c);
 		
 		netReconnect = new JCheckBox("Auto Reconnect", cfg.getBool("net", "autoreconnect"));
@@ -225,21 +239,21 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx = 0; c.gridy++;	c.gridwidth = 2;
 		net.add(netReconnect, c);
 
-		c.gridy++; c.gridwidth = 1;
+		c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
 		net.add(new JLabel("    Delay Between Tries (s): "), c);
 		
-		netReconnectDelay = new JTextField(cfg.get("net", "autoreconnectdelay"));
-		c.gridx++;
+		netReconnectDelay = makeSpinner(INT_SPINNER);
+		c.gridx++; c.weightx = 1.0;
 		net.add(netReconnectDelay, c);
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		net.add(new JLabel("    Max Number of Tries: "), c);
 		
-		netReconnectTries = new JTextField(cfg.get("net", "autoreconnecttries"));
-		c.gridx++;
+		netReconnectTries = makeSpinner(INT_SPINNER);
+		c.gridx++; c.weightx = 1.0;
 		net.add(netReconnectTries, c);
 		
-		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 1;
+		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 2;
 		net.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
@@ -253,12 +267,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		//screenshot.setBorder(
 		//	BorderFactory.createTitledBorder(lineBorder, "Screenshot"));
 		
-		c.gridx = 0; c.gridy = 0;
+		c.gridx = 0; c.gridy = 0; c.weightx = 0.0; c.weighty = 0.0;
 		screenshot.add(new JLabel("Refresh (ms): "), c);
 		
-		screenshotInterval = new JTextField(Integer.toString(cfg.getInt("screenshot", "updateInterval")));
-		screenshotInterval.addActionListener(this);
-		c.gridx++;
+		screenshotInterval = makeSpinner(INT_SPINNER);
+//		screenshotInterval.addActionListener(this);
+		c.gridx++; c.weightx = 1.0;
 		screenshot.add(screenshotInterval, c);
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 2;
@@ -266,7 +280,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshotAutoScale.addChangeListener(this);
 		screenshot.add(screenshotAutoScale, c);
 		
-		c.gridx = 0; c.gridy++; c.gridwidth = 1;
+		c.gridx = 0; c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
 		screenshot.add(new JLabel("Scale: "), c);
 		
 		screenshotScale =
@@ -275,10 +289,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshotScale.setMinorTickSpacing(10);
 		screenshotScale.setPaintTicks(true);
 		screenshotScale.setPaintLabels(true);
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		screenshot.add(screenshotScale, c);
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		screenshot.add(new JLabel("Quality: "), c);
 		
 		screenshotQuality =
@@ -288,23 +302,23 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshotQuality.setMinorTickSpacing(10);
 		screenshotQuality.setPaintTicks(true);
 		screenshotQuality.setPaintLabels(true);
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		screenshot.add(screenshotQuality, c);
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		screenshot.add(new JLabel("Buffer Size (MB): "), c);
 		
 		screenshotBuffer = new JSpinner(
 			new SpinnerNumberModel(1.0, 0.5, 10.0, 0.1)
 		);
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		screenshot.add(screenshotBuffer, c);
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		screenshot.add(new JLabel("Update Timeout (s): "), c);
 		
-		screenshotTimeout = new JTextField();
-		c.gridx++;
+		screenshotTimeout = makeSpinner(INT_SPINNER);
+		c.gridx++; c.weightx = 1.0;
 		screenshot.add(screenshotTimeout, c);
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 2;
@@ -426,38 +440,39 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		// stuck options
 		stuck = new JPanel(new GridBagLayout());
 		
-		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.weighty = 0.0;
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
+		c.weightx = 1.0; c.weighty = 0.0;		
 		enableStuck = new JCheckBox("Attempt To Resume When Stuck");
 		enableStuck.addChangeListener(this);
 		stuck.add(enableStuck, c);
 		
-		JLabel tmpLbl = new JLabel("  Stuck Limit");
+		JLabel tmpLbl = new JLabel("  Stuck Limit: ");
 		tmpLbl.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
 		
-		c.gridwidth = 1; c.gridy++;
+		c.gridwidth = 1; c.gridy++; c.weightx = 0.0;
 		stuck.add(tmpLbl, c);
 		
 		stuckLimit = new JSpinner(
 			new SpinnerNumberModel(5, 0, 10000, 1)
 		);
 		stuckLimit.addChangeListener(this);
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		stuck.add(stuckLimit, c);
 		
-		tmpLbl = new JLabel("  Limit Timeout (s)");
+		tmpLbl = new JLabel("  Limit Timeout (s): ");
 		tmpLbl.setToolTipText("Reset stuck timer after this many seconds");
 		
-		c.gridx = 0; c.gridy++;
+		c.gridx = 0; c.gridy++; c.weightx = 0;
 		stuck.add(tmpLbl, c);
 
 		stuckTimeout = new JSpinner(
 			new SpinnerNumberModel(300, 5, 10000, 1)
 		);
 		stuckTimeout.addChangeListener(this);
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		stuck.add(stuckTimeout, c);
 		
-		c.gridx = 0; c.gridy++; c.weighty = 1.0;
+		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 1.0;
 		stuck.add(new JLabel(), c);
 		
 		tabs.addTab("Stuck", stuck);
@@ -472,21 +487,27 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		enableWeb.addChangeListener(this);
 		web.add(enableWeb, c);
 		
-		tmpLbl = new JLabel("  Port");
+		tmpLbl = new JLabel("  Port: ");
 //		tmpLbl.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
 		
-		c.gridwidth = 1; c.gridy++; c.weightx = 0.5;
+		c.gridwidth = 1; c.gridy++; c.weightx = 0.0;
 		web.add(tmpLbl, c);
 		
-		webPort = new JSpinner(
-			new SpinnerNumberModel(3201, 1, 65536, 1)
-		);
+		webPort = makeSpinner(PORT_SPINNER);
 		webPort.setEditor(new JSpinner.NumberEditor(webPort, "#")); // prevent comma grouping
 		webPort.addChangeListener(this);
-		c.gridx++;
+		c.gridx++; c.weightx = 1.0;
 		web.add(webPort, c);
 		
-		c.gridx = 0; c.gridy++; c.weighty = 1.0;
+		tmpLbl = new JLabel("  Update Interval (ms): ");
+		c.gridwidth = 1; c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		web.add(tmpLbl, c);
+		
+		webInterval = makeSpinner(INT_SPINNER);
+		c.gridx++; c.weightx = 1.0;
+		web.add(webInterval, c);
+		
+		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 1.0;
 		web.add(new JLabel(), c);
 		
 		tabs.addTab("Web", web);
@@ -519,71 +540,30 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			jgm.Log.reloadConfig();
 		}
 		
-		cfg.set("net", "host", host.getText());
-		
-		try {
-			cfg.set("net", "port", Integer.parseInt(port.getText()));
-			
-			if (cfg.getInt("net", "port") < 1) 
-				throw new NumberFormatException("Port must be positive");
-		} catch (NumberFormatException x) {
-			log.warning("Invalid port: " + port.getText());
-		}
-		
+		cfg.set("net", "host", host.getText());		
+		cfg.set("net", "port", port.getValue());
 		cfg.set("net", "password", password.getText());
 		cfg.set("net", "autoreconnect", netReconnect.isSelected());			
-		
-		try {
-			cfg.set("net", "autoreconnectdelay", Integer.parseInt(netReconnectDelay.getText()));
-			
-			if (cfg.getInt("net", "autoreconnectdelay") < 0)
-				throw new NumberFormatException("Auto reconnect delay must be > 0");
-		} catch (NumberFormatException x) {
-			log.warning("Invalid auto reconnect delay: " + netReconnectDelay.getText());
-		}
-		
-		try {
-			cfg.set("net", "autoreconnecttries", Integer.parseInt(netReconnectTries.getText()));
-			
-			if (cfg.getInt("net", "autoreconnecttries") < 1)
-				throw new NumberFormatException("Auto reconnect tries must be positive");
-		} catch (NumberFormatException x) {
-			log.warning("Invalid auto reconnect tries: " + netReconnectTries.getText());
-		}
-		
-		try {
-			cfg.set("status", "updateinterval", Integer.parseInt(statusInterval.getText()));
-		} catch (NumberFormatException x) {
-			log.warning("Invalid interval: " + statusInterval.getText());
-		}
-		
-		try {
-			cfg.set("log", "maxentries", Integer.parseInt(maxLogEntries.getText()));
-		} catch (NumberFormatException x) {
-			log.warning("Invalid max entries: " + maxLogEntries.getText());
-		}
+		cfg.set("net", "autoreconnectdelay", netReconnectDelay.getValue());
+		cfg.set("net", "autoreconnecttries", netReconnectTries.getValue());
+
+		cfg.set("status", "updateinterval", statusInterval.getValue());
+
+		cfg.set("log", "maxentries", maxLogEntries.getValue());
+
 		
 		cfg.set("general", "showtray", showTray.isSelected());
 		cfg.set("general", "mintotray", minToTray.isSelected());
 		cfg.set("general", "wowdb", wowDbSite.getSelectedItem());
 		
-		try {
-			cfg.set("screenshot", "updateinterval", Integer.parseInt(screenshotInterval.getText()));
-		} catch (NumberFormatException x) {
-			log.warning("Invalid interval: " + screenshotInterval.getText());
-		}
 		
+		cfg.set("screenshot", "updateinterval", screenshotInterval.getValue());
 		cfg.set("screenshot", "autoscale", screenshotAutoScale.isSelected());
 		cfg.set("screenshot", "scale", screenshotScale.getValue());
 		cfg.set("screenshot", "quality", screenshotQuality.getValue());
-		
 		cfg.set("screenshot", "buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
-		
-		try {
-			cfg.set("screenshot", "timeout", Integer.parseInt(screenshotTimeout.getText()));
-		} catch (NumberFormatException x) {
-			log.warning("Invalid timeout: " + screenshotTimeout.getText());
-		}
+		cfg.set("screenshot", "timeout", screenshotTimeout.getValue());
+
 		
 		// would be null on first-time startup
 		if (null != jgm.JGlideMon.instance.ssUpdater)
@@ -611,6 +591,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		cfg.set("web", "enabled", enableWeb.isSelected());
 		cfg.set("web", "port", webPort.getValue());
+		cfg.set("web", "updateinterval", webInterval.getValue());
+
 		
 		// stop httpd if needed
 		if ((oldWebEnabled && oldWebPort != cfg.getInt("web", "port")) ||
@@ -694,24 +676,25 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		//super.onShow();
 
 		debug.setSelected(cfg.getBool("general", "debug"));
-		statusInterval.setText(cfg.get("status", "updateinterval"));
-		maxLogEntries.setText(cfg.get("log", "maxentries"));
+		statusInterval.setValue(cfg.getInt("status", "updateinterval"));
+		maxLogEntries.setValue(cfg.getInt("log", "maxentries"));
 		showTray.setEnabled(jgm.gui.Tray.isSupported());
 		showTray.setSelected(cfg.getBool("general", "showtray"));
 		minToTray.setSelected(cfg.getBool("general", "mintotray"));
 		
 		host.setText(cfg.get("net", "host"));
-		port.setText(cfg.get("net", "port"));
+		port.setValue(cfg.getInt("net", "port"));
 		password.setText(cfg.get("net", "password"));
 		netReconnect.setSelected(cfg.getBool("net", "autoreconnect"));
-		netReconnectDelay.setText(cfg.get("net", "autoreconnectdelay"));
+		netReconnectDelay.setValue(cfg.getInt("net", "autoreconnectdelay"));
+		netReconnectTries.setValue(cfg.getInt("net", "autoreconnecttries"));
 		
-		screenshotInterval.setText(cfg.get("screenshot", "updateinterval"));
+		screenshotInterval.setValue(cfg.getInt("screenshot", "updateinterval"));
 		screenshotAutoScale.setSelected(cfg.getBool("screenshot", "autoscale"));
 		screenshotScale.setValue(cfg.getInt("screenshot", "scale"));
 		screenshotQuality.setValue(cfg.getInt("screenshot", "quality"));
 		screenshotBuffer.setValue(cfg.getDouble("screenshot", "buffer"));
-		screenshotTimeout.setText(cfg.get("screenshot", "timeout"));
+		screenshotTimeout.setValue(cfg.getInt("screenshot", "timeout"));
 		
 		Icon i = jgm.GUI.instance.tabsPane.screenshotTab.ssLabel.getIcon();
 		
@@ -755,6 +738,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		enableWeb.setSelected(cfg.getBool("web", "enabled"));
 		webPort.setValue(cfg.getInt("web", "port"));
+		webInterval.setValue(cfg.getInt("web", "updateinterval"));
 		
 		// to initialize enabled/disabled states
 		stateChanged(new ChangeEvent(showTray));

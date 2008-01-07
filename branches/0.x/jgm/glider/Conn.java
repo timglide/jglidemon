@@ -116,9 +116,11 @@ public class Conn {
 		try {			
 			if (isConnected()) {
 				try {
-					send("/exit");
-					in.readLine(); // Bye!
-//					Thread.sleep(500);
+					synchronized (s) {
+						send("/exit");
+						in.readLine(); // Bye!
+//						Thread.sleep(500);
+					}
 				} catch (IOException e) {}
 			}
 			

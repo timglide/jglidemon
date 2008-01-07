@@ -331,6 +331,7 @@ public class Config extends QuickIni {
 		public static class web {
 			public static final boolean enabled = false;
 			public static final int port = 3201;
+			public static final int updateinterval = 5000;
 		}
 	}
 }

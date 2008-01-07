@@ -104,7 +104,52 @@ public class AjaxHandler extends Handler {
 			AC(request, tmp);
 			*/
 			
-			if (uri.equals("status")) {
+			if (uri.equals("command")) {
+				final String cmd = params.getProperty("command");
+				
+				if (cmd != null) {
+					Thread t = null;
+					
+					if (cmd.equals("start") || cmd.equals("stop")) {
+						t = new Thread() {
+							public void run() {
+								javax.swing.JButton btn = 
+									cmd.equals("start")
+									? jgm.JGlideMon.instance.gui.ctrlPane.start
+									: jgm.JGlideMon.instance.gui.ctrlPane.start;
+								btn.doClick();
+							}
+						};
+					} else if (cmd.equals("chat")) {
+						final String keys = params.getProperty("keys");
+						
+						if (keys != null && !keys.trim().equals("")) {
+							t = new Thread() {
+								public void run() {
+									jgm.JGlideMon.instance.gui.tabsPane.sendKeys.type.setSelectedItem("Raw");
+									jgm.JGlideMon.instance.gui.tabsPane.sendKeys.keys.setText(keys);
+									jgm.JGlideMon.instance.gui.tabsPane.sendKeys.send.doClick();
+									jgm.JGlideMon.instance.gui.tabsPane.sendKeys.reset.doClick();
+									jgm.JGlideMon.instance.gui.tabsPane.sendKeys.type.setSelectedItem("Whisper");
+								}
+							};
+						} else {
+							status.setTextContent("error");
+							message.setTextContent("No keys sent");
+						}
+					} else {
+						status.setTextContent("error");
+						message.setTextContent("Invalid command: " + cmd);
+					}
+					
+					if (t != null) {
+						t.start();
+					}
+				} else {
+					status.setTextContent("error");
+					message.setTextContent("No command given");
+				}
+			} else if (uri.equals("status")) {
 				// jgm info
 				Element jgm_ = CE(xml, "jgm");
 				_(xml, jgm_, "version", JGlideMon.version);
@@ -112,7 +157,7 @@ public class AjaxHandler extends Handler {
 				boolean connected = jgm.glider.Connector.isConnected();
 				_(xml, jgm_, "connected", Boolean.toString(connected));
 				
-				_(xml, jgm_, "update-interval", "1000");
+				_(xml, jgm_, "update-interval", jgm.Config.getInstance().getInt("web", "updateinterval"));
 				
 				AC(root, jgm_);
 				
@@ -155,7 +200,12 @@ public class AjaxHandler extends Handler {
 						}
 						
 						_(xml, glider, "mode", s.mode);
-						_(xml, glider, "profile", s.profile);
+						_(xml, glider, "full-profile", s.profile);
+						
+						String[] parts = s.profile.split("\\\\");
+						String str = parts.length > 0 ? parts[parts.length - 1] : "";
+						_(xml, glider, "profile", str);
+						
 						_(xml, glider, "kills", s.kills);
 						_(xml, glider, "loots", s.loots);
 						_(xml, glider, "deaths", s.deaths);
@@ -170,6 +220,9 @@ public class AjaxHandler extends Handler {
 				}
 				
 				AC(root, glider);
+			} else {
+				status.setTextContent("error");
+				message.setTextContent("Invalid uri: " + uri);
 			}
 			
 			
