@@ -211,7 +211,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	<target name="src_zip" description="Create ${src_zip}">
 		<zip destfile="${src_zip}">
-			<fileset dir="${src_dir}" includes="**" excludes="**/*.class,lib/**,bin/**,**/.*,**/*.cache,**/*.dat,**/*.ini,DebugInfo.txt,Log.txt"/>
+			<fileset dir="${src_dir}" includes="**" excludes="**/*.class,lib/**,bin/**,**/.*,**/*.cache,**/*.dat,**/*.ini,php/phpglidemon.php,DebugInfo.txt,Log.txt"/>
 		</zip>
 	</target>
 
