@@ -127,6 +127,7 @@ while (!feof($fp) && false !== ($line = rtrim(fgets($fp)))) {
 	fwrite($fpout, "\n");
 
 	if (false !== strpos($line, '//----FILE_LIST_START----')) {
+		fwrite($fpout, "\t" . '$dataLength = ' . $totalLength . ";\n");
 		fwrite($fpout, "\t" . '$files = ' . var_export($files, true) . ';' . "\n");
 	}
 }
