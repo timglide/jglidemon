@@ -216,7 +216,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 	<target name="zips" depends="core_zip,profiler_zip,tts_zip,src_zip,phpglidemon_zip"
-			description="Build all zip files"/>
+			description="Build all zip files and creates MD5 hashes">
+		<checksum todir="${bin_dir}" forceOverwrite="yes">
+			<fileset dir="${bin_dir}">
+				<include name="*.zip"/>
+			</fileset>
+		</checksum>
+	</target>
 
 
 	<property name="core_zip" value="${bin_dir}/${title}_v${version}_core.zip"/>
