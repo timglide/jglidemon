@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<property name="version"		value="0.12"/>
 
     <path id="classpath">
-		<fileset dir="lib" includes="**/openchart2-1.2.1.jar,**/freetts.jar"/>
+		<fileset dir="lib" includes="**/freetts.jar"/>
 	</path>
 
     <property name="src_dir"		value="."/>
@@ -99,7 +99,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			description="Copy sound/image/httpd resources">
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}/jgm/resources">
-			<fileset dir="${src_dir}/jgm/resources" includes="httpd/**/*,images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav" excludes="**/psd/,**/gif/"/>
+			<fileset dir="${src_dir}/jgm/resources"
+				includes="httpd/**/*,images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav"
+				excludes="**/*.psd,**/psd/,**/gif/"/>
 		</copy>
 	</target>
 
@@ -244,7 +246,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	<target name="src_zip" description="Create ${src_zip}">
 		<zip destfile="${src_zip}">
-			<fileset dir="${src_dir}" includes="**" excludes="**/*.class,lib/**,bin/**,**/.*,**/*.cache,**/*.dat,**/*.ini,php/phpglidemon.php,DebugInfo.txt,Log.txt"/>
+			<fileset dir="${src_dir}" includes="**" 
+				excludes="**/*.class,lib/**,bin/**,**/*.MD5,**/.*,**/*.cache,**/*.dat,**/*.ini,php/phpglidemon.php,DebugInfo.txt,Log.txt"/>
 		</zip>
 	</target>
 
