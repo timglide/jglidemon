@@ -155,8 +155,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
     <target name="jars"
 	    depends="JGlideMon_jar,Profiler_jar,ConnTest_jar"
-	    description="Builds all the jar files"/>
-
+	    description="Builds all the jar files">
+		<checksum todir="${bin_dir}" forceOverwrite="yes">
+			<fileset dir="${bin_dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</checksum>
+	</target>
 
 
 	<property name="JGlideMon_jar" value="${bin_dir}/${title}.jar"/>
@@ -230,7 +235,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,Profiler.jar,*.properties"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,Profiler.jar,Profiler.jar.MD5,*.properties"/>
 		</zip>
 	</target>
 
@@ -248,7 +253,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="profiler_zip" depends="Profiler_jar"
 			description="Create ${profiler_zip}">
 		<zip destfile="${profiler_zip}">
-			<fileset dir="${bin_dir}" includes="Profiler.jar,License.txt"/>
+			<fileset dir="${bin_dir}" includes="Profiler.jar,Profiler.jar.MD5,License.txt"/>
 		</zip>
 	</target>
 
@@ -268,7 +273,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="phpglidemon_zip" depends="phpglidemon"
 			description="Create ${phpglidemon_zip}">
 		<zip destfile="${phpglidemon_zip}">
-			<fileset dir="php" includes="phpglidemon.php"/>
+			<fileset dir="php" includes="phpglidemon.php,phpglidemon.php.MD5"/>
 			<fileset dir="${bin_dir}" includes="License.txt"/>
 		</zip>
 	</target>

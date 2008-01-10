@@ -19,6 +19,9 @@
 
 // builds phpglidemon.php by encoding/appending the necessary files
 // and doing any required replacements
+//
+// this build script may require php 5.x+. PHPGlideMon itself can run
+// on php 4 or 5.
 
 
 ini_set('display_errors', 'on');
@@ -36,6 +39,7 @@ $resourcesDir = $binDir . $resourcePath;
 $outFile = $here . '/' . $fname;
 $tmpFile = $outFile . '.tmp';
 $inFile = $outFile . '.in';
+$md5File = $outFile . '.MD5';
 
 if (!file_exists($inFile)) {
 	echo "Unable to find $inFile\n";
@@ -154,6 +158,9 @@ fclose($fp);
 fclose($fpout);
 
 @unlink($tmpFile);
+
+echo "  Generating MD5 Checksum...\n";
+file_put_contents($md5File, md5_file($outFile));
 
 echo "\n---- Done Building PHPGlideMon ---- \n";
 
