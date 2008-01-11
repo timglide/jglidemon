@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="version"		value="0.12"/>
+	<property name="_version"		value="0.12"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/freetts.jar"/>
@@ -52,8 +52,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<property name="bin_dir"        value="bin"/>
 	<property name="javadoc_dir"    value="${bin_dir}/javadoc"/>
 
+	<property environment="env"/>
+
     <patternset id="java_files" 
 			includes="jgm/**/*.java"/>
+
+	<!-- set current svn revision, requires SvnAnt to be set up correctly -->
+	<!-- you will need to comment the following lines and remove ${svn.revision}
+	     from the version property below if you downloaded the source zip since
+		 you didn't get the source from my svn repository -->
+	<taskdef resource="svntask.properties"/>
+	<svn>
+		<status path="${src_dir}" revisionProperty="svn.revision" />
+	</svn>
+
+	<property name="version" value="${_version}.${svn.revision}" />
 
 
     <!-- ********************************************************** -->
@@ -139,6 +152,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	<!-- this would need to be changed in order to build on *nix -->
 	<target name="phpglidemon" description="Compile PHPGlideMon files">
+		<!-- doesn't work on windows... -->
+		<!-- exec executable="php" searchpath="true" -->
 		<exec executable="cmd" osfamily="Windows">
 			<arg value="/c"/>
 			<arg value="php"/>
