@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Loading...</title>
+
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="/static/main.css" />
+
+<script type="text/javascript" src="/static/js/prototype.js"></script>
+<script type="text/javascript" src="/static/js/ajaxsettings.js"></script>
+<script type="text/javascript" src="/static/js/ajax.js"></script>
+<script type="text/javascript" src="/static/js/xmldom.js"></script>
+
+<script type="text/javascript">
+	window.onload=function() {
+		updater.init();
+		setTimeout("updater.update();", settings.updateInterval);
+		commands.typeChange(); // to ensure it's correct if the page is refreshed
+	}
+</script>
+
+</head>
+
+<body>
+<script type="text/javascript" src="/static/js/wz_tooltip.js"></script>
+
+<div id="main" class="container">
+	<div class="roundtopw">
+		<img src="/static/img/corners/tlw.png" alt="" class="corner" />
+	</div>
+
+	<div class="header">
+		<div class="roundtop">
+			<img src="/static/img/corners/tl.png" alt="" class="corner" />
+		</div>
+
+		<div id="headerdiv">
+			<div id="loadingheader"><h1>Loading...</h1></div>
+		</div>
+
+		<div class="roundbottom">
+			<img src="/static/img/corners/bl.png" alt="" class="corner" />
+		</div>
+
+	</div>
+
+	<div id="hiddenheaders" style="display: none;">
+		<div id="discheader"><h1>Disconnected from Glider</h1></div>
+		<div id="notattached"><h1>Connected to Glider, Detached</h1></div>
+		<div id="mainheader"><h1><img src="/static/img/classes/$lcclass.png" align="absmiddle" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
+	</div>
+
+	<div id="connected" style="display: none;">
+		<div id="nav">
+			<div class="roundtop">
+				<img src="/static/img/corners/tl.png" alt="" class="corner" />
+			</div>
+
+			<div id="navpad">
+				<div id="attached_info">
+					<div class="info_bar" id="health_bar">
+						<div class="info_text" id="health_text">$health%</div>
+						<div class="info_percent" id="health_percent"></div>
+					</div>
+					<div class="info_bar" id="secondary_bar">
+						<div class="info_text" id="secondary_text">$mana%</div>
+						<div class="info_percent mana" id="secondary_percent"></div>
+					</div>
+					<div class="info_bar" id="xp_bar">
+						<div class="info_text" id="xp_text">$xptext</div>
+						<div class="info_percent" id="xp_percent"></div>
+					</div>
+					<div><strong>XP/Hour:</strong> <span id="xp_per_hour_text">$xpperhour</span></div>
+					<div><strong>Time To Level:</strong> <span id="ttl_text">$ttl</span></div>
+					<hr />
+					<div><strong>Mode:</strong> <span id="mode_text">$mode</span></div>
+					<div id="profilediv"><strong>Profile:</strong> <span id="profile_text">$profile</span></div>
+					<div><strong>KLD:</strong> <span id="kills_text">$kills</span>/<span id="loots_text">$loots</span>/<span id="deaths_text">$deaths</span></div>
+				</div>
+
+				<hr />
+
+				<form id="theform">
+					<label for="chattype">Type: </label>
+					<select id="chattype" onchange="commands.typeChange();" onmouseover="TagToTip('typetooltip');">
+						<option>Whisper</option>
+						<option>Say</option>
+						<option>Raw</option>
+					</select>
+					<span id="chattospan">
+						<label for="chatto">To: </label>
+						<input id="chatto" type="text" size="10" />
+					</span>
+					<br />
+					<input id="chattext" type="text" size="25" onmouseover="TagToTip('typetooltip');" />
+					<input onclick="commands.chat(); return false;" type="image" src="/static/img/buttons/play.png" alt="Send" align="absmiddle" title="Send Chat" />
+				</form>
+
+				<hr />
+
+				<a href="javascript:commands.start()" title="Start Gliding"><img src="/static/img/buttons/play.png" alt="Start Gliding" /></a>
+				<a href="javascript:commands.stop()" title="Stop Gliding"><img src="/static/img/buttons/stop.png" alt="Stop Gliding" /></a>
+				<a href="javascript:window.location.reload(false)" title="Refresh Page Manually"><img src="/static/img/buttons/refresh.png" alt="Refresh Page Manually" /></a>
+				
+			</div>
+
+			<div class="roundbottom">
+				<img src="/static/img/corners/bl.png" alt="" class="corner" />
+			</div>
+		</div>
+
+		<div>
+			<div id="content">
+				<div class="roundtop">
+					<img src="/static/img/corners/tl.png" alt="" class="corner" />
+				</div>
+
+				<div id="ssdiv">
+					<img src="/static/img/classes/unknown.png" id="screenshot" />
+				</div>
+
+				<div class="roundbottom">
+					<img src="/static/img/corners/bl.png" alt="" class="corner" />
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div id="footer" class="footer">
+		<!--iframe name="out" id="out" width="0" height="0" frameborder="0" scrolling="no">Your Browser does not support IFrames.</iframe-->
+		<a href="http://www.mmoglider.com/" target="_new" title="MMOGlider"><img src="/static/img/glogo.gif" alt="MMOGlider" /></a>
+	</div>
+
+	<div class="roundbottomw">
+		<img src="/static/img/corners/blw.png" alt="" class="corner" />
+	</div>
+</div>
+
+<!-- tooltip divs that will be hidden -->
+<div id="typetooltip">
+	Whisper and Say will both add the<br />
+	slash command and a carraige return.<br />
+	You must add everything for Raw.<br />
+	| = Enter, #VK# = VK
+</div>
+
+</body>
+</html>

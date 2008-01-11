@@ -1,8 +1,27 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm;
 
 import java.lang.reflect.Method;
 import java.io.*;
-import java.net.URI;
 
 /**
  * Contains some utility functions 
@@ -144,91 +163,52 @@ public class Util {
 		} catch (Throwable e) {}
 	}
 	
-	// from azureus
-    public static File getJarFileFromURL(String url_str ) {
-    	if (url_str.startsWith("jar:file:")) {
-        	
-        	// java web start returns a url like "jar:file:c:/sdsd" which then fails as the file
-        	// part doesn't start with a "/". Add it in!
-    		// here's an example 
-    		// jar:file:C:/Documents%20and%20Settings/stuff/.javaws/cache/http/Dparg.homeip.net/P9090/DMazureus-jnlp/DMlib/XMAzureus2.jar1070487037531!/org/gudy/azureus2/internat/MessagesBundle.properties
-    			
-        	// also on Mac we don't get the spaces escaped
-        	
-    		url_str = url_str.replaceAll(" ", "%20" );
-        	
-        	if ( !url_str.startsWith("jar:file:/")) {
-        		url_str = "jar:file:/".concat(url_str.substring(9));
-        	}
-        	
-        	try{
-        			// 	you can see that the '!' must be present and that we can safely use the last occurrence of it
-          	
-        		int posPling = url_str.lastIndexOf('!');
-            
-        		String jarName = url_str.substring(4, posPling);
-        		
-        			//        System.out.println("jarName: " + jarName);
-        		
-        		URI uri = URI.create(jarName);
-        		
-        		File jar = new File(uri);
-        		
-        		return( jar );
-        		
-        	}catch( Throwable e ){
-        		e.printStackTrace();
-        		//Debug.printStackTrace( e );
-        	}
-    	}
-    	
-    	return( null );
-    }
-
-
+	
 	public static final File debugInfoFile = new File("DebugInfo.txt");
-
+	
 	public static void generateDebugInfo() {
 		//FileWriter fw = null;
 		//BufferedWriter bw = null;
 		PrintWriter pw = null;
-
+		
 		FileOutputStream fs = null;
 		PrintStream ps = null;
-
+		
 		try {
 			//fw = new FileWriter(debugInfoFile);
 			//bw = new BufferedWriter(fw);
 			//pw = new PrintWriter(bw);
-
+			
 			fs = new FileOutputStream(debugInfoFile);
 			ps = new PrintStream(fs);
-
+			
 			ps.println("Java Properties");
 			ps.println("---------------");
-
+			
 			for (Object key : System.getProperties().keySet()) {
 				ps.println(key + ": " + System.getProperty(key.toString()));
 			}
-
-
+			
+			
 			ps.println();
 			ps.println("JGlideMon Properties");
 			ps.println("--------------------");
-
+			
 			ps.println("version: " + jgm.JGlideMon.version);
 			ps.println("debug: " + Boolean.toString(jgm.JGlideMon.debug));
-
+			ps.println(jgm.JGlideMon.revision);
+			ps.println(jgm.JGlideMon.date);
+			
 			ps.println();
 			ps.println("JGlideMon Config");
 			ps.println("----------------");
-
+			
 			Config cfg = Config.getInstance();
 			java.util.Iterator<String> i = cfg.getAllSectionNames();
-
+				
 			while (i.hasNext()) {
 				String section = i.next();
-
+				
 				for (String prop : cfg.getAllPropertyNames(section)) {
 					ps.print(section + "." + prop + ": ");
 					ps.println(cfg.get(section, prop));

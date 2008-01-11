@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.tabs;
 
 import jgm.gui.components.*;
@@ -14,7 +34,7 @@ public class LootsTab extends Tab implements ActionListener {
 	private GoldPanel        lootWorth  = new GoldPanel("Loot Worth: ");
 	private GoldPanel        goldPerHour = new GoldPanel("Gold/Hour: ");
 	
-	private JButton          resetBtn   = new JButton("Reset Loot");
+	public  JButton          resetBtn   = new JButton("Reset Loot");
 	
 	private long initialGoldTime = System.currentTimeMillis();
 	
@@ -60,6 +80,7 @@ public class LootsTab extends Tab implements ActionListener {
 				jp.add(panes[i]);
 			}
 			
+			// to add items for testing
 //			if (i == 3)
 //				for (int j = 0; j < 10; j++)
 //					items[i].add(ItemSet.factory(7713 + j, "Illusionary Rod", 1)); // for testing
@@ -191,6 +212,7 @@ public class LootsTab extends Tab implements ActionListener {
 		}
 	}
 
+	
 	private class ItemTable extends JTable
 		implements MouseMotionListener,
 				   MouseListener {
@@ -227,15 +249,36 @@ public class LootsTab extends Tab implements ActionListener {
             itemTooltip.setItemSet(getItemSet(row));
 			itemTooltip.setVisible(true);
 			itemTooltip.revalidate();
+			
+			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 		
 		public void mouseExited(MouseEvent e) {
 			//System.out.println("Exited: " + e);
 			itemTooltip.setVisible(false);
 			itemTooltip.revalidate();
+			
+			setCursor(Cursor.getDefaultCursor());
 		}
 		
-		public void mouseClicked(MouseEvent e) {}
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() != 1) return;
+			
+			Point pt = e.getPoint();
+			int row = this.rowAtPoint(pt);
+	
+			ItemTableModel tm = (ItemTableModel) this.dataModel;
+			ItemSet is = tm.getItem(row);
+			
+			int itemId = is.getItem().id;
+			
+			jgm.Util.openURL(
+				String.format(
+					jgm.Config.getInstance().get("general", "wowdb"),
+					itemId
+			));
+		}
+		
 		public void mousePressed(MouseEvent e) {}
 		public void mouseReleased(MouseEvent e) {}
 		

@@ -1,45 +1,30 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.glider.log;
 
-import jgm.Locale;
 import jgm.sound.*;
 
 import java.util.regex.*;
 
-public class ChatLogEntry extends LogEntry {
-	static String GM_INDICATOR = null;
-	static String WHISPERS_VERB = null;
-	static String SAYS_VERB = null;
-	static String WHISPER_NOUN = null;
-	static String SAY_NOUN = null;
-	
-	static {
-		localeChanged();
-		
-		Locale.addListener(new jgm.locale.LocaleListener() {
-			public void localeChanged() {
-				ChatLogEntry.localeChanged();
-			}
-		});
-	}
-	
-	public static void localeChanged() {
-		Locale.setBase("regex");
-		
-		try {
-			GM_INDICATOR = Locale._("chat.gmindicato");
-			WHISPERS_VERB = Locale._("chat.whispers");
-			SAY_NOUN = Locale._("chat.says");
-			WHISPER_NOUN = Locale._("chat.whisper");
-			SAY_NOUN = Locale._("chat.say");
-			PATTERN1 = Pattern.compile(Locale._("chat.whispersay"));
-			PATTERN2 = Pattern.compile(Locale._("chat.normalchat"));
-		} catch (Throwable e) {
-			e.printStackTrace();
-			
-			Locale.setLocale(Locale.LOCALE_ENGLISH);
-		}
-	}
-	
+public class ChatLogEntry extends LogEntry {	
 	public static enum Urgency {
 		TRIVIAL, URGENT, CRITICAL
 	};
@@ -86,16 +71,16 @@ public class ChatLogEntry extends LogEntry {
 		return message;
 	}
 	
-	private static Pattern PATTERN1 = null;
-//		Pattern.compile(".*?(<GM>|)\\[([^]]+)\\] (whisper|say)s: (.*)");
+	private static Pattern PATTERN1 =
+		Pattern.compile(".*?(<GM>|)\\[([^]]+)\\] (whisper|say)s: (.*)");
 		/* group 1: <GM>?
 		 *       2: sender
 		 *       3: type
 		 *       4: message
 		 */
 
-	private static Pattern PATTERN2 = null;
-//		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] \\[(<GM>|)([^]]+)\\]: (.*)");
+	private static Pattern PATTERN2 =
+		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] \\[(<GM>|)([^]]+)\\]: (.*)");
 		/* group 1: number => public chat channel
 		 *       2: channel name (Guild|Office|public channel name)
 		 *       3: <GM>?
@@ -110,17 +95,10 @@ public class ChatLogEntry extends LogEntry {
 		if (m.matches()) {	
 			//System.out.println("matched pattern1: " + s);
 			
-			boolean gm     = m.group(1).equals(GM_INDICATOR);
+			boolean gm     = m.group(1).equals("<GM>");
 			String sender  = m.group(2);
 			String type    = m.group(3);
-			//type = Character.toUpperCase(type.charAt(0)) + type.substring(1);
-			
-			if (type.equals(WHISPERS_VERB)) {
-				type = WHISPER_NOUN;
-			} else if (type.equals(SAYS_VERB)) {
-				type = SAY_NOUN;
-			}
-			
+			type = Character.toUpperCase(type.charAt(0)) + type.substring(1);
 			String message = m.group(4);
 			
 			ret.channel = type;
@@ -157,13 +135,15 @@ public class ChatLogEntry extends LogEntry {
 			new Sound(Audible.Type.GM, jgm.util.Sound.File.GM_WHISPER).play(true);
 			new Phrase(Audible.Type.GM, ret.getText()).play();
 		} else if (ret.isUrgent()) {
-			Audible.Type t = (ret.type.equals(WHISPER_NOUN)) ? Audible.Type.WHISPER : Audible.Type.SAY;
+			Audible.Type t = (ret.type.equals("Whisper")) ? Audible.Type.WHISPER : Audible.Type.SAY;
 			new Sound(t, jgm.util.Sound.File.WHISPER).play(true);
 			new Phrase(t, ret.getText()).play();
 		}
 		
 		return ret;
 	}
+	
+
 	
 	public static ChatLogEntry factory(String rawText) {
 		return parse(rawText);

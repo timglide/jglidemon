@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.updaters;
 
 import jgm.*;
@@ -8,19 +28,18 @@ import jgm.gui.tabs.*;
 import java.util.Observer;
 import java.util.logging.*;
 import java.io.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
  
 public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(SSUpdater.class.getName());
-
+	
 	public  volatile boolean idle = true;
 	private volatile boolean stop = false;
 	private volatile boolean attached = false;
-
 	public  volatile boolean sentSettings = false;
-
+	public  volatile boolean redoScale = true; // so it will happen initially
+	
 	private Conn conn = null;
 
 	private ScreenshotTab tab;
@@ -61,7 +80,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	}
 
 	//private static final int MAX_SIZE = 1048576;
-	private static byte[] buff = null; // new byte[MAX_SIZE];
+	public static byte[] buff = null; //new byte[MAX_SIZE];
 	
 	public boolean update() throws IOException, InterruptedException {
 	  synchronized (conn) {
@@ -72,12 +91,12 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		GUI.setStatusBarProgress(0);
 		
 		int buffSize = (int) (cfg.getDouble("screenshot", "buffer") * 1048576);
-
+		
 		if (buff == null || buff.length != buffSize) {
 			log.fine("Allocating ss buffer of size " + buffSize);
 			buff = new byte[buffSize];
 		}
-
+		
 		/* This timer will interrupt the screenshot updater
 		 * in X seconds if it fails to update the screenshot.
 		 */
@@ -97,6 +116,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					conn.connect();
 				} catch (Throwable e) {
 					log.log(Level.WARNING, "SSWatcher", e);
+					//System.err.println("SSWatcher: " + e.getClass().getName() + ": " + e.getMessage());
 					Connector.disconnect();
 				}
 				
@@ -121,7 +141,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			log.finer(conn.readLine()); // set quality successfully
 			conn.readLine(); // ---
 		}
-
+		
 		conn.send("/capture");
 		String line = conn.readLine(); // info stating stuff about the datastream
 		
@@ -160,9 +180,8 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 //					System.out.println(s);
 				z++;
 
-				//int l = s.length();
-				//if (l >= 3 && s.lastIndexOf("---") == l - 3) {
-				if (s.endsWith("---")) {
+				int l = s.length();
+				if (l >= 3 && s.lastIndexOf("---") == l - 3) {
 //					System.out.println("Found ---");
 					break;
 				}
@@ -211,12 +230,60 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			);
 		ImageIcon icon = new ImageIcon(img);
 		tab.ssLabel.setIcon(icon);
-
+		
 		if (!sentSettings) {
 			tab.ssLabel.setSize(icon.getIconWidth(), icon.getIconHeight());
 			sentSettings = true;
 		}
-
+		
+		if (redoScale && cfg.getBool("screenshot", "autoscale")) {
+			log.fine("Attempting to set screenshot scale...");
+			
+			double curScale = cfg.getDouble("screenshot", "scale") / 100;
+			double newScale = curScale;
+			int iwidth = icon.getIconWidth();
+			int iheight = icon.getIconHeight();
+			// double iratio = (double) iwidth / iheight;
+			
+			int realIWidth = (int) ((double) iwidth / curScale);
+			int realIHeight = (int) ((double) iheight / curScale);
+			
+			// try to account for margin and width of border
+			int pwidth = tab.jsp.getWidth() - 20;
+			int pheight = tab.jsp.getHeight() - 20;
+			
+			int dx = realIWidth - pwidth;
+			int dy = realIHeight - pheight;
+			
+			log.finer(
+				String.format(
+					"Current: scale=%s; size=%sx%s; real size=%sx%s",
+					curScale, iwidth, iheight, realIWidth, realIHeight
+				)
+			);
+			
+			if (dy >= dx) {
+				newScale = (double) pheight / (double) realIHeight;
+			} else {
+				newScale = (double) pwidth / (double) realIWidth;
+			}
+			
+			// -3 to be safe because there's a margin between the
+			// screenshot image and the jscrollpane i don't know how
+			// to 'properly' account for
+			int newScaleInt = (int) (newScale * 100) /*- 3*/;
+			
+			// ensure it's within bounds
+			newScaleInt = Math.min(newScaleInt, 99);
+			newScaleInt = Math.max(newScaleInt, 10);
+			
+			log.fine("Setting scale to " + newScaleInt + "%");
+			
+			cfg.set("screenshot", "scale", newScaleInt);
+			redoScale = false;
+			sentSettings = false;
+		}
+		
 		GUI.revertStatusBarText();
 		GUI.unlockStatusBarText();
 		GUI.hideStatusBarProgress();
@@ -233,7 +300,11 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				
 				try {
 					//while (attached && tab.isCurrentTab() && !update()) {}
-					if (attached && tab.isCurrentTab()) update();
+					
+					// update if either the screenshot tab is viewable or if the
+					// webserver is enabled so that only one thread ever tries to
+					// update the screenshot
+					if (attached && (tab.isCurrentTab() || cfg.getBool("web", "enabled"))) update();
 				} catch (InterruptedException e) {
 					log.fine(thread.getName() + " interrupted within update()");
 				} catch (Exception e) {

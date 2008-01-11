@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.tabs;
 
 import jgm.*;
@@ -17,11 +37,12 @@ public class ScreenshotTab extends Tab
 	implements ActionListener, ChangeListener, MouseListener,
 				KeyListener {
 	static Logger log = Logger.getLogger(ScreenshotTab.class.getName());
-
+	
 	private static Conn conn = null;
 	private static SSUpdater updater = null;
 	
 	public JCheckBox keysEnabled;
+	public JScrollPane jsp;
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
 
@@ -36,7 +57,7 @@ public class ScreenshotTab extends Tab
 		keysEnabled.setFocusable(false);
 		jp.add(keysEnabled, c);
 		add(jp, BorderLayout.NORTH);
-
+		
 		ssLabel = new JLabel();
 		ssLabel.setHorizontalAlignment(JLabel.CENTER);
 		ssLabel.addMouseListener(this);
@@ -45,7 +66,10 @@ public class ScreenshotTab extends Tab
 		JPanel p = new JPanel();
 		p.add(ssLabel);
 		
-		add(p, BorderLayout.CENTER);
+		jsp = new JScrollPane(p);
+		// jsp.setBorder(null);
+		// jsp.setBorder(BorderFactory.createLineBorder(Color.red, 10));
+		add(jsp, BorderLayout.CENTER);
 		
 		refresh = new JButton("Refresh Screenshot Immediately");
 		refresh.setFocusable(false);

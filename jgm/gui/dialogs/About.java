@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.dialogs;
 
 import jgm.JGlideMon;
@@ -11,6 +31,7 @@ public class About extends Dialog implements ActionListener {
 	private JLabel iconLabel;
 	private JLabel text;
 	
+	private JLinkButton gplLink;
 	private JLinkButton freeTtsLink;
 	
 	private JButton close;
@@ -31,10 +52,21 @@ public class About extends Dialog implements ActionListener {
 		
 		text = new JLabel(
 			"<html><br>JGlideMon " + JGlideMon.version + "<br>" +
-			"By Tim<br><br>" +
+			JGlideMon.revision + "<br>" +
+			JGlideMon.date + "<br>" +
+			"By Tim<br><br>Released under the GNU GPL<br>" +
 			"</html>"
 		);
 		textPanel.add(text);
+		
+		try {
+			gplLink =
+				new JLinkButton("More Info",
+					new java.net.URL("http://www.gnu.org/licenses/gpl.html"));
+			gplLink.setBorder(BorderFactory.createEmptyBorder());
+			textPanel.add(gplLink);
+			textPanel.add(new JLabel("<html><br></html>"));
+		} catch (java.net.MalformedURLException e) {}
 		
 		// only if there is tts support
 		if (jgm.util.Speech.isSupported()) {
