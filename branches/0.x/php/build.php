@@ -160,7 +160,7 @@ fclose($fpout);
 @unlink($tmpFile);
 
 echo "  Generating MD5 Checksum...\n";
-file_put_contents($md5File, md5_file($outFile));
+file_put_contents($md5File, md5_file($outFile) . "\r\n");
 
 echo "\n---- Done Building PHPGlideMon ---- \n";
 

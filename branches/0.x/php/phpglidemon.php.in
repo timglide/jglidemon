@@ -284,7 +284,10 @@ function handleAjax($url) {
 				if (isset($info['attached']) && $info['attached'] == 'true') {
 					if (isset($info['profile'])) {
 						$info['full-profile'] = $info['profile'];
-						$info['profile'] = basename($info['full-profile']);
+						// on *nix, basename only works with /, not \
+//						$info['profile'] = basename($info['full-profile']);
+						$parts = explode('\\', $info['profile']);
+						$info['profile'] = $parts[count($parts) - 1];
 					}
 
 					if (isset($info['class'])) {
