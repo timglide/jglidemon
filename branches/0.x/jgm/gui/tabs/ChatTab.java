@@ -190,21 +190,24 @@ public class ChatTab extends Tab implements ActionListener {
 			
 			ChatType t = (ChatType) type.getSelectedItem();
 			
-			sb.append(t.getSlashCommand());
-			
 			switch (t) {
 				case RAW:
 					break;
-					
-				case WHISPER:
-					if (to.getText().trim().equals("")) {
-						setEnabled(true);
-						return;
-					}
-					
-					sb.append(to.getText());
-					sb.append(' ');
+				
 				default:
+					sb.append("#13#"); // press enter first
+			}
+			
+			sb.append(t.getSlashCommand());
+			
+			if (t == ChatType.WHISPER) {
+				if (to.getText().trim().equals("")) {
+					setEnabled(true);
+					return;
+				}
+				
+				sb.append(to.getText());
+				sb.append(' ');
 			}
 			
 			if (keys.getText().trim().equals("")) {
@@ -217,7 +220,7 @@ public class ChatTab extends Tab implements ActionListener {
 			switch (t) {
 				case RAW: break;
 				default:
-					sb.append('|');
+					sb.append("#13#");
 			}
 
 			

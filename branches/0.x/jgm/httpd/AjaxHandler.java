@@ -126,11 +126,14 @@ public class AjaxHandler extends Handler {
 						if (keys != null && !keys.trim().equals("")) {
 							t = new Thread() {
 								public void run() {
-									jgm.JGlideMon.instance.gui.tabsPane.chatLog.type.setSelectedItem(jgm.glider.ChatType.RAW);
-									jgm.JGlideMon.instance.gui.tabsPane.chatLog.keys.setText(keys);
-									jgm.JGlideMon.instance.gui.tabsPane.chatLog.send.doClick();
-									jgm.JGlideMon.instance.gui.tabsPane.chatLog.reset.doClick();
-									jgm.JGlideMon.instance.gui.tabsPane.chatLog.type.setSelectedItem(jgm.glider.ChatType.WHISPER);
+									jgm.gui.tabs.ChatTab tab = 
+										jgm.JGlideMon.instance.gui.tabsPane.chatLog;
+									Object last = tab.type.getSelectedItem();
+									tab.type.setSelectedItem(jgm.glider.ChatType.RAW);
+									tab.keys.setText(keys);
+									tab.send.doClick();
+									tab.reset.doClick();
+									tab.type.setSelectedItem(last);
 								}
 							};
 						} else {

@@ -197,9 +197,7 @@ function SNT(xml, path) {
 }
 
 function IH(element, content) {
-//	alert("before: " + element.innerHTML);
 	element.innerHTML = content;
-//	alert("after: " + element.innerHTML);
 }
 
 
@@ -210,7 +208,7 @@ var commands = {
 	url: urls.command + "command=",
 
 	typeChange: function() {
-		if (els.chattype.getValue() == 'Whisper') {
+		if (els.chattype.getValue() == 'w') {
 			els.chattospan.show();
 		} else {
 			els.chattospan.hide();
@@ -257,17 +255,23 @@ var commands = {
 		var to   = trim(els.chatto.getValue());
 		var text = trim(els.chattext.getValue());
 
-		if (type == 'Whisper') {
+		if (type != 'Raw') {
+			out += '#13#/' + type + ' ';
+		}
+
+		if (type == 'w') {
 			if (to == '') {
 				alert('The To field cannot be empty');
 				return;
 			}
 
-			out = '/w ' + to + ' ' + text + '|';
-		} else if (type == 'Say') {
-			out = '/s ' + text + '|';
-		} else if (type == 'Raw') {
-			out = text;
+			out += to + ' ';
+		}
+
+		out += text;
+
+		if (type != 'Raw') {
+			out += '#13#';
 		}
 
 		if (text == '') {
@@ -276,7 +280,7 @@ var commands = {
 		}
 
 		if (out != '') {
-			new Ajax.Request(commands.url + "chat&keys=" + out, {
+			new Ajax.Request(commands.url + "chat&keys=" + escape(out), {
 				method: 'get',
 				asynchronous: true,
 				onSuccess: commands.handle,

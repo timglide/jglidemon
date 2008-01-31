@@ -23,7 +23,7 @@ package jgm.gui.tabs;
 import jgm.Config;
 import jgm.glider.log.*;
 
-import java.util.Vector;
+import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -64,7 +64,37 @@ public class LogTab extends Tab {
 		logEntries.fireTableDataChanged();
 	}
 	
+	static HashMap<String, Color> TYPE_COLORS = new HashMap<String, Color>();
+	
+	static {
+		TYPE_COLORS.put("Chat", new Color(0x00AA00));
+		TYPE_COLORS.put("Public Chat", new Color(0xC84646));
+		TYPE_COLORS.put("Whisper", Color.MAGENTA);
+		TYPE_COLORS.put("Guild", Color.GREEN);
+		TYPE_COLORS.put("Say", Color.DARK_GRAY);
+		TYPE_COLORS.put("Combat", new Color(0x800000));
+		TYPE_COLORS.put("GliderLog", new Color(0xF06514));
+		TYPE_COLORS.put("Status", TYPE_COLORS.get("GliderLog"));
+	}
+	
+	private class ColorLabelRenderer extends JLabel implements TableCellRenderer {		
+		public Component getTableCellRendererComponent(
+			JTable table, Object obj,
+			boolean isSelected, boolean hasFocus,
+			int row, int column) {
+			String str = (String) obj;
+			Color color = TYPE_COLORS.get(str);
+			
+			if (color != null)
+				this.setForeground(color);
+			this.setText(str);
+			return this;
+		}
+	};
+	
 	private class LogTable extends JTable implements MouseListener {
+		ColorLabelRenderer colorLabelRenderer = new ColorLabelRenderer();
+		
 		public LogTable(TableModel dm) {
 			super(dm);
 
@@ -75,6 +105,7 @@ public class LogTab extends Tab {
 			cm.getColumn(1).setResizable(false);
 			cm.getColumn(1).setMinWidth(100);
 			cm.getColumn(1).setMaxWidth(100);
+			cm.getColumn(1).setCellRenderer(colorLabelRenderer);
 			
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			this.addMouseListener(this);

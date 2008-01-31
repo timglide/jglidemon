@@ -84,8 +84,10 @@
 				<form id="theform">
 					<label for="chattype">Type: </label>
 					<select id="chattype" onchange="commands.typeChange();" onmouseover="TagToTip('typetooltip');">
-						<option>Whisper</option>
-						<option>Say</option>
+						<option value="w">Whisper</option>
+						<option value="r">Reply</option>
+						<option value="s">Say</option>
+						<option value="g">Guild</option>
 						<option>Raw</option>
 					</select>
 					<span id="chattospan">
@@ -140,8 +142,8 @@
 
 <!-- tooltip divs that will be hidden -->
 <div id="typetooltip">
-	Whisper and Say will both add the<br />
-	slash command and a carraige return.<br />
+	The slash command and a carraige return<br />
+	will be added except for Raw.
 	You must add everything for Raw.<br />
 	| = Enter, #VK# = VK
 </div>
