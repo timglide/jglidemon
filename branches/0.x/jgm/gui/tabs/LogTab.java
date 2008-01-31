@@ -30,7 +30,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 public class LogTab extends Tab {
-	private JTabbedPane   parent;
+	protected JTabbedPane   parent;
 	private LogTable      logTable;
 	private LogTableModel logEntries;
 	

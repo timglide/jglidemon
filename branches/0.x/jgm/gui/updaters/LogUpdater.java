@@ -25,6 +25,7 @@ import jgm.glider.log.*;
 import jgm.gui.panes.TabsPane;
 import jgm.gui.tabs.*;
 
+import java.util.regex.*;
 import java.util.logging.*;
 import java.io.*;
 
@@ -93,6 +94,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			conn.send("/log all");
 			conn.readLine(); // Log mode added: all
 			conn.readLine(); // ---
+			conn.send("/escapehi on");
+			conn.readLine(); // Escapehi mode: on
+			conn.readLine(); // ---			
 		} catch (IOException e) {
 			log.fine("Stopping LogUpdater, IOE: " + e.getMessage());
 			Connector.disconnect();
@@ -141,6 +145,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		}
 	}
 	
+	private Pattern ESCPAE_PATTERN =
+//		Pattern.compile("&(&#\\d+;)"); // see below...
+		Pattern.compile("&&#(\\d+);");
+	
 	private void handleLine(String line) {
 		handleLine(line, LogFile.None);
 	}
@@ -153,10 +161,32 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	 */
 	private void handleLine(String line, LogFile logFile) {
 		boolean fromLog = !logFile.equals(LogFile.None);
-		
+
 		if (fromLog) {
 			jgm.sound.Audible.ENABLE_SOUNDS = false;
 		}
+		
+		// fix escaped characters
+		Matcher m = ESCPAE_PATTERN.matcher(line);
+		StringBuffer sb = new StringBuffer();
+		int i = 0;
+		
+		// if this were php, i would use preg_replace
+		// with the e modifier, but java doesn't have
+		// eval obviously
+		while (m.find()) {
+			sb.append(line.substring(i, m.start()));
+			sb.append((char) Integer.parseInt(m.group(1)));
+			i = m.end();
+		}
+		sb.append(line.substring(i));
+		
+		line = sb.toString();
+		
+		// Not going to include Apache Commons just for
+		// one thing.
+//		line = m.replaceAll("$1");
+//		line = org.apache.commons.lang.StringEscapeUtils.unescapeHtml(line);
 		
 		LogEntry e = LogEntry.factory(line, logFile);
 

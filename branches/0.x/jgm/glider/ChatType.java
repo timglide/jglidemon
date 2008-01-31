@@ -28,6 +28,7 @@ package jgm.glider;
 
 public enum ChatType {
 	WHISPER("/w "),
+	REPLY("/r "),
 	SAY("/s "),
 	GUILD("/g "),
 	RAW("");

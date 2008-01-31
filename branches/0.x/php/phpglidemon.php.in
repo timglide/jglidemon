@@ -67,6 +67,11 @@ $ss_quality = 100;
 // 5000 = 5 seconds
 $refresh = 5000;
 
+// If true, /stopglide will be sent before sending chat keys and /startglide
+// will be sent after chat keys (if Glider was already running). This should
+// help with /queuekeys not always sending things.
+$pause_glide = true;
+
 // If true, error reporting will be turned on. You shouldn't need to enable this
 $debug   = false;
 
@@ -202,7 +207,7 @@ function handleScreenshot() {
 
 
 function handleAjax($url) {
-	global $app, $version, $refresh;
+	global $app, $version, $refresh, $pause_glide;
 
 	sendNoCache();
 
@@ -235,8 +240,21 @@ function handleAjax($url) {
 							$status = 'error';
 							$message = 'No keys provided for sending';
 						} else {
-							sendCommand($fp, 'queuekeys ' . $_GET['keys']);
+							$test = null;
+
+							if ($pause_glide) {
+								sendCommand($fp, 'stopglide');
+								$test = getResult($fp);
+							}
+
+							$cmd = $pause_glide ? 'force' : 'queue';
+							sendCommand($fp, $cmd . 'keys ' . $_GET['keys']);
 							$message = getResult($fp); // result
+
+							if ($pause_glide && $test != 'Already stopped') {
+								sendCommand($fp, 'startglide');
+								getResult($fp);
+							}
 						}
 
 						break;

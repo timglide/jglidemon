@@ -45,7 +45,7 @@ public class ChatTab extends Tab implements ActionListener {
 	public  JButton send;
 	public  JButton reset;
 	
-	private volatile boolean connected = false;
+	protected volatile boolean connected = false;
 	private Conn conn;
 	
 	public ChatTab() {
@@ -77,7 +77,7 @@ public class ChatTab extends Tab implements ActionListener {
 		keysPanel.add(to, c);
 		
 		keys = new JTextField();
-		keys.setToolTipText("Whisper/Say/Guild will add the slash command and a carriage return. " +
+		keys.setToolTipText("Slash command and a carriage return will be added except for Raw. " +
 		                    "You must add everything for Raw, | = CR, #VK# = VK");
 		keys.addActionListener(this);
 		c.gridx++; c.weightx = 1.0;
@@ -224,14 +224,20 @@ public class ChatTab extends Tab implements ActionListener {
 			try {
 				log.fine("Sending: " + sb.toString());
 				conn.send("/stopglide");
-				conn.readLine(); // attempting stop
+				String test = conn.readLine(); // attempting stop
 				conn.readLine(); // ---
 				conn.send("/forcekeys " + sb.toString());
 				conn.readLine(); // queued keys
 				conn.readLine(); // ---
-				conn.send("/startglide");
-				conn.readLine(); // attempting start
-				conn.readLine(); // ---
+				
+				// don't start if we were stopped initially
+				if (!test.equals("Already stopped")) {
+					conn.send("/startglide");
+					conn.readLine(); // attempting start
+					conn.readLine(); // ---
+				} else {
+					log.finer("Already stopped, not starting glide");
+				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

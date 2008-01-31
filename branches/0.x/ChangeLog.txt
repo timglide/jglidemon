@@ -1,5 +1,20 @@
 JGlideMon ChangeLog
 
+Version 0.13
+------------
+- Sending chat is now at the bottom of the Chat tab and
+  the Keys tab has been removed.
+- Now when keys are sent, /stopglide is sent first, followed
+  by the keys, followed by /startglide (if Glider was already
+  running). This is also reflected in PHPGlideMon. This should
+  help with /queuekeys not always sending the keys.
+- Added the use of the "/escapehi on" command. Special characters
+  should now be seen in the logs. Note that you won't be able
+  to send the special characters, but you can at least see them.
+  This means you cannot whisper people with special characters
+  in their name. This is a limitation of Glider's remote interface
+  as far as I can tell.
+
 Version 0.12
 ------------
 - Added Public Chat tab to the Chat tab that contains only

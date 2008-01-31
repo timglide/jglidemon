@@ -32,7 +32,7 @@ import javax.swing.event.*;
 
 public class ProfilesTab extends Tab
 	implements ActionListener, TreeSelectionListener {
-	static Logger log = Logger.getLogger(SendKeysTab.class.getName());
+	static Logger log = Logger.getLogger(ProfilesTab.class.getName());
 	
 	private ProfileTree profiles;
 	private JButton loadProfile;

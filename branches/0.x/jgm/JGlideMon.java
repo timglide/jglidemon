@@ -49,7 +49,7 @@ public class JGlideMon {
 	public  StatusUpdater status;
 	public  LogUpdater    logUpdater;
 	public  SSUpdater     ssUpdater;
-	private PlayerChartUpdater chartUpdater;
+	public  PlayerChartUpdater chartUpdater;
 	
 	public Connector connector;
 	
