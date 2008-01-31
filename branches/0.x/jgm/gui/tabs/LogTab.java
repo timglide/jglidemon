@@ -55,7 +55,7 @@ public class LogTab extends Tab {
 		);
 		
 		if (select) {
-			parent.setSelectedIndex(getIndex());
+			this.select();
 		}
 	}
 
@@ -103,14 +103,14 @@ public class LogTab extends Tab {
 				ChatLogEntry centry = (ChatLogEntry) entry;
 				if (centry.getSender() == null) return;
 
-				SendKeysTab skt =
-					jgm.JGlideMon.instance.gui.tabsPane.sendKeys;
+				ChatTab ct =
+					jgm.JGlideMon.instance.gui.tabsPane.chatLog;
 	
-				skt.type.setSelectedItem("Whisper");
-				skt.to.setText(centry.getSender());
-				skt.keys.setText("");
-				((JTabbedPane) skt.getParent()).setSelectedIndex(skt.getIndex());
-				skt.keys.requestFocus();
+				ct.type.setSelectedItem(jgm.glider.ChatType.WHISPER);
+				ct.to.setText(centry.getSender());
+				ct.keys.setText("");
+				ct.select();
+				ct.keys.requestFocusInWindow();
 			}
 		}
 	}

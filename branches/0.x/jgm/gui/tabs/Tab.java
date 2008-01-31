@@ -61,7 +61,7 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * @return The index of this Tab
 	 */
 	public final int getIndex() {
-		return ((JTabbedPane) this.getParent()).indexOfTab(name);
+		return ((JTabbedPane) this.getParent()).indexOfComponent(this);
 	}
 	
 	/**
@@ -71,6 +71,10 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	public final boolean isCurrentTab() {
 		return ((JTabbedPane) this.getParent()).getSelectedIndex()
 				== getIndex();
+	}
+	
+	public final void select() {
+		((JTabbedPane) this.getParent()).setSelectedComponent(this);
 	}
 	
 	/**

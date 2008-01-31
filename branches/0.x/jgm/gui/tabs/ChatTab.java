@@ -20,17 +20,33 @@
  */
 package jgm.gui.tabs;
 
+import jgm.JGlideMon;
+import jgm.glider.*;
 import jgm.glider.log.*;
 
 import java.awt.*;
+import java.awt.event.*;
+import java.util.logging.Logger;
+
 import javax.swing.*;
 
-public class ChatTab extends Tab {
+public class ChatTab extends Tab implements ActionListener {
+	static Logger log = Logger.getLogger(ChatTab.class.getName());
+	
 	private JTabbedPane tabs;
 	public LogTab all;
 	public LogTab pub;
 	public LogTab whisper;
 	public LogTab guild;
+	
+	public  JComboBox type;
+	public  JTextField to;
+	public  JTextField keys;
+	public  JButton send;
+	public  JButton reset;
+	
+	private volatile boolean connected = false;
+	private Conn conn;
 	
 	public ChatTab() {
 		super(new BorderLayout(), "Chat");
@@ -46,7 +62,67 @@ public class ChatTab extends Tab {
 		addTab(whisper);
 		addTab(guild);
 		
+		
+		// set up send keys
+		JPanel keysPanel = new JPanel(new GridBagLayout());
+		
+		type = new JComboBox(ChatType.values());
+		type.addActionListener(this);
+		c.gridx = 0; c.gridy = 0; c.weightx = 0.0;
+		keysPanel.add(type, c);
+		
+		to = new JTextField();
+		to.setToolTipText("The person to send a whisper to");
+		c.gridx++; c.weightx = 0.15;
+		keysPanel.add(to, c);
+		
+		keys = new JTextField();
+		keys.setToolTipText("Whisper/Say/Guild will add the slash command and a carriage return. " +
+		                    "You must add everything for Raw, | = CR, #VK# = VK");
+		keys.addActionListener(this);
+		c.gridx++; c.weightx = 1.0;
+		keysPanel.add(keys, c);
+				
+		JPanel btns = new JPanel(new GridLayout(1, 0));
+		
+		send = new JButton("Send");
+		send.addActionListener(this);
+		btns.add(send);
+		
+		reset = new JButton("Reset");
+		reset.addActionListener(this);
+		btns.add(reset);
+		
+		c.gridx++; c.weightx = 0.0;
+		keysPanel.add(btns, c);
+		
+/*		c.gridy++;
+		keysPanel.add(new JLabel(
+			"<html>Whisper and Say will both add the slash command and a carriage return.<br>" +
+			"You must add everything for Raw, | = CR, #VK# = VK</html>",
+			JLabel.CENTER
+		), c);
+*/
+		
+		setEnabled(false);
+		
+		Connector.addListener(new ConnectionAdapter() {
+			public void connectionEstablished() {
+				connected = true;
+				setEnabled(true);
+			}
+			
+			public void disconnecting() {
+				connected = false;
+				setEnabled(false);
+			}
+		});
+		
+		
 		add(tabs, BorderLayout.CENTER);
+		add(keysPanel, BorderLayout.SOUTH);
+		
+		validate();
 	}
 	
 	private void addTab(Tab t) {
@@ -73,5 +149,97 @@ public class ChatTab extends Tab {
 		pub.clear();
 		whisper.clear();
 		guild.clear();
+	}
+	
+	
+	// send keys related stuff
+	
+	public void resetFields() {
+		to.setText("");
+		keys.setText("");
+	}
+	
+	public void setEnabled(boolean b) {
+		type.setEnabled(b);
+		to.setEnabled(b);
+		keys.setEnabled(b);
+		send.setEnabled(b);
+		reset.setEnabled(b);
+	}
+	
+	public boolean isEnabled() {
+		return type.isEnabled();
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (conn == null) conn = JGlideMon.instance.keysConn;
+		Object source = e.getSource();
+		
+		if (source == type) {
+			ChatType selected =
+				(ChatType) type.getSelectedItem();
+			
+			boolean test = selected.equals(ChatType.WHISPER);
+			to.setVisible(test);
+			this.revalidate();
+		} else if (source == send || source == keys) {
+			if (!isEnabled()) return;
+				
+			setEnabled(false);
+			StringBuffer sb = new StringBuffer();
+			
+			ChatType t = (ChatType) type.getSelectedItem();
+			
+			sb.append(t.getSlashCommand());
+			
+			switch (t) {
+				case RAW:
+					break;
+					
+				case WHISPER:
+					if (to.getText().trim().equals("")) {
+						setEnabled(true);
+						return;
+					}
+					
+					sb.append(to.getText());
+					sb.append(' ');
+				default:
+			}
+			
+			if (keys.getText().trim().equals("")) {
+				setEnabled(true);
+				return;
+			}
+			
+			sb.append(keys.getText());
+			
+			switch (t) {
+				case RAW: break;
+				default:
+					sb.append('|');
+			}
+
+			
+			try {
+				log.fine("Sending: " + sb.toString());
+				conn.send("/stopglide");
+				conn.readLine(); // attempting stop
+				conn.readLine(); // ---
+				conn.send("/forcekeys " + sb.toString());
+				conn.readLine(); // queued keys
+				conn.readLine(); // ---
+				conn.send("/startglide");
+				conn.readLine(); // attempting start
+				conn.readLine(); // ---
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+			resetFields();
+			setEnabled(true);
+		} else if (source == reset) {
+			resetFields();
+		}
 	}
 }

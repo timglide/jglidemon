@@ -58,7 +58,7 @@ public class Licenser {
 	    
 	    in.close();
 	    
-	    insertLicense(new File("."));
+	    insertLicense(new File("./jgm"));
 	}
 
 	static void insertLicense(File dir) throws Exception {
