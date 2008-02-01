@@ -106,7 +106,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</javac>
     </target>
 
-	<target name="all_resources" depends="resources, compress_httpd_resources" />
+	<target name="all_resources" depends="resources, compress_httpd_resources, properties" />
 
 	<target name="resources" 
 			description="Copy sound/image/httpd resources">
@@ -138,6 +138,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			<arg value="${bin_dir}/jgm/resources/httpd/static/js/xmldom.js"/>
 		</java>
 	</target>
+
+	<target name="properties" 
+			description="Copy property files">
+		<copy todir="${bin_dir}/jgm/properties">
+			<fileset dir="${src_dir}/jgm/properties"
+				includes="**/*"/>
+		</copy>
+	</target>
+
 
 	<target name="libs"
 		description="Copy libraries">

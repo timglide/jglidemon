@@ -20,18 +20,19 @@
  */
 package jgm;
 
+import java.io.*;
 import java.util.logging.*;
 
 public class Log {
 	public static void reloadConfig() {
-		System.setProperty(
-			"java.util.logging.config.file",
-			Config.getInstance().getBool("general", "debug") ? "logging.debug.properties" : "logging.properties"
-		);
-		
 		try {
-			LogManager.getLogManager().readConfiguration();
-		} catch (java.io.IOException e) {
+			InputStream in =
+				JGlideMon.class.getResourceAsStream("properties/" +
+					(Config.getInstance().getBool("general", "debug")
+					 ? "logging.debug.properties" : "logging.properties")
+				);
+			LogManager.getLogManager().readConfiguration(in);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
