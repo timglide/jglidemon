@@ -72,7 +72,7 @@ public class ChatLogEntry extends LogEntry {
 	}
 	
 	private static Pattern PATTERN1 =
-		Pattern.compile(".*?(<GM>|)\\[([^]]+)\\] (whisper|say)s: (.*)");
+		Pattern.compile(".*?(<GM>|)(?:<AFK|DND>)?\\[([^]]+)\\] (whisper|say)s: (.*)");
 		/* group 1: <GM>?
 		 *       2: sender
 		 *       3: type
@@ -80,7 +80,7 @@ public class ChatLogEntry extends LogEntry {
 		 */
 
 	private static Pattern PATTERN2 =
-		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] \\[(<GM>|)([^]]+)\\]: (.*)");
+		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] \\[(<GM>|)(?:<AFK|DND>)?([^]]+)\\]: (.*)");
 		/* group 1: number => public chat channel
 		 *       2: channel name (Guild|Office|public channel name)
 		 *       3: <GM>?

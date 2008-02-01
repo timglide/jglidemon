@@ -34,6 +34,8 @@ import org.w3c.dom.NodeList;
 public class ItemFactory {
 	static Logger log = Logger.getLogger(Item.class.getName());
 	
+	// for future i18n reference see, for example,
+	// http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=16898&locale=frFR
 	private static final String SITE_URL
 		= "http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=";
 

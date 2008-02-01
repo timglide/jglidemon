@@ -18,6 +18,10 @@ Version 0.13
   instead of a regular whisper if they were the last person to
   whisper you.
 - Log lines are now color coded by type.
+- Changed it so that logging.properties and logging.debug.properties
+  are now embedded within JGlideMon.jar and not in the base folder.
+  You may delete these files if you are upgrading. Not deleting them
+  will not cause any harm, but they will just sit there.
 
 Version 0.12
 ------------
