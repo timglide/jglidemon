@@ -77,17 +77,21 @@ public class LogTab extends Tab {
 		TYPE_COLORS.put("Status", TYPE_COLORS.get("GliderLog"));
 	}
 	
-	private class ColorLabelRenderer extends JLabel implements TableCellRenderer {		
+	private class ColorLabelRenderer extends DefaultTableCellRenderer {
+		
 		public Component getTableCellRendererComponent(
-			JTable table, Object obj,
+			JTable table, Object value,
 			boolean isSelected, boolean hasFocus,
 			int row, int column) {
-			String str = (String) obj;
-			Color color = TYPE_COLORS.get(str);
+			
+			super.getTableCellRendererComponent(
+				table, value, isSelected, hasFocus, row, column);
+
+			Color color = TYPE_COLORS.get(value);
 			
 			if (color != null)
 				this.setForeground(color);
-			this.setText(str);
+		
 			return this;
 		}
 	};
@@ -98,6 +102,13 @@ public class LogTab extends Tab {
 		public LogTable(TableModel dm) {
 			super(dm);
 
+//			System.out.println("LogTable Orig Font: " + this.getFont().toString());		
+//			this.setFont(this.getFont().deriveFont(Font.PLAIN, 22.0f));
+			FontMetrics fm = this.getFontMetrics(this.getFont());
+			this.setRowHeight(fm.getHeight());
+			
+			this.showVerticalLines = false;
+			
 			TableColumnModel cm = getColumnModel();
 			cm.getColumn(0).setResizable(false);
 			cm.getColumn(0).setMinWidth(75);
@@ -164,7 +175,7 @@ public class LogTab extends Tab {
 			}
 			
 			entries.add(i);
-			fireTableRowsInserted(entries.size() - 1, entries.size() - 1);
+			fireTableRowsInserted(entries.size(), entries.size());
 		}
 
 		public LogEntry get(int row) {

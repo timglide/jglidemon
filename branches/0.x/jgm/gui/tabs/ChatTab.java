@@ -20,7 +20,6 @@
  */
 package jgm.gui.tabs;
 
-import jgm.JGlideMon;
 import jgm.glider.*;
 import jgm.glider.log.*;
 
@@ -45,11 +44,12 @@ public class ChatTab extends Tab implements ActionListener {
 	public  JButton send;
 	public  JButton reset;
 	
-	protected volatile boolean connected = false;
-	private Conn conn;
+	private SendChatManager sendChat;
 	
 	public ChatTab() {
 		super(new BorderLayout(), "Chat");
+		
+		sendChat = new SendChatManager();
 		
 		tabs = new JTabbedPane();
 		all = new LogTab("All Chat", tabs);
@@ -108,12 +108,10 @@ public class ChatTab extends Tab implements ActionListener {
 		
 		Connector.addListener(new ConnectionAdapter() {
 			public void connectionEstablished() {
-				connected = true;
 				setEnabled(true);
 			}
 			
 			public void disconnecting() {
-				connected = false;
 				setEnabled(false);
 			}
 		});
@@ -172,7 +170,6 @@ public class ChatTab extends Tab implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (conn == null) conn = JGlideMon.instance.keysConn;
 		Object source = e.getSource();
 		
 		if (source == type) {
@@ -223,27 +220,9 @@ public class ChatTab extends Tab implements ActionListener {
 					sb.append("#13#");
 			}
 
-			
-			try {
-				log.fine("Sending: " + sb.toString());
-				conn.send("/stopglide");
-				String test = conn.readLine(); // attempting stop
-				conn.readLine(); // ---
-				conn.send("/forcekeys " + sb.toString());
-				conn.readLine(); // queued keys
-				conn.readLine(); // ---
-				
-				// don't start if we were stopped initially
-				if (!test.equals("Already stopped")) {
-					conn.send("/startglide");
-					conn.readLine(); // attempting start
-					conn.readLine(); // ---
-				} else {
-					log.finer("Already stopped, not starting glide");
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			String keys = sb.toString();
+			log.fine("Queuing keys: " + keys);
+			sendChat.add(keys);
 			
 			resetFields();
 			setEnabled(true);

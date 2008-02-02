@@ -50,6 +50,7 @@ public class Speech implements Runnable {
 		if (voice == null) return;
 		
 		thread = new Thread(this, "TTS");
+		thread.setDaemon(true);
 		thread.start();
 	}
 	
