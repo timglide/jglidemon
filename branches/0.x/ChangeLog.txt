@@ -33,10 +33,13 @@ Version 0.13
   Immediately" button have been moved to a Screenshot menu. Again, this is
   to declutter the GUI/provide real estate for screenshots. Also, a Logs
   menu has been added with associated functions.
-- Added a popup message when an urgent log item is received. This requires
-  Java 1.6+ as well as the system tray option to be enabled. The program
+- Added a popup message when an urgent log entry is received. This requires
+  Java 1.6+ as well as the system tray option to be enabled. JGlideMon
   should still function with Java 1.5, but you will not receive the
   messages.
+- A Glider log entry containing "Died while gliding" is now considered
+  an urgent log entry. It is considered a Status sound, in case you
+  don't want to hear a sound when you die.
 
 Version 0.12
 ------------

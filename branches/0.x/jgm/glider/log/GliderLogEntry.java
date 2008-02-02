@@ -26,7 +26,7 @@ import jgm.sound.Sound;
 // nothing special
 public class GliderLogEntry extends LogEntry {
 	public enum Type {
-		NORMAL, BEING_ATTACKED, BEING_FOLLOWED, STUCK
+		NORMAL, BEING_ATTACKED, BEING_FOLLOWED, STUCK, DIED
 	}
 	
 	public  Type    type    = Type.NORMAL;
@@ -50,6 +50,10 @@ public class GliderLogEntry extends LogEntry {
 				isAlert = true;
 				type = Type.STUCK;
 				new Sound(Audible.Type.STUCK, jgm.util.Sound.File.STOP).play(true);
+			} else if (s.contains("Died while gliding")) {
+				isAlert = true;
+				type = Type.DIED;
+				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
 			}
 		}
 	}
