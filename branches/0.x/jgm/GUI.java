@@ -328,6 +328,8 @@ public class GUI
 		xpPane.update(s);
 		tabsPane.update(s);
 
+		tabsPane.chatLog.update(s);
+		
 		String version = "";
 		
 		if (!s.version.equals("")) {

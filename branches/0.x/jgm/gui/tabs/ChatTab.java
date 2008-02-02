@@ -172,6 +172,12 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 		return type.isEnabled();
 	}
 	
+	public void update(jgm.gui.updaters.StatusUpdater s) {
+		if (s.attached != isEnabled()) {
+			setEnabled(s.attached);
+		}
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		
