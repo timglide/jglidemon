@@ -40,6 +40,8 @@ Version 0.13
 - A Glider log entry containing "Died while gliding" is now considered
   an urgent log entry. It is considered a Status sound, in case you
   don't want to hear a sound when you die.
+- Mobs that you kill will now appear in the Mobs tab even if you are at
+  the level cap.
 
 Version 0.12
 ------------

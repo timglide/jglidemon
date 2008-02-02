@@ -26,7 +26,8 @@ import jgm.sound.Sound;
 // nothing special
 public class GliderLogEntry extends LogEntry {
 	public enum Type {
-		NORMAL, BEING_ATTACKED, BEING_FOLLOWED, STUCK, DIED
+		NORMAL, BEING_ATTACKED, BEING_FOLLOWED,
+		LOGGING_OUT, STUCK, DIED
 	}
 	
 	public  Type    type    = Type.NORMAL;
@@ -42,8 +43,13 @@ public class GliderLogEntry extends LogEntry {
 				type = Type.BEING_ATTACKED;
 				new Sound(Audible.Type.PVP, jgm.util.Sound.File.BEING_ATTACK).play(true);
 			} else if (s.contains("Being followed")) {
-				type = Type.BEING_FOLLOWED;
-				new Sound(Audible.Type.FOLLOW, jgm.util.Sound.File.BEING_FOLLOWED).play(true);
+				if (s.contains("logging out now")) {
+					type = Type.LOGGING_OUT;
+					new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
+				} else {
+					type = Type.BEING_FOLLOWED;
+					new Sound(Audible.Type.FOLLOW, jgm.util.Sound.File.BEING_FOLLOWED).play(true);
+				}
 			}
 		} else {
 			if (s.contains("Stuck too many times")) {

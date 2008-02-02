@@ -54,31 +54,21 @@ public class ExperiencePane extends Pane {
 	}
 
 	public void update(StatusUpdater s) {		
-		int xpPercent = 0;
-
 		if (s.nextExperience > 0) {
-			xpPercent = (int) (100 * ((float) s.experience / (float) s.nextExperience));
-
 			xp.setText(
 				String.format(
 					"%s: %s/%s (%s%%)",
 					"Experience",
 					s.experience,
 					s.nextExperience,
-					xpPercent
+					s.xpPercent
 			));
 		} else {
 			xp.setText("Experience: Unknown");
 		}
 		
 		// hide this pane if we're at the level cap.
-		// assume the level cap will be 70, 80, 90, etc.
-		// even if at the supposed level cap, it will become
-		// visible again if xpPercent >= 2 because it can only
-		// get past 1% if you're actually leveling.
-		this.setVisible(
-			!(s.level >= 70 && s.level % 10 == 0 && xpPercent < 2)
-		);
+		this.setVisible(!s.atLevelCap());
 		
 		if (s.xpPerHour > 0) {
 			int seconds = 0, minutes = 0, hours = 0;
@@ -95,7 +85,7 @@ public class ExperiencePane extends Pane {
 			ttl.setText("Time to level: Unknown");
 		}
 
-		xpbar.setValue(xpPercent);
+		xpbar.setValue(s.xpPercent);
 		// redundant
 //		xpbar.setToolTipText(xpPercent + "%");
 		xph.setText("XP/Hour: " + Integer.toString(s.xpPerHour));

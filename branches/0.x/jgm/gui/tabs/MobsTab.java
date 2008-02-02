@@ -129,6 +129,11 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		public MobTable(TableModel dm) {
 			super(dm);
 
+			FontMetrics fm = this.getFontMetrics(this.getFont());
+			this.setRowHeight(fm.getHeight());
+			
+			this.showVerticalLines = false;
+			
 			TableColumnModel cm = getColumnModel();
 			cm.getColumn(0).setResizable(false);
 			cm.getColumn(0).setMinWidth(75);
@@ -230,6 +235,11 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		public RepTable(TableModel dm) {
 			super(dm);
 
+			FontMetrics fm = this.getFontMetrics(this.getFont());
+			this.setRowHeight(fm.getHeight());
+			
+			this.showVerticalLines = false;
+			
 			TableColumnModel cm = getColumnModel();
 			cm.getColumn(0).setResizable(false);
 			cm.getColumn(0).setMinWidth(75);
@@ -331,6 +341,11 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		public SkillTable(TableModel dm) {
 			super(dm);
 
+			FontMetrics fm = this.getFontMetrics(this.getFont());
+			this.setRowHeight(fm.getHeight());
+			
+			this.showVerticalLines = false;
+			
 			TableColumnModel cm = getColumnModel();
 			cm.getColumn(0).setResizable(false);
 			cm.getColumn(0).setMinWidth(75);

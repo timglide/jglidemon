@@ -49,6 +49,7 @@ public class StatusUpdater extends Observable
 	public int    experience;
 	public int    nextExperience;
 	public int    xpPerHour;
+	public int    xpPercent;
 	public String location;
 	public double heading;
 	public int    kills;
@@ -86,6 +87,7 @@ public class StatusUpdater extends Observable
 		experience     = 0;
 		nextExperience = 0;
 		xpPerHour      = 0;
+		xpPercent      = 0;
 		location       = "";
 		heading        = -1.0;
 		kills          = 0;
@@ -139,6 +141,19 @@ public class StatusUpdater extends Observable
 		}
 	}
 
+	/**
+	 * Determines if the character is at the level cap.
+	 * AssumeS the level cap will be 70, 80, 90, etc.
+	 * Even if at the supposed level cap, it will become
+	 * visible again if xpPercent >= 2 because it can only
+	 * get past 1% if you're actually leveling (i.e. when
+	 * a new expansion is released).
+	 * @return
+	 */
+	public boolean atLevelCap() {
+		return level >= 70 && level % 10 == 0 && xpPercent < 2;
+	}
+	
 	private void update()
 		throws NullPointerException, InterruptedException, IOException {
 		
@@ -272,6 +287,12 @@ public class StatusUpdater extends Observable
 			xpPerHour = 0;
 		}
 
+		if (nextExperience > 0) {
+			xpPercent = (int) (100 * ((float) experience / (float) nextExperience));
+		} else {
+			xpPercent = 0;
+		}
+		
 		try {
 			if (!m.containsKey("Heading")) {
 				heading = -1.0;

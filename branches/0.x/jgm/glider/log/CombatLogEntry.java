@@ -22,6 +22,8 @@ package jgm.glider.log;
 
 import java.util.regex.*;
 
+import jgm.gui.updaters.StatusUpdater;
+
 // nothing special
 public class CombatLogEntry extends LogEntry {
 	public String killedMob = null;
@@ -47,14 +49,30 @@ public class CombatLogEntry extends LogEntry {
 	private static Pattern KILLED_MOB_PATTERN = 
 		Pattern.compile("(.+) dies, you gain (\\d+) experience.(?: \\(\\+\\d+ exp Rested bonus\\))?");
 	
+	private static Pattern SLAIN_MOB_PATTERN =
+		Pattern.compile("You have slain (.+)!");
+	
 	private void parseMob() {
 		Matcher m = KILLED_MOB_PATTERN.matcher(rawText);
-		if (!m.matches()) return;
 		
-		killedMob = m.group(1);
-		
-		try {
-			xp = Integer.parseInt(m.group(2));
-		} catch (NumberFormatException e) {}
+		if (m.matches()) {
+			killedMob = m.group(1);
+			
+			try {
+				xp = Integer.parseInt(m.group(2));
+			} catch (NumberFormatException e) {}
+		} else {
+			// only check the slain pattern if at the 
+			// level cap
+			
+			if (StatusUpdater.instance.atLevelCap()) {
+				m = SLAIN_MOB_PATTERN.matcher(rawText);
+				
+				if (m.matches()) {
+					killedMob = m.group(1);
+					xp = 0;
+				}
+			}
+		}
 	}
 }
