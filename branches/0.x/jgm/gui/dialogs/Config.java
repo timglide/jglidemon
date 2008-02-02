@@ -80,6 +80,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JCheckBox soundFollow;
 	JCheckBox soundPVP;
 	JCheckBox soundStuck;
+	JCheckBox soundStatus;
 	
 	JCheckBox enableTTS;
 	JCheckBox ttsWhisper;
@@ -388,6 +389,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		soundStuck = new JCheckBox("On Stuck Too Many Times", cfg.getBool("sound", "stuck"));
 		sound.add(soundStuck, c);
 		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		sound.add(new JLabel("    "), c);
+		
+		c.gridx++; c.weightx = 1.0;
+		soundStatus = new JCheckBox("On Status Event", cfg.getBool("sound", "status"));
+		soundStatus.setToolTipText("This includes when your character dies.");
+		sound.add(soundStatus, c);
+		
 		c.gridy++; c.weighty = 1.0;
 		sound.add(new JLabel(), c);
 		
@@ -425,6 +434,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		c.gridx++; c.weightx = 1.0;
 		ttsStatus = new JCheckBox("On Status Event", cfg.getBool("sound.tts", "status"));
+		ttsStatus.setToolTipText("This includes when JGlideMon connects/disconnects with Glider.");
 		sound.add(ttsStatus, c);
 		
 		c.gridy++; c.weighty = 1.0;
@@ -576,6 +586,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("sound", "follow", soundFollow.isSelected());
 		cfg.set("sound", "pvp", soundPVP.isSelected());
 		cfg.set("sound", "stuck", soundStuck.isSelected());
+		cfg.set("sound", "status", soundStatus.isSelected());
 		cfg.set("sound.tts", "enabled", enableTTS.isSelected());
 		cfg.set("sound.tts", "whisper", ttsWhisper.isSelected());
 		cfg.set("sound.tts", "say", ttsSay.isSelected());
@@ -649,6 +660,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			soundFollow.setEnabled(state);
 			soundPVP.setEnabled(state);
 			soundStuck.setEnabled(state);
+			soundStatus.setEnabled(state);
 			
 			// make tts dependant on general sound
 			//enableTTS.setEnabled(state);
@@ -725,6 +737,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		soundFollow.setSelected(cfg.getBool("sound", "follow"));
 		soundPVP.setSelected(cfg.getBool("sound", "pvp"));
 		soundStuck.setSelected(cfg.getBool("sound", "stuck"));
+		soundStatus.setSelected(cfg.getBool("sound", "status"));
 		
 		enableTTS.setEnabled(jgm.util.Speech.isSupported());
 		enableTTS.setSelected(cfg.getBool("sound.tts", "enabled"));

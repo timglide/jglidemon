@@ -312,6 +312,7 @@ public class Config extends QuickIni {
 			public static final boolean follow = true;
 			public static final boolean pvp = true;
 			public static final boolean stuck = true;
+			public static final boolean status = true;
 			
 			public static class tts {
 				public static final boolean enabled = true;
