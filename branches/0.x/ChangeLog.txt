@@ -22,6 +22,12 @@ Version 0.13
   are now embedded within JGlideMon.jar and not in the base folder.
   You may delete these files if you are upgrading. Not deleting them
   will not cause any harm, but they will just sit there.
+- The Experience pane (time to level, xp progress bar, etc.) will now
+  be hidden if you are at the level cap. I have programmed it such
+  that it will reappear if your xp percentage is greater than 1%,
+  which would imply that the cap has been raised due to a new expansion.
+  The idea of this is to declutter the GUI as well as provide some extra
+  screen real estate for the screenshots.
 
 Version 0.12
 ------------
