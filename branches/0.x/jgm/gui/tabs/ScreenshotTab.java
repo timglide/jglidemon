@@ -40,23 +40,13 @@ public class ScreenshotTab extends Tab
 	
 	private static Conn conn = null;
 	private static SSUpdater updater = null;
-	
-	public JCheckBox keysEnabled;
+
 	public JScrollPane jsp;
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
-
-	private JButton refresh;
 	
 	public ScreenshotTab() {
 		super(new BorderLayout(), "Screenshot");
-		
-		JPanel jp = new JPanel(new GridBagLayout());
-		c.weightx = 0.0;
-		keysEnabled = new JCheckBox("Enable Sending Keystrokes", false);
-		keysEnabled.setFocusable(false);
-		jp.add(keysEnabled, c);
-		add(jp, BorderLayout.NORTH);
 		
 		ssLabel = new JLabel();
 		ssLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -71,24 +61,7 @@ public class ScreenshotTab extends Tab
 		// jsp.setBorder(BorderFactory.createLineBorder(Color.red, 10));
 		add(jsp, BorderLayout.CENTER);
 		
-		refresh = new JButton("Refresh Screenshot Immediately");
-		refresh.setFocusable(false);
-		refresh.addActionListener(this);
-		add(refresh, BorderLayout.SOUTH);
-		
 		checkNulls();
-		
-		setEnabled(false);
-		
-		Connector.addListener(new ConnectionAdapter() {
-			public void connectionEstablished() {
-				setEnabled(true);
-			}
-			
-			public void disconnecting() {
-				setEnabled(false);
-			}
-		});
 	}
 	
 	private void checkNulls() {
@@ -96,15 +69,10 @@ public class ScreenshotTab extends Tab
 		if (updater == null) updater = JGlideMon.instance.ssUpdater;
 	}
 	
-	public void setEnabled(boolean b) {
-		//super.setEnabled(b);
-		refresh.setEnabled(b);
-	}
-	
 	public void actionPerformed(ActionEvent e) {
 		checkNulls();
 		
-		if (e.getSource() == refresh) {
+		if (e.getSource() == jgm.JGlideMon.instance.gui.menu.refreshSS) {
 			log.finer("Want to update SS");
 			
 			if (updater != null && updater.idle) {
@@ -136,7 +104,9 @@ public class ScreenshotTab extends Tab
 
 	public void mouseClicked(MouseEvent e) {	
 		checkNulls();
-		if (!Connector.isConnected() || !keysEnabled.isSelected()) return;
+		if (!Connector.isConnected() ||
+			!jgm.JGlideMon.instance.gui.menu.sendKeys.isSelected())
+			return;
 		
 		Dimension s = ssLabel.getSize();
 		int x = e.getX(); int y = e.getY();
@@ -166,7 +136,9 @@ public class ScreenshotTab extends Tab
 		= new HashMap<Integer, Boolean>();
 	
 	public void keyPressed(KeyEvent e) {
-		if (!this.isCurrentTab() || !keysEnabled.isSelected()) return;
+		if (!this.isCurrentTab() ||
+			!jgm.JGlideMon.instance.gui.menu.sendKeys.isSelected())
+			return;
 		
 		checkNulls();
 		if (!Connector.isConnected()) return;
@@ -198,7 +170,9 @@ public class ScreenshotTab extends Tab
 	}
 	
 	public void keyReleased(KeyEvent e) {
-		if (!this.isCurrentTab() || !keysEnabled.isSelected()) return;
+		if (!this.isCurrentTab() ||
+			!jgm.JGlideMon.instance.gui.menu.sendKeys.isSelected())
+			return;
 		
 		checkNulls();
 		//System.out.println(e);

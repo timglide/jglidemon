@@ -28,6 +28,11 @@ Version 0.13
   which would imply that the cap has been raised due to a new expansion.
   The idea of this is to declutter the GUI as well as provide some extra
   screen real estate for the screenshots.
+- Some functionality has been rearranged to be utilized by menus. Namely,
+  the "Enable Sending Keystrokes" checkbox and the "Refresh Screenshot
+  Immediately" button have been moved to a Screenshot menu. Again, this is
+  to declutter the GUI/provide real estate for screenshots. Also, a Logs
+  menu has been added with associated functions.
 
 Version 0.12
 ------------

@@ -29,7 +29,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class LogTab extends Tab {
+public class LogTab extends Tab implements Clearable {
 	protected JTabbedPane   parent;
 	private LogTable      logTable;
 	private LogTableModel logEntries;
@@ -59,7 +59,7 @@ public class LogTab extends Tab {
 		}
 	}
 
-	public void clear() {
+	public void clear(boolean clearingAll) {
 		logEntries.entries.clear();
 		logEntries.fireTableDataChanged();
 	}

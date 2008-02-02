@@ -30,7 +30,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class MobsTab extends Tab implements ActionListener {	
+public class MobsTab extends Tab implements ActionListener, Clearable {	
 	public  JButton       resetBtn   = new JButton("Reset All");
 	
 	private MobTable      mobTable;
@@ -100,6 +100,10 @@ public class MobsTab extends Tab implements ActionListener {
 			repEntries.empty();
 			skillEntries.empty();
 		}
+	}
+	
+	public void clear(boolean clearingAll) {
+		resetBtn.doClick();
 	}
 	
 	private class MyPane extends JPanel {

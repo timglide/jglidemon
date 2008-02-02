@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import javax.swing.*;
 
-public class ChatTab extends Tab implements ActionListener {
+public class ChatTab extends Tab implements ActionListener, Clearable {
 	static Logger log = Logger.getLogger(ChatTab.class.getName());
 	
 	private JTabbedPane tabs;
@@ -77,7 +77,7 @@ public class ChatTab extends Tab implements ActionListener {
 		keysPanel.add(to, c);
 		
 		keys = new JTextField();
-		keys.setToolTipText("Slash command and a carriage return will be added except for Raw. " +
+		keys.setToolTipText("<html>Slash command and a carriage return will be added except for Raw.<br>" +
 		                    "You must add everything for Raw, | = CR, #VK# = VK");
 		keys.addActionListener(this);
 		c.gridx++; c.weightx = 1.0;
@@ -142,11 +142,14 @@ public class ChatTab extends Tab implements ActionListener {
 		}
 	}
 	
-	public void clear() {
-		all.clear();
-		pub.clear();
-		whisper.clear();
-		guild.clear();
+	public void clear(boolean clearingAll) {
+		if (!clearingAll) {
+			((Clearable) tabs.getSelectedComponent()).clear(false);
+		} else {
+			for (int i = 0; i < tabs.getComponentCount(); i++) {
+				((Clearable) tabs.getComponentAt(i)).clear(true);
+			}
+		}
 	}
 	
 	

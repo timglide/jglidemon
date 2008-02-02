@@ -47,8 +47,6 @@ public class GUI
 	public ExperiencePane xpPane;
 	public TabsPane       tabsPane;
 
-	private JMenuBar      menuBar;
-
 	private static JStatusBar statusBar;
 
 	private jgm.gui.dialogs.About aboutFrame;
@@ -59,6 +57,35 @@ public class GUI
 
 	public static final String BASE_TITLE = "JGlideMon " + JGlideMon.version;
 
+	
+	// menu stuff
+	public final Menu menu = new Menu();
+	
+	// this class is just to give a menu namespace for the
+	// necessary variables
+	public class Menu {
+		JMenuBar  bar;
+		
+		JMenu     file;
+		JMenuItem saveIcons;
+		JMenuItem loadIcons;
+		JMenuItem config;
+		JMenuItem exit;
+		
+		JMenu     screenshot;
+		public JCheckBoxMenuItem sendKeys;
+		public JMenuItem refreshSS;
+		
+		JMenu     logs;
+		JMenuItem clearCurLog;
+		JMenuItem clearAllLogs;
+		JMenuItem parseLogFile;
+		
+		JMenu     help;
+		JMenuItem debug;
+		JMenuItem about;
+	}
+	
 	public GUI() {
 		instance = this;
 		cfg = jgm.Config.getInstance();
@@ -184,56 +211,60 @@ public class GUI
 		frame.setLayout(new BorderLayout());
 		frame.add(mainPane, BorderLayout.CENTER);
 
+		//////////////
 		// set up menu
-		         menuBar  = new JMenuBar();
-		JMenu    fileMenu = new JMenu("File");
-		fileMenu.setMnemonic(KeyEvent.VK_F);
-		menuBar.add(fileMenu);
+		menu.bar  = new JMenuBar();
+		
+		// file
+		menu.file = new JMenu("File");
+		menu.file.setMnemonic(KeyEvent.VK_F);
+		menu.bar.add(menu.file);
 
 		if (jgm.JGlideMon.debug) {
-			JMenuItem saveIcons = new JMenuItem("Save Cache");
-			saveIcons.addActionListener(this);
-			fileMenu.add(saveIcons);
-		
-			saveIcons = new JMenuItem("Load Cache");
-			saveIcons.addActionListener(this);
-			fileMenu.add(saveIcons);
-			
-			fileMenu.addSeparator();
+			menu.saveIcons = doMenuItem("Save Cache", menu.file, this);
+			menu.loadIcons = doMenuItem("Load Cache", menu.file, this);
+			menu.file.addSeparator();
 		}
 		
-		JMenuItem parseItem = new JMenuItem("Parse Log File", KeyEvent.VK_P);
-		parseItem.addActionListener(this);
-		fileMenu.add(parseItem);
+		menu.config = doMenuItem("Configuration", KeyEvent.VK_C, menu.file, this);		
+		menu.file.addSeparator();
+		menu.exit = doMenuItem("Exit", KeyEvent.VK_X, menu.file, this);
 		
-		JMenuItem clearLogItem = new JMenuItem("Clear All Log Tabs", KeyEvent.VK_R);
-		clearLogItem.addActionListener(this);
-		fileMenu.add(clearLogItem);
+		// screenshot
+		menu.screenshot = new JMenu("Screenshot");
+		menu.screenshot.setMnemonic(KeyEvent.VK_S);
+		menu.bar.add(menu.screenshot);
 		
-		fileMenu.addSeparator();
+		menu.sendKeys = new JCheckBoxMenuItem("Enable Sending Keystrokes");
+		menu.sendKeys.setMnemonic(KeyEvent.VK_E);
+		// alt+k
+		menu.sendKeys.setAccelerator(
+			KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.ALT_MASK));
+		menu.sendKeys.setEnabled(false);
+		menu.screenshot.add(menu.sendKeys);
 		
-		JMenuItem configItem = new JMenuItem("Configuration", KeyEvent.VK_C);
-		configItem.addActionListener(this);
-		fileMenu.add(configItem);
+		menu.refreshSS = doMenuItem("Refresh Immediately", KeyEvent.VK_R, menu.screenshot, tabsPane.screenshotTab);
+		menu.refreshSS.setAccelerator(
+			KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+		menu.refreshSS.setEnabled(false);
 		
-		fileMenu.addSeparator();
+		menu.logs = new JMenu("Logs");
+		menu.logs.setMnemonic(KeyEvent.VK_L);
+		menu.bar.add(menu.logs);
+
+		menu.clearCurLog  = doMenuItem("Clear Current Tab", KeyEvent.VK_R, menu.logs, this);
+		menu.clearAllLogs = doMenuItem("Clear All Tabs", KeyEvent.VK_A, menu.logs, this);
+		menu.logs.addSeparator();
+		menu.parseLogFile = doMenuItem("Parse Log File", KeyEvent.VK_P, menu.logs, this);
 		
-		JMenuItem exitItem = new JMenuItem("Exit", KeyEvent.VK_X);
-		exitItem.addActionListener(this);
-		fileMenu.add(exitItem);
+		// help
+		menu.help = new JMenu("Help");
+		menu.help.setMnemonic(KeyEvent.VK_H);
+		menu.bar.add(menu.help);
 		
-		JMenu    helpMenu = new JMenu("Help");
-		helpMenu.setMnemonic(KeyEvent.VK_H);
-		menuBar.add(helpMenu);
-		
-		JMenuItem debugItem = new JMenuItem("Generate Debug Info", KeyEvent.VK_D);
-		debugItem.addActionListener(this);
-		helpMenu.add(debugItem);
-		helpMenu.addSeparator();
-		
-		JMenuItem aboutItem = new JMenuItem("About", KeyEvent.VK_A);
-		aboutItem.addActionListener(this);
-		helpMenu.add(aboutItem);
+		menu.debug = doMenuItem("Generate Debug Info", KeyEvent.VK_D, menu.help, this);
+		menu.help.addSeparator();
+		menu.about = doMenuItem("About", KeyEvent.VK_A, menu.help, this);
 
 		
 		// set up status bar
@@ -247,7 +278,7 @@ public class GUI
 		
 		frame.add(statusBar, BorderLayout.SOUTH);
 
-		frame.setJMenuBar(menuBar);
+		frame.setJMenuBar(menu.bar);
 
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
@@ -262,11 +293,17 @@ public class GUI
 				setStatusBarText("Connected", false, true);
 				setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
 				hideStatusBarProgress();
+				
+				menu.sendKeys.setEnabled(true);
+				menu.refreshSS.setEnabled(true);
 	    	}
 	    	
 	    	public void disconnecting() {
 				setStatusBarText("Disconnecting...", false, true);
 				setStatusBarProgressIndeterminent();
+				
+				menu.sendKeys.setEnabled(false);
+				menu.refreshSS.setEnabled(false);
 	    	}
 	    	
 	    	public void connectionDied() {
@@ -315,25 +352,27 @@ public class GUI
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		String cmd = e.getActionCommand();
+		Object source = e.getSource();
 		
-		if (cmd.equals("Parse Log File")) {
+		if (source == menu.parseLogFile) {
 			showParse();
-		} else if (cmd.equals("Clear All Log Tabs")) {
-			tabsPane.statusLog.clear();
-			tabsPane.chatLog.clear();
-			tabsPane.urgentChatLog.clear();
-			tabsPane.combatLog.clear();
-			tabsPane.gliderLog.clear();
-			tabsPane.mobsTab.resetBtn.doClick();
-			tabsPane.lootsTab.resetBtn.doClick();
-		} else if (cmd.equals("Configuration")) {
+		} else if (source == menu.clearCurLog) {
+			if (tabsPane.tabbedPane.getSelectedComponent() instanceof jgm.gui.tabs.Clearable) {
+				((jgm.gui.tabs.Clearable) tabsPane.tabbedPane.getSelectedComponent()).clear(false);
+			}
+		} else if (source == menu.clearAllLogs) {
+			for (int i = 0; i < tabsPane.tabbedPane.getComponentCount(); i++) {
+				if (tabsPane.tabbedPane.getComponentAt(i) instanceof jgm.gui.tabs.Clearable) {
+					((jgm.gui.tabs.Clearable) tabsPane.tabbedPane.getComponentAt(i)).clear(true);
+				}
+			}
+		} else if (source == menu.config) {
 			showConfig();
-		} else if (cmd.equals("Exit")) {
+		} else if (source == menu.exit) {
 			JGlideMon.instance.destroy();
-		} else if (cmd.equals("About")) {
+		} else if (source == menu.about) {
 			showAbout();
-		} else if (cmd.equals("Generate Debug Info")) {
+		} else if (source == menu.debug) {
 			Util.generateDebugInfo();
 			
 			String path = null;
@@ -359,10 +398,10 @@ public class GUI
 						JOptionPane.ERROR_MESSAGE
 					);
 			}
-		} else if (cmd.equals("Save Cache")) {
+		} else if (source == menu.saveIcons) {
 			jgm.wow.Item.Cache.saveIcons();
 			jgm.wow.Item.Cache.saveItems();
-		} else if (cmd.equals("Load Cache")) {
+		} else if (source == menu.loadIcons) {
 			jgm.wow.Item.Cache.loadIcons();
 			jgm.wow.Item.Cache.loadItems();
 		}
@@ -519,6 +558,18 @@ public class GUI
 		}
 	}
     
+    public static JMenuItem doMenuItem(String text, JMenu parent, ActionListener listener) {
+    	return doMenuItem(text, -1, parent, listener);
+    }
+    
+    public static JMenuItem doMenuItem(String text, int mnemonic, JMenu parent, ActionListener listener) {
+    	JMenuItem item =
+    		(mnemonic >= 0) ? new JMenuItem(text, mnemonic) : new JMenuItem(text);
+    	item.addActionListener(listener);
+    	parent.add(item);
+    	
+    	return item;
+    }
     
 	public static final Cursor
 		HAND_CURSOR = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR),

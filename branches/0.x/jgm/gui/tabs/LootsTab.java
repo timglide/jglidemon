@@ -29,7 +29,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class LootsTab extends Tab implements ActionListener {
+public class LootsTab extends Tab implements ActionListener, Clearable {
 	private GoldPanel        goldLooted = new GoldPanel("Gold Looted: ");
 	private GoldPanel        lootWorth  = new GoldPanel("Loot Worth: ");
 	private GoldPanel        goldPerHour = new GoldPanel("Gold/Hour: ");
@@ -177,6 +177,10 @@ public class LootsTab extends Tab implements ActionListener {
 				items[i].empty();
 			}
 		}
+	}
+	
+	public void clear(boolean clearingAll) {
+		resetBtn.doClick();
 	}
 	
 	private class LootsPane extends JPanel {
