@@ -28,6 +28,7 @@ import jgm.gui.tabs.*;
 import java.util.Observer;
 import java.util.logging.*;
 import java.io.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
  
@@ -249,8 +250,11 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			int realIHeight = (int) ((double) iheight / curScale);
 			
 			// try to account for margin and width of border
-			int pwidth = tab.jsp.getWidth() - 20;
-			int pheight = tab.jsp.getHeight() - 20;
+//			int pwidth = tab.jsp.getWidth() - 20;
+//			int pheight = tab.jsp.getHeight() - 20;
+
+			int pwidth = tab.getWidth() - 20;
+			int pheight = tab.getHeight() - 20;
 			
 			int dx = realIWidth - pwidth;
 			int dy = realIHeight - pheight;

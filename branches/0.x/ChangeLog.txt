@@ -33,6 +33,10 @@ Version 0.13
   Immediately" button have been moved to a Screenshot menu. Again, this is
   to declutter the GUI/provide real estate for screenshots. Also, a Logs
   menu has been added with associated functions.
+- Added a popup message when an urgent log item is received. This requires
+  Java 1.6+ as well as the system tray option to be enabled. The program
+  should still function with Java 1.5, but you will not receive the
+  messages.
 
 Version 0.12
 ------------

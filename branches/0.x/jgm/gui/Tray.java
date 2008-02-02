@@ -96,6 +96,60 @@ public class Tray implements ActionListener {
 		}
 	}
 	
+	/**
+	 * This will display a popup message only if the
+	 * program isn't the active window. It is intended
+	 * for urgent log alerts. It would be redundant to
+	 * display the popup when the program is active.
+	 * 
+	 * @param caption
+	 * @param text
+	 */
+	public void messageIfInactive(String caption, String text) {
+		if (jgm.GUI.frame.isActive())
+			return;
+		
+		displayMessage(caption, text, MessageType.WARNING);
+	}
+	
+	// necessary to not have it break with java 1.5
+	public enum MessageType {
+		ERROR, INFO, NONE, WARNING
+	}
+	
+	// passthru for displayMessage
+	public void displayMessage(String caption, String text, MessageType type) {
+//		try {
+//			Class.forName("java.awt.TrayIcon");
+//		} catch (ClassNotFoundException e) {
+//			return;
+//		}
+		
+		if (icon == null) return;
+		
+		TrayIcon.MessageType realType = null;
+		
+		switch (type) {
+			case ERROR:
+				realType = TrayIcon.MessageType.ERROR;
+				break;
+			
+			case INFO:
+				realType = TrayIcon.MessageType.INFO;
+				break;
+				
+			case WARNING:
+				realType = TrayIcon.MessageType.WARNING;
+				break;
+			
+			default:
+				realType = TrayIcon.MessageType.NONE;
+				break;
+		}
+		
+		icon.displayMessage(caption, text, realType);
+	}
+	
 	private class MyMouseListener extends MouseAdapter {
 		// when the tray icon is clicked
 		public void mouseClicked(MouseEvent e) {

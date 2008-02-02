@@ -210,6 +210,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			if (e2.isAlert()) {
 				urgentChatLog.add(e, true);
 				
+				if (!fromLog) 
+					jgm.GUI.tray
+						.messageIfInactive("JGlideMon Glider Alert", e2.getText());
+				
 				if (!fromLog && e2.type == GliderLogEntry.Type.STUCK &&
 					jgm.Config.getInstance().getBool("stuck", "enabled")) {
 					long now = System.currentTimeMillis();
@@ -246,6 +250,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			
 			if (e2.isUrgent()) {
 				urgentChatLog.add(e, true);
+				
+				if (!fromLog) 
+					jgm.GUI.tray
+						.messageIfInactive("JGlideMon Chat Alert", e2.getText());
 			}
 			
 			chatLog.add(e2);
