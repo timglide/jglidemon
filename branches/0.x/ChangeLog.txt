@@ -7,7 +7,9 @@ Version 0.13
 - Now when keys are sent, /stopglide is sent first, followed
   by the keys, followed by /startglide (if Glider was already
   running). This is also reflected in PHPGlideMon. This should
-  help with /queuekeys not always sending the keys.
+  hopefully help with /queuekeys not always sending the keys.
+  It may not be perfect but I'm pretty sure it's a problem
+  with Glider.
 - Added Reply and Guild options for sending chat.
 - Added the use of the "/escapehi on" command. Special characters
   should now be seen in the logs. Note that you won't be able
