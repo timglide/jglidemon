@@ -30,7 +30,7 @@ public class RawChatLogEntry extends LogEntry {
 	
 	static {
 		COLOR_MAP.put("loot", "#00AA00");
-		COLOR_MAP.put("rep",  "#0070DD");
+		COLOR_MAP.put("rep",  "#5555FF");
 		COLOR_MAP.put("skill", COLOR_MAP.get("rep"));
 	}
 	
