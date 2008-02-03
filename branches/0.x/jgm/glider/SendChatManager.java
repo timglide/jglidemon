@@ -73,7 +73,7 @@ public class SendChatManager implements Runnable {
 			conn.send("/stopglide");
 			String test = conn.readLine(); // attempting stop
 			conn.readLine(); // ---
-			conn.send("/forcekeys " + keys);
+			conn.send("/queuekeys " + keys);
 			conn.readLine(); // queued keys
 			conn.readLine(); // ---
 			

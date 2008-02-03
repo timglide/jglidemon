@@ -247,8 +247,7 @@ function handleAjax($url) {
 								$test = getResult($fp);
 							}
 
-							$cmd = $pause_glide ? 'force' : 'queue';
-							sendCommand($fp, $cmd . 'keys ' . $_GET['keys']);
+							sendCommand($fp, 'queuekeys ' . $_GET['keys']);
 							$message = getResult($fp); // result
 
 							if ($pause_glide && $test != 'Already stopped') {

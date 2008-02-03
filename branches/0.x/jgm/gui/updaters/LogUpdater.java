@@ -251,6 +251,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			}
 		} else if (e instanceof StatusEntry) {
 			statusLog.add(e);
+			
+			if (!fromLog && e.getText().equals("Stopping glide")) 
+				jgm.GUI.tray
+					.messageIfInactive("JGlideMon Glider Alert", e.getText());
 		} else if (e instanceof ChatLogEntry) {
 			ChatLogEntry e2 = (ChatLogEntry) e;
 			
