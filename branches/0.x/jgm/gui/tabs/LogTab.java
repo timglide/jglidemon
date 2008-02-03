@@ -48,15 +48,22 @@ public class LogTab extends Tab implements Clearable {
 	protected JTabbedPane   parent;
 	private LogTable      logTable;
 	private LogTableModel logEntries;
+	private JScrollPane   jsp;
 	
 	public LogTab(String s, JTabbedPane tp) {
 		super(new BorderLayout(), s);
 
+		this.setBackground(Color.BLACK);
+		this.setOpaque(true);
+		
 		parent     = tp;
 		logEntries = new LogTableModel();
 		logTable   = new LogTable(logEntries);
 
-		add(new JScrollPane(logTable), BorderLayout.CENTER);
+		jsp = new JScrollPane(logTable);
+		jsp.getViewport().setBackground(Color.BLACK);
+		jsp.getViewport().setOpaque(true);
+		add(jsp, BorderLayout.CENTER);
 	}
 
 	public void add(LogEntry e) {
