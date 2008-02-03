@@ -17,7 +17,6 @@ Version 0.13
   interface as far as I can tell. You can send a reply message 
   instead of a regular whisper if they were the last person to
   whisper you.
-- Log lines are now color coded by type.
 - Changed it so that logging.properties and logging.debug.properties
   are now embedded within JGlideMon.jar and not in the base folder.
   You may delete these files if you are upgrading. Not deleting them
@@ -42,6 +41,8 @@ Version 0.13
   don't want to hear a sound when you die.
 - Mobs that you kill will now appear in the Mobs tab even if you are at
   the level cap.
+- Log entry types are now color coded. Additionally, chat logs are now
+  colored, similarly to how they are in-game.
 
 Version 0.12
 ------------

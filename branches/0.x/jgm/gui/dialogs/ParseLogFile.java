@@ -30,6 +30,9 @@ import java.util.logging.*;
 import jgm.glider.log.LogFile;
 
 public class ParseLogFile extends Dialog implements ActionListener {
+	JPanel mainPanel;
+	JPanel waitPanel;
+	
 	JComboBox type;
 	JTextField fileText;
 	JButton browse;
@@ -43,8 +46,9 @@ public class ParseLogFile extends Dialog implements ActionListener {
 	public ParseLogFile(Frame parent) {
 		super(parent, "Parse Log File");
 		
+		mainPanel = new JPanel(new BorderLayout());
 		JLabel lbl = new JLabel("Please select the log type, browse to the log file, and click Parse.", JLabel.CENTER);
-		add(lbl, BorderLayout.NORTH);
+		mainPanel.add(lbl, BorderLayout.NORTH);
 		
 		JPanel jp = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -71,7 +75,7 @@ public class ParseLogFile extends Dialog implements ActionListener {
 		c.gridx++; c.weightx = 0.0;
 		jp.add(browse, c);
 		
-		add(jp, BorderLayout.CENTER);
+		mainPanel.add(jp, BorderLayout.CENTER);
 		
 		
 		JPanel btnPanel = new JPanel(new GridLayout(1, 0));
@@ -85,8 +89,22 @@ public class ParseLogFile extends Dialog implements ActionListener {
 		close.addActionListener(this);
 		btnPanel.add(close);
 		
-		add(btnPanel, BorderLayout.SOUTH);
+		mainPanel.add(btnPanel, BorderLayout.SOUTH);
 		
+		
+		waitPanel = new JPanel(new BorderLayout());
+		lbl = new JLabel("Please wait...");
+		lbl.setHorizontalAlignment(JLabel.CENTER);
+		lbl.setVerticalAlignment(JLabel.CENTER);
+		waitPanel.add(lbl, BorderLayout.CENTER);
+		
+		
+		
+		makeVisible();
+	}
+	
+	protected void onShow() {
+		setContentPane(mainPanel);
 		makeVisible();
 	}
 	
@@ -154,21 +172,28 @@ public class ParseLogFile extends Dialog implements ActionListener {
 				return;
 			}
 			
-			try {
-				jgm.JGlideMon.instance.logUpdater.parseFile(
-					selectedFile,
-					(jgm.glider.log.LogFile) type.getSelectedItem());
-			} catch (Throwable t) {
-				Logger.getLogger(getClass().getName())
-					.log(Level.WARNING, "Error parsing log file", t);
-				
-				JOptionPane.showMessageDialog(this,
-					"There was an error parsing the log file.\n\n" +
-					t.getClass().getName() + ": " + t.getMessage(),
-					"Error", JOptionPane.ERROR_MESSAGE);
-			}
-			
-			this.setVisible(false);
+			new Thread(new Runnable() {
+				public void run() {
+					ParseLogFile.this.setContentPane(waitPanel);
+					ParseLogFile.this.validate();
+					
+					try {
+						jgm.JGlideMon.instance.logUpdater.parseFile(
+							selectedFile,
+							(jgm.glider.log.LogFile) type.getSelectedItem());
+					} catch (Throwable t) {
+						Logger.getLogger(getClass().getName())
+							.log(Level.WARNING, "Error parsing log file", t);
+						
+						JOptionPane.showMessageDialog(ParseLogFile.this,
+							"There was an error parsing the log file.\n\n" +
+							t.getClass().getName() + ": " + t.getMessage(),
+							"Error", JOptionPane.ERROR_MESSAGE);
+					}
+					
+					ParseLogFile.this.setVisible(false);
+				}
+			}).start();
 		}
 	}
 }

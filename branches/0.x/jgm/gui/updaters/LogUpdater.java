@@ -94,6 +94,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			conn.send("/log all");
 			conn.readLine(); // Log mode added: all
 			conn.readLine(); // ---
+			conn.send("/nolog chat"); // making our own chat entries
+			conn.readLine(); // Log mode added: all
+			conn.readLine(); // ---
 			conn.send("/escapehi on");
 			conn.readLine(); // Escapehi mode: on
 			conn.readLine(); // ---			
@@ -134,14 +137,16 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		while (null != (line = in.readLine())) {
 			handleLine(line, logFile);
 			
+/// !!! No longer necessary since we manually create non-raw
+///     entries in order to have color 
 			// since the chat log file is tecnically
 			// raw, we have to create a non-raw line
 			// to get whispers and stuff
-			if (logFile.equals(LogFile.Chat)) {
-				line = RawChatLogEntry.removeFormatting(line);
-				line = RawChatLogEntry.removeLinks(line);
-				handleLine(line, LogFile._NormalChat);
-			}
+//			if (logFile.equals(LogFile.Chat)) {
+//				line = RawChatLogEntry.removeFormatting(line);
+//				line = RawChatLogEntry.removeLinks(line);
+//				handleLine(line, LogFile._NormalChat);
+//			}
 		}
 	}
 	
@@ -159,9 +164,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	 * @param logFile The type of log file we're parsing the
 	 *                line from, if applicable
 	 */
-	private void handleLine(String line, LogFile logFile) {
+	private LogEntry handleLine(String line, LogFile logFile) {
 		boolean fromLog = !logFile.equals(LogFile.None);
-
+//		System.out.println("Line: " + line);
+		
 		if (fromLog) {
 			jgm.sound.Audible.ENABLE_SOUNDS = false;
 		}
@@ -195,7 +201,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				jgm.sound.Audible.ENABLE_SOUNDS = true;
 			}
 			
-			return;
+			return null;
 		}
 		
 		if (jgm.JGlideMon.debug && rawLog != null) {
@@ -253,7 +259,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				
 				if (!fromLog) 
 					jgm.GUI.tray
-						.messageIfInactive("JGlideMon Chat Alert", e2.getText());
+						.messageIfInactive("JGlideMon Chat Alert", e2.getRawText());
 			}
 			
 			chatLog.add(e2);
@@ -276,6 +282,15 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			if (e2.hasRep() || e2.hasSkill()) {
 				mobsTab.add(e);
 			}
+			
+			// create the non-raw chat entry
+			if (fromLog) {
+				LogEntry newEntry = 
+					handleLine(e2.getHtmlText(), LogFile._NormalChat);
+				newEntry.timestamp = e.timestamp;
+			} else {
+				handleLine("[Chat] " + e2.getHtmlText(), LogFile.None);
+			}
 		} else if (e instanceof CombatLogEntry) {
 			CombatLogEntry e2 = (CombatLogEntry) e;
 			combatLog.add(e2);
@@ -288,5 +303,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		if (fromLog) {
 			jgm.sound.Audible.ENABLE_SOUNDS = true;
 		}
+		
+		return e;
 	}
 }

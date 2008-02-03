@@ -30,6 +30,21 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 public class LogTab extends Tab implements Clearable {
+	static HashMap<String, Color> COLOR_MAP = new HashMap<String, Color>();
+	
+	static {
+		COLOR_MAP.put("Chat", new Color(0x00AA00));
+//		COLOR_MAP.put("Public Chat", new Color(0xC84646)); // darker version
+		COLOR_MAP.put("Public Chat", new Color(0xFFC0C0));
+		COLOR_MAP.put("Whisper", new Color(0xFF80FF));
+		COLOR_MAP.put("Guild", new Color(0x40FF40));
+		COLOR_MAP.put("Say", Color.WHITE);
+		COLOR_MAP.put("Yell", new Color(0xFF4040));
+		COLOR_MAP.put("Combat", new Color(0xFF0000));
+		COLOR_MAP.put("GliderLog", new Color(0xF06514));
+		COLOR_MAP.put("Status", COLOR_MAP.get("GliderLog"));
+	}
+	
 	protected JTabbedPane   parent;
 	private LogTable      logTable;
 	private LogTableModel logEntries;
@@ -50,9 +65,12 @@ public class LogTab extends Tab implements Clearable {
 	
 	public void add(LogEntry e, boolean select) {
 		logEntries.add(e);
+		
+		// to scroll the added entry into view but not keep it selected
 		logTable.changeSelection(
 			logTable.getRowCount() - 1, 1, false, false
 		);
+		logTable.clearSelection();
 		
 		if (select) {
 			this.select();
@@ -62,19 +80,6 @@ public class LogTab extends Tab implements Clearable {
 	public void clear(boolean clearingAll) {
 		logEntries.entries.clear();
 		logEntries.fireTableDataChanged();
-	}
-	
-	static HashMap<String, Color> TYPE_COLORS = new HashMap<String, Color>();
-	
-	static {
-		TYPE_COLORS.put("Chat", new Color(0x00AA00));
-		TYPE_COLORS.put("Public Chat", new Color(0xC84646));
-		TYPE_COLORS.put("Whisper", Color.MAGENTA);
-		TYPE_COLORS.put("Guild", Color.GREEN);
-		TYPE_COLORS.put("Say", Color.DARK_GRAY);
-		TYPE_COLORS.put("Combat", new Color(0x800000));
-		TYPE_COLORS.put("GliderLog", new Color(0xF06514));
-		TYPE_COLORS.put("Status", TYPE_COLORS.get("GliderLog"));
 	}
 	
 	private class ColorLabelRenderer extends DefaultTableCellRenderer {
@@ -87,7 +92,7 @@ public class LogTab extends Tab implements Clearable {
 			super.getTableCellRendererComponent(
 				table, value, isSelected, hasFocus, row, column);
 
-			Color color = TYPE_COLORS.get(value);
+			Color color = COLOR_MAP.get(value);
 			
 			if (color != null)
 				this.setForeground(color);
@@ -107,7 +112,10 @@ public class LogTab extends Tab implements Clearable {
 			FontMetrics fm = this.getFontMetrics(this.getFont());
 			this.setRowHeight(fm.getHeight());
 			
+			this.showHorizontalLines = false;
 			this.showVerticalLines = false;
+			this.setForeground(Color.WHITE);
+			this.setBackground(Color.BLACK);
 			
 			TableColumnModel cm = getColumnModel();
 			cm.getColumn(0).setResizable(false);
@@ -143,7 +151,7 @@ public class LogTab extends Tab implements Clearable {
 			
 			if (entry instanceof ChatLogEntry) {
 				ChatLogEntry centry = (ChatLogEntry) entry;
-				if (centry.getSender() == null) return;
+				if (centry.getSender() == null || !centry.fromPlayer) return;
 
 				ChatTab ct =
 					jgm.JGlideMon.instance.gui.tabsPane.chatLog;

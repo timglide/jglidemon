@@ -28,7 +28,6 @@ import jgm.gui.tabs.*;
 import java.util.Observer;
 import java.util.logging.*;
 import java.io.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
  

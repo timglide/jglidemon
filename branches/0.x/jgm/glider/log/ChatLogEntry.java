@@ -22,15 +22,31 @@ package jgm.glider.log;
 
 import jgm.sound.*;
 
+import java.util.*;
 import java.util.regex.*;
 
 public class ChatLogEntry extends LogEntry {	
+	static Map<String, String> COLOR_MAP = new HashMap<String, String>();
+	
+	static {
+		COLOR_MAP.put("Whisper", "#FF80FF");
+		COLOR_MAP.put("Yell", "#FF4040");
+		COLOR_MAP.put("Guild", "#40FF40");
+		COLOR_MAP.put("Public Chat", "#FFC0C0");
+	}
+	
 	public static enum Urgency {
 		TRIVIAL, URGENT, CRITICAL
 	};
 		
 	private String  channel = null;
+	
+	// if you sent a whisper this is actually the reciever
 	private String  sender  = null;
+	
+	// this is only relevant for whisper/say/yell
+	public boolean fromPlayer = true;
+	
 	private Urgency urgency = Urgency.TRIVIAL;
 	private String  message = null;
 	
@@ -71,45 +87,60 @@ public class ChatLogEntry extends LogEntry {
 		return message;
 	}
 	
+	public String getText() {
+		String preColor = COLOR_MAP.get(this.type);
+		
+		return "<html>" +
+		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
+		rawText;
+	}
+	
 	private static Pattern PATTERN1 =
-		Pattern.compile(".*?(<GM>|)(?:<AFK|DND>)?\\[([^]]+)\\] (whisper|say)s: (.*)");
+		Pattern.compile(".*?(<GM>|<AFK>|<DND>|)(\\[?)([^]]+)\\]? (whisper|say|yell)s: (.*)");
 		/* group 1: <GM>?
-		 *       2: sender
-		 *       3: type
-		 *       4: message
+		 *       2: [, to determine if player or npc
+		 *       3: sender
+		 *       4: type
+		 *       5: message
 		 */
 
 	private static Pattern PATTERN2 =
-		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] \\[(<GM>|)(?:<AFK|DND>)?([^]]+)\\]: (.*)");
+		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] (<GM>|<AFK>|<DND>|)\\[([^]]+)\\]: (.*)");
 		/* group 1: number => public chat channel
 		 *       2: channel name (Guild|Office|public channel name)
-		 *       3: <GM>?
+		 *       3: <GM>?, doubt it
 		 *       4: sender
 		 *       5: message
 		 */
+	
+	// for when you send a whisper to someone else
+	private static Pattern PATTERN3 =
+		Pattern.compile(".*?To \\[([^]]+)\\]: (.*)");
 	
 	private static ChatLogEntry parse(String s) {
 		ChatLogEntry ret = new ChatLogEntry(s);
 		Matcher m = PATTERN1.matcher(s);
 		
-		if (m.matches()) {	
+		if (m.matches()) {
 			//System.out.println("matched pattern1: " + s);
 			
 			boolean gm     = m.group(1).equals("<GM>");
-			String sender  = m.group(2);
-			String type    = m.group(3);
-			type = Character.toUpperCase(type.charAt(0)) + type.substring(1);
-			String message = m.group(4);
-			
-			ret.channel = type;
-			ret.sender = sender;
-			ret.message = message;
-			ret.urgency = (gm) ? Urgency.CRITICAL : Urgency.URGENT;
+			ret.fromPlayer = m.group(2).equals("[");
+			ret.sender  = m.group(3);
+			ret.type    = m.group(4);
+			ret.type = Character.toUpperCase(ret.type.charAt(0)) + ret.type.substring(1);
+			ret.message = m.group(5);
+
+			ret.channel = ret.type;
+			ret.urgency =
+				!ret.fromPlayer || ret.type.equals("Yell") 
+				? Urgency.TRIVIAL
+				: gm
+				  ? Urgency.CRITICAL
+				  : Urgency.URGENT;
 			
 			if (gm) {
-				ret.type = "GM " + type;
-			} else {
-				ret.type = type;
+				ret.type = "GM " + ret.type;
 			}
 
 		} else {
@@ -128,16 +159,26 @@ public class ChatLogEntry extends LogEntry {
 				} else {
 					ret.type = ret.channel;
 				}
+			} else {
+				
+				m = PATTERN3.matcher(s);
+				
+				if (m.matches()) {
+					ret.type = "Whisper";
+					ret.channel = "Whisper";
+					ret.sender = m.group(1);
+					ret.message = m.group(2);
+				}
 			}
 		}
 		
 		if (ret.isCritical()) {
 			new Sound(Audible.Type.GM, jgm.util.Sound.File.GM_WHISPER).play(true);
-			new Phrase(Audible.Type.GM, ret.getText()).play();
+			new Phrase(Audible.Type.GM, ret.getRawText()).play();
 		} else if (ret.isUrgent()) {
 			Audible.Type t = (ret.type.equals("Whisper")) ? Audible.Type.WHISPER : Audible.Type.SAY;
 			new Sound(t, jgm.util.Sound.File.WHISPER).play(true);
-			new Phrase(t, ret.getText()).play();
+			new Phrase(t, ret.getRawText()).play();
 		}
 		
 		return ret;

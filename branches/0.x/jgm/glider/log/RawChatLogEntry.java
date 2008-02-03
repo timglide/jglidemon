@@ -22,9 +22,19 @@ package jgm.glider.log;
 
 import jgm.wow.*;
 
+import java.util.*;
 import java.util.regex.*;
 
 public class RawChatLogEntry extends LogEntry {
+	static Map<String, String> COLOR_MAP = new HashMap<String, String>();
+	
+	static {
+		COLOR_MAP.put("loot", "#00AA00");
+		COLOR_MAP.put("rep",  "#0070DD");
+		COLOR_MAP.put("skill", COLOR_MAP.get("rep"));
+	}
+	
+	private String rawText;
 	private String text;
 	private ItemSet itemSet = null;
 	private int    money = 0;
@@ -38,6 +48,7 @@ public class RawChatLogEntry extends LogEntry {
 	public RawChatLogEntry(String s) {
 		super("RawChat", s);
 
+		rawText = s;
 		text = s;
 
 		removeFormatting();
@@ -67,6 +78,24 @@ public class RawChatLogEntry extends LogEntry {
 		return text;
 	}
 
+	public String getHtmlText() {
+		Matcher m = FORMATTING_REGEX.matcher(removeLinks(rawText));
+		
+		String preColor =
+			this.hasItemSet()
+			? COLOR_MAP.get("loot")
+			: this.hasRep()
+			  ? COLOR_MAP.get("rep")
+			  : this.hasSkill()
+			    ? COLOR_MAP.get("skill")
+			    : null;
+			    
+		return
+		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
+		m.replaceAll("<font color=\"$2\">")
+			.replace("|r", "</font>");
+	}
+	
 	public boolean hasItemSet() {
 		return itemSet != null;
 	}
@@ -220,16 +249,21 @@ public class RawChatLogEntry extends LogEntry {
 		} catch (NumberFormatException e) {}
 	}
 	
-	private static final String LINK_REGEX = "\\|H[^|]+(?=|h)";
+	private static final Pattern LINK_REGEX =
+		Pattern.compile("\\|H[^|]+(?=|h)");
 	
 	public static String removeLinks(String str) {
-		return str.replaceAll(LINK_REGEX, "").replace("|h", "");
+		Matcher m = LINK_REGEX.matcher(str);
+		return m.replaceAll("").replace("|h", "");
 	}
 	
-	private static final String FORMATTING_REGEX = "\\|(?:c[0-9A-Fa-f]{8}|r)";
+	// group 1 = transparancy, 2 = color (both in hex)
+	private static final Pattern FORMATTING_REGEX =
+		Pattern.compile("\\|(?:c([0-9A-Fa-f]{2})([0-9A-Fa-f]{6}))");
 
 	public static String removeFormatting(String str) {
-		return str.replaceAll(FORMATTING_REGEX, "");
+		Matcher m = FORMATTING_REGEX.matcher(str);
+		return m.replaceAll("").replace("|r", "");
 	}
 	
 	private void removeFormatting() {

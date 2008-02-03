@@ -54,7 +54,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 		tabs = new JTabbedPane();
 		all = new LogTab("All Chat", tabs);
 		pub = new LogTab("Public Chat", tabs);
-		whisper = new LogTab("Whisper/Say", tabs);
+		whisper = new LogTab("Whisper/Say/Yell", tabs);
 		guild = new LogTab("Guild", tabs);
 		
 		addTab(all);
@@ -133,7 +133,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 		String channel = e.getChannel();
 		if (channel == null) return;
 		
-		if (channel.equals("Whisper") || channel.equals("Say")) {
+		if (channel.equals("Whisper") || channel.equals("Say") || channel.equals("Yell")) {
 			whisper.add(e);
 		} else if (channel.equals("Guild") || channel.equals("Officer")) {
 			guild.add(e);

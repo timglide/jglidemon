@@ -34,7 +34,7 @@ import java.text.SimpleDateFormat;
 public class LogEntry implements Comparable<LogEntry> {
 	protected static Logger log = Logger.getLogger(LogEntry.class.getName());
 	
-	protected Date timestamp = new Date();
+	public    Date timestamp = new Date();
 	protected String type = "Unknown";
 	
 	protected String rawText = null;
@@ -106,7 +106,6 @@ public class LogEntry implements Comparable<LogEntry> {
 		Pattern.compile("^\\d+:\\d+:\\d+\\.\\d+\\s+.*$");
 	
 	private static Calendar cal = new GregorianCalendar();
-	private static Date today = new Date();
 	
 	public static LogEntry factory(String s) {
 		return factory(s, LogFile.None);
@@ -137,24 +136,24 @@ public class LogEntry implements Comparable<LogEntry> {
 					
 					if (m.matches()) {
 						log.finer("Ignoring debug line while parsing log file");
-					} else {
-						log.finer("Ignoring malformed line while parsing log file: " + s);
+						return null;
 					}
-					
-					return null;
 				}
 				
 //				System.out.println("  Parsed Time");
 				
-				cal.setTime(today);
-				cal.set(Calendar.AM_PM, m.group(3).equals("AM") ? Calendar.AM : Calendar.PM);
-				cal.set(Calendar.HOUR, Integer.parseInt(m.group(1)));
-				cal.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
-				cal.set(Calendar.SECOND, 0);
-				overrideDate = cal.getTime();
+				cal.setTime(new Date());
 				
-				// remove the timestamp;
-				s = m.group(4);
+				if (m.matches()) {
+					cal.set(Calendar.AM_PM, m.group(3).equals("AM") ? Calendar.AM : Calendar.PM);
+					cal.set(Calendar.HOUR, Integer.parseInt(m.group(1)));
+					cal.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
+					cal.set(Calendar.SECOND, 0);
+					overrideDate = cal.getTime();
+					
+					// remove the timestamp;
+					s = m.group(4);
+				}
 				
 //				System.out.println("  1st: " + s);
 				// add the correct type
