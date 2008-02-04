@@ -34,6 +34,7 @@ import javax.swing.*;
 
 public class GUI 
 	implements java.util.Observer, ActionListener, ContainerListener {
+	public static final int PADDING = 10;
 	
 	public static GUI instance;
 	public static JFrame frame;
@@ -185,6 +186,8 @@ public class GUI
 
 		charInfo = new CharInfoPane();
 		c.gridx = 0; c.gridy = 0; c.weightx = 0.25;
+		c.insets.top = PADDING;
+		c.insets.left = PADDING;
 		mainPane.add(charInfo, c);
 
 		mobInfo = new MobInfoPane();
@@ -194,10 +197,13 @@ public class GUI
 		ctrlPane = new ControlPane();
 		Connector.addListener(ctrlPane);
 		c.gridx = 2; c.gridy = 0; c.weightx = 0.0;
+		c.insets.right = PADDING;
 		mainPane.add(ctrlPane, c);
 
 		xpPane = new ExperiencePane();
 		c.gridx = 0; c.gridy = 1; c.gridwidth = 3;
+		c.insets.left = 0;
+		c.insets.right = 0;
 		mainPane.add(xpPane, c);
 
 		tabsPane = new TabsPane();

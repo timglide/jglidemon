@@ -52,21 +52,25 @@ public class ParseLogFile extends Dialog implements ActionListener {
 		
 		JPanel jp = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-
+		c.insets = new Insets(PADDING, 0, PADDING, 0);
+		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0; c.gridy = 0; c.weightx = 0.0; c.gridwidth = 1;
 		jp.add(new JLabel("Log Type"), c);
 		
 		type = new JComboBox(new Object[]{LogFile.Chat, LogFile.Combat});
 		c.gridx++; c.weightx = 1.0; c.gridwidth = 2;
+		c.insets.left = PADDING;
 		jp.add(type, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		c.insets.top = 0; c.insets.left = 0;
 		jp.add(new JLabel("Log File"), c);
 		
 		fileText = new JTextField();
 		fileText.setEnabled(false);
 		c.gridx++; c.weightx = 1.0;
+		c.insets.bottom = 0; c.insets.left = PADDING;
 		jp.add(fileText, c);
 		
 		browse = new JButton("...");
@@ -78,18 +82,15 @@ public class ParseLogFile extends Dialog implements ActionListener {
 		mainPanel.add(jp, BorderLayout.CENTER);
 		
 		
-		JPanel btnPanel = new JPanel(new GridLayout(1, 0));
 		parse = new JButton("Parse");
 		parse.setMnemonic(KeyEvent.VK_P);
 		parse.addActionListener(this);
-		btnPanel.add(parse);
 		
 		close = new JButton("Cancel");
 		close.setMnemonic(KeyEvent.VK_C);
 		close.addActionListener(this);
-		btnPanel.add(close);
 		
-		mainPanel.add(btnPanel, BorderLayout.SOUTH);
+		mainPanel.add(Dialog.makeNiceButtons(parse, close), BorderLayout.SOUTH);
 		
 		
 		waitPanel = new JPanel(new BorderLayout());
@@ -104,7 +105,7 @@ public class ParseLogFile extends Dialog implements ActionListener {
 	}
 	
 	protected void onShow() {
-		setContentPane(mainPanel);
+		getContentPane().add(mainPanel, BorderLayout.CENTER);
 		makeVisible();
 	}
 	
@@ -174,7 +175,7 @@ public class ParseLogFile extends Dialog implements ActionListener {
 			
 			new Thread(new Runnable() {
 				public void run() {
-					ParseLogFile.this.setContentPane(waitPanel);
+					ParseLogFile.this.getContentPane().add(waitPanel, BorderLayout.CENTER);
 					ParseLogFile.this.validate();
 					
 					try {

@@ -34,7 +34,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	private static Conn conn;
 	
 	public final JButton connect;
-	public final JButton attach;
+//	public final JButton attach;
 	public final JButton start;
 	public final JButton stop;
 
@@ -46,13 +46,14 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		connect.addActionListener(this);
 		//connect.setEnabled(false);
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
+		c.insets.bottom = jgm.GUI.PADDING / 2;
 		add(connect, c);
 		
 		// attach is done automatically now
-		attach = new JButton("Attach");
-		attach.setFocusable(false);
-		attach.addActionListener(this);
-		attach.setEnabled(false);
+//		attach = new JButton("Attach");
+//		attach.setFocusable(false);
+//		attach.addActionListener(this);
+//		attach.setEnabled(false);
 //		c.gridy++;
 //		add(attach, c);
 
@@ -61,6 +62,8 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		start.addActionListener(this);
 		start.setEnabled(false);
 		c.gridy++; c.gridwidth = 1;
+		c.insets.right = c.insets.bottom;
+		c.insets.bottom = 0;
 		add(start, c);
 		
 		stop = new JButton("Stop Glide");
@@ -68,6 +71,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		stop.addActionListener(this);
 		stop.setEnabled(false);
 		c.gridx++;
+		c.insets.right = 0;
 		add(stop, c);
 	}
 
@@ -75,12 +79,12 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		//System.out.println("ControlPane.update()");
 		
 		if (s.attached) {
-			attach.setEnabled(false);
+//			attach.setEnabled(false);
 			start.setEnabled(true);
 			stop.setEnabled(true);
 		} else {
-			if (Connector.isConnected())
-				attach.setEnabled(true);
+//			if (Connector.isConnected())
+//				attach.setEnabled(true);
 			start.setEnabled(false);
 			stop.setEnabled(false);
 		}
@@ -131,7 +135,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public void connectionDied() {
 		connect.setText("Connect");
 		connect.setEnabled(true);
-		attach.setEnabled(false);
+//		attach.setEnabled(false);
 		start.setEnabled(false);
 		stop.setEnabled(false);
 	}
@@ -144,7 +148,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public void disconnecting() {
 		connect.setText("Disconnecting...");
 		connect.setEnabled(false);
-		attach.setEnabled(false);
+//		attach.setEnabled(false);
 		start.setEnabled(false);
 		stop.setEnabled(false);
 	}

@@ -22,14 +22,21 @@ package jgm.gui.dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.JDialog;
+import javax.swing.*;
 
 public abstract class Dialog extends JDialog {
+	public static final int PADDING = jgm.GUI.PADDING;
+	
 	protected String title;
 	protected GridBagConstraints c = new GridBagConstraints();
 	
 	public Dialog(Frame owner, String title) {
 		super(owner, title, true);
+		
+		JPanel spacer = new JPanel(new BorderLayout());
+		spacer.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
+		setContentPane(spacer);
+		
 		this.title = title;
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setResizable(false);
@@ -51,5 +58,26 @@ public abstract class Dialog extends JDialog {
 	protected void onShow() {
 		if (jgm.JGlideMon.debug)
 			java.util.logging.Logger.getLogger("jgm").fine("Showing dialog " + getClass().getName());
+	}
+	
+	
+	// helpers
+	
+	/**
+	 * Returns a JPanel with the supplied buttons nicely
+	 * laid out in a row.
+	 */
+	public static final JPanel makeNiceButtons(JButton ... buttons) {
+	    JPanel p  = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+	    p.setBorder(BorderFactory.createEmptyBorder(PADDING, 0, 0, 0));
+	    JPanel p1 = new JPanel(new GridLayout(1, 0, 10, 0));
+	    
+	    for (JButton b : buttons) {
+	    	p1.add(b);
+	    }
+	    
+	    p.add(p1);
+	    
+	    return p;
 	}
 }

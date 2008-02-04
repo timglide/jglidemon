@@ -45,17 +45,18 @@ public class About extends Dialog implements ActionListener {
 			JGlideMon.class.getResource("resources/images/stitch/stitch" + r.nextInt(2) + ".jpg"));
 		iconLabel = new JLabel(icon);
 		
+		this.setLayout(new BorderLayout(PADDING, PADDING));
+		
 		add(iconLabel, BorderLayout.WEST);
 		
 		JPanel textPanel = new JPanel();
 		textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.PAGE_AXIS));
 		
 		text = new JLabel(
-			"<html><br>JGlideMon " + JGlideMon.version + "<br>" +
+			"<html>JGlideMon " + JGlideMon.version + "<br>" +
 			JGlideMon.revision + "<br>" +
 			JGlideMon.date + "<br>" +
-			"By Tim<br><br>Released under the GNU GPL<br>" +
-			"</html>"
+			"By Tim<br><br>Released under the GNU GPL"
 		);
 		textPanel.add(text);
 		
@@ -65,7 +66,6 @@ public class About extends Dialog implements ActionListener {
 					new java.net.URL("http://www.gnu.org/licenses/gpl.html"));
 			gplLink.setBorder(BorderFactory.createEmptyBorder());
 			textPanel.add(gplLink);
-			textPanel.add(new JLabel("<html><br></html>"));
 		} catch (java.net.MalformedURLException e) {}
 		
 		// only if there is tts support
@@ -79,9 +79,9 @@ public class About extends Dialog implements ActionListener {
 			} catch (java.net.MalformedURLException e) {}
 			
 			if (freeTtsLink != null) {
-				textPanel.add(new JLabel("Text-to-speech provided by"));
-				textPanel.add(freeTtsLink);		
 				textPanel.add(new JLabel("<html><br></html>"));
+				textPanel.add(new JLabel("Text-to-speech provided by"));
+				textPanel.add(freeTtsLink);
 			}
 		}
 		
@@ -89,7 +89,7 @@ public class About extends Dialog implements ActionListener {
 		
 		close = new JButton("Close");
 		close.addActionListener(this);
-		add(close, BorderLayout.SOUTH);
+		add(Dialog.makeNiceButtons(close), BorderLayout.SOUTH);
 		
 		makeVisible();
 	}

@@ -104,21 +104,18 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	public Config(Frame owner) {
 		super(owner, "Configuration");
 		cfg = jgm.Config.getInstance();
-		
+				
 		tabs = new JTabbedPane(JTabbedPane.LEFT);
 		
-		JPanel btnPanel = new JPanel(new GridLayout(1, 0));
 		update = new JButton("Save Settings");
 		update.setMnemonic(KeyEvent.VK_S);
 		update.addActionListener(this);
-		btnPanel.add(update);
 		
 		close = new JButton("Cancel");
 		close.setMnemonic(KeyEvent.VK_C);
 		close.addActionListener(this);
-		btnPanel.add(close);
 		
-		add(btnPanel, BorderLayout.SOUTH);
+		add(Dialog.makeNiceButtons(update, close), BorderLayout.SOUTH);
 		
 		
 		//JPanel p = new JPanel(new GridLayout(2, 3, 10, 10));
@@ -192,14 +189,15 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx = 0; c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
 		general.add(new JLabel("WoW DB Site: "), c);
 		
-		c.gridx++; c.weightx = 1.0;
+		c.gridx++; c.weightx = 0.75;
 		general.add(wowDbSite, c);
 		
-		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 2;
+		c.gridx = 0; c.gridy++; c.weightx = 1.0;
+		c.weighty = 1.0; c.gridwidth = 2;
 		general.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
-		tabs.addTab("General", general);
+		addTab("General", general);
 		//p.add(status);
 		
 		
@@ -258,7 +256,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		net.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
-		tabs.addTab("Network", net);
+		addTab("Network", net);
 		//p.add(net);
 		
 		
@@ -330,7 +328,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
-		tabs.addTab("Screenshot", screenshot);
+		addTab("Screenshot", screenshot);
 		//p.add(screenshot);
 		
 		
@@ -443,7 +441,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		tmp.add(sound);
 		sound = tmp;
 		
-		tabs.addTab("Sound/TTS", sound);
+		addTab("Sound/TTS", sound);
 		//p.add(sound);
 		
 		
@@ -485,7 +483,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 1.0;
 		stuck.add(new JLabel(), c);
 		
-		tabs.addTab("Stuck", stuck);
+		addTab("Stuck", stuck);
 		
 		
 		
@@ -520,7 +518,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 1.0;
 		web.add(new JLabel(), c);
 		
-		tabs.addTab("Web", web);
+		addTab("Web", web);
 		
 		
 		
@@ -531,6 +529,13 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		// is taken care of in onShow()
 		
 		makeVisible();
+	}
+	
+	private void addTab(String title, Component panel) {
+		JPanel tmp = new JPanel(new BorderLayout());
+		tmp.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
+		tmp.add(panel, BorderLayout.CENTER);
+		tabs.addTab(title, tmp);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
