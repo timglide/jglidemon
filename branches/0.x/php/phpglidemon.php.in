@@ -247,8 +247,39 @@ function handleAjax($url) {
 								$test = getResult($fp);
 							}
 
-							sendCommand($fp, 'queuekeys ' . $_GET['keys']);
-							$message = getResult($fp); // result
+							// if it's a slash command, try to send the keys
+							// one at a time with a delay to try to account
+							// for glider's bug with not always sending
+							// the keys properly
+							if (strpos($_GET['keys'], '#13#/') === 0) {
+								$_GET['keys'] = substr($_GET['keys'], 5);
+								$parts = preg_split('!\s+!', $_GET['keys'], 2);
+
+								if (count($parts) == 2) {
+									$_GET['keys'] = $parts[1];
+								} else {
+									$_GET['keys'] = null;
+								}
+
+								usleep(250000);
+								sendCommand($fp, 'queuekeys #13#');
+								getResult($fp);
+
+								usleep(250000);
+								sendCommand($fp, 'queuekeys /');
+								getResult($fp);
+
+								usleep(250000);
+								sendCommand($fp, 'queuekeys ' . $parts[0] . ' ');
+								$message = getResult($fp);
+
+								usleep(250000);
+							}
+
+							if ($_GET['keys'] !== null) {
+								sendCommand($fp, 'queuekeys ' . $_GET['keys']);
+								$message = getResult($fp); // result
+							}
 
 							if ($pause_glide && $test != 'Already stopped') {
 								sendCommand($fp, 'startglide');

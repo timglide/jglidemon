@@ -36,6 +36,8 @@ import jgm.JGlideMon;
  * @since 0.13
  */
 public class SendChatManager implements Runnable {
+	static final String SLASH_CHECK = "#13#/";
+	
 	static Logger log = Logger.getLogger(SendChatManager.class.getName());
 	
 	private Conn conn;
@@ -64,18 +66,63 @@ public class SendChatManager implements Runnable {
 	}
 	
 	private boolean sendKeys(String keys) {
+		if (null == keys)
+			throw new NullPointerException("keys cannot be null in sendKeys()");
+		
 		if (!Connector.isConnected()) return false;
 		
 		if (conn == null) conn = JGlideMon.instance.keysConn;
 		
-		try {
+		try {			
 			log.info("Sending keys: " + keys);
 			conn.send("/stopglide");
 			String test = conn.readLine(); // attempting stop
 			conn.readLine(); // ---
-			conn.send("/queuekeys " + keys);
-			conn.readLine(); // queued keys
-			conn.readLine(); // ---
+			
+			// if it's a slash command, try to send the keys
+			// one at a time with a delay to try to account
+			// for glider's bug with not always sending
+			// the keys properly
+			if (keys.startsWith(SLASH_CHECK)) {
+				keys = keys.substring(SLASH_CHECK.length());
+				String[] parts = keys.split("\\s+", 2);
+				
+				if (parts.length == 2) {
+					keys = parts[1];
+				} else {
+					keys = null;
+				}
+				
+				try {
+					Thread.sleep(250);
+				} catch (Exception e) {}
+				conn.send("/queuekeys #13#");
+				conn.readLine(); conn.readLine();
+				
+				try {
+					Thread.sleep(250);
+				} catch (Exception e) {}			
+				
+				conn.send("/queuekeys /");
+				conn.readLine(); conn.readLine();
+				
+				try {
+					Thread.sleep(250);
+				} catch (Exception e) {}			
+				
+				conn.send("/queuekeys " + parts[0] + " ");
+				conn.readLine(); conn.readLine();
+				
+				try {
+					Thread.sleep(250);
+				} catch (Exception e) {}
+			}
+			
+			if (null != keys) {
+				conn.send("/queuekeys " + keys);
+				conn.readLine(); // queued keys
+				conn.readLine(); // ---
+			}
 			
 			// don't start if we were stopped initially
 			if (!test.equals("Already stopped")) {
