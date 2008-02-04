@@ -117,7 +117,7 @@ public class SendChatManager implements Runnable {
 					Thread.sleep(250);
 				} catch (Exception e) {}
 			}
-			
+
 			if (null != keys) {
 				conn.send("/queuekeys " + keys);
 				conn.readLine(); // queued keys
