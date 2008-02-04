@@ -22,6 +22,7 @@ package jgm.gui.tabs;
 
 import jgm.Config;
 import jgm.glider.log.*;
+import jgm.util.RingBuffer;
 
 import java.util.*;
 import java.awt.*;
@@ -30,6 +31,17 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 public class LogTab extends Tab implements Clearable {
+	static Font BASE_FONT = null;
+	static Font FONT = null;
+	
+	static {
+		try {
+//			BASE_FONT = Font.createFont(Font.TRUETYPE_FONT, jgm.JGlideMon.class.getResourceAsStream("resources/fonts/arialn.ttf"));
+//			BASE_FONT = new Font("Arial", 0, 16);
+//			FONT = BASE_FONT.deriveFont(18.0f);
+		} catch (Throwable e) {}
+	}
+	
 	static HashMap<String, Color> COLOR_MAP = new HashMap<String, Color>();
 	
 	static {
@@ -116,6 +128,9 @@ public class LogTab extends Tab implements Clearable {
 
 //			System.out.println("LogTable Orig Font: " + this.getFont().toString());		
 //			this.setFont(this.getFont().deriveFont(Font.PLAIN, 22.0f));
+			if (FONT != null) {
+				this.setFont(FONT);
+			}
 			FontMetrics fm = this.getFontMetrics(this.getFont());
 			this.setRowHeight(fm.getHeight());
 			
@@ -175,22 +190,21 @@ public class LogTab extends Tab implements Clearable {
 	private static final String[] columnNames = {"Time", "Type", "Text"};
 	
 	private class LogTableModel extends AbstractTableModel {
-		private Vector<LogEntry> entries;
+		private RingBuffer<LogEntry> entries;
 
 		public LogTableModel() {
 			super();
 
-			entries = new Vector<LogEntry>();
+			entries = new RingBuffer<LogEntry>(Config.getInstance().getInt("log", "maxentries"));
 		}
 
-		public void add(LogEntry i) {
-			if (entries.size() > Config.getInstance().getInt("log", "maxentries")) {
-				entries.clear();
-				fireTableDataChanged();
-			}
-			
+		public void add(LogEntry i) {			
 			entries.add(i);
-			fireTableRowsInserted(entries.size(), entries.size());
+			
+			if (entries.size() < entries.capacity())
+				fireTableRowsInserted(entries.size(), entries.size());
+			else
+				fireTableRowsUpdated(0, entries.size());
 		}
 
 		public LogEntry get(int row) {
