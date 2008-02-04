@@ -26,6 +26,8 @@ import jgm.glider.*;
 import jgm.gui.updaters.*;
 import jgm.util.*;
 
+// this line edited so the svn revision gets updated
+
 /**
  * The main program.
  * @author Tim

@@ -1,6 +1,6 @@
 JGlideMon ChangeLog
 
-Version 0.13
+Version 0.14
 ------------
 - Sending chat is now at the bottom of the Chat tab and
   the Keys tab has been removed.
