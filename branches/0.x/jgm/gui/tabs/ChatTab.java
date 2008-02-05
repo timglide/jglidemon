@@ -172,7 +172,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 		return type.isEnabled();
 	}
 	
-	public void update(jgm.gui.updaters.StatusUpdater s) {
+	public void update(Status s) {
 		if (s.attached != isEnabled()) {
 			setEnabled(s.attached);
 		}
@@ -192,7 +192,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 			if (!isEnabled()) return;
 				
 			setEnabled(false);
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			
 			ChatType t = (ChatType) type.getSelectedItem();
 			

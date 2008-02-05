@@ -65,7 +65,7 @@ public class CombatLogEntry extends LogEntry {
 			// only check the slain pattern if at the 
 			// level cap
 			
-			if (StatusUpdater.instance.atLevelCap()) {
+			if (StatusUpdater.instance.s.atLevelCap()) {
 				m = SLAIN_MOB_PATTERN.matcher(rawText);
 				
 				if (m.matches()) {

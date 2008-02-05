@@ -35,29 +35,8 @@ public class StatusUpdater extends Observable
 	
 	public static StatusUpdater instance = null;
 	
-	public String version;
-	public boolean attached;
-	public String mode;
-	public String profile;
-	public String logMode;
-	public double health;
-	public double mana;
-	public String manaName;
-	public String name;
-	public jgm.wow.Class  clazz; // class
-	public int    level;
-	public int    experience;
-	public int    nextExperience;
-	public int    xpPerHour;
-	public int    xpPercent;
-	public String location;
-	public double heading;
-	public int    kills;
-	public int    loots;
-	public int    deaths;
-	public String targetName;
-	public int    targetLevel;
-	public double targetHealth;
+	public Status last = new Status();
+	public Status s = new Status();
 
 	private Conn conn;
 	private Thread thread;
@@ -66,36 +45,9 @@ public class StatusUpdater extends Observable
 	private Config cfg;
 	
 	public StatusUpdater() {
-		resetData();
 		instance = this;
 		conn = new Conn();
 		cfg = jgm.Config.getInstance();
-	}
-
-	private void resetData() {
-		version        = "";
-		attached      = false;
-		mode           = "Auto";
-		profile        = "";
-		logMode        = "None";
-		health         = 0.0;
-		mana           = 0.0;
-		manaName       = "";
-		name           = "";
-		clazz          = jgm.wow.Class.UNKNOWN; // class
-		level          = 0;
-		experience     = 0;
-		nextExperience = 0;
-		xpPerHour      = 0;
-		xpPercent      = 0;
-		location       = "";
-		heading        = -1.0;
-		kills          = 0;
-		loots          = 0;
-		deaths         = 0;
-		targetName     = "";
-		targetLevel    = 0;
-		targetHealth   = 0.0;
 	}
 	
 	public void close() {
@@ -119,8 +71,8 @@ public class StatusUpdater extends Observable
 	public void disconnecting() {}
 	
 	public void connectionDied() {
-		resetData();
-		attached = false;
+		s.resetData();
+		s.attached = false;
 		setChanged();
 		stop = true;
 		notifyObservers(this);
@@ -139,19 +91,6 @@ public class StatusUpdater extends Observable
 				return;
 			}
 		}
-	}
-
-	/**
-	 * Determines if the character is at the level cap.
-	 * AssumeS the level cap will be 70, 80, 90, etc.
-	 * Even if at the supposed level cap, it will become
-	 * visible again if xpPercent >= 2 because it can only
-	 * get past 1% if you're actually leveling (i.e. when
-	 * a new expansion is released).
-	 * @return
-	 */
-	public boolean atLevelCap() {
-		return level >= 70 && level % 10 == 0 && xpPercent < 2;
 	}
 	
 	private void update()
@@ -179,48 +118,50 @@ public class StatusUpdater extends Observable
 
 //		System.out.println("--><--");
 
-		version    = m.containsKey("Version")     ? m.get("Version")     : "";
-		attached   = m.containsKey("Attached")
+		last = s.clone();
+		
+		s.version    = m.containsKey("Version")     ? m.get("Version")     : "";
+		s.attached   = m.containsKey("Attached")
 					 && m.get("Attached").equals("True")
 					 							  ? true                 : false;
-		mode       = m.containsKey("Mode")        ? m.get("Mode")        : "Auto";
-		profile    = m.containsKey("Profile")     ? m.get("Profile")     : "";
-		logMode    = m.containsKey("Log")         ? m.get("Log")         : "None";
-		name       = m.containsKey("Name")        ? m.get("Name")        : "";
-		clazz      = m.containsKey("Class")       ? jgm.wow.Class.strToClass(m.get("Class")) : jgm.wow.Class.UNKNOWN;
-		location   = m.containsKey("Location")    ? m.get("Location")    : "";
-		targetName = m.containsKey("Target-Name") ? m.get("Target-Name") : "";
+		s.mode       = m.containsKey("Mode")        ? m.get("Mode")        : "Auto";
+		s.profile    = m.containsKey("Profile")     ? m.get("Profile")     : "";
+		s.logMode    = m.containsKey("Log")         ? m.get("Log")         : "None";
+		s.name       = m.containsKey("Name")        ? m.get("Name")        : "";
+		s.clazz      = m.containsKey("Class")       ? jgm.wow.Class.strToClass(m.get("Class")) : jgm.wow.Class.UNKNOWN;
+		s.location   = m.containsKey("Location")    ? m.get("Location")    : "";
+		s.targetName = m.containsKey("Target-Name") ? m.get("Target-Name") : "";
 		
-		int i = profile.toLowerCase().indexOf("profiles\\");
+		int i = s.profile.toLowerCase().indexOf("profiles\\");
 
 		if (i >= 0) {
-			profile = profile.substring(i + 9);
+			s.profile = s.profile.substring(i + 9);
 		} else {
-			i = profile.toLowerCase().indexOf("groups\\");
+			i = s.profile.toLowerCase().indexOf("groups\\");
 
 			if (i >= 0) {
-				profile = profile.substring(i + 7);
+				s.profile = s.profile.substring(i + 7);
 			}
 		}
 
 		try {
-			health = m.containsKey("Health")
+			s.health = m.containsKey("Health")
 					 ? Double.parseDouble(m.get("Health"))
 					 : 0.0;
 		} catch (NumberFormatException e) {
-			health = 0.0;
+			s.health = 0.0;
 		}
 
-		health *= 100; // health was a percent
+		s.health *= 100; // health was a percent
 
 		try {
 			if (!m.containsKey("Mana")) {
-				mana = 0.0;
-				manaName = "Mana";
+				s.mana = 0.0;
+				s.manaName = "Mana";
 			} else {
 				// "Mana: 123 (42%)"
 				// "Mana: 100 (CP = 0)"
-				Pattern p = clazz.mana.getRegex();
+				Pattern p = s.clazz.mana.getRegex();
 				Matcher x = p.matcher(m.get("Mana"));
 
 //				System.out.println("Matching: " + m.get("Mana"));
@@ -228,9 +169,9 @@ public class StatusUpdater extends Observable
 				if (!x.matches()) throw new NumberFormatException("No Match");
 
 //				System.out.print("Matched:");
-				for (int n = 0; n <= x.groupCount(); n++) {
+//				for (int n = 0; n <= x.groupCount(); n++) {
 //					System.out.print(" " + n + ": " + x.group(n));
-				}
+//				}
 //				System.out.println();
 				
 				int group = 1;
@@ -238,106 +179,106 @@ public class StatusUpdater extends Observable
 				// only check if the groups are null if there's more than 1
 				// don't check the last one because we must assume that the
 				// last one won't be null if all the others are
-				for (int j = 1; j < clazz.mana.numRegexGroups(); j++) {
+				for (int j = 1; j < s.clazz.mana.numRegexGroups(); j++) {
 					if (x.group(group) == null) group++;
 					else break;
 				}
 				
-				mana = Double.parseDouble(x.group(group));
-				manaName = clazz.mana.toString(group);
+				s.mana = Double.parseDouble(x.group(group));
+				s.manaName = s.clazz.mana.toString(group);
 				
 //				System.out.println("  Found: " + x.group(group) + "; group: " + group);
 			}	
 		} catch (Exception e) {
 			//e.printStackTrace();
 //			System.err.println("Did not match mana");
-			mana = 0.0;
-			manaName = "Mana";
+			s.mana = 0.0;
+			s.manaName = "Mana";
 		}
 
 		try {
-			level = m.containsKey("Level")
+			s.level = m.containsKey("Level")
 					? Integer.parseInt(m.get("Level"))
 					: 0;
 		} catch (NumberFormatException e) {
-			level = 0;
+			s.level = 0;
 		}
 
 		try {
-			experience = m.containsKey("Experience")
+			s.experience = m.containsKey("Experience")
 						 ? Integer.parseInt(m.get("Experience"))
 						 : 0;
 		} catch (NumberFormatException e) {
-			experience = 0;
+			s.experience = 0;
 		}
 
 		try {
-			nextExperience = m.containsKey("Next-Experience")
+			s.nextExperience = m.containsKey("Next-Experience")
 							 ? Integer.parseInt(m.get("Next-Experience"))
 							 : 0;
 		} catch (NumberFormatException e) {
-			nextExperience = 0;
+			s.nextExperience = 0;
 		}
 
 		try {
-			xpPerHour = m.containsKey("XP/Hour")
+			s.xpPerHour = m.containsKey("XP/Hour")
 						? Integer.parseInt(m.get("XP/Hour"))
 						: 0;
 		} catch (NumberFormatException e) {
-			xpPerHour = 0;
+			s.xpPerHour = 0;
 		}
 
-		if (nextExperience > 0) {
-			xpPercent = (int) (100 * ((float) experience / (float) nextExperience));
+		if (s.nextExperience > 0) {
+			s.xpPercent = (int) (100 * ((float) s.experience / (float) s.nextExperience));
 		} else {
-			xpPercent = 0;
+			s.xpPercent = 0;
 		}
 		
 		try {
 			if (!m.containsKey("Heading")) {
-				heading = -1.0;
+				s.heading = -1.0;
 			} else {
-				heading = Double.parseDouble(m.get("Heading"));
+				s.heading = Double.parseDouble(m.get("Heading"));
 			}
 		} catch (NumberFormatException e) {
-			heading = -1.0;
+			s.heading = -1.0;
 		}
 
 		try {
 			if (!m.containsKey("KLD")) {
-				kills = loots = deaths = 0;
+				s.kills = s.loots = s.deaths = 0;
 			} else {
 				String[] parts = m.get("KLD").split("/");
 
 				if (parts.length != 3) throw new NumberFormatException();
 
-				kills  = Integer.parseInt(parts[0]);
-				loots  = Integer.parseInt(parts[1]);
-				deaths = Integer.parseInt(parts[2]);
+				s.kills  = Integer.parseInt(parts[0]);
+				s.loots  = Integer.parseInt(parts[1]);
+				s.deaths = Integer.parseInt(parts[2]);
 			}
 		} catch (NumberFormatException e) {
-			kills = loots = deaths = 0;
+			s.kills = s.loots = s.deaths = 0;
 		}
 
 		try {
-			targetLevel = m.containsKey("Target-Level")
+			s.targetLevel = m.containsKey("Target-Level")
 						  ? Integer.parseInt(m.get("Target-Level"))
 						  : 0;
 		} catch (NumberFormatException e) {
-			targetLevel = 0;
+			s.targetLevel = 0;
 		}
 
 		try {
-			targetHealth = m.containsKey("Target-Health")
+			s.targetHealth = m.containsKey("Target-Health")
 						   ? Double.parseDouble(m.get("Target-Health"))
 						   : 0.0;
 		} catch (NumberFormatException e) {
-			targetHealth = 0.0;
+			s.targetHealth = 0.0;
 		}
 
-		targetHealth *= 100; // health was a percent
+		s.targetHealth *= 100; // health was a percent
 
 		setChanged();
-		notifyObservers(this);
+		notifyObservers(s);
 	}
 }

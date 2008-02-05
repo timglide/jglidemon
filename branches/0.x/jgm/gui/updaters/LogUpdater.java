@@ -174,7 +174,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		
 		// fix escaped characters
 		Matcher m = ESCPAE_PATTERN.matcher(line);
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		int i = 0;
 		
 		// if this were php, i would use preg_replace

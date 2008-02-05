@@ -20,8 +20,8 @@
  */
 package jgm.gui.panes;
 
+import jgm.glider.Status;
 import jgm.gui.components.HeadingDial;
-import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.*;
 import javax.swing.*;
@@ -100,7 +100,7 @@ public class CharInfoPane extends Pane {
 		add(p, BorderLayout.CENTER);
 	}
 
-	public void update(StatusUpdater s) {
+	public void update(Status s) {
 		name.setText(s.name);
 		level.setText(((s.level > 0) ? Integer.toString(s.level) : ""));
 		health.setValue((int) s.health);

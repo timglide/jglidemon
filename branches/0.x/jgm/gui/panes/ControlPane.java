@@ -22,7 +22,6 @@ package jgm.gui.panes;
 
 import jgm.JGlideMon;
 import jgm.glider.*;
-import jgm.gui.updaters.StatusUpdater;
 
 import java.util.logging.*;
 import java.awt.event.*;
@@ -75,7 +74,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		add(stop, c);
 	}
 
-	public void update(StatusUpdater s) {
+	public void update(Status s) {
 		//System.out.println("ControlPane.update()");
 		
 		if (s.attached) {

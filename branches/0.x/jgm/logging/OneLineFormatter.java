@@ -34,7 +34,7 @@ public class OneLineFormatter extends Formatter {
 	Date dt = new Date();
 	
 	public String format(LogRecord r) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		dt.setTime(r.getMillis());
 		
 		sb.append(String.format(

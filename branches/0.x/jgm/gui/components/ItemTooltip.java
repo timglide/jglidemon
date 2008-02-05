@@ -279,15 +279,15 @@ public class ItemTooltip extends JPanel {
 	 */
 	public static final String lineify(String s) {
 		String[] words = s.split(" ");
-		StringBuffer out = new StringBuffer();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder out = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 		
 		for (int i = 0; i < words.length; i++) {
 			if (sb.length() >= CHARS_PER_LINE) {
 				out.append(sb);
 				out.append("<br>\n");
 				
-				sb = new StringBuffer();
+				sb = new StringBuilder();
 			}
 			
 			sb.append(words[i] + " ");

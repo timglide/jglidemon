@@ -25,9 +25,9 @@ import jgm.sound.Sound;
 
 // nothing special
 public class GliderLogEntry extends LogEntry {
-	public enum Type {
+	public static enum Type {
 		NORMAL, BEING_ATTACKED, BEING_FOLLOWED,
-		LOGGING_OUT, STUCK, DIED
+		LOGGING_OUT, STUCK, DIED, EXCEPTION
 	}
 	
 	public  Type    type    = Type.NORMAL;
@@ -36,7 +36,7 @@ public class GliderLogEntry extends LogEntry {
 	public GliderLogEntry(String s) {
 		super("GliderLog", s);
 		
-		isAlert = s.startsWith("!");
+		isAlert = s.startsWith("!") || s.startsWith("*");
 		
 		if (isAlert) {
 			if (s.contains("Being attacked")) {
@@ -52,14 +52,18 @@ public class GliderLogEntry extends LogEntry {
 				}
 			}
 		} else {
-			if (s.contains("Stuck too many times")) {
-				isAlert = true;
-				type = Type.STUCK;
-				new Sound(Audible.Type.STUCK, jgm.util.Sound.File.STOP).play(true);
-			} else if (s.contains("Died while gliding")) {
+			if (s.contains("Died while gliding")) {
 				isAlert = true;
 				type = Type.DIED;
 				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
+			} else if (s.contains("Exception")) {
+				isAlert = true;
+				type = Type.EXCEPTION;
+				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
+			} else if (s.contains("Stuck too many times")) {
+				isAlert = true;
+				type = Type.STUCK;
+				new Sound(Audible.Type.STUCK, jgm.util.Sound.File.STOP).play(true);
 			}
 		}
 	}

@@ -64,8 +64,20 @@ public class LogEntry implements Comparable<LogEntry> {
 		return rawText;
 	}
 
+	public String getPlainText() {
+		return rawText;
+	}
+	
+	public boolean supportsHtmlText() {
+		return false;
+	}
+	
+	public String getHtmlText() {
+		return rawText;
+	}
+	
 	public String getText() {
-		return getRawText();
+		return rawText;
 	}
 
 	/**

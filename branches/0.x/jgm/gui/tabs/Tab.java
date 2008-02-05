@@ -20,10 +20,11 @@
  */
 package jgm.gui.tabs;
 
-import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.*;
 import javax.swing.*;
+
+import jgm.glider.Status;
 
 /**
  * Abstract class representing one of the main tabs.
@@ -81,5 +82,5 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * It is optional for a Tab to implement this method
 	 * for when the StatusUpdater has updated.
 	 */
-	public void update(StatusUpdater s) {}
+	public void update(Status s) {}
 }

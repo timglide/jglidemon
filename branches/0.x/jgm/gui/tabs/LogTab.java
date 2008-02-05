@@ -237,7 +237,9 @@ public class LogTab extends Tab implements Clearable {
 					break;
 					
 				case 2:
-					ret = i.getText();
+					ret =
+						i.supportsHtmlText()
+						? "<html>" + i.getHtmlText() : i.getText();
 					break;
 			}
 

@@ -20,10 +20,10 @@
  */
 package jgm.gui.panes;
 
-import jgm.gui.updaters.StatusUpdater;
-
 import java.awt.*;
 import javax.swing.*;
+
+import jgm.glider.Status;
 
 /**
  * Abstract class representing one of the panels 
@@ -58,5 +58,5 @@ public abstract class Pane extends JPanel {
 	 * has been updated.
 	 * @param s The StatusUpdater with updated information
 	 */
-	public void update(StatusUpdater s) {}
+	public void update(Status s) {}
 }

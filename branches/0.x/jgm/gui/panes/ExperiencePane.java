@@ -20,9 +20,10 @@
  */
 package jgm.gui.panes;
 
-import jgm.gui.updaters.StatusUpdater;
 
 import javax.swing.*;
+
+import jgm.glider.Status;
 
 public class ExperiencePane extends Pane {
 	private JLabel ttl;
@@ -53,7 +54,7 @@ public class ExperiencePane extends Pane {
 		add(xpbar, c);
 	}
 
-	public void update(StatusUpdater s) {		
+	public void update(Status s) {		
 		if (s.nextExperience > 0) {
 			xp.setText(
 				String.format(

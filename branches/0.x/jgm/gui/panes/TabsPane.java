@@ -20,8 +20,8 @@
  */
 package jgm.gui.panes;
 
+import jgm.glider.Status;
 import jgm.gui.tabs.*;
-import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.*;
 import javax.swing.*;
@@ -111,7 +111,7 @@ public class TabsPane extends Pane {
 		tabbedPane.addTab(t.name, t);
 	}
 
-	public void update(StatusUpdater s) {
+	public void update(Status s) {
 		lootsTab.update(s);
 	}
 }

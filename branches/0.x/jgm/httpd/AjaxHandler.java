@@ -170,7 +170,7 @@ public class AjaxHandler extends Handler {
 				Element glider = CE(xml, "glider");
 				
 				if (connected && StatusUpdater.instance != null) {
-					StatusUpdater s = StatusUpdater.instance;
+					jgm.glider.Status s = StatusUpdater.instance.s;
 					
 					_(xml, glider, "version", s.version);
 					_(xml, glider, "attached", Boolean.toString(s.attached));

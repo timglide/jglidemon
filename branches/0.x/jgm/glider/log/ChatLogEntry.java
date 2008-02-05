@@ -87,12 +87,19 @@ public class ChatLogEntry extends LogEntry {
 		return message;
 	}
 	
-	public String getText() {
+	@Override
+	public boolean supportsHtmlText() {
+		return true;
+	}
+	
+	@Override
+	public String getHtmlText() {
 		String preColor = COLOR_MAP.get(this.type);
 		
-		return "<html>" +
+		return
 		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
-		rawText;
+		rawText +
+		(preColor != null ? "</font>" : "");
 	}
 	
 	private static Pattern PATTERN1 =

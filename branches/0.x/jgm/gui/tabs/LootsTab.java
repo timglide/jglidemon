@@ -20,6 +20,7 @@
  */
 package jgm.gui.tabs;
 
+import jgm.glider.Status;
 import jgm.gui.components.*;
 import jgm.wow.*;
 
@@ -162,7 +163,7 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 		initialGoldTime = System.currentTimeMillis();
 	}
 	
-	public void update(jgm.gui.updaters.StatusUpdater s) {
+	public void update(Status s) {
 		//if (isCurrentTab())
 		//	doGoldPerHour();
 	}

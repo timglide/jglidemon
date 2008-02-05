@@ -340,7 +340,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	}
 	
 	public void update(java.util.Observable obs, Object o) {
-		StatusUpdater s = (StatusUpdater) o;
+		Status s = (Status) o;
 		attached = s.attached;
 	}
 }

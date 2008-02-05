@@ -23,7 +23,6 @@ package jgm;
 import jgm.glider.*;
 import jgm.gui.Tray;
 import jgm.gui.panes.*;
-import jgm.gui.updaters.*;
 import jgm.gui.components.JStatusBar;
 
 import java.awt.*;
@@ -326,7 +325,7 @@ public class GUI
 	
 	public void update(java.util.Observable obs, Object o) {
 //		System.out.println("GUI.update() called");
-		StatusUpdater s = (StatusUpdater) o;
+		Status s = (Status) o;
 
 		charInfo.update(s);
 		mobInfo.update(s);

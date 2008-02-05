@@ -20,10 +20,11 @@
  */
 package jgm.gui.panes;
 
-import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.*;
 import javax.swing.*;
+
+import jgm.glider.Status;
 
 public class MobInfoPane extends Pane {
 	private JLabel name;
@@ -78,7 +79,7 @@ public class MobInfoPane extends Pane {
 		add(deaths, c);
 	}
 
-	public void update(StatusUpdater s) {
+	public void update(Status s) {
 		name.setText(s.targetName.equals("") ? "No Target" : s.targetName);
 		level.setText(s.targetLevel > 0 ? Integer.toString(s.targetLevel) : "");
 		level.setForeground(s.targetLevel > 0 ? jgm.wow.Mob.getMobColor(s.level, s.targetLevel) : Color.BLACK);

@@ -87,6 +87,22 @@ public class Conn {
 //		return out;
 //	}
 
+	public String cmd(String cmd) throws IOException {
+		send(cmd);
+		
+		String line = null;
+		StringBuilder sb = new StringBuilder();
+		
+		while (in.ready() && null != (line = in.readLine())) {
+			if (line.equals("---"))
+				break;
+			
+			sb.append(line);
+		}
+		
+		return sb.toString();
+	}
+	
 	public void send(String str) {
 		while (!isConnected()) {}
 		

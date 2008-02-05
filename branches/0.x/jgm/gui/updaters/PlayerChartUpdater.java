@@ -30,11 +30,11 @@ public class PlayerChartUpdater {
 	static final int UPDATE_INTERVAL = 1000;
 	
 	PlayerChart chart;
-	StatusUpdater status;
+	jgm.glider.Status status;
 	Timer timer;
 	
 	public PlayerChartUpdater() {
-		status = JGlideMon.instance.status;
+		status = JGlideMon.instance.status.s;
 		chart = JGlideMon.instance.gui.tabsPane.chartTab.chart;
 		
 		timer = new Timer();

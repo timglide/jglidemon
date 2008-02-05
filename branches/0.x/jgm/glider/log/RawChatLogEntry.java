@@ -74,10 +74,17 @@ public class RawChatLogEntry extends LogEntry {
 		}*/
 	}
 
+	@Override
 	public String getText() {
 		return text;
 	}
 
+	@Override
+	public boolean supportsHtmlText() {
+		return true;
+	}
+	
+	@Override
 	public String getHtmlText() {
 		Matcher m = FORMATTING_REGEX.matcher(removeLinks(rawText));
 		
@@ -93,7 +100,8 @@ public class RawChatLogEntry extends LogEntry {
 		return
 		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
 		m.replaceAll("<font color=\"$2\">")
-			.replace("|r", "</font>");
+			.replace("|r", "</font>") +
+		(preColor != null ? "</font>" : "");
 	}
 	
 	public boolean hasItemSet() {
