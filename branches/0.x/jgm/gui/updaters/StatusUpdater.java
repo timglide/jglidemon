@@ -75,7 +75,7 @@ public class StatusUpdater extends Observable
 		s.attached = false;
 		setChanged();
 		stop = true;
-		notifyObservers(this);
+		notifyObservers(s);
 	}
 	
 	public void run() {

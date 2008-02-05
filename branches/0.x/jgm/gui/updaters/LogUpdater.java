@@ -49,6 +49,8 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	private Long stuckTimer = null;
 	private int stuckCount = 0;
 	
+	private Long lastGliderException = null;
+	
 	private Thread thread;
 	
 	public LogUpdater(TabsPane t) {
@@ -91,15 +93,15 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	
 	public void run() {
 		try {
+			conn.send("/escapehi on");
+			conn.readLine(); // Escapehi mode: on
+			conn.readLine(); // ---
 			conn.send("/log all");
 			conn.readLine(); // Log mode added: all
 			conn.readLine(); // ---
 			conn.send("/nolog chat"); // making our own chat entries
 			conn.readLine(); // Log mode added: all
 			conn.readLine(); // ---
-			conn.send("/escapehi on");
-			conn.readLine(); // Escapehi mode: on
-			conn.readLine(); // ---			
 		} catch (IOException e) {
 			log.fine("Stopping LogUpdater, IOE: " + e.getMessage());
 			Connector.disconnect();
@@ -220,41 +222,54 @@ public class LogUpdater implements Runnable, ConnectionListener {
 					jgm.GUI.tray
 						.messageIfInactive("JGlideMon Glider Alert", e2.getText());
 				
-				if (!fromLog && e2.type == GliderLogEntry.Type.STUCK &&
-					jgm.Config.getInstance().getBool("stuck.enabled")) {
-					long now = System.currentTimeMillis();
-					long timeout = 1000 * jgm.Config.getInstance().getInt("stuck.timeout");
-					int limit = jgm.Config.getInstance().getInt("stuck.limit");
-					
-					if (stuckTimer == null) {
-						stuckTimer = now;
-					} else if (now - stuckTimer >= timeout) {
-						// we're stuck but it's been long enough
-						// since the last time we were stuck
-						stuckTimer = now;
-						stuckCount = 0;
-					}
-					
-					log.fine("Stuck " + stuckCount + " times. Limit = " + limit);
-					
-					if (limit == 0 || stuckCount < limit) {
-						stuckCount++;
-						// simulate pressing the Start button
-						jgm.GUI.instance.ctrlPane.start.doClick();
-						log.info("Restarting glide after being stuck");
-					} else {
-						stuckTimer = null;
-						stuckCount = 0;
-						log.warning("Stuck too many times in a row, giving up");
+				if (!fromLog) {
+					if (e2.type == GliderLogEntry.Type.STUCK &&
+						jgm.Config.getInstance().getBool("stuck.enabled")) {
+						long now = System.currentTimeMillis();
+						long timeout = 1000 * jgm.Config.getInstance().getInt("stuck.timeout");
+						int limit = jgm.Config.getInstance().getInt("stuck.limit");
+						
+						if (stuckTimer == null) {
+							stuckTimer = now;
+						} else if (now - stuckTimer >= timeout) {
+							// we're stuck but it's been long enough
+							// since the last time we were stuck
+							stuckTimer = now;
+							stuckCount = 0;
+						}
+						
+						log.fine("Stuck " + stuckCount + " times. Limit = " + limit);
+						
+						if (limit == 0 || stuckCount < limit) {
+							stuckCount++;
+							// simulate pressing the Start button
+							jgm.GUI.instance.ctrlPane.start.doClick();
+							log.info("Restarting glide after being stuck");
+						} else {
+							stuckTimer = null;
+							stuckCount = 0;
+							log.warning("Stuck too many times in a row, giving up");
+						}
+					} else if (e2.type == GliderLogEntry.Type.EXCEPTION &&
+								jgm.Config.getInstance().getBool("restarter.exception.enabled")) {
+						lastGliderException = System.currentTimeMillis();
 					}
 				}
 			}
 		} else if (e instanceof StatusEntry) {
 			statusLog.add(e);
 			
-			if (!fromLog && e.getText().equals("Stopping glide")) 
+			if (!fromLog && e.getText().equals("Stopping glide")) {
 				jgm.GUI.tray
 					.messageIfInactive("JGlideMon Glider Alert", e.getText());
+				
+				if (jgm.Config.getInstance().getBool("restarter.exception.enabled")
+					&& lastGliderException != null
+					&& System.currentTimeMillis() - lastGliderException <= 1000 * jgm.Config.getInstance().getInt("restarter.exception.time")) {
+					jgm.GUI.instance.ctrlPane.start.doClick();
+					log.info("Restarting glide after an exception");
+				}
+			}
 		} else if (e instanceof ChatLogEntry) {
 			ChatLogEntry e2 = (ChatLogEntry) e;
 			

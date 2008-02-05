@@ -39,7 +39,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	static JSpinner makeSpinner(SpinnerNumberModel sm) {
 		return new JSpinner(
 			new SpinnerNumberModel(
-				(Integer) sm.getValue(), sm.getMinimum(), sm.getMaximum(), sm.getStepSize())
+				(Number) sm.getValue(), sm.getMinimum(), sm.getMaximum(), sm.getStepSize())
 		);
 	}
 	
@@ -92,6 +92,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JCheckBox enableStuck;
 	JSpinner stuckLimit;
 	JSpinner stuckTimeout;
+
+	JCheckBox restartOnException;
+	JSpinner restartOnExceptionTime;
 	
 	JPanel web;
 	JCheckBox enableWeb;
@@ -450,7 +453,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
 		c.weightx = 1.0; c.weighty = 0.0;		
-		enableStuck = new JCheckBox("Attempt To Resume When Stuck");
+		enableStuck = new JCheckBox("Stuck");
+		enableStuck.setToolTipText("Try to restart when stuck");
 		enableStuck.addChangeListener(this);
 		stuck.add(enableStuck, c);
 		
@@ -480,10 +484,28 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++; c.weightx = 1.0;
 		stuck.add(stuckTimeout, c);
 		
+		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 0.0;
+		stuck.add(new JLabel(), c);
+		
+		restartOnException = new JCheckBox("On Glider Exception");
+		restartOnException.setToolTipText("Try to restart when Glider stops as a result of an exception");
+		restartOnException.addChangeListener(this);
+		c.gridy++;
+		stuck.add(restartOnException, c);
+		
+		c.gridwidth = 1; c.weightx = 0.0; c.gridy++;
+		stuck.add(new JLabel("  Timeout (s): "), c);
+		
+		restartOnExceptionTime = Config.makeSpinner(Config.INT_SPINNER);
+		restartOnExceptionTime.setToolTipText("Glider will be restarted if an exception occured within this many seconds before stopping");
+		restartOnExceptionTime.addChangeListener(this);
+		c.gridx++; c.weightx = 1.0;
+		stuck.add(restartOnExceptionTime, c);
+		
 		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 1.0;
 		stuck.add(new JLabel(), c);
 		
-		addTab("Stuck", stuck);
+		addTab("Restarter", stuck);
 		
 		
 		
@@ -602,6 +624,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("stuck.limit", ((Integer) stuckLimit.getValue()).intValue());
 		cfg.set("stuck.timeout", ((Integer) stuckTimeout.getValue()).intValue());
 		
+		cfg.set("restarter.exception.enabled", restartOnException.isSelected());
+		cfg.set("restarter.exception.timeout", restartOnExceptionTime.getValue());
+		
 		boolean oldWebEnabled = cfg.getBool("web.enabled");
 		int oldWebPort = cfg.getInt("web.port");
 		
@@ -682,6 +707,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			
 			stuckLimit.setEnabled(state);
 			stuckTimeout.setEnabled(state);
+		} else if (e.getSource() == restartOnException) {
+			boolean state = restartOnException.isEnabled() && restartOnException.isSelected();
+			restartOnExceptionTime.setEnabled(state);
 		} else if (e.getSource() == enableWeb) {
 			boolean state = enableWeb.isEnabled() && enableWeb.isSelected();
 			
@@ -755,6 +783,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		stuckLimit.setValue(cfg.getInt("stuck.limit"));
 		stuckTimeout.setValue(cfg.getInt("stuck.timeout"));
 		
+		restartOnException.setSelected(cfg.getBool("restarter.exception.enabled"));
+		restartOnExceptionTime.setValue(cfg.getInt("restarter.exception.timeout"));
+		
 		enableWeb.setSelected(cfg.getBool("web.enabled"));
 		webPort.setValue(cfg.getInt("web.port"));
 		webInterval.setValue(cfg.getInt("web.updateinterval"));
@@ -766,6 +797,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		stateChanged(new ChangeEvent(enableSound));
 		stateChanged(new ChangeEvent(enableTTS));
 		stateChanged(new ChangeEvent(enableStuck));
+		stateChanged(new ChangeEvent(restartOnException));
 		stateChanged(new ChangeEvent(enableWeb));
 	}
 	
