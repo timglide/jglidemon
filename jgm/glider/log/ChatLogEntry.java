@@ -1,43 +1,38 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.glider.log;
 
-import jgm.Locale;
 import jgm.sound.*;
 
+import java.util.*;
 import java.util.regex.*;
 
-public class ChatLogEntry extends LogEntry {
-	static String GM_INDICATOR = null;
-	static String WHISPERS_VERB = null;
-	static String SAYS_VERB = null;
-	static String WHISPER_NOUN = null;
-	static String SAY_NOUN = null;
+public class ChatLogEntry extends LogEntry {	
+	static Map<String, String> COLOR_MAP = new HashMap<String, String>();
 	
 	static {
-		localeChanged();
-		
-		Locale.addListener(new jgm.locale.LocaleListener() {
-			public void localeChanged() {
-				ChatLogEntry.localeChanged();
-			}
-		});
-	}
-	
-	public static void localeChanged() {
-		Locale.setBase("regex");
-		
-		try {
-			GM_INDICATOR = Locale._("chat.gmindicato");
-			WHISPERS_VERB = Locale._("chat.whispers");
-			SAY_NOUN = Locale._("chat.says");
-			WHISPER_NOUN = Locale._("chat.whisper");
-			SAY_NOUN = Locale._("chat.say");
-			PATTERN1 = Pattern.compile(Locale._("chat.whispersay"));
-			PATTERN2 = Pattern.compile(Locale._("chat.normalchat"));
-		} catch (Throwable e) {
-			e.printStackTrace();
-			
-			Locale.setLocale(Locale.LOCALE_ENGLISH);
-		}
+		COLOR_MAP.put("Whisper", "#FF80FF");
+		COLOR_MAP.put("Yell", "#FF4040");
+		COLOR_MAP.put("Guild", "#40FF40");
+		COLOR_MAP.put("Public Chat", "#FFC0C0");
 	}
 	
 	public static enum Urgency {
@@ -45,7 +40,13 @@ public class ChatLogEntry extends LogEntry {
 	};
 		
 	private String  channel = null;
+	
+	// if you sent a whisper this is actually the reciever
 	private String  sender  = null;
+	
+	// this is only relevant for whisper/say/yell
+	public boolean fromPlayer = true;
+	
 	private Urgency urgency = Urgency.TRIVIAL;
 	private String  message = null;
 	
@@ -86,52 +87,60 @@ public class ChatLogEntry extends LogEntry {
 		return message;
 	}
 	
-	private static Pattern PATTERN1 = null;
-//		Pattern.compile(".*?(<GM>|)\\[([^]]+)\\] (whisper|say)s: (.*)");
+	public String getText() {
+		String preColor = COLOR_MAP.get(this.type);
+		
+		return "<html>" +
+		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
+		rawText;
+	}
+	
+	private static Pattern PATTERN1 =
+		Pattern.compile(".*?(<GM>|<AFK>|<DND>|)(\\[?)([^]]+)\\]? (whisper|say|yell)s: (.*)");
 		/* group 1: <GM>?
-		 *       2: sender
-		 *       3: type
-		 *       4: message
+		 *       2: [, to determine if player or npc
+		 *       3: sender
+		 *       4: type
+		 *       5: message
 		 */
 
-	private static Pattern PATTERN2 = null;
-//		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] \\[(<GM>|)([^]]+)\\]: (.*)");
+	private static Pattern PATTERN2 =
+		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] (<GM>|<AFK>|<DND>|)\\[([^]]+)\\]: (.*)");
 		/* group 1: number => public chat channel
 		 *       2: channel name (Guild|Office|public channel name)
-		 *       3: <GM>?
+		 *       3: <GM>?, doubt it
 		 *       4: sender
 		 *       5: message
 		 */
+	
+	// for when you send a whisper to someone else
+	private static Pattern PATTERN3 =
+		Pattern.compile(".*?To \\[([^]]+)\\]: (.*)");
 	
 	private static ChatLogEntry parse(String s) {
 		ChatLogEntry ret = new ChatLogEntry(s);
 		Matcher m = PATTERN1.matcher(s);
 		
-		if (m.matches()) {	
+		if (m.matches()) {
 			//System.out.println("matched pattern1: " + s);
 			
-			boolean gm     = m.group(1).equals(GM_INDICATOR);
-			String sender  = m.group(2);
-			String type    = m.group(3);
-			//type = Character.toUpperCase(type.charAt(0)) + type.substring(1);
-			
-			if (type.equals(WHISPERS_VERB)) {
-				type = WHISPER_NOUN;
-			} else if (type.equals(SAYS_VERB)) {
-				type = SAY_NOUN;
-			}
-			
-			String message = m.group(4);
-			
-			ret.channel = type;
-			ret.sender = sender;
-			ret.message = message;
-			ret.urgency = (gm) ? Urgency.CRITICAL : Urgency.URGENT;
+			boolean gm     = m.group(1).equals("<GM>");
+			ret.fromPlayer = m.group(2).equals("[");
+			ret.sender  = m.group(3);
+			ret.type    = m.group(4);
+			ret.type = Character.toUpperCase(ret.type.charAt(0)) + ret.type.substring(1);
+			ret.message = m.group(5);
+
+			ret.channel = ret.type;
+			ret.urgency =
+				!ret.fromPlayer || ret.type.equals("Yell") 
+				? Urgency.TRIVIAL
+				: gm
+				  ? Urgency.CRITICAL
+				  : Urgency.URGENT;
 			
 			if (gm) {
-				ret.type = "GM " + type;
-			} else {
-				ret.type = type;
+				ret.type = "GM " + ret.type;
 			}
 
 		} else {
@@ -150,20 +159,32 @@ public class ChatLogEntry extends LogEntry {
 				} else {
 					ret.type = ret.channel;
 				}
+			} else {
+				
+				m = PATTERN3.matcher(s);
+				
+				if (m.matches()) {
+					ret.type = "Whisper";
+					ret.channel = "Whisper";
+					ret.sender = m.group(1);
+					ret.message = m.group(2);
+				}
 			}
 		}
 		
 		if (ret.isCritical()) {
 			new Sound(Audible.Type.GM, jgm.util.Sound.File.GM_WHISPER).play(true);
-			new Phrase(Audible.Type.GM, ret.getText()).play();
+			new Phrase(Audible.Type.GM, ret.getRawText()).play();
 		} else if (ret.isUrgent()) {
-			Audible.Type t = (ret.type.equals(WHISPER_NOUN)) ? Audible.Type.WHISPER : Audible.Type.SAY;
+			Audible.Type t = (ret.type.equals("Whisper")) ? Audible.Type.WHISPER : Audible.Type.SAY;
 			new Sound(t, jgm.util.Sound.File.WHISPER).play(true);
-			new Phrase(t, ret.getText()).play();
+			new Phrase(t, ret.getRawText()).play();
 		}
 		
 		return ret;
 	}
+	
+
 	
 	public static ChatLogEntry factory(String rawText) {
 		return parse(rawText);

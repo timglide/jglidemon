@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.tabs;
 
 import jgm.gui.updaters.StatusUpdater;
@@ -41,7 +61,7 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * @return The index of this Tab
 	 */
 	public final int getIndex() {
-		return ((JTabbedPane) this.getParent()).indexOfTab(name);
+		return ((JTabbedPane) this.getParent()).indexOfComponent(this);
 	}
 	
 	/**
@@ -53,28 +73,13 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 				== getIndex();
 	}
 	
+	public final void select() {
+		((JTabbedPane) this.getParent()).setSelectedComponent(this);
+	}
+	
 	/**
 	 * It is optional for a Tab to implement this method
 	 * for when the StatusUpdater has updated.
 	 */
 	public void update(StatusUpdater s) {}
-	
-	public void localeChanged(String key) {
-		setName(jgm.Locale._(key));
-	}
-	
-	public void setName(String s) {
-		super.setName(s);
-		//System.err.printf("name: %s, parent: %s\n", name, getParent());
-		
-		/*if (name == null) {
-			name = s;
-			return;
-		}*/
-		
-		if (getParent() != null && getIndex() >= 0)
-			//System.err.println("YES");
-			((JTabbedPane) this.getParent()).setTitleAt(getIndex(), s);
-		name = s;
-	}
 }

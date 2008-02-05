@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm;
 
 import jgm.util.*;
@@ -14,7 +34,7 @@ import java.io.File;
  */
 public class Config extends QuickIni {
 	static Logger log = Logger.getLogger(Config.class.getName());
-
+		
 	public static Config instance;
 	private static final File iniFile = new File("JGlideMon.ini");
 	//private static QuickIni ini = new QuickIni(iniFile.getName());
@@ -220,12 +240,18 @@ public class Config extends QuickIni {
 		i = getInt("screenshot", "quality");
 		if (i > 100) setInt("screenshot", "quality", 100); else
 		if (i < 10)  setInt("screenshot", "quality", 10);
-
+		
 		if (getDouble("screenshot", "buffer") < 1.0)
 			setDouble("screenshot", "buffer", 1.0);
-
+		
 		if (getInt("screenshot", "timeout") < 5)
 			setInt("screenshot", "timeout", 5);
+		
+		if (getInt("stuck", "limit") < 0)
+			setInt("stuck", "limit", 0);
+		
+		if (getInt("stuck", "timeout") < 5)
+			setInt("stuck", "timeout", 5);
 	}
 	
 	public static void writeIni() {
@@ -238,6 +264,8 @@ public class Config extends QuickIni {
 			public static final boolean debug = false;
 			public static final boolean showtray = true;
 			public static final boolean mintotray = true;
+			public static final String wowdb = "http://wow.allakhazam.com/db/item.html?witem=%s";
+			public static final int lasttab = 0;
 		}
 		
 		public static class log {
@@ -260,10 +288,10 @@ public class Config extends QuickIni {
 		public static class screenshot {
 			public static final boolean autoupdate = true;
 			public static final int updateinterval = 5000;
-
-			// seems to be some weird issue if scale/quality is 100
+			public static final boolean autoscale = true;
+			// seems to be some weird issue if scale is 100
 			public static final int scale = 99;
-			public static final int quality = 99;
+			public static final int quality = 100;
 			public static final double buffer = 1.5;
 			public static final int timeout = 10;
 		}
@@ -284,6 +312,7 @@ public class Config extends QuickIni {
 			public static final boolean follow = true;
 			public static final boolean pvp = true;
 			public static final boolean stuck = true;
+			public static final boolean status = true;
 			
 			public static class tts {
 				public static final boolean enabled = true;
@@ -292,6 +321,18 @@ public class Config extends QuickIni {
 				public static final boolean gm = true;
 				public static final boolean status = true;
 			}
+		}
+		
+		public static class stuck {
+			public static final boolean enabled = false;
+			public static final int limit = 5;
+			public static final int timeout = 300;
+		}
+		
+		public static class web {
+			public static final boolean enabled = false;
+			public static final int port = 3201;
+			public static final int updateinterval = 5000;
 		}
 	}
 }

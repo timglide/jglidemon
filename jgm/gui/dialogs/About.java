@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.dialogs;
 
 import jgm.JGlideMon;
@@ -11,6 +31,7 @@ public class About extends Dialog implements ActionListener {
 	private JLabel iconLabel;
 	private JLabel text;
 	
+	private JLinkButton gplLink;
 	private JLinkButton freeTtsLink;
 	
 	private JButton close;
@@ -24,17 +45,28 @@ public class About extends Dialog implements ActionListener {
 			JGlideMon.class.getResource("resources/images/stitch/stitch" + r.nextInt(2) + ".jpg"));
 		iconLabel = new JLabel(icon);
 		
+		this.setLayout(new BorderLayout(PADDING, PADDING));
+		
 		add(iconLabel, BorderLayout.WEST);
 		
 		JPanel textPanel = new JPanel();
 		textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.PAGE_AXIS));
 		
 		text = new JLabel(
-			"<html><br>JGlideMon " + JGlideMon.version + "<br>" +
-			"By Tim<br><br>" +
-			"</html>"
+			"<html>JGlideMon " + JGlideMon.version + "<br>" +
+			JGlideMon.revision + "<br>" +
+			JGlideMon.date + "<br>" +
+			"By Tim<br><br>Released under the GNU GPL"
 		);
 		textPanel.add(text);
+		
+		try {
+			gplLink =
+				new JLinkButton("More Info",
+					new java.net.URL("http://www.gnu.org/licenses/gpl.html"));
+			gplLink.setBorder(BorderFactory.createEmptyBorder());
+			textPanel.add(gplLink);
+		} catch (java.net.MalformedURLException e) {}
 		
 		// only if there is tts support
 		if (jgm.util.Speech.isSupported()) {
@@ -47,9 +79,9 @@ public class About extends Dialog implements ActionListener {
 			} catch (java.net.MalformedURLException e) {}
 			
 			if (freeTtsLink != null) {
-				textPanel.add(new JLabel("Text-to-speech provided by"));
-				textPanel.add(freeTtsLink);		
 				textPanel.add(new JLabel("<html><br></html>"));
+				textPanel.add(new JLabel("Text-to-speech provided by"));
+				textPanel.add(freeTtsLink);
 			}
 		}
 		
@@ -57,7 +89,7 @@ public class About extends Dialog implements ActionListener {
 		
 		close = new JButton("Close");
 		close.addActionListener(this);
-		add(close, BorderLayout.SOUTH);
+		add(Dialog.makeNiceButtons(close), BorderLayout.SOUTH);
 		
 		makeVisible();
 	}
