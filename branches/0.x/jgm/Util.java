@@ -185,7 +185,7 @@ public class Util {
 			ps.println("Java Properties");
 			ps.println("---------------");
 			
-			for (Object key : System.getProperties().keySet()) {
+			for (Object key : new java.util.TreeSet<Object>(System.getProperties().keySet())) {
 				ps.println(key + ": " + System.getProperty(key.toString()));
 			}
 			
@@ -202,18 +202,11 @@ public class Util {
 			ps.println();
 			ps.println("JGlideMon Config");
 			ps.println("----------------");
-			
-			Config cfg = Config.getInstance();
-			java.util.Iterator<String> i = cfg.getAllSectionNames();
-				
-			while (i.hasNext()) {
-				String section = i.next();
-				
-				for (String prop : cfg.getAllPropertyNames(section)) {
-					ps.print(section + "." + prop + ": ");
-					ps.println(cfg.get(section, prop));
-				}
+						
+			for (Object key : new java.util.TreeSet<Object>(Config.getProps().keySet())) {
+				ps.println(key + ": " + Config.getProps().getProperty(key.toString()));
 			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

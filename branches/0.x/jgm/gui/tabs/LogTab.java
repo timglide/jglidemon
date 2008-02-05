@@ -195,7 +195,7 @@ public class LogTab extends Tab implements Clearable {
 		public LogTableModel() {
 			super();
 
-			entries = new RingBuffer<LogEntry>(Config.getInstance().getInt("log", "maxentries"));
+			entries = new RingBuffer<LogEntry>(Config.getInstance().getInt("log.maxentries"));
 		}
 
 		public void add(LogEntry i) {			

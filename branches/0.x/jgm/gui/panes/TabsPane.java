@@ -92,14 +92,14 @@ public class TabsPane extends Pane {
 		addTab(lootsTab);
 
 		try {
-			tabbedPane.setSelectedIndex(jgm.Config.getInstance().getInt("general", "lasttab"));
+			tabbedPane.setSelectedIndex(jgm.Config.getInstance().getInt("general.lasttab"));
 		} catch (IndexOutOfBoundsException e) {}
 		
 		// save current tab in the config to restore when program is restarted
 		tabbedPane.addChangeListener(
 			new javax.swing.event.ChangeListener() {
 				public void stateChanged(javax.swing.event.ChangeEvent e) {
-					jgm.Config.getInstance().set("general", "lasttab", tabbedPane.getSelectedIndex());
+					jgm.Config.getInstance().set("general.lasttab", tabbedPane.getSelectedIndex());
 				}
 			}
 		);

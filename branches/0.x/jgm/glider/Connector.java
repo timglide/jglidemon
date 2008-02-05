@@ -67,7 +67,7 @@ public class Connector {
 		if (state != State.DISCONNECTED) return;
 		
 		if (interactive)
-			reconnectTries = cfg.getInt("net", "autoreconnecttries");
+			reconnectTries = cfg.getInt("net.autoreconnecttries");
 		
 		state = State.CONNECTING;
 		
@@ -84,13 +84,13 @@ public class Connector {
 						if (c.getConn() == null) continue;
 						c.getConn().connect();
 					} catch (java.net.UnknownHostException e) {
-						log.warning("Error connecting to " + cfg.get("net", "host") + ": " + e.getMessage());
-						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
+						log.warning("Error connecting to " + cfg.get("net.host") + ": " + e.getMessage());
+						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net.host") + ":" + cfg.get("net.port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
 						success = false;
 						break;
 					} catch (Exception e) {
-						log.warning("Error connecting to " + cfg.getString("net", "host") + ": " + e.getMessage());
-						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net", "host") + ":" + cfg.get("net", "port") + " - " + e.getMessage(), true, true);						
+						log.warning("Error connecting to " + cfg.getString("net.host") + ": " + e.getMessage());
+						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net.host") + ":" + cfg.get("net.port") + " - " + e.getMessage(), true, true);						
 						success = false;
 						break;
 					}
@@ -99,14 +99,14 @@ public class Connector {
 				state = (success) ? State.CONNECTED : State.DISCONNECTED;
 				
 				if (success) {
-					reconnectTries = cfg.getInt("net", "autoreconnecttries");
+					reconnectTries = cfg.getInt("net.autoreconnecttries");
 
 					notifyConnectionEstablished();
 					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 				} else {
 					notifyConnectionDied();
 					
-					if (cfg.getBool("net" , "autoReconnect")) {
+					if (cfg.getBool("net.autoReconnect")) {
 						createReconnector();
 					}
 				}
@@ -162,7 +162,7 @@ public class Connector {
 					notifyConnectionDied();
 					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 					
-					if (!interactive && cfg.getBool("net" , "autoReconnect")) {
+					if (!interactive && cfg.getBool("net.autoreconnect")) {
 						createReconnector();
 					}
 				}
@@ -215,10 +215,10 @@ public class Connector {
 	private static int reconnectTries = Integer.MIN_VALUE;
 	
 	private static void createReconnector() {
-		final int delay = cfg.getInt("net", "autoreconnectdelay");
+		final int delay = cfg.getInt("net.autoreconnectdelay");
 		
 		if (reconnectTries == Integer.MIN_VALUE) {
-			reconnectTries = cfg.getInt("net", "autoreconnecttries");
+			reconnectTries = cfg.getInt("net.autoreconnecttries");
 		}
 		
 		reconnectTries--;

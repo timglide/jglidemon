@@ -57,7 +57,7 @@ public class Tray implements ActionListener {
 			icon.setImageAutoSize(true);
 			icon.addMouseListener(new MyMouseListener());
 			
-			if (jgm.Config.getInstance().getBool("general", "showtray")) {
+			if (jgm.Config.getInstance().getBool("general.showtray")) {
 				enable();
 			}
 		} catch (Throwable e) {

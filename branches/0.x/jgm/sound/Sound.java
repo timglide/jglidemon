@@ -42,8 +42,8 @@ public class Sound extends Audible {
 	}
 
 	public boolean isAudible() {
-		if (!cfg.getBool("sound", "enabled")) return false;
-		return cfg.getBool("sound", type.toString().toLowerCase());
+		if (!cfg.getBool("sound.enabled")) return false;
+		return cfg.getBool("sound." + type.toString().toLowerCase());
 	}
 
 }

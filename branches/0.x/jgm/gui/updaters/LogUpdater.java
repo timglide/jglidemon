@@ -221,10 +221,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 						.messageIfInactive("JGlideMon Glider Alert", e2.getText());
 				
 				if (!fromLog && e2.type == GliderLogEntry.Type.STUCK &&
-					jgm.Config.getInstance().getBool("stuck", "enabled")) {
+					jgm.Config.getInstance().getBool("stuck.enabled")) {
 					long now = System.currentTimeMillis();
-					long timeout = 1000 * jgm.Config.getInstance().getInt("stuck", "timeout");
-					int limit = jgm.Config.getInstance().getInt("stuck", "limit");
+					long timeout = 1000 * jgm.Config.getInstance().getInt("stuck.timeout");
+					int limit = jgm.Config.getInstance().getInt("stuck.limit");
 					
 					if (stuckTimer == null) {
 						stuckTimer = now;

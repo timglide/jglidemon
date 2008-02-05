@@ -90,7 +90,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		GUI.setStatusBarText("Updating screenshot...", true, false);
 		GUI.setStatusBarProgress(0);
 		
-		int buffSize = (int) (cfg.getDouble("screenshot", "buffer") * 1048576);
+		int buffSize = (int) (cfg.getDouble("screenshot.buffer") * 1048576);
 		
 		if (buff == null || buff.length != buffSize) {
 			log.fine("Allocating ss buffer of size " + buffSize);
@@ -126,16 +126,16 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				
 				this.cancel();
 			}
-		}, cfg.getInt("screenshot", "timeout") * 1000);
+		}, cfg.getInt("screenshot.timeout") * 1000);
 		
 		if (!sentSettings) {
 			log.finer("Sending screenshot settings");
-			conn.send("/capturescale " + cfg.get("screenshot", "scale"));
+			conn.send("/capturescale " + cfg.get("screenshot.scale"));
 			//System.out.println(conn.readLine()); // set scale successfully
 			//System.out.println(conn.readLine()); // ---
 			log.finer(conn.readLine()); // set scale successfully
 			conn.readLine(); // ---
-			conn.send("/capturequality " + cfg.get("screenshot", "quality"));
+			conn.send("/capturequality " + cfg.get("screenshot.quality"));
 			//System.out.println(conn.readLine()); // set quality successfully
 			//System.out.println(conn.readLine()); // ---
 			log.finer(conn.readLine()); // set quality successfully
@@ -236,10 +236,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			sentSettings = true;
 		}
 		
-		if (redoScale && cfg.getBool("screenshot", "autoscale")) {
+		if (redoScale && cfg.getBool("screenshot.autoscale")) {
 			log.fine("Attempting to set screenshot scale...");
 			
-			double curScale = cfg.getDouble("screenshot", "scale") / 100;
+			double curScale = cfg.getDouble("screenshot.scale") / 100;
 			double newScale = curScale;
 			int iwidth = icon.getIconWidth();
 			int iheight = icon.getIconHeight();
@@ -282,7 +282,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			
 			log.fine("Setting scale to " + newScaleInt + "%");
 			
-			cfg.set("screenshot", "scale", newScaleInt);
+			cfg.set("screenshot.scale", newScaleInt);
 			redoScale = false;
 			sentSettings = false;
 		}
@@ -307,7 +307,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					// update if either the screenshot tab is viewable or if the
 					// webserver is enabled so that only one thread ever tries to
 					// update the screenshot
-					if (attached && (tab.isCurrentTab() || cfg.getBool("web", "enabled"))) update();
+					if (attached && (tab.isCurrentTab() || cfg.getBool("web.enabled"))) update();
 				} catch (InterruptedException e) {
 					log.fine(thread.getName() + " interrupted within update()");
 				} catch (Exception e) {
@@ -321,7 +321,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				}
 				
 				idle = true;
-				Thread.sleep(cfg.getInt("screenshot", "updateInterval"));
+				Thread.sleep(cfg.getInt("screenshot.updateInterval"));
 			} catch (InterruptedException e) {
 				log.fine(thread.getName() + " interrupted");
 				Thread.interrupted();

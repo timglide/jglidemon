@@ -35,7 +35,7 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.14";
+	public static final String version = "0.15 beta";
 	public static final String _revision = "$Revision$";
 	public static final String revision = _revision.substring(1, _revision.length() - 1);
 	public static final String _date = "$Date$";
@@ -57,12 +57,18 @@ public class JGlideMon {
 	
 	public JGlideMon() {
 		instance = this;
-		cfg = new Config();		
 		init();
 	}
 	
 	private void init() {
 		// initialize logger
+		Log.reloadConfig();
+		cfg = new Config();
+		
+		// yeah... so that if it converts JGlideMon.ini
+		// the log line for it looks nice but this
+		// needs to be called again in case the config
+		// has log.debug=true
 		Log.reloadConfig();
 		
 		try {
@@ -82,7 +88,7 @@ public class JGlideMon {
 		// takes a while to connect it won't slow the gui
 		Runnable r = new Runnable() {
 			public void run() {
-				if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
+				if (!jgm.Config.fileExists() || cfg.getString("net.host").equals("")) {
 					JOptionPane.showMessageDialog(GUI.frame,
 						"Please enter the remote host, port, and password.\n" +
 						"Next, click Save Settings, then click Connect.\n\n" +
@@ -127,13 +133,13 @@ public class JGlideMon {
 		
 		new HTTPD();
 		
-		if (cfg.getBool("web", "enabled")) {
+		if (cfg.getBool("web.enabled")) {
 			try {
-				HTTPD.instance.start(cfg.getInt("web", "port"));
+				HTTPD.instance.start(cfg.getInt("web.port"));
 			} catch (java.io.IOException e) {
 				JOptionPane.showMessageDialog(GUI.frame,
 					"Unable to start web-server.\n" +
-					"Port " + cfg.getInt("web", "port") + " is unavailible.",
+					"Port " + cfg.getInt("web.port") + " is unavailible.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE
 				);
@@ -153,7 +159,7 @@ public class JGlideMon {
 		jgm.wow.Item.Cache.saveIcons();
 		jgm.wow.Item.Cache.saveItems();
 		HTTPD.instance.stop(); // doesn't matter if it's actually running or not
-		jgm.Config.writeIni();
+		jgm.Config.write();
 		
 		System.exit(0);
 	}

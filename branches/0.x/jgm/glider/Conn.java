@@ -31,6 +31,9 @@ import java.net.*;
  * @author Tim
  * @since 0.1
  */
+
+// TODO Figure out proper synchronization to eliminate
+// Invalid LogEntry "Bye!" upon disconnect
 public class Conn {
 	static Logger log = Logger.getLogger(Conn.class.getName());
 	
@@ -54,20 +57,22 @@ public class Conn {
 		throws UnknownHostException, IOException {
 		s = null; out = null; inStream = null; in = null;
 
-		log.info("Connecting to " + cfg.getString("net", "host") + "...");
-		s   = new Socket(cfg.getString("net", "host"), cfg.getInt("net", "port"));
+		log.info("Connecting to " + cfg.getString("net.host") + "...");
+		s   = new Socket(cfg.getString("net.host"), cfg.getInt("net.port"));
 		out = new PrintWriter(s.getOutputStream(), false);
 		inStream = new BufferedInputStream(s.getInputStream());
 		in  = new BufferedReader(
 		          new InputStreamReader(inStream, "UTF-8"));
-		send(cfg.getString("net", "password"));
+		send(cfg.getString("net.password"));
 		in.readLine(); // ignore Authenticated OK line
 		
 		notifyAll();
 	}
 
 	public boolean isConnected() {
-		return s != null && s.isConnected() && !s.isOutputShutdown();
+//		synchronized (s) {
+			return s != null && s.isConnected() && !s.isOutputShutdown();
+//		}
 	}
 
 	public InputStream getInStream() {
@@ -86,30 +91,42 @@ public class Conn {
 		while (!isConnected()) {}
 		
 		//try {
-			out.print(str + "\r\n"); out.flush();
+//			synchronized (out) {
+				out.print(str + "\r\n"); out.flush();
+//			}
 		/*} catch (Exception e) {
 			System.err.println("Error sending '" + str + "'. " + e.getMessage());
 		}*/
 	}
 
 	public int read() throws IOException {
-		return inStream.read();
+//		synchronized (inStream) {
+			return inStream.read();
+//		}
 	}
 
 	public int read(byte[] buff) throws IOException {
-		return inStream.read(buff);
+//		synchronized (inStream) {
+			return inStream.read(buff);
+//		}
 	}
 
 	public int read(byte[] buff, int off, int len) throws IOException {
-		return inStream.read(buff, off, len);
+//		synchronized (inStream) {
+			return inStream.read(buff, off, len);
+//		}
 	}
 
 	public long skip(long n) throws IOException {
-		return inStream.skip(n);
+//		synchronized (inStream) {
+			return inStream.skip(n);
+//		}
 	}
 
 	public String readLine() throws IOException {
-		return in.readLine();
+//		synchronized (in) {
+			return in.readLine();
+//		}
 	}
 
 	public void close() {

@@ -161,7 +161,7 @@ public class AjaxHandler extends Handler {
 				boolean connected = jgm.glider.Connector.isConnected();
 				_(xml, jgm_, "connected", Boolean.toString(connected));
 				
-				_(xml, jgm_, "update-interval", jgm.Config.getInstance().getInt("web", "updateinterval"));
+				_(xml, jgm_, "update-interval", jgm.Config.getInstance().getInt("web.updateinterval"));
 				
 				AC(root, jgm_);
 				

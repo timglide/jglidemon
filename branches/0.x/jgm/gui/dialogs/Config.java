@@ -147,12 +147,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++; c.weightx = 1.0;
 		general.add(maxLogEntries, c);
 		
-		showTray = new JCheckBox("Show Tray Icon", cfg.getBool("general", "showtray"));
+		showTray = new JCheckBox("Show Tray Icon", cfg.getBool("general.showtray"));
 		showTray.addChangeListener(this);
 		c.gridy++; c.gridx = 0; c.gridwidth = 2;
 		general.add(showTray, c);
 		
-		minToTray = new JCheckBox("Minimize To Tray", cfg.getBool("general", "mintotray"));
+		minToTray = new JCheckBox("Minimize To Tray", cfg.getBool("general.mintotray"));
 		minToTray.setMargin(new Insets(0, 25, 0, 0));
 		c.gridy++;
 		general.add(minToTray, c);
@@ -184,7 +184,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			}
 		});*/
 		wowDbSite.setEditable(true);
-		wowDbSite.setSelectedItem(cfg.get("general", "wowdb"));		
+		wowDbSite.setSelectedItem(cfg.get("general.wowdb"));		
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
 		general.add(new JLabel("WoW DB Site: "), c);
@@ -211,7 +211,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx = 0; c.gridy = 0; c.weightx = 0.0;
 		net.add(new JLabel("Host: "), c);
 		
-		host = new JTextField(cfg.getString("net", "host"));
+		host = new JTextField(cfg.getString("net.host"));
 		host.addActionListener(this);
 		c.gridx++; c.weightx = 1.0;
 		net.add(host, c);
@@ -228,12 +228,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		net.add(new JLabel("Password: " ), c);
 		
-		password = new JPasswordField(cfg.getString("net", "password"));
+		password = new JPasswordField(cfg.getString("net.password"));
 		password.addActionListener(this);
 		c.gridx++; c.weightx = 1.0;
 		net.add(password, c);
 		
-		netReconnect = new JCheckBox("Auto Reconnect", cfg.getBool("net", "autoreconnect"));
+		netReconnect = new JCheckBox("Auto Reconnect", cfg.getBool("net.autoreconnect"));
 		netReconnect.addChangeListener(this);
 		c.gridx = 0; c.gridy++;	c.gridwidth = 2;
 		net.add(netReconnect, c);
@@ -275,7 +275,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(screenshotInterval, c);
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 2;
-		screenshotAutoScale = new JCheckBox("Automatically adjust scale to fit window", cfg.getBool("screenshot", "autoscale"));
+		screenshotAutoScale = new JCheckBox("Automatically adjust scale to fit window", cfg.getBool("screenshot.autoscale"));
 		screenshotAutoScale.addChangeListener(this);
 		screenshot.add(screenshotAutoScale, c);
 		
@@ -283,7 +283,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(new JLabel("Scale: "), c);
 		
 		screenshotScale =
-			new JSlider(JSlider.HORIZONTAL, 10, 100, cfg.getInt("screenshot", "scale"));
+			new JSlider(JSlider.HORIZONTAL, 10, 100, cfg.getInt("screenshot.scale"));
 		screenshotScale.setMajorTickSpacing(30);
 		screenshotScale.setMinorTickSpacing(10);
 		screenshotScale.setPaintTicks(true);
@@ -295,7 +295,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(new JLabel("Quality: "), c);
 		
 		screenshotQuality =
-			new JSlider(JSlider.HORIZONTAL, 10, 100, cfg.getInt("screenshot", "quality"));
+			new JSlider(JSlider.HORIZONTAL, 10, 100, cfg.getInt("screenshot.quality"));
 			
 		screenshotQuality.setMajorTickSpacing(30);
 		screenshotQuality.setMinorTickSpacing(10);
@@ -341,7 +341,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		sound = new JPanel(new GridBagLayout());
 		
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.weightx = 1.0; c.weighty = 0.0;
-		enableSound = new JCheckBox("Enable Sound", cfg.getBool("sound", "enabled"));
+		enableSound = new JCheckBox("Enable Sound", cfg.getBool("sound.enabled"));
 		enableSound.addChangeListener(this);
 		sound.add(enableSound, c);
 		
@@ -349,49 +349,49 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		soundWhisper = new JCheckBox("On Whisper", cfg.getBool("sound", "whisper"));
+		soundWhisper = new JCheckBox("On Whisper", cfg.getBool("sound.whisper"));
 		sound.add(soundWhisper, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		soundSay = new JCheckBox("On Say", cfg.getBool("sound", "say"));
+		soundSay = new JCheckBox("On Say", cfg.getBool("sound.say"));
 		sound.add(soundSay, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		soundGM = new JCheckBox("On GM Event", cfg.getBool("sound", "gm"));
+		soundGM = new JCheckBox("On GM Event", cfg.getBool("sound.gm"));
 		sound.add(soundGM, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		soundFollow = new JCheckBox("On Follower Alert", cfg.getBool("sound", "follow"));
+		soundFollow = new JCheckBox("On Follower Alert", cfg.getBool("sound.follow"));
 		sound.add(soundFollow, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		soundPVP = new JCheckBox("On PVP Attacker Alert", cfg.getBool("sound", "pvp"));
+		soundPVP = new JCheckBox("On PVP Attacker Alert", cfg.getBool("sound.pvp"));
 		sound.add(soundPVP, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		soundStuck = new JCheckBox("On Stuck Too Many Times", cfg.getBool("sound", "stuck"));
+		soundStuck = new JCheckBox("On Stuck Too Many Times", cfg.getBool("sound.stuck"));
 		sound.add(soundStuck, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		soundStatus = new JCheckBox("On Status Event", cfg.getBool("sound", "status"));
+		soundStatus = new JCheckBox("On Status Event", cfg.getBool("sound.status"));
 		soundStatus.setToolTipText("This includes when your character dies.");
 		sound.add(soundStatus, c);
 		
@@ -402,7 +402,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		sound = new JPanel(new GridBagLayout());
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 2; c.weighty = 0.0;
-		enableTTS = new JCheckBox("Enable TTS", cfg.getBool("sound.tts", "enabled"));
+		enableTTS = new JCheckBox("Enable TTS", cfg.getBool("sound.tts.enabled"));
 		enableTTS.addChangeListener(this);
 		sound.add(enableTTS, c);
 		
@@ -410,28 +410,28 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		ttsWhisper = new JCheckBox("On Whisper", cfg.getBool("sound.tts", "whisper"));
+		ttsWhisper = new JCheckBox("On Whisper", cfg.getBool("sound.tts.whisper"));
 		sound.add(ttsWhisper, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		ttsSay = new JCheckBox("On Say", cfg.getBool("sound.tts", "say"));
+		ttsSay = new JCheckBox("On Say", cfg.getBool("sound.tts.say"));
 		sound.add(ttsSay, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		ttsGM = new JCheckBox("On GM Event", cfg.getBool("sound.tts", "gm"));
+		ttsGM = new JCheckBox("On GM Event", cfg.getBool("sound.tts.gm"));
 		sound.add(ttsGM, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		sound.add(new JLabel("    "), c);
 		
 		c.gridx++; c.weightx = 1.0;
-		ttsStatus = new JCheckBox("On Status Event", cfg.getBool("sound.tts", "status"));
+		ttsStatus = new JCheckBox("On Status Event", cfg.getBool("sound.tts.status"));
 		ttsStatus.setToolTipText("This includes when JGlideMon connects/disconnects with Glider.");
 		sound.add(ttsStatus, c);
 		
@@ -545,94 +545,94 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			return;
 		}
 		
-		boolean oldDebug = cfg.getBool("general", "debug");
+		boolean oldDebug = cfg.getBool("general.debug");
 		
 		if (oldDebug != debug.isSelected()) {
-			cfg.set("general", "debug", debug.isSelected());
+			cfg.set("general.debug", debug.isSelected());
 			jgm.JGlideMon.debug = debug.isSelected();
 			
 			// this deletes the current log
 			jgm.Log.reloadConfig();
 		}
 		
-		cfg.set("net", "host", host.getText());		
-		cfg.set("net", "port", port.getValue());
-		cfg.set("net", "password", password.getText());
-		cfg.set("net", "autoreconnect", netReconnect.isSelected());			
-		cfg.set("net", "autoreconnectdelay", netReconnectDelay.getValue());
-		cfg.set("net", "autoreconnecttries", netReconnectTries.getValue());
+		cfg.set("net.host", host.getText());		
+		cfg.set("net.port", port.getValue());
+		cfg.set("net.password", password.getText());
+		cfg.set("net.autoreconnect", netReconnect.isSelected());			
+		cfg.set("net.autoreconnectdelay", netReconnectDelay.getValue());
+		cfg.set("net.autoreconnecttries", netReconnectTries.getValue());
 
-		cfg.set("status", "updateinterval", statusInterval.getValue());
+		cfg.set("status.updateinterval", statusInterval.getValue());
 
-		cfg.set("log", "maxentries", maxLogEntries.getValue());
+		cfg.set("log.maxentries", maxLogEntries.getValue());
 
 		
-		cfg.set("general", "showtray", showTray.isSelected());
-		cfg.set("general", "mintotray", minToTray.isSelected());
-		cfg.set("general", "wowdb", wowDbSite.getSelectedItem());
+		cfg.set("general.showtray", showTray.isSelected());
+		cfg.set("general.mintotray", minToTray.isSelected());
+		cfg.set("general.wowdb", wowDbSite.getSelectedItem());
 		
 		
-		cfg.set("screenshot", "updateinterval", screenshotInterval.getValue());
-		cfg.set("screenshot", "autoscale", screenshotAutoScale.isSelected());
-		cfg.set("screenshot", "scale", screenshotScale.getValue());
-		cfg.set("screenshot", "quality", screenshotQuality.getValue());
-		cfg.set("screenshot", "buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
-		cfg.set("screenshot", "timeout", screenshotTimeout.getValue());
+		cfg.set("screenshot.updateinterval", screenshotInterval.getValue());
+		cfg.set("screenshot.autoscale", screenshotAutoScale.isSelected());
+		cfg.set("screenshot.scale", screenshotScale.getValue());
+		cfg.set("screenshot.quality", screenshotQuality.getValue());
+		cfg.set("screenshot.buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
+		cfg.set("screenshot.timeout", screenshotTimeout.getValue());
 
 		
 		// would be null on first-time startup
 		if (null != jgm.JGlideMon.instance.ssUpdater)
 			jgm.JGlideMon.instance.ssUpdater.sentSettings = false;
 		
-		cfg.set("sound", "enabled", enableSound.isSelected());
-		cfg.set("sound", "whisper", soundWhisper.isSelected());
-		cfg.set("sound", "say", soundSay.isSelected());
-		cfg.set("sound", "gm", soundGM.isSelected());
-		cfg.set("sound", "follow", soundFollow.isSelected());
-		cfg.set("sound", "pvp", soundPVP.isSelected());
-		cfg.set("sound", "stuck", soundStuck.isSelected());
-		cfg.set("sound", "status", soundStatus.isSelected());
-		cfg.set("sound.tts", "enabled", enableTTS.isSelected());
-		cfg.set("sound.tts", "whisper", ttsWhisper.isSelected());
-		cfg.set("sound.tts", "say", ttsSay.isSelected());
-		cfg.set("sound.tts", "gm", ttsGM.isSelected());
-		cfg.set("sound.tts", "status", ttsStatus.isSelected());
+		cfg.set("sound.enabled", enableSound.isSelected());
+		cfg.set("sound.whisper", soundWhisper.isSelected());
+		cfg.set("sound.say", soundSay.isSelected());
+		cfg.set("sound.gm", soundGM.isSelected());
+		cfg.set("sound.follow", soundFollow.isSelected());
+		cfg.set("sound.pvp", soundPVP.isSelected());
+		cfg.set("sound.stuck", soundStuck.isSelected());
+		cfg.set("sound.status", soundStatus.isSelected());
+		cfg.set("sound.tts.enabled", enableTTS.isSelected());
+		cfg.set("sound.tts.whisper", ttsWhisper.isSelected());
+		cfg.set("sound.tts.say", ttsSay.isSelected());
+		cfg.set("sound.tts.gm", ttsGM.isSelected());
+		cfg.set("sound.tts.status", ttsStatus.isSelected());
 		
-		cfg.set("stuck", "enabled", enableStuck.isSelected());
-		cfg.set("stuck", "limit", ((Integer) stuckLimit.getValue()).intValue());
-		cfg.set("stuck", "timeout", ((Integer) stuckTimeout.getValue()).intValue());
+		cfg.set("stuck.enabled", enableStuck.isSelected());
+		cfg.set("stuck.limit", ((Integer) stuckLimit.getValue()).intValue());
+		cfg.set("stuck.timeout", ((Integer) stuckTimeout.getValue()).intValue());
 		
-		boolean oldWebEnabled = cfg.getBool("web", "enabled");
-		int oldWebPort = cfg.getInt("web", "port");
+		boolean oldWebEnabled = cfg.getBool("web.enabled");
+		int oldWebPort = cfg.getInt("web.port");
 		
-		cfg.set("web", "enabled", enableWeb.isSelected());
-		cfg.set("web", "port", webPort.getValue());
-		cfg.set("web", "updateinterval", webInterval.getValue());
+		cfg.set("web.enabled", enableWeb.isSelected());
+		cfg.set("web.port", webPort.getValue());
+		cfg.set("web.updateinterval", webInterval.getValue());
 
 		
 		// stop httpd if needed
-		if ((oldWebEnabled && oldWebPort != cfg.getInt("web", "port")) ||
+		if ((oldWebEnabled && oldWebPort != cfg.getInt("web.port")) ||
 			(!enableWeb.isSelected())) {
 			jgm.HTTPD.instance.stop();
 		}
 		
 		// restart on different port if needed
-		if ((enableWeb.isSelected() && oldWebPort != cfg.getInt("web", "port")) ||
+		if ((enableWeb.isSelected() && oldWebPort != cfg.getInt("web.port")) ||
 			(!oldWebEnabled && enableWeb.isSelected()) ||
 			(enableWeb.isSelected() && jgm.HTTPD.thread == null)) {
 			try {
-				jgm.HTTPD.instance.start(cfg.getInt("web", "port"));
+				jgm.HTTPD.instance.start(cfg.getInt("web.port"));
 			} catch (java.io.IOException x) {
 				JOptionPane.showMessageDialog(GUI.frame,
 					"Unable to start web-server.\n" +
-					"Port " + cfg.getInt("web", "port") + " is unavailible.",
+					"Port " + cfg.getInt("web.port") + " is unavailible.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE
 				);
 			}
 		}
 		
-		jgm.Config.writeIni();
+		jgm.Config.write();
 		
 		setVisible(false);
 	}
@@ -693,26 +693,26 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	protected void onShow() {
 		//super.onShow();
 
-		debug.setSelected(cfg.getBool("general", "debug"));
-		statusInterval.setValue(cfg.getInt("status", "updateinterval"));
-		maxLogEntries.setValue(cfg.getInt("log", "maxentries"));
+		debug.setSelected(cfg.getBool("general.debug"));
+		statusInterval.setValue(cfg.getInt("status.updateinterval"));
+		maxLogEntries.setValue(cfg.getInt("log.maxentries"));
 		showTray.setEnabled(jgm.gui.Tray.isSupported());
-		showTray.setSelected(cfg.getBool("general", "showtray"));
-		minToTray.setSelected(cfg.getBool("general", "mintotray"));
+		showTray.setSelected(cfg.getBool("general.showtray"));
+		minToTray.setSelected(cfg.getBool("general.mintotray"));
 		
-		host.setText(cfg.get("net", "host"));
-		port.setValue(cfg.getInt("net", "port"));
-		password.setText(cfg.get("net", "password"));
-		netReconnect.setSelected(cfg.getBool("net", "autoreconnect"));
-		netReconnectDelay.setValue(cfg.getInt("net", "autoreconnectdelay"));
-		netReconnectTries.setValue(cfg.getInt("net", "autoreconnecttries"));
+		host.setText(cfg.get("net.host"));
+		port.setValue(cfg.getInt("net.port"));
+		password.setText(cfg.get("net.password"));
+		netReconnect.setSelected(cfg.getBool("net.autoreconnect"));
+		netReconnectDelay.setValue(cfg.getInt("net.autoreconnectdelay"));
+		netReconnectTries.setValue(cfg.getInt("net.autoreconnecttries"));
 		
-		screenshotInterval.setValue(cfg.getInt("screenshot", "updateinterval"));
-		screenshotAutoScale.setSelected(cfg.getBool("screenshot", "autoscale"));
-		screenshotScale.setValue(cfg.getInt("screenshot", "scale"));
-		screenshotQuality.setValue(cfg.getInt("screenshot", "quality"));
-		screenshotBuffer.setValue(cfg.getDouble("screenshot", "buffer"));
-		screenshotTimeout.setValue(cfg.getInt("screenshot", "timeout"));
+		screenshotInterval.setValue(cfg.getInt("screenshot.updateinterval"));
+		screenshotAutoScale.setSelected(cfg.getBool("screenshot.autoscale"));
+		screenshotScale.setValue(cfg.getInt("screenshot.scale"));
+		screenshotQuality.setValue(cfg.getInt("screenshot.quality"));
+		screenshotBuffer.setValue(cfg.getDouble("screenshot.buffer"));
+		screenshotTimeout.setValue(cfg.getInt("screenshot.timeout"));
 		
 		Icon i = jgm.GUI.instance.tabsPane.screenshotTab.ssLabel.getIcon();
 		
@@ -735,29 +735,29 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			this.pack();
 		}
 		
-		enableSound.setSelected(cfg.getBool("sound", "enabled"));
-		soundWhisper.setSelected(cfg.getBool("sound", "whisper"));
-		soundSay.setSelected(cfg.getBool("sound", "say"));
-		soundGM.setSelected(cfg.getBool("sound", "gm"));
-		soundFollow.setSelected(cfg.getBool("sound", "follow"));
-		soundPVP.setSelected(cfg.getBool("sound", "pvp"));
-		soundStuck.setSelected(cfg.getBool("sound", "stuck"));
-		soundStatus.setSelected(cfg.getBool("sound", "status"));
+		enableSound.setSelected(cfg.getBool("sound.enabled"));
+		soundWhisper.setSelected(cfg.getBool("sound.whisper"));
+		soundSay.setSelected(cfg.getBool("sound.say"));
+		soundGM.setSelected(cfg.getBool("sound.gm"));
+		soundFollow.setSelected(cfg.getBool("sound.follow"));
+		soundPVP.setSelected(cfg.getBool("sound.pvp"));
+		soundStuck.setSelected(cfg.getBool("sound.stuck"));
+		soundStatus.setSelected(cfg.getBool("sound.status"));
 		
 		enableTTS.setEnabled(jgm.util.Speech.isSupported());
-		enableTTS.setSelected(cfg.getBool("sound.tts", "enabled"));
-		ttsWhisper.setSelected(cfg.getBool("sound.tts", "whisper"));
-		ttsSay.setSelected(cfg.getBool("sound.tts", "say"));
-		ttsGM.setSelected(cfg.getBool("sound.tts", "gm"));
-		ttsStatus.setSelected(cfg.getBool("sound.tts", "status"));
+		enableTTS.setSelected(cfg.getBool("sound.tts.enabled"));
+		ttsWhisper.setSelected(cfg.getBool("sound.tts.whisper"));
+		ttsSay.setSelected(cfg.getBool("sound.tts.say"));
+		ttsGM.setSelected(cfg.getBool("sound.tts.gm"));
+		ttsStatus.setSelected(cfg.getBool("sound.tts.status"));
 		
-		enableStuck.setSelected(cfg.getBool("stuck", "enabled"));
-		stuckLimit.setValue(cfg.getInt("stuck", "limit"));
-		stuckTimeout.setValue(cfg.getInt("stuck", "timeout"));
+		enableStuck.setSelected(cfg.getBool("stuck.enabled"));
+		stuckLimit.setValue(cfg.getInt("stuck.limit"));
+		stuckTimeout.setValue(cfg.getInt("stuck.timeout"));
 		
-		enableWeb.setSelected(cfg.getBool("web", "enabled"));
-		webPort.setValue(cfg.getInt("web", "port"));
-		webInterval.setValue(cfg.getInt("web", "updateinterval"));
+		enableWeb.setSelected(cfg.getBool("web.enabled"));
+		webPort.setValue(cfg.getInt("web.port"));
+		webInterval.setValue(cfg.getInt("web.updateinterval"));
 		
 		// to initialize enabled/disabled states
 		stateChanged(new ChangeEvent(showTray));

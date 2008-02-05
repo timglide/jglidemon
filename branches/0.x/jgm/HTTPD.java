@@ -415,7 +415,7 @@ public class HTTPD implements Runnable
 				
 				// ensure password was provided
 				if (parms.containsKey("HTTP_PASS") &&
-					parms.getProperty("HTTP_PASS").equals(jgm.Config.getInstance().getString("net", "password"))) {
+					parms.getProperty("HTTP_PASS").equals(jgm.Config.getInstance().getString("net.password"))) {
 					r = serve(uri, method, header, parms);
 				} else {
 					r = new Response(HTTPD.HTTP_UNAUTHORIZED, HTTPD.MIME_PLAINTEXT, "Authorization required");

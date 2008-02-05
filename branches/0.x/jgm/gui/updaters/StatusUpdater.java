@@ -132,7 +132,7 @@ public class StatusUpdater extends Observable
 			
 			try {
 				update();
-				Thread.sleep(cfg.getLong("status", "updateInterval"));
+				Thread.sleep(cfg.getLong("status.updateInterval"));
 			} catch (Exception e) {
 				log.fine("Stopping StatusUpdater, Ex: " + e.getMessage());
 				Connector.disconnect();

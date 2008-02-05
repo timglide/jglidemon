@@ -98,12 +98,12 @@ public class GUI
 		
 		frame.setIconImage(img.getImage());
 		
-		frame.setSize(cfg.getInt("window", "width"), cfg.getInt("window", "height"));
-		frame.setLocation(cfg.getInt("window", "x"), cfg.getInt("window", "y"));
+		frame.setSize(cfg.getInt("window.width"), cfg.getInt("window.height"));
+		frame.setLocation(cfg.getInt("window.x"), cfg.getInt("window.y"));
 
 		tray = new Tray();
 		
-		if (cfg.getBool("window", "maximized")) {
+		if (cfg.getBool("window.maximized")) {
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		}
 		
@@ -120,10 +120,10 @@ public class GUI
 				if (JFrame.MAXIMIZED_BOTH ==
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
 					//System.out.println("Window is maximized");
-					cfg.setBool("window", "maximized", true);
+					cfg.set("window.maximized", true);
 				} else {
 					//System.out.println("Window not maximized");
-					cfg.setBool("window", "maximized", false);
+					cfg.set("window.maximized", false);
 				}
 				
 				if (JFrame.ICONIFIED ==
@@ -131,8 +131,8 @@ public class GUI
 					
 					// minimize to tray
 					if (Tray.isSupported() &&
-						cfg.getBool("general", "showtray") &&
-						cfg.getBool("general", "mintotray")) {
+						cfg.getBool("general.showtray") &&
+						cfg.getBool("general.mintotray")) {
 						frame.setVisible(false);
 					}
 				}
@@ -147,8 +147,8 @@ public class GUI
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
-					cfg.setInt("window", "width", s.width);					
-					cfg.setInt("window", "height", s.height);
+					cfg.set("window.width", s.width);					
+					cfg.set("window.height", s.height);
 				}
 				
 				// request to update the screenshot's scale
@@ -164,8 +164,8 @@ public class GUI
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
-					cfg.setInt("window", "x", p.x);
-					cfg.setInt("window", "y", p.y);
+					cfg.set("window.x", p.x);
+					cfg.set("window.y", p.y);
 				}
 			}
 		});
@@ -297,7 +297,7 @@ public class GUI
 	    	
 	    	public void connectionEstablished() {
 				setStatusBarText("Connected", false, true);
-				setTitle(cfg.get("net", "host") + ":" + cfg.get("net", "port"));
+				setTitle(cfg.get("net.host") + ":" + cfg.get("net.port"));
 				hideStatusBarProgress();
 				
 				menu.sendKeys.setEnabled(true);

@@ -278,7 +278,7 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 			
 			jgm.Util.openURL(
 				String.format(
-					jgm.Config.getInstance().get("general", "wowdb"),
+					jgm.Config.getInstance().get("general.wowdb"),
 					itemId
 			));
 		}

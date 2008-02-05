@@ -45,7 +45,7 @@ public class Phrase extends Audible {
 	}
 	
 	public boolean isAudible() {
-		if (!cfg.getBool("sound.tts", "enabled")) return false;
-		return cfg.getBool("sound.tts", type.toString().toLowerCase());
+		if (!cfg.getBool("sound.tts.enabled")) return false;
+		return cfg.getBool("sound.tts." + type.toString().toLowerCase());
 	}
 }

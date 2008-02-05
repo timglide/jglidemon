@@ -26,11 +26,14 @@ import java.util.logging.*;
 public class Log {
 	public static void reloadConfig() {
 		try {
+			String props =
+				(Config.getInstance() != null && Config.getInstance().getBool("general.debug")
+						 ? "logging.debug.properties" : "logging.properties");
+			
+//			System.out.println("Reading: " + props);
+			
 			InputStream in =
-				JGlideMon.class.getResourceAsStream("properties/" +
-					(Config.getInstance().getBool("general", "debug")
-					 ? "logging.debug.properties" : "logging.properties")
-				);
+				JGlideMon.class.getResourceAsStream("properties/" + props);
 			LogManager.getLogManager().readConfiguration(in);
 		} catch (IOException e) {
 			e.printStackTrace();
