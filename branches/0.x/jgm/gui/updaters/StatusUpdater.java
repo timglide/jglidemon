@@ -62,17 +62,17 @@ public class StatusUpdater extends Observable
 		return conn;
 	}
 	
-	public void connecting() {}
+	public void onConnecting() {}
 	
-	public void connectionEstablished() {
+	public void onConnect() {
 		stop = false;
 		thread = new Thread(this, "StatusUpdater");
 		thread.start();
 	}
 	
-	public void disconnecting() {}
+	public void onDisconnecting() {}
 	
-	public void connectionDied() {
+	public void onDisconnect() {
 		s.resetData();
 		s.attached = false;
 		setChanged();

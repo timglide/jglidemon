@@ -25,8 +25,8 @@ public class ConnectionAdapter implements ConnectionListener {
 		return null;
 	}
 	
-	public void connecting() {}
-	public void connectionEstablished() {}
-	public void disconnecting() {}
-	public void connectionDied() {}
+	public void onConnecting() {}
+	public void onConnect() {}
+	public void onDisconnecting() {}
+	public void onDisconnect() {}
 }

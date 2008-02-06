@@ -603,8 +603,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 
 		
 		// would be null on first-time startup
-		if (null != jgm.JGlideMon.sm.ssUpdater)
-			jgm.JGlideMon.sm.ssUpdater.sentSettings = false;
+		if (null != jgm.JGlideMon.getCurManager().ssUpdater)
+			jgm.JGlideMon.getCurManager().ssUpdater.sentSettings = false;
 		
 		cfg.set("sound.enabled", enableSound.isSelected());
 		cfg.set("sound.whisper", soundWhisper.isSelected());

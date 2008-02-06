@@ -73,7 +73,7 @@ public class Connector {
 			public void run() {
 				if (interactive) cancelReconnect();
 				
-				notifyConnecting();
+				fireConnecting();
 				
 				boolean success = true;
 				
@@ -99,10 +99,10 @@ public class Connector {
 				if (success) {
 					reconnectTries = sm.cfg.getInt("net.autoreconnecttries");
 
-					notifyConnectionEstablished();
+					fireConnect();
 					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 				} else {
-					notifyConnectionDied();
+					fireDisconnect();
 					
 					if (sm.cfg.getBool("net.autoReconnect")) {
 						createReconnector();
@@ -134,7 +134,7 @@ public class Connector {
 		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-				notifyDisconnecting();
+				fireDisconnecting();
 
 				boolean success = true;
 				
@@ -155,7 +155,7 @@ public class Connector {
 				jgm.GUI.hideStatusBarProgress();
 				
 				if (success) {
-					notifyConnectionDied();
+					fireDisconnect();
 					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 					
 					if (!interactive && sm.cfg.getBool("net.autoreconnect")) {
@@ -179,31 +179,31 @@ public class Connector {
 		listeners.remove(cl);
 	}
 	
-	private void notifyConnecting() {
-		log.finer("Notifying of connecting");
+	private void fireConnecting() {
+		log.finest("Firing connecting");
 		for (ConnectionListener c : listeners) {
-			c.connecting();
+			c.onConnecting();
 		}
 	}
 	
-	private void notifyConnectionEstablished() {
-		log.finer("Notifying of connection established");
+	private void fireConnect() {
+		log.finest("Fire connect");
 		for (ConnectionListener c : listeners) {
-			c.connectionEstablished();
+			c.onConnect();
 		}
 	}
 	
-	private void notifyDisconnecting() {
-		log.finer("Notifying of disconnecting");
+	private void fireDisconnecting() {
+		log.finest("Fire disconnecting");
 		for (ConnectionListener c : listeners) {
-			c.disconnecting();
+			c.onDisconnecting();
 		}
 	}
 	
-	private void notifyConnectionDied() {
-		log.finer("Notifying of connection died");
+	private void fireDisconnect() {
+		log.finest("Fire disconnect");
 		for (ConnectionListener c : listeners) {
-			c.connectionDied();
+			c.onDisconnect();
 		}
 	}
 	

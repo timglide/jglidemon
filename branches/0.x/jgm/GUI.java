@@ -196,7 +196,7 @@ public class GUI
 		mainPane.add(mobInfo, c);
 
 		ctrlPane = new ControlPane();
-		JGlideMon.sm.connector.addListener(ctrlPane);
+		JGlideMon.getCurManager().connector.addListener(ctrlPane);
 		c.gridx = 2; c.gridy = 0; c.weightx = 0.0;
 		c.insets.right = PADDING;
 		mainPane.add(ctrlPane, c);
@@ -290,13 +290,13 @@ public class GUI
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
 	    
-	    JGlideMon.sm.connector.addListener(new ConnectionAdapter() {
-	    	public void connecting() {
+	    JGlideMon.getCurManager().connector.addListener(new ConnectionAdapter() {
+	    	public void onConnecting() {
 				setStatusBarText("Connecting...", false, true);
 				setStatusBarProgressIndeterminent();
 	    	}
 	    	
-	    	public void connectionEstablished() {
+	    	public void onConnect() {
 				setStatusBarText("Connected", false, true);
 				setTitle(cfg.get("net.host") + ":" + cfg.get("net.port"));
 				hideStatusBarProgress();
@@ -305,7 +305,7 @@ public class GUI
 				menu.refreshSS.setEnabled(true);
 	    	}
 	    	
-	    	public void disconnecting() {
+	    	public void onDisconnecting() {
 				setStatusBarText("Disconnecting...", false, true);
 				setStatusBarProgressIndeterminent();
 				
@@ -313,7 +313,7 @@ public class GUI
 				menu.refreshSS.setEnabled(false);
 	    	}
 	    	
-	    	public void connectionDied() {
+	    	public void onDisconnect() {
 				hideStatusBarProgress();
 				setTitle();
 	    	}
@@ -343,10 +343,10 @@ public class GUI
 			version = "Connected to Glider v" + s.version + " - ";
 		}
 		
-		if (!JGlideMon.sm.connector.isConnected()) {
+		if (!JGlideMon.getCurManager().connector.isConnected()) {
 			String st;
 			
-			switch (JGlideMon.sm.connector.state) {
+			switch (JGlideMon.getCurManager().connector.state) {
 				case CONNECTING: st = "Connecting..."; break;
 				case DISCONNECTING: st = "Disconnecting..."; break;
 				default: st = "Disconnected"; break;

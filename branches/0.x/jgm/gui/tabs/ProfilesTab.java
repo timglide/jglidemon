@@ -77,13 +77,13 @@ public class ProfilesTab extends Tab
 		
 		validate();
 		
-		JGlideMon.sm.connector.addListener(new ConnectionAdapter() {
-			public void connectionEstablished() {
+		JGlideMon.getCurManager().connector.addListener(new ConnectionAdapter() {
+			public void onConnect() {
 				connected = true;
 				setEnabled(true);
 			}
 			
-			public void disconnecting() {
+			public void onDisconnecting() {
 				connected = false;
 				setEnabled(false);
 			}
@@ -113,7 +113,7 @@ public class ProfilesTab extends Tab
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (conn == null) conn = JGlideMon.sm.keysConn;
+		if (conn == null) conn = JGlideMon.getCurManager().keysConn;
 		Object source = e.getSource();
 		
 		if (source instanceof JButton) {			

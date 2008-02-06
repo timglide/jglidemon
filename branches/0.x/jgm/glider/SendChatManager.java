@@ -69,9 +69,9 @@ public class SendChatManager implements Runnable {
 		if (null == keys)
 			throw new NullPointerException("keys cannot be null in sendKeys()");
 		
-		if (!JGlideMon.sm.connector.isConnected()) return false;
+		if (!JGlideMon.getCurManager().connector.isConnected()) return false;
 		
-		if (conn == null) conn = JGlideMon.sm.keysConn;
+		if (conn == null) conn = JGlideMon.getCurManager().keysConn;
 		
 		try {			
 			log.info("Sending keys: " + keys);

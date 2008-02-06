@@ -65,8 +65,8 @@ public class ScreenshotTab extends Tab
 	}
 	
 	private void checkNulls() {
-		if (conn == null) conn = JGlideMon.sm.keysConn;
-		if (updater == null) updater = JGlideMon.sm.ssUpdater;
+		if (conn == null) conn = JGlideMon.getCurManager().keysConn;
+		if (updater == null) updater = JGlideMon.getCurManager().ssUpdater;
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -104,7 +104,7 @@ public class ScreenshotTab extends Tab
 
 	public void mouseClicked(MouseEvent e) {	
 		checkNulls();
-		if (!JGlideMon.sm.connector.isConnected() ||
+		if (!JGlideMon.getCurManager().connector.isConnected() ||
 			!JGlideMon.instance.gui.menu.sendKeys.isSelected())
 			return;
 		
@@ -141,7 +141,7 @@ public class ScreenshotTab extends Tab
 			return;
 		
 		checkNulls();
-		if (!JGlideMon.sm.connector.isConnected()) return;
+		if (!JGlideMon.getCurManager().connector.isConnected()) return;
 		
 		int code = e.getKeyCode();
 		
@@ -177,7 +177,7 @@ public class ScreenshotTab extends Tab
 		checkNulls();
 		//System.out.println(e);
 
-		if (!JGlideMon.sm.connector.isConnected()) {
+		if (!JGlideMon.getCurManager().connector.isConnected()) {
 			keysDown.clear();
 			return;
 		}

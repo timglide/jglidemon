@@ -107,12 +107,12 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 		
 		setEnabled(false);
 		
-		JGlideMon.sm.connector.addListener(new ConnectionAdapter() {
-			public void connectionEstablished() {
+		JGlideMon.getCurManager().connector.addListener(new ConnectionAdapter() {
+			public void onConnect() {
 				setEnabled(true);
 			}
 			
-			public void disconnecting() {
+			public void onDisconnecting() {
 				setEnabled(false);
 			}
 		});

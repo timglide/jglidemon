@@ -90,7 +90,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (conn == null) conn = JGlideMon.sm.keysConn;
+		if (conn == null) conn = JGlideMon.getCurManager().keysConn;
 		
 		String cmd = e.getActionCommand();
 		String s = null;
@@ -103,10 +103,10 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 			s = "/stopglide";
 		} else if (cmd.equals("Disconnect")) {
 			connect.setEnabled(false);
-			JGlideMon.sm.connector.disconnect(true);
+			JGlideMon.getCurManager().connector.disconnect(true);
 		} else if (cmd.equals("Connect")) {
 			connect.setEnabled(false);
-			JGlideMon.sm.connector.connect(true);
+			JGlideMon.getCurManager().connector.connect(true);
 		}
 		
 		if (s != null) {
@@ -126,12 +126,12 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		return null;
 	}
 	
-	public void connectionEstablished() {
+	public void onConnect() {
 		connect.setText("Disconnect");
 		connect.setEnabled(true);
 	}
 	
-	public void connectionDied() {
+	public void onDisconnect() {
 		connect.setText("Connect");
 		connect.setEnabled(true);
 //		attach.setEnabled(false);
@@ -139,12 +139,12 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		stop.setEnabled(false);
 	}
 	
-	public void connecting() {
+	public void onConnecting() {
 		connect.setText("Connecting...");
 		connect.setEnabled(false);
 	}
 	
-	public void disconnecting() {
+	public void onDisconnecting() {
 		connect.setText("Disconnecting...");
 		connect.setEnabled(false);
 //		attach.setEnabled(false);

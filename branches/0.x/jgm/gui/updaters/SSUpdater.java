@@ -60,18 +60,18 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		return conn;
 	}
 	
-	public void connecting() {}
+	public void onConnecting() {}
 	
-	public void connectionEstablished() {
+	public void onConnect() {
 		sentSettings = false;
 		stop = false;
 		thread = new Thread(this, "SSUpdater");
 		thread.start();
 	}
 	
-	public void disconnecting() {}
+	public void onDisconnecting() {}
 	
-	public void connectionDied() {
+	public void onDisconnect() {
 		stop = true;
 	}
 	
@@ -318,7 +318,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					GUI.revertStatusBarText();
 					GUI.unlockStatusBarText();
 					GUI.hideStatusBarProgress();
-					JGlideMon.sm.connector.disconnect();
+					JGlideMon.getCurManager().connector.disconnect();
 					return;
 				}
 				

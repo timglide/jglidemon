@@ -48,7 +48,11 @@ public class JGlideMon {
 	public  Config        cfg;
 	
 	List<ServerManager> managers = new LinkedList<ServerManager>();
-	public static ServerManager sm = null;
+	static ServerManager sm = null;
+	
+	public static ServerManager getCurManager() {
+		return sm;
+	}
 	
 	public JGlideMon() {
 		instance = this;

@@ -34,7 +34,7 @@ public class PlayerChartUpdater {
 	Timer timer;
 	
 	public PlayerChartUpdater() {
-		status = JGlideMon.sm.status.s;
+		status = JGlideMon.getCurManager().status.s;
 		chart = JGlideMon.instance.gui.tabsPane.chartTab.chart;
 		
 		timer = new Timer();
@@ -42,7 +42,7 @@ public class PlayerChartUpdater {
 			new TimerTask() {
 				public void run() {
 					// don't add points when we're dced or not attached
-					if (!JGlideMon.sm.connector.isConnected() || !status.attached) return;
+					if (!JGlideMon.getCurManager().connector.isConnected() || !status.attached) return;
 					
 					chart.addData(status.health, status.mana, status.targetHealth);
 				}
