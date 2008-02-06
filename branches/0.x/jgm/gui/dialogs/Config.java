@@ -742,7 +742,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshotBuffer.setValue(cfg.getDouble("screenshot.buffer"));
 		screenshotTimeout.setValue(cfg.getInt("screenshot.timeout"));
 		
-		Icon i = jgm.GUI.instance.tabsPane.screenshotTab.ssLabel.getIcon();
+		Icon i = jgm.JGlideMon.getCurManager().myGui.tabsPane.screenshotTab.ssLabel.getIcon();
 		
 		if (i != null) {
 			int width = i.getIconWidth();

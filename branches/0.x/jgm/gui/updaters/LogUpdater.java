@@ -54,7 +54,11 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	
 	private Thread thread;
 	
+	jgm.ServerManager sm;
+	
 	public LogUpdater(jgm.ServerManager sm, TabsPane t) {
+		this.sm = sm;
+		
 		statusLog  = t.statusLog;
 		rawLog     = t.rawLog;
 		gliderLog  = t.gliderLog;
@@ -244,7 +248,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 						if (limit == 0 || stuckCount < limit) {
 							stuckCount++;
 							// simulate pressing the Start button
-							jgm.GUI.instance.ctrlPane.start.doClick();
+							sm.myGui.ctrlPane.start.doClick();
 							log.info("Restarting glide after being stuck");
 						} else {
 							stuckTimer = null;
@@ -267,7 +271,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				if (jgm.Config.getInstance().getBool("restarter.exception.enabled")
 					&& lastGliderException != null
 					&& System.currentTimeMillis() - lastGliderException <= 1000 * jgm.Config.getInstance().getInt("restarter.exception.time")) {
-					jgm.GUI.instance.ctrlPane.start.doClick();
+					sm.myGui.ctrlPane.start.doClick();
 					log.info("Restarting glide after an exception");
 				}
 			}

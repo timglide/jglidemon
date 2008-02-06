@@ -22,7 +22,6 @@ package jgm;
 
 import jgm.glider.*;
 import jgm.gui.Tray;
-import jgm.gui.panes.*;
 import jgm.gui.components.JStatusBar;
 
 import java.awt.*;
@@ -32,20 +31,12 @@ import javax.swing.*;
 
 
 public class GUI 
-	implements java.util.Observer, ActionListener, ContainerListener {
+	implements ActionListener, ContainerListener {
 	public static final int PADDING = 10;
 	
 	public static GUI instance;
 	public static JFrame frame;
 	public static Tray tray;
-
-	private JPanel mainPane;
-	
-	public CharInfoPane   charInfo;
-	public MobInfoPane    mobInfo;
-	public ControlPane    ctrlPane;
-	public ExperiencePane xpPane;
-	public TabsPane       tabsPane;
 
 	private static JStatusBar statusBar;
 
@@ -179,44 +170,7 @@ public class GUI
 			System.err.println("Coultn'd set L&F: " + e.getMessage());
 		}
 
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.0; c.weighty = 0.0;
-
-		mainPane = new JPanel(new GridBagLayout());
-
-		charInfo = new CharInfoPane();
-		c.gridx = 0; c.gridy = 0; c.weightx = 0.25;
-		c.insets.top = PADDING;
-		c.insets.left = PADDING;
-		mainPane.add(charInfo, c);
-
-		mobInfo = new MobInfoPane();
-		c.gridx = 1; c.gridy = 0; c.weightx = 0.75;
-		mainPane.add(mobInfo, c);
-
-		ctrlPane = new ControlPane();
-		JGlideMon.getCurManager().connector.addListener(ctrlPane);
-		c.gridx = 2; c.gridy = 0; c.weightx = 0.0;
-		c.insets.right = PADDING;
-		mainPane.add(ctrlPane, c);
-
-		xpPane = new ExperiencePane();
-		c.gridx = 0; c.gridy = 1; c.gridwidth = 3;
-		c.insets.left = 0;
-		c.insets.right = 0;
-		mainPane.add(xpPane, c);
-
-		tabsPane = new TabsPane();
-		JPanel tabsPanel = new JPanel(new BorderLayout());
-		tabsPanel.add(tabsPane, BorderLayout.CENTER);
-		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0; c.weighty = 1.0;
-		mainPane.add(tabsPanel, c);
-
-		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, frame);
-		
 		frame.setLayout(new BorderLayout());
-		frame.add(mainPane, BorderLayout.CENTER);
 
 		//////////////
 		// set up menu
@@ -250,7 +204,13 @@ public class GUI
 		menu.sendKeys.setEnabled(false);
 		menu.screenshot.add(menu.sendKeys);
 		
-		menu.refreshSS = doMenuItem("Refresh Immediately", KeyEvent.VK_R, menu.screenshot, tabsPane.screenshotTab);
+		menu.refreshSS = doMenuItem("Refresh Immediately", KeyEvent.VK_R, menu.screenshot,
+			new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					JGlideMon.getCurManager().myGui.tabsPane.screenshotTab.actionPerformed(e);
+				}
+			}
+		);
 		menu.refreshSS.setAccelerator(
 			KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		menu.refreshSS.setEnabled(false);
@@ -320,44 +280,13 @@ public class GUI
 	    });
 	}
 	
+	public void managerChanged(ServerManager sm) {
+		frame.add(sm.myGui, BorderLayout.CENTER);
+	}
+	
 	public void makeVisible() {
 		frame.validate();
 		frame.setVisible(true);
-	}
-	
-	public void update(java.util.Observable obs, Object o) {
-//		System.out.println("GUI.update() called");
-		Status s = (Status) o;
-
-		charInfo.update(s);
-		mobInfo.update(s);
-		ctrlPane.update(s);
-		xpPane.update(s);
-		tabsPane.update(s);
-
-		tabsPane.chatLog.update(s);
-		
-		String version = "";
-		
-		if (!s.version.equals("")) {
-			version = "Connected to Glider v" + s.version + " - ";
-		}
-		
-		if (!JGlideMon.getCurManager().connector.isConnected()) {
-			String st;
-			
-			switch (JGlideMon.getCurManager().connector.state) {
-				case CONNECTING: st = "Connecting..."; break;
-				case DISCONNECTING: st = "Disconnecting..."; break;
-				default: st = "Disconnected"; break;
-			}
-			
-			setStatusBarText(st);
-		} else if (s.attached) {
-			setStatusBarText(version + "Attached: " + s.profile);
-		} else {
-			setStatusBarText(version + "Not Attached");
-		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -366,13 +295,13 @@ public class GUI
 		if (source == menu.parseLogFile) {
 			showParse();
 		} else if (source == menu.clearCurLog) {
-			if (tabsPane.tabbedPane.getSelectedComponent() instanceof jgm.gui.tabs.Clearable) {
-				((jgm.gui.tabs.Clearable) tabsPane.tabbedPane.getSelectedComponent()).clear(false);
+			if (JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getSelectedComponent() instanceof jgm.gui.tabs.Clearable) {
+				((jgm.gui.tabs.Clearable) JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getSelectedComponent()).clear(false);
 			}
 		} else if (source == menu.clearAllLogs) {
-			for (int i = 0; i < tabsPane.tabbedPane.getComponentCount(); i++) {
-				if (tabsPane.tabbedPane.getComponentAt(i) instanceof jgm.gui.tabs.Clearable) {
-					((jgm.gui.tabs.Clearable) tabsPane.tabbedPane.getComponentAt(i)).clear(true);
+			for (int i = 0; i < JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getComponentCount(); i++) {
+				if (JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getComponentAt(i) instanceof jgm.gui.tabs.Clearable) {
+					((jgm.gui.tabs.Clearable) JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getComponentAt(i)).clear(true);
 				}
 			}
 		} else if (source == menu.config) {
@@ -440,11 +369,15 @@ public class GUI
 	//////////////////////////////
 	// Implement ContainerListener
 	public void componentAdded(ContainerEvent e) {
-		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
+		for (ServerManager sm : JGlideMon.instance.managers) {
+			addKeyAndContainerListenerRecursively(sm.myGui.tabsPane.screenshotTab, this, e.getChild());
+		}
 	}
 
 	public void componentRemoved(ContainerEvent e) {
-		removeKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, e.getChild());
+		for (ServerManager sm : JGlideMon.instance.managers) {
+			removeKeyAndContainerListenerRecursively(sm.myGui.tabsPane.screenshotTab, this, e.getChild());
+		}
 	}
 	
 	/////////////////

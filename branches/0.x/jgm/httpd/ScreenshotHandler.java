@@ -23,20 +23,18 @@ package jgm.httpd;
 import java.io.*;
 import java.util.Properties;
 import jgm.HTTPD;
-import jgm.gui.tabs.ScreenshotTab;
-import jgm.gui.updaters.SSUpdater;
 
-public class ScreenshotHandler extends Handler {
-	static ScreenshotTab tab = jgm.GUI.instance.tabsPane.screenshotTab;
-	
+public class ScreenshotHandler extends Handler {	
 	@Override
 	public Response handle(String uri, String method, Properties headers, Properties params) {
+		jgm.ServerManager sm = jgm.JGlideMon.getCurManager();
+		
 		// updating of the screenshot is only done withon SSUpdater
 		// otherwise very bad things could happen....
 		
-		if (SSUpdater.buff != null) {
-			synchronized(SSUpdater.buff) {
-				InputStream data = new ByteArrayInputStream(SSUpdater.buff);
+		if (sm.ssUpdater.buff != null) {
+			synchronized(sm.ssUpdater.buff) {
+				InputStream data = new ByteArrayInputStream(sm.ssUpdater.buff);
 				Response ret = new Response(HTTPD.HTTP_OK, "image/jpeg", data);
 				ret.addHeader("Cache-Control", "no-cache, must-revalidate");
 				ret.addHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");

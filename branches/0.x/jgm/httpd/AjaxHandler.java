@@ -107,6 +107,8 @@ public class AjaxHandler extends Handler {
 			if (uri.equals("command")) {
 				final String cmd = params.getProperty("command");
 				
+				final jgm.ServerManager sm = jgm.JGlideMon.getCurManager();
+				
 				if (cmd != null) {
 					Thread t = null;
 					
@@ -115,8 +117,8 @@ public class AjaxHandler extends Handler {
 							public void run() {
 								javax.swing.JButton btn = 
 									cmd.equals("start")
-									? jgm.JGlideMon.instance.gui.ctrlPane.start
-									: jgm.JGlideMon.instance.gui.ctrlPane.stop;
+									? sm.myGui.ctrlPane.start
+									: sm.myGui.ctrlPane.stop;
 								btn.doClick();
 							}
 						};
@@ -127,7 +129,7 @@ public class AjaxHandler extends Handler {
 							t = new Thread() {
 								public void run() {
 									jgm.gui.tabs.ChatTab tab = 
-										jgm.JGlideMon.instance.gui.tabsPane.chatLog;
+										sm.myGui.tabsPane.chatLog;
 									Object last = tab.type.getSelectedItem();
 									tab.type.setSelectedItem(jgm.glider.ChatType.RAW);
 									tab.keys.setText(keys);

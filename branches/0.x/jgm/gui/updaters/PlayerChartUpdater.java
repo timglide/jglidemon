@@ -33,9 +33,9 @@ public class PlayerChartUpdater {
 	jgm.glider.Status status;
 	Timer timer;
 	
-	public PlayerChartUpdater() {
-		status = JGlideMon.getCurManager().status.s;
-		chart = JGlideMon.instance.gui.tabsPane.chartTab.chart;
+	public PlayerChartUpdater(jgm.ServerManager sm) {
+		status = sm.status.s;
+		chart = sm.myGui.tabsPane.chartTab.chart;
 		
 		timer = new Timer();
 		timer.scheduleAtFixedRate(

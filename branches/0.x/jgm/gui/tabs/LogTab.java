@@ -176,7 +176,7 @@ public class LogTab extends Tab implements Clearable {
 				if (centry.getSender() == null || !centry.fromPlayer) return;
 
 				ChatTab ct =
-					jgm.JGlideMon.instance.gui.tabsPane.chatLog;
+					jgm.JGlideMon.getCurManager().myGui.tabsPane.chatLog;
 	
 				ct.type.setSelectedItem(jgm.glider.ChatType.WHISPER);
 				ct.to.setText(centry.getSender());

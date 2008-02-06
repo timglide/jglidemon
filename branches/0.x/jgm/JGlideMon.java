@@ -47,11 +47,10 @@ public class JGlideMon {
 	public  GUI           gui;
 	public  Config        cfg;
 	
-	List<ServerManager> managers = new LinkedList<ServerManager>();
-	static ServerManager sm = null;
+	List<ServerManager> managers = new Vector<ServerManager>();
 	
 	public static ServerManager getCurManager() {
-		return sm;
+		return instance.managers.get(0);
 	}
 	
 	public JGlideMon() {
@@ -80,14 +79,15 @@ public class JGlideMon {
 		Sound.init();
 		Speech.init();
 		
-		sm = new ServerManager(0);
-		managers.add(sm);
+		managers.add(new ServerManager(0));
 
 		gui = new GUI();
 		
 		for (ServerManager sm : managers) {
 			sm.init(gui);
 		}
+		
+		gui.managerChanged(managers.get(0));
 		
 		gui.makeVisible();
 		
