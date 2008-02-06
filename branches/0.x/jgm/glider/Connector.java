@@ -29,45 +29,43 @@ import java.util.logging.*;
 public class Connector {
 	static Logger log = Logger.getLogger(Connector.class.getName());
 	
-	public enum State {
+	public static enum State {
 		DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING
 	}
-		
-	private static Connector instance;
-	private static Config cfg;
 	
-	private static Vector<ConnectionListener> listeners
+	public volatile State state = State.DISCONNECTED;
+	
+	ServerManager sm;
+	Thread reconnector;
+	int reconnectTries = Integer.MIN_VALUE;
+	
+	Vector<ConnectionListener> listeners
 		= new Vector<ConnectionListener>();
 	
-	public static volatile State state = State.DISCONNECTED;
-	
-	public Connector() {
-		instance = this;
-		cfg = jgm.Config.getInstance();
+	public Connector(ServerManager sm) {
+		this.sm = sm;
 	}
 	
-	public static boolean isConnected() {
+	public boolean isConnected() {
 		return state == State.CONNECTED;
 	}
 	
-	public static void connect() {
+	public void connect() {
 		connect(false);
 	}
 	
 	/**
 	 * @param interactive True if the user pressed the connect button
 	 */
-	public static void connect(boolean interactive) {
-		if (instance == null) return;
-		
-		instance.connectImpl(interactive);
+	public void connect(boolean interactive) {
+		connectImpl(interactive);
 	}
 	
 	private void connectImpl(final boolean interactive) {
 		if (state != State.DISCONNECTED) return;
 		
 		if (interactive)
-			reconnectTries = cfg.getInt("net.autoreconnecttries");
+			reconnectTries = sm.cfg.getInt("net.autoreconnecttries");
 		
 		state = State.CONNECTING;
 		
@@ -84,13 +82,13 @@ public class Connector {
 						if (c.getConn() == null) continue;
 						c.getConn().connect();
 					} catch (java.net.UnknownHostException e) {
-						log.warning("Error connecting to " + cfg.get("net.host") + ": " + e.getMessage());
-						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net.host") + ":" + cfg.get("net.port") + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
+						log.warning("Error connecting to " + c.getConn().host + ": " + e.getMessage());
+						jgm.GUI.setStatusBarText("Unable to connect to " + c.getConn().host + ":" + c.getConn().port + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
 						success = false;
 						break;
 					} catch (Exception e) {
-						log.warning("Error connecting to " + cfg.getString("net.host") + ": " + e.getMessage());
-						jgm.GUI.setStatusBarText("Unable to connect to " + cfg.get("net.host") + ":" + cfg.get("net.port") + " - " + e.getMessage(), true, true);						
+						log.warning("Error connecting to " + c.getConn().host + ": " + e.getMessage());
+						jgm.GUI.setStatusBarText("Unable to connect to " + c.getConn().host + ":" + c.getConn().port + " - " + e.getMessage(), true, true);						
 						success = false;
 						break;
 					}
@@ -99,14 +97,14 @@ public class Connector {
 				state = (success) ? State.CONNECTED : State.DISCONNECTED;
 				
 				if (success) {
-					reconnectTries = cfg.getInt("net.autoreconnecttries");
+					reconnectTries = sm.cfg.getInt("net.autoreconnecttries");
 
 					notifyConnectionEstablished();
 					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 				} else {
 					notifyConnectionDied();
 					
-					if (cfg.getBool("net.autoReconnect")) {
+					if (sm.cfg.getBool("net.autoReconnect")) {
 						createReconnector();
 					}
 				}
@@ -117,7 +115,7 @@ public class Connector {
 		t.start();
 	}
 
-	public static Thread disconnect() {
+	public Thread disconnect() {
 		return disconnect(false);
 	}
 	
@@ -125,10 +123,8 @@ public class Connector {
 	 * @param forced True if the user pressed the Disconnect button
 	 * @return
 	 */
-	public static Thread disconnect(boolean interactive) {
-		if (instance == null) return null;
-		
-		return instance.disconnectImpl(interactive);
+	public Thread disconnect(boolean interactive) {		
+		return disconnectImpl(interactive);
 	}
 	
 	private Thread disconnectImpl(final boolean interactive) {
@@ -162,7 +158,7 @@ public class Connector {
 					notifyConnectionDied();
 					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 					
-					if (!interactive && cfg.getBool("net.autoreconnect")) {
+					if (!interactive && sm.cfg.getBool("net.autoreconnect")) {
 						createReconnector();
 					}
 				}
@@ -175,11 +171,11 @@ public class Connector {
 		return t;
 	}
 	
-	public static void addListener(ConnectionListener cl) {
+	public void addListener(ConnectionListener cl) {
 		listeners.add(cl);
 	}
 	
-	public static void removeListener(ConnectionListener cl) {
+	public void removeListener(ConnectionListener cl) {
 		listeners.remove(cl);
 	}
 	
@@ -211,14 +207,11 @@ public class Connector {
 		}
 	}
 	
-	private static Thread reconnector;
-	private static int reconnectTries = Integer.MIN_VALUE;
-	
-	private static void createReconnector() {
-		final int delay = cfg.getInt("net.autoreconnectdelay");
+	private void createReconnector() {
+		final int delay = sm.cfg.getInt("net.autoreconnectdelay");
 		
 		if (reconnectTries == Integer.MIN_VALUE) {
-			reconnectTries = cfg.getInt("net.autoreconnecttries");
+			reconnectTries = sm.cfg.getInt("net.autoreconnecttries");
 		}
 		
 		reconnectTries--;
@@ -242,13 +235,13 @@ public class Connector {
 					log.fine("Cancelling auto-reconnect.");
 					return;
 				}
-				Connector.connect();
+				Connector.this.connect();
 			}
 		}, "AutoReconnector");
 		reconnector.start();
 	}
 	
-	public static void cancelReconnect() {
+	public void cancelReconnect() {
 		if (reconnector == null) return;
 		
 		reconnector.interrupt();

@@ -158,7 +158,7 @@ public class AjaxHandler extends Handler {
 				_(xml, jgm_, "name", JGlideMon.app);
 				_(xml, jgm_, "version", JGlideMon.version);
 				
-				boolean connected = jgm.glider.Connector.isConnected();
+				boolean connected = jgm.JGlideMon.sm.connector.isConnected();
 				_(xml, jgm_, "connected", Boolean.toString(connected));
 				
 				_(xml, jgm_, "update-interval", jgm.Config.getInstance().getInt("web.updateinterval"));

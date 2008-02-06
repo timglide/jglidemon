@@ -90,7 +90,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (conn == null) conn = JGlideMon.instance.keysConn;
+		if (conn == null) conn = JGlideMon.sm.keysConn;
 		
 		String cmd = e.getActionCommand();
 		String s = null;
@@ -103,10 +103,10 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 			s = "/stopglide";
 		} else if (cmd.equals("Disconnect")) {
 			connect.setEnabled(false);
-			Connector.disconnect(true);
+			JGlideMon.sm.connector.disconnect(true);
 		} else if (cmd.equals("Connect")) {
 			connect.setEnabled(false);
-			Connector.connect(true);
+			JGlideMon.sm.connector.connect(true);
 		}
 		
 		if (s != null) {

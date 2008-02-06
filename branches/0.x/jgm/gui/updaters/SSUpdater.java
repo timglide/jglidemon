@@ -40,18 +40,20 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	public  volatile boolean sentSettings = false;
 	public  volatile boolean redoScale = true; // so it will happen initially
 	
-	private Conn conn = null;
+	Conn conn = null;
 
-	private ScreenshotTab tab;
+	ScreenshotTab tab;
  
 	public Thread thread;
 	
-	private Config cfg;
+	Config cfg;
+	jgm.ServerManager sm;
 	
-	public SSUpdater(ScreenshotTab t) {
+	public SSUpdater(jgm.ServerManager sm, ScreenshotTab t) {
+		this.sm = sm;
 		cfg = jgm.Config.getInstance();
 		tab  = t;
-		conn = new Conn();
+		conn = new Conn(sm);
 	}
 
 	public Conn getConn() {
@@ -109,7 +111,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				t.interrupt();
 
 				conn.close();
-				conn = new Conn();
+				conn = new Conn(sm);
 				
 				try {
 					//conn.getInStream().skip(conn.getInStream().available());
@@ -117,7 +119,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				} catch (Throwable e) {
 					log.log(Level.WARNING, "SSWatcher", e);
 					//System.err.println("SSWatcher: " + e.getClass().getName() + ": " + e.getMessage());
-					Connector.disconnect();
+					sm.connector.disconnect();
 				}
 				
 				GUI.revertStatusBarText();
@@ -316,7 +318,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					GUI.revertStatusBarText();
 					GUI.unlockStatusBarText();
 					GUI.hideStatusBarProgress();
-					Connector.disconnect();
+					JGlideMon.sm.connector.disconnect();
 					return;
 				}
 				

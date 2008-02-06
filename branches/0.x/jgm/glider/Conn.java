@@ -39,31 +39,34 @@ public class Conn {
 	
 	private static int instances = 0;
 	
+	public String host;
+	public int    port;
+	public String password;
+	
 	private Socket         s;
 	private PrintWriter    out;
 	private InputStream    inStream;
 	private BufferedReader in;
-	private static Config cfg;
 	
-	public Conn() {
-		++instances;
+	public Conn(ServerManager sm) {
+		host = sm.host;
+		port = sm.port;
+		password = sm.password;
 		
-		if (cfg == null) {
-			cfg = jgm.Config.getInstance();
-		}
+		++instances;
 	}
 	
 	public synchronized void connect()
 		throws UnknownHostException, IOException {
 		s = null; out = null; inStream = null; in = null;
 
-		log.info("Connecting to " + cfg.getString("net.host") + "...");
-		s   = new Socket(cfg.getString("net.host"), cfg.getInt("net.port"));
+		log.info("Connecting to " + host + "...");
+		s   = new Socket(host, port);
 		out = new PrintWriter(s.getOutputStream(), false);
 		inStream = new BufferedInputStream(s.getInputStream());
 		in  = new BufferedReader(
 		          new InputStreamReader(inStream, "UTF-8"));
-		send(cfg.getString("net.password"));
+		send(password);
 		in.readLine(); // ignore Authenticated OK line
 		
 		notifyAll();

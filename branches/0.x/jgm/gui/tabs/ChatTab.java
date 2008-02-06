@@ -20,6 +20,7 @@
  */
 package jgm.gui.tabs;
 
+import jgm.JGlideMon;
 import jgm.glider.*;
 import jgm.glider.log.*;
 
@@ -106,7 +107,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 		
 		setEnabled(false);
 		
-		Connector.addListener(new ConnectionAdapter() {
+		JGlideMon.sm.connector.addListener(new ConnectionAdapter() {
 			public void connectionEstablished() {
 				setEnabled(true);
 			}

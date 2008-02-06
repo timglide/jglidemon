@@ -48,6 +48,7 @@ public class Config {
 	}
 	
 	public static Config instance;
+	public static Config c;
 	
 	Properties props = new Properties(DEFAULTS);
 	
@@ -69,6 +70,7 @@ public class Config {
 	
 	public Config() {
 		instance = this;
+		c = this;
 		
 		// convert to new format
 		if (iniFile.exists() && !propsFile.exists()) {
@@ -101,6 +103,10 @@ public class Config {
 		}
 		
 		validate();
+	}
+	
+	public boolean hasProp(String propertyName) {
+		return props.containsKey(propertyName);
 	}
 	
 	public int getInt(String propertyName) {

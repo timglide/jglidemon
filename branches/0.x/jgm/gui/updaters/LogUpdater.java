@@ -20,6 +20,7 @@
  */
 package jgm.gui.updaters;
 
+import jgm.JGlideMon;
 import jgm.glider.*;
 import jgm.glider.log.*;
 import jgm.gui.panes.TabsPane;
@@ -53,7 +54,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	
 	private Thread thread;
 	
-	public LogUpdater(TabsPane t) {
+	public LogUpdater(jgm.ServerManager sm, TabsPane t) {
 		statusLog  = t.statusLog;
 		rawLog     = t.rawLog;
 		gliderLog  = t.gliderLog;
@@ -64,7 +65,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		mobsTab    = t.mobsTab;
 		lootsTab   = t.lootsTab;
 		
-		conn = new Conn();
+		conn = new Conn(sm);
  	}
 
 	public void close() {
@@ -104,7 +105,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			conn.readLine(); // ---
 		} catch (IOException e) {
 			log.fine("Stopping LogUpdater, IOE: " + e.getMessage());
-			Connector.disconnect();
+			JGlideMon.sm.connector.disconnect();
 			return; // connection died
 		}
 
@@ -117,7 +118,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				line = conn.readLine();
 			} catch (Throwable x) {
 				log.fine("Stopping LogUpdater, Ex: " + x.getMessage());
-				Connector.disconnect();
+				JGlideMon.sm.connector.disconnect();
 				return;
 			}
 			

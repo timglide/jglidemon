@@ -21,9 +21,8 @@
 package jgm;
 
 import javax.swing.JOptionPane;
+import java.util.*;
 
-import jgm.glider.*;
-import jgm.gui.updaters.*;
 import jgm.util.*;
 
 // this line edited so the svn revision gets updated
@@ -45,15 +44,11 @@ public class JGlideMon {
 	
 	public static JGlideMon instance;
 	
-	public  Conn          keysConn;
-	private Config        cfg;
 	public  GUI           gui;
-	public  StatusUpdater status;
-	public  LogUpdater    logUpdater;
-	public  SSUpdater     ssUpdater;
-	public  PlayerChartUpdater chartUpdater;
+	public  Config        cfg;
 	
-	public Connector connector;
+	List<ServerManager> managers = new LinkedList<ServerManager>();
+	public static ServerManager sm = null;
 	
 	public JGlideMon() {
 		instance = this;
@@ -74,9 +69,6 @@ public class JGlideMon {
 		try {
 			jgm.glider.Profile.Cache.loadProfiles();
 		} catch (Throwable e) {} // doesn't matter here 
-		
-	  	connector = new Connector();
-		gui = new GUI();
 
 		// put this here so that the tts config options will
 		// be enabled if tts is available and JGM has yet to
@@ -84,46 +76,15 @@ public class JGlideMon {
 		Sound.init();
 		Speech.init();
 		
-		// create a seperate thread to connect in case it
-		// takes a while to connect it won't slow the gui
-		Runnable r = new Runnable() {
-			public void run() {
-				if (!jgm.Config.fileExists() || cfg.getString("net.host").equals("")) {
-					JOptionPane.showMessageDialog(GUI.frame,
-						"Please enter the remote host, port, and password.\n" +
-						"Next, click Save Settings, then click Connect.\n\n" +
-						"Remember to click Save Settings any time you change a setting.\n" +
-						"You may access the configuration screen later via the File menu.",
-						"Configuration Required",
-						JOptionPane.INFORMATION_MESSAGE);
-					
-					// select the network tab
-					gui.showConfig(1);
-				}
-				
-				keysConn = new Conn();
-				Connector.addListener(new ConnectionAdapter() {
-					public Conn getConn() {
-						return keysConn;
-					}
-				});
-				logUpdater = new LogUpdater(gui.tabsPane);
-				Connector.addListener(logUpdater);
-				ssUpdater  = new SSUpdater(gui.tabsPane.screenshotTab);
-				Connector.addListener(ssUpdater);
-				status     = new StatusUpdater();
-				Connector.addListener(status);
-				status.addObserver(gui);
-				status.addObserver(ssUpdater);
-				
-				chartUpdater = new PlayerChartUpdater();
-				
-				Connector.connect();
-			}
-		};
+		sm = new ServerManager(0);
+		managers.add(sm);
 
-		new Thread(r, "JGlideMon.Init").start();
-
+		gui = new GUI();
+		
+		for (ServerManager sm : managers) {
+			sm.init(gui);
+		}
+		
 		gui.makeVisible();
 		
 		// not critical to get these loaded before the gui shows
@@ -148,11 +109,13 @@ public class JGlideMon {
 	}
 
 	public void destroy() {
-		if (Connector.isConnected()) {
-			try {
-				Thread t = Connector.disconnect();
-				t.join();
-			} catch (InterruptedException e) {}
+		for (ServerManager sm : managers) {
+			if (sm.connector.isConnected()) {
+				try {
+					Thread t = sm.connector.disconnect();
+					t.join();
+				} catch (InterruptedException e) {}
+			}
 		}
 		
 		Speech.destroy();

@@ -42,11 +42,13 @@ public class StatusUpdater extends Observable
 	private Thread thread;
 	private volatile boolean stop = false;
 
-	private Config cfg;
+	Config cfg;
+	jgm.ServerManager sm;
 	
-	public StatusUpdater() {
+	public StatusUpdater(jgm.ServerManager sm) {
+		this.sm = sm;
 		instance = this;
-		conn = new Conn();
+		conn = new Conn(sm);
 		cfg = jgm.Config.getInstance();
 	}
 	
@@ -87,7 +89,7 @@ public class StatusUpdater extends Observable
 				Thread.sleep(cfg.getLong("status.updateInterval"));
 			} catch (Exception e) {
 				log.fine("Stopping StatusUpdater, Ex: " + e.getMessage());
-				Connector.disconnect();
+				sm.connector.disconnect();
 				return;
 			}
 		}

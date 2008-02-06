@@ -152,7 +152,9 @@ public class GUI
 				
 				// request to update the screenshot's scale
 				try {
-					JGlideMon.instance.ssUpdater.redoScale = true;
+					for (ServerManager sm : JGlideMon.instance.managers) {
+						sm.ssUpdater.redoScale = true;
+					}
 				} catch (Exception x) {}
 			}
 			
@@ -194,7 +196,7 @@ public class GUI
 		mainPane.add(mobInfo, c);
 
 		ctrlPane = new ControlPane();
-		Connector.addListener(ctrlPane);
+		JGlideMon.sm.connector.addListener(ctrlPane);
 		c.gridx = 2; c.gridy = 0; c.weightx = 0.0;
 		c.insets.right = PADDING;
 		mainPane.add(ctrlPane, c);
@@ -288,7 +290,7 @@ public class GUI
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
 	    
-	    Connector.addListener(new ConnectionAdapter() {
+	    JGlideMon.sm.connector.addListener(new ConnectionAdapter() {
 	    	public void connecting() {
 				setStatusBarText("Connecting...", false, true);
 				setStatusBarProgressIndeterminent();
@@ -341,10 +343,10 @@ public class GUI
 			version = "Connected to Glider v" + s.version + " - ";
 		}
 		
-		if (!Connector.isConnected()) {
+		if (!JGlideMon.sm.connector.isConnected()) {
 			String st;
 			
-			switch (Connector.state) {
+			switch (JGlideMon.sm.connector.state) {
 				case CONNECTING: st = "Connecting..."; break;
 				case DISCONNECTING: st = "Disconnecting..."; break;
 				default: st = "Disconnected"; break;
