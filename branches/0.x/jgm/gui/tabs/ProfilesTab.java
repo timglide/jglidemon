@@ -43,8 +43,8 @@ public class ProfilesTab extends Tab
 	
 	private volatile boolean connected = false;
 	
-	public ProfilesTab() {
-		super(new BorderLayout(), "Profiles");
+	public ProfilesTab(jgm.GUI gui) {
+		super(gui, new BorderLayout(), "Profiles");
 						
 		JPanel prosPanel = new JPanel(new BorderLayout(10, 10));
 		
@@ -123,7 +123,7 @@ public class ProfilesTab extends Tab
 			} else if (source == manualLoad) {
 				String path =
 					JOptionPane.showInputDialog(
-						jgm.GUI.frame,
+						gui.frame,
 						"Enter full profile path to load:",
 						"Load Profile",
 						JOptionPane.QUESTION_MESSAGE
@@ -147,7 +147,7 @@ public class ProfilesTab extends Tab
 					}
 					
 					JOptionPane.showMessageDialog(
-						jgm.GUI.frame, 
+						gui.frame, 
 						"There was an error loading the profiles:\n\n" +
 						x.getClass().getName() + "\n" +
 						x.getMessage() + extra,
@@ -167,7 +167,7 @@ public class ProfilesTab extends Tab
 	public void loadProfile(String path) {
 		if (path.trim().equals("")) {
 			JOptionPane.showMessageDialog(
-				jgm.GUI.frame,
+				gui.frame,
 				"You must enter a profile to load.",
 				"Error",
 				JOptionPane.ERROR_MESSAGE
@@ -197,14 +197,14 @@ public class ProfilesTab extends Tab
 			
 			if (ret.toLowerCase().contains("failed")) {
 				JOptionPane.showMessageDialog(
-					jgm.GUI.frame,
+					gui.frame,
 					ret,
 					"Error",
 					JOptionPane.ERROR_MESSAGE
 				);
 			} else if (ret.contains("ok")) {
 				JOptionPane.showMessageDialog(
-					jgm.GUI.frame,
+					gui.frame,
 					ret + ".\nDon't forget to start gliding.",
 					"Profile Loaded",
 					JOptionPane.INFORMATION_MESSAGE

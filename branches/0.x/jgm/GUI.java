@@ -23,7 +23,13 @@ package jgm;
 import jgm.glider.*;
 import jgm.gui.Tray;
 import jgm.gui.components.JStatusBar;
+import jgm.gui.panes.CharInfoPane;
+import jgm.gui.panes.ControlPane;
+import jgm.gui.panes.ExperiencePane;
+import jgm.gui.panes.MobInfoPane;
+import jgm.gui.panes.TabsPane;
 
+import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -31,23 +37,29 @@ import javax.swing.*;
 
 
 public class GUI 
-	implements ActionListener, ContainerListener {
+	implements ActionListener, java.util.Observer, ContainerListener {
 	public static final int PADDING = 10;
-	
-	public static GUI instance;
-	public static JFrame frame;
-	public static Tray tray;
-
-	private static JStatusBar statusBar;
-
-	private jgm.gui.dialogs.About aboutFrame;
-	private jgm.gui.dialogs.Config configDialog;
-	private jgm.gui.dialogs.ParseLogFile parseLogDialog;
-	
-	private Config cfg;
-
+	static Config cfg = Config.c;
 	public static final String BASE_TITLE = "JGlideMon " + JGlideMon.version;
-
+	
+	public ServerManager sm;
+	
+	public JFrame frame;
+	public Tray tray;
+	JStatusBar statusBar;
+	
+	// elements
+	public CharInfoPane   charInfo;
+	public MobInfoPane    mobInfo;
+	public ControlPane    ctrlPane;
+	public ExperiencePane xpPane;
+	public TabsPane       tabsPane;
+	
+	// dialogs
+	jgm.gui.dialogs.About aboutFrame;
+	jgm.gui.dialogs.Config configDialog;
+	jgm.gui.dialogs.ParseLogFile parseLogDialog;
+	
 	
 	// menu stuff
 	public final Menu menu = new Menu();
@@ -72,14 +84,18 @@ public class GUI
 		JMenuItem clearAllLogs;
 		JMenuItem parseLogFile;
 		
+		JMenu     servers;
+		JMenuItem addServer;
+		JMenuItem removeServer;
+		java.util.List<JRadioButtonMenuItem> serverItems = new Vector<JRadioButtonMenuItem>();
+		
 		JMenu     help;
 		JMenuItem debug;
 		JMenuItem about;
 	}
 	
-	public GUI() {
-		instance = this;
-		cfg = jgm.Config.getInstance();
+	public GUI(ServerManager sm) {
+		this.sm = sm;
 		
 		frame = new JFrame(BASE_TITLE);
 
@@ -91,7 +107,7 @@ public class GUI
 		frame.setSize(cfg.getInt("window.width"), cfg.getInt("window.height"));
 		frame.setLocation(cfg.getInt("window.x"), cfg.getInt("window.y"));
 
-		tray = new Tray();
+		tray = new Tray(this);
 		
 		if (cfg.getBool("window.maximized")) {
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -143,7 +159,7 @@ public class GUI
 				
 				// request to update the screenshot's scale
 				try {
-					for (ServerManager sm : JGlideMon.instance.managers) {
+					for (ServerManager sm : JGlideMon.managers) {
 						sm.ssUpdater.redoScale = true;
 					}
 				} catch (Exception x) {}
@@ -171,7 +187,48 @@ public class GUI
 		}
 
 		frame.setLayout(new BorderLayout());
+		
+		////////////////
+		// set up panels
+		JPanel mainPanel = new JPanel(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.0; c.weighty = 0.0;
 
+		charInfo = new CharInfoPane(this);
+		c.gridx = 0; c.gridy = 0; c.weightx = 0.25;
+		c.insets.top = PADDING;
+		c.insets.left = PADDING;
+		mainPanel.add(charInfo, c);
+
+		mobInfo = new MobInfoPane(this);
+		c.gridx = 1; c.gridy = 0; c.weightx = 0.75;
+		mainPanel.add(mobInfo, c);
+
+		ctrlPane = new ControlPane(this);
+		sm.connector.addListener(ctrlPane);
+		c.gridx = 2; c.gridy = 0; c.weightx = 0.0;
+		c.insets.right = PADDING;
+		mainPanel.add(ctrlPane, c);
+
+		xpPane = new ExperiencePane(this);
+		c.gridx = 0; c.gridy = 1; c.gridwidth = 3;
+		c.insets.left = 0;
+		c.insets.right = 0;
+		mainPanel.add(xpPane, c);
+
+		tabsPane = new TabsPane(this);
+		JPanel tabsPanel = new JPanel(new BorderLayout());
+		tabsPanel.add(tabsPane, BorderLayout.CENTER);
+		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0; c.weighty = 1.0;
+		mainPanel.add(tabsPanel, c);
+
+		frame.add(mainPanel, BorderLayout.CENTER);
+		
+		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, frame);
+		
+		
 		//////////////
 		// set up menu
 		menu.bar  = new JMenuBar();
@@ -207,7 +264,7 @@ public class GUI
 		menu.refreshSS = doMenuItem("Refresh Immediately", KeyEvent.VK_R, menu.screenshot,
 			new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					JGlideMon.getCurManager().myGui.tabsPane.screenshotTab.actionPerformed(e);
+					tabsPane.screenshotTab.actionPerformed(e);
 				}
 			}
 		);
@@ -224,6 +281,17 @@ public class GUI
 		menu.logs.addSeparator();
 		menu.parseLogFile = doMenuItem("Parse Log File", KeyEvent.VK_P, menu.logs, this);
 		
+		
+		// servers
+		menu.servers = new JMenu("Servers");
+		menu.servers.setMnemonic(KeyEvent.VK_R);
+		menu.bar.add(menu.servers);
+		
+		menu.addServer = doMenuItem("Add New Server...", KeyEvent.VK_N, menu.servers, this);
+		menu.removeServer = doMenuItem("Remove Current Server", KeyEvent.VK_R, menu.servers, this); 
+		// other items dynamically allocated
+		
+		
 		// help
 		menu.help = new JMenu("Help");
 		menu.help.setMnemonic(KeyEvent.VK_H);
@@ -235,7 +303,7 @@ public class GUI
 
 		
 		// set up status bar
-		statusBar = new JStatusBar();
+		statusBar = new JStatusBar(this);
 		statusBar.setText("Disconnected");
 
 		JProgressBar tmp = statusBar.getProgressBar();
@@ -250,7 +318,7 @@ public class GUI
 		// ensure the system L&F
 	    SwingUtilities.updateComponentTreeUI(frame);
 	    
-	    JGlideMon.getCurManager().connector.addListener(new ConnectionAdapter() {
+	    sm.connector.addListener(new ConnectionAdapter() {
 	    	public void onConnecting() {
 				setStatusBarText("Connecting...", false, true);
 				setStatusBarProgressIndeterminent();
@@ -258,7 +326,7 @@ public class GUI
 	    	
 	    	public void onConnect() {
 				setStatusBarText("Connected", false, true);
-				setTitle(cfg.get("net.host") + ":" + cfg.get("net.port"));
+				setTitle(JGlideMon.getCurManager().host + ":" + JGlideMon.getCurManager().port);
 				hideStatusBarProgress();
 				
 				menu.sendKeys.setEnabled(true);
@@ -280,8 +348,29 @@ public class GUI
 	    });
 	}
 	
-	public void managerChanged(ServerManager sm) {
-		frame.add(sm.myGui, BorderLayout.CENTER);
+	public void doServersMenu() {
+//		menu.servers.removeAll();
+//		menu.serverItems.clear();
+//		
+//		ButtonGroup g = new ButtonGroup();
+//		JRadioButtonMenuItem item = null;
+//		
+//		for (final JInternalFrame f : desktop.getAllFrames()) {
+//			item = new JRadioButtonMenuItem(f.getTitle(), f == desktop.getSelectedFrame());
+//			menu.serverItems.add(item);
+//			menu.servers.add(item);
+//			g.add(item);
+//			
+//			item.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					f.toFront();
+//					
+//					try {
+//						f.setMaximum(true);
+//					} catch (java.beans.PropertyVetoException x) {}
+//				}
+//			});
+//		}
 	}
 	
 	public void makeVisible() {
@@ -295,14 +384,24 @@ public class GUI
 		if (source == menu.parseLogFile) {
 			showParse();
 		} else if (source == menu.clearCurLog) {
-			if (JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getSelectedComponent() instanceof jgm.gui.tabs.Clearable) {
-				((jgm.gui.tabs.Clearable) JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getSelectedComponent()).clear(false);
+			if (tabsPane.tabbedPane.getSelectedComponent() instanceof jgm.gui.tabs.Clearable) {
+				((jgm.gui.tabs.Clearable) tabsPane.tabbedPane.getSelectedComponent()).clear(false);
 			}
 		} else if (source == menu.clearAllLogs) {
-			for (int i = 0; i < JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getComponentCount(); i++) {
-				if (JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getComponentAt(i) instanceof jgm.gui.tabs.Clearable) {
-					((jgm.gui.tabs.Clearable) JGlideMon.getCurManager().myGui.tabsPane.tabbedPane.getComponentAt(i)).clear(true);
+			for (int i = 0; i < tabsPane.tabbedPane.getComponentCount(); i++) {
+				if (tabsPane.tabbedPane.getComponentAt(i) instanceof jgm.gui.tabs.Clearable) {
+					((jgm.gui.tabs.Clearable) tabsPane.tabbedPane.getComponentAt(i)).clear(true);
 				}
+			}
+		} else if (source == menu.addServer) {
+			ServerManager.addServer();
+		} else if (source == menu.removeServer) {
+			if (ServerManager.managers.size() == 1) {
+				JOptionPane.showMessageDialog(frame,
+					"You cannot remove the only server.",
+					"Error", JOptionPane.ERROR_MESSAGE);
+			} else {
+				ServerManager.removeServer(sm);
 			}
 		} else if (source == menu.config) {
 			showConfig();
@@ -345,9 +444,55 @@ public class GUI
 		}
 	}
 	
+	public void update(java.util.Observable obs, Object o) {
+//		System.out.println("GUI.update() called");
+		Status s = (Status) o;
+
+		charInfo.update(s);
+		mobInfo.update(s);
+		ctrlPane.update(s);
+		xpPane.update(s);
+		tabsPane.update(s);
+
+		tabsPane.chatLog.update(s);
+		
+		String version = "";
+		
+		if (!s.version.equals("")) {
+			version = "Connected to Glider v" + s.version + " - ";
+		}
+		
+		if (!sm.connector.isConnected()) {
+			String st;
+			
+			switch (sm.connector.state) {
+				case CONNECTING: st = "Connecting..."; break;
+				case DISCONNECTING: st = "Disconnecting..."; break;
+				default: st = "Disconnected"; break;
+			}
+			
+			setStatusBarText(st);
+		} else if (s.attached) {
+			setStatusBarText(version + "Attached: " + s.profile);
+		} else {
+			setStatusBarText(version + "Not Attached");
+		}
+	}
+	
+	
+	//////////////////////////////
+	// Implement ContainerListener
+	public void componentAdded(ContainerEvent e) {
+		GUI.addKeyAndContainerListenerRecursively(this.tabsPane.screenshotTab, this, e.getChild());
+	}
+
+	public void componentRemoved(ContainerEvent e) {
+		GUI.removeKeyAndContainerListenerRecursively(this.tabsPane.screenshotTab, this, e.getChild());
+	}
+	
 	public void showParse() {
 		if (this.parseLogDialog == null)
-			parseLogDialog = new jgm.gui.dialogs.ParseLogFile(frame);
+			parseLogDialog = new jgm.gui.dialogs.ParseLogFile(this);
 		parseLogDialog.setVisible(true);
 	}
 	
@@ -356,36 +501,23 @@ public class GUI
 	}
 	
 	public void showConfig(int selectTab) {
-		if (configDialog == null) configDialog = new jgm.gui.dialogs.Config(frame);
+		if (configDialog == null) configDialog = new jgm.gui.dialogs.Config(this);
 		if (selectTab >= 0) configDialog.selectTab(selectTab);
 		configDialog.setVisible(true);
 	}
 	
 	public void showAbout() {
-		if (aboutFrame == null) aboutFrame = new jgm.gui.dialogs.About(frame);
+		if (aboutFrame == null) aboutFrame = new jgm.gui.dialogs.About(this);
 		aboutFrame.setVisible(true);
 	}
 	
-	//////////////////////////////
-	// Implement ContainerListener
-	public void componentAdded(ContainerEvent e) {
-		for (ServerManager sm : JGlideMon.instance.managers) {
-			addKeyAndContainerListenerRecursively(sm.myGui.tabsPane.screenshotTab, this, e.getChild());
-		}
-	}
 
-	public void componentRemoved(ContainerEvent e) {
-		for (ServerManager sm : JGlideMon.instance.managers) {
-			removeKeyAndContainerListenerRecursively(sm.myGui.tabsPane.screenshotTab, this, e.getChild());
-		}
-	}
-	
 	/////////////////
 	// static methods
 	
-	private static volatile boolean lockStatusText = false;
+	private volatile boolean lockStatusText = false;
 	
-	public static void unlockStatusBarText() {
+	public void unlockStatusBarText() {
 		lockStatusText = false;
 	}
 	
@@ -393,7 +525,7 @@ public class GUI
 	 * Set the status bar's text.
 	 * @param s The String to set the text to
 	 */
-	public static void setStatusBarText(String s) {
+	public void setStatusBarText(String s) {
 		setStatusBarText(s, false, false);
 	}
 	
@@ -404,7 +536,7 @@ public class GUI
 	 * @param lock Whether to lock the text after setting it
 	 * @param force Whether to ignore if the text is locked
 	 */
-	public static void setStatusBarText(String s, boolean lock, boolean force) {
+	public void setStatusBarText(String s, boolean lock, boolean force) {
 		if (statusBar == null || (lockStatusText && !force)) return;
 
 		// if locking set the lock
@@ -420,23 +552,23 @@ public class GUI
 		statusBar.setText(s);
 	}
 	
-	private static String lastStatusText = "";
-	private static String currentStatusText = "";
+	private String lastStatusText = "";
+	private String currentStatusText = "";
 	
-	public static void revertStatusBarText() {
+	public void revertStatusBarText() {
 		if (statusBar == null) return;
 		
 		statusBar.setText(lastStatusText);
 	}
 	
-	public static void setStatusBarProgressIndeterminent() {
+	public void setStatusBarProgressIndeterminent() {
 		if (statusBar == null) return;
 		
 		statusBar.getProgressBar().setIndeterminate(true);
 		statusBar.getProgressBar().setVisible(true);
 	}
 	
-	public static void setStatusBarProgress(int i) {
+	public void setStatusBarProgress(int i) {
 		if (statusBar == null) return;
 		
 		statusBar.getProgressBar().setIndeterminate(false);
@@ -444,7 +576,7 @@ public class GUI
 		statusBar.getProgressBar().setVisible(true);
 	}
 	
-	public static void hideStatusBarProgress() {
+	public void hideStatusBarProgress() {
 		if (statusBar == null) return;
 		
 		statusBar.getProgressBar().setIndeterminate(false);
@@ -452,11 +584,11 @@ public class GUI
 		statusBar.getProgressBar().setVisible(false);
 	}
 	
-	public static void setTitle() {
+	public void setTitle() {
 		setTitle(null);
 	}
 
-	public static void setTitle(String s) {
+	public void setTitle(String s) {
 		if (frame == null) return;
 
 		frame.setTitle((s != null && !s.equals("") ? s + " - " : "") + BASE_TITLE);
@@ -500,11 +632,11 @@ public class GUI
 		}
 	}
     
-    public static JMenuItem doMenuItem(String text, JMenu parent, ActionListener listener) {
+    public JMenuItem doMenuItem(String text, JMenu parent, ActionListener listener) {
     	return doMenuItem(text, -1, parent, listener);
     }
     
-    public static JMenuItem doMenuItem(String text, int mnemonic, JMenu parent, ActionListener listener) {
+    public JMenuItem doMenuItem(String text, int mnemonic, JMenu parent, ActionListener listener) {
     	JMenuItem item =
     		(mnemonic >= 0) ? new JMenuItem(text, mnemonic) : new JMenuItem(text);
     	item.addActionListener(listener);

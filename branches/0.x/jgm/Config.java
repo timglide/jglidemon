@@ -68,6 +68,10 @@ public class Config {
 		return instance.props;
 	}
 	
+	public static Properties getDefaults() {
+		return DEFAULTS;
+	}
+	
 	public Config() {
 		instance = this;
 		c = this;
@@ -100,6 +104,18 @@ public class Config {
 				log.log(Level.WARNING, "Unable to load config properties", e);
 				System.exit(-1);
 			}
+		}
+		
+		if (hasProp("net.host")) {
+			log.info("Adding old server info to new format");
+			set("servers.0.name", "Default");
+			set("servers.0.net.host", get("net.host"));
+			set("servers.0.net.port", get("net.port"));
+			set("servers.0.net.password", get("net.password"));
+			
+			props.remove("net.host");
+			props.remove("net.port");
+			props.remove("net.password");
 		}
 		
 		validate();

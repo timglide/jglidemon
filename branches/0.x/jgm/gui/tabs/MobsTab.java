@@ -42,8 +42,8 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 	private SkillTable skillTable;
 	private SkillTableModel skillEntries;
 	
-	public MobsTab() {
-		super(new BorderLayout(20, 20), "Mobs/Rep/Skills");
+	public MobsTab(jgm.GUI gui) {
+		super(gui, new BorderLayout(20, 20), "Mobs/Rep/Skills");
 		
 		JPanel infoPanel = new JPanel(new GridLayout(1, 0));
 		resetBtn.addActionListener(this);

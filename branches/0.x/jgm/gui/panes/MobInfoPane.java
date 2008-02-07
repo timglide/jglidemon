@@ -36,8 +36,8 @@ public class MobInfoPane extends Pane {
 	private JLabel loots;
 	private JLabel deaths;
 
-	public MobInfoPane() {
-		super();
+	public MobInfoPane(jgm.GUI gui) {
+		super(gui);
 
 		JPanel lbls = new JPanel(new GridBagLayout());
 		

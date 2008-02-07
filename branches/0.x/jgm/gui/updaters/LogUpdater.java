@@ -224,7 +224,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				urgentChatLog.add(e, true);
 				
 				if (!fromLog) 
-					jgm.GUI.tray
+					sm.gui.tray
 						.messageIfInactive("JGlideMon Glider Alert", e2.getText());
 				
 				if (!fromLog) {
@@ -248,7 +248,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 						if (limit == 0 || stuckCount < limit) {
 							stuckCount++;
 							// simulate pressing the Start button
-							sm.myGui.ctrlPane.start.doClick();
+							sm.gui.ctrlPane.start.doClick();
 							log.info("Restarting glide after being stuck");
 						} else {
 							stuckTimer = null;
@@ -257,6 +257,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 						}
 					} else if (e2.type == GliderLogEntry.Type.EXCEPTION &&
 								jgm.Config.getInstance().getBool("restarter.exception.enabled")) {
+						log.finer("Exception GliderLogEntry: " + e2.getText());
 						lastGliderException = System.currentTimeMillis();
 					}
 				}
@@ -265,13 +266,15 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			statusLog.add(e);
 			
 			if (!fromLog && e.getText().equals("Stopping glide")) {
-				jgm.GUI.tray
+				sm.gui.tray
 					.messageIfInactive("JGlideMon Glider Alert", e.getText());
 				
+				if (lastGliderException != null)
+					log.finer("Restarter check: " + (System.currentTimeMillis() - lastGliderException) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.exception.time")));
 				if (jgm.Config.getInstance().getBool("restarter.exception.enabled")
 					&& lastGliderException != null
 					&& System.currentTimeMillis() - lastGliderException <= 1000 * jgm.Config.getInstance().getInt("restarter.exception.time")) {
-					sm.myGui.ctrlPane.start.doClick();
+					sm.gui.ctrlPane.start.doClick();
 					log.info("Restarting glide after an exception");
 				}
 			}
@@ -282,7 +285,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				urgentChatLog.add(e, true);
 				
 				if (!fromLog) 
-					jgm.GUI.tray
+					sm.gui.tray
 						.messageIfInactive("JGlideMon Chat Alert", e2.getRawText());
 			}
 			

@@ -56,12 +56,15 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JComboBox wowDbSite;
 	
 	JPanel net;
+	JTextField serverName;
 	JTextField host;
 	JSpinner port;
 	JTextField password;
+	
 	JCheckBox netReconnect;
 	JSpinner netReconnectDelay;
 	JSpinner netReconnectTries;
+	
 	
 	JPanel screenshot;
 	JSpinner screenshotInterval;
@@ -104,8 +107,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	jgm.Config cfg;
 //	static javax.swing.border.Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
 		
-	public Config(Frame owner) {
-		super(owner, "Configuration");
+	public Config(GUI gui) {
+		super(gui, "Configuration");
 		cfg = jgm.Config.getInstance();
 				
 		tabs = new JTabbedPane(JTabbedPane.LEFT);
@@ -212,10 +215,17 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0; c.gridy = 0; c.weightx = 0.0;
+		net.add(new JLabel("Name: "), c);
+		
+		serverName = new JTextField();
+		c.gridx++; c.weightx = 1.0;
+		net.add(serverName, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		net.add(new JLabel("Host: "), c);
 		
-		host = new JTextField(cfg.getString("net.host"));
-		host.addActionListener(this);
+		host = new JTextField();
+//		host.addActionListener(this);
 		c.gridx++; c.weightx = 1.0;
 		net.add(host, c);
 		
@@ -231,8 +241,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		net.add(new JLabel("Password: " ), c);
 		
-		password = new JPasswordField(cfg.getString("net.password"));
-		password.addActionListener(this);
+		password = new JPasswordField();
+//		password.addActionListener(this);
 		c.gridx++; c.weightx = 1.0;
 		net.add(password, c);
 		
@@ -577,9 +587,39 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			jgm.Log.reloadConfig();
 		}
 		
-		cfg.set("net.host", host.getText());		
-		cfg.set("net.port", port.getValue());
-		cfg.set("net.password", password.getText());
+		gui.sm.name = serverName.getText();
+		
+		log.finest(String.format("Old server: %s:%s = %s",
+			gui.sm.host, gui.sm.port, gui.sm.password));
+		
+		boolean reconnect = !gui.sm.host.equals(host.getText());
+		gui.sm.host = host.getText();
+		reconnect = reconnect || gui.sm.port != (Integer) port.getValue();
+		gui.sm.port = (Integer) port.getValue();
+		reconnect = reconnect || !gui.sm.password.equals(password.getText());		
+		gui.sm.password = password.getText();
+		
+		log.finest(String.format("New server: %s:%s = %s",
+				gui.sm.host, gui.sm.port, gui.sm.password));
+		
+		if (!gui.sm.firstRun && reconnect) {
+			log.finer("Server info changed, need to reconnect...");
+			
+			new Thread(new Runnable() {
+				public void run() {
+					Thread t = gui.sm.connector.disconnect();
+					
+					if (t != null) {
+						try {
+							t.join();
+						} catch (InterruptedException e) {}
+					}
+					
+					gui.sm.connector.connect();
+				}
+			}).start();
+		}
+		
 		cfg.set("net.autoreconnect", netReconnect.isSelected());			
 		cfg.set("net.autoreconnectdelay", netReconnectDelay.getValue());
 		cfg.set("net.autoreconnecttries", netReconnectTries.getValue());
@@ -648,7 +688,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			try {
 				jgm.HTTPD.instance.start(cfg.getInt("web.port"));
 			} catch (java.io.IOException x) {
-				JOptionPane.showMessageDialog(GUI.frame,
+				JOptionPane.showMessageDialog(jgm.JGlideMon.getCurManager().gui.frame,
 					"Unable to start web-server.\n" +
 					"Port " + cfg.getInt("web.port") + " is unavailible.",
 					"Error",
@@ -669,9 +709,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			minToTray.setEnabled(state);
 			
 			if (state) {
-				jgm.GUI.tray.enable();
+				jgm.JGlideMon.getCurManager().gui.tray.enable();
 			} else {
-				jgm.GUI.tray.disable();
+				jgm.JGlideMon.getCurManager().gui.tray.disable();
 			}
 		} else if (e.getSource() == netReconnect) {
 			boolean state = netReconnect.isEnabled() && netReconnect.isSelected();
@@ -728,9 +768,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		showTray.setSelected(cfg.getBool("general.showtray"));
 		minToTray.setSelected(cfg.getBool("general.mintotray"));
 		
-		host.setText(cfg.get("net.host"));
-		port.setValue(cfg.getInt("net.port"));
-		password.setText(cfg.get("net.password"));
+		serverName.setText(gui.sm.name);
+		host.setText(gui.sm.host);
+		port.setValue(gui.sm.port);
+		password.setText(gui.sm.password);
 		netReconnect.setSelected(cfg.getBool("net.autoreconnect"));
 		netReconnectDelay.setValue(cfg.getInt("net.autoreconnectdelay"));
 		netReconnectTries.setValue(cfg.getInt("net.autoreconnecttries"));
@@ -742,7 +783,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshotBuffer.setValue(cfg.getDouble("screenshot.buffer"));
 		screenshotTimeout.setValue(cfg.getInt("screenshot.timeout"));
 		
-		Icon i = jgm.JGlideMon.getCurManager().myGui.tabsPane.screenshotTab.ssLabel.getIcon();
+		Icon i = jgm.JGlideMon.getCurManager().gui.tabsPane.screenshotTab.ssLabel.getIcon();
 		
 		if (i != null) {
 			int width = i.getIconWidth();

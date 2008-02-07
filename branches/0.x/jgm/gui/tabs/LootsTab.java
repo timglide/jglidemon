@@ -52,8 +52,8 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 		"Poor", "Common", "Uncommon", "Rare", "Epic"
 	};
 
-	public LootsTab() {
-		super(new BorderLayout(20, 20), "Loot");
+	public LootsTab(jgm.GUI gui) {
+		super(gui, new BorderLayout(20, 20), "Loot");
 		
 		JPanel goldPanel = new JPanel(new GridLayout(1, 0));
 		goldPanel.add(goldLooted);

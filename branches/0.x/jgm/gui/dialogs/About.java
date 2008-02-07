@@ -38,8 +38,8 @@ public class About extends Dialog implements ActionListener {
 	
 	private static java.util.Random r = new java.util.Random();
 	
-	public About(Frame owner) {
-		super(owner, "About JGlideMon");
+	public About(jgm.GUI gui) {
+		super(gui, "About JGlideMon");
 		
 		ImageIcon icon = new ImageIcon(
 			JGlideMon.class.getResource("resources/images/stitch/stitch" + r.nextInt(2) + ".jpg"));

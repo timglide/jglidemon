@@ -89,8 +89,8 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		
 		if (stop) return false;
 		
-		GUI.setStatusBarText("Updating screenshot...", true, false);
-		GUI.setStatusBarProgress(0);
+		sm.gui.setStatusBarText("Updating screenshot...", true, false);
+		sm.gui.setStatusBarProgress(0);
 		
 		int buffSize = (int) (cfg.getDouble("screenshot.buffer") * 1048576);
 		
@@ -122,9 +122,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					sm.connector.disconnect();
 				}
 				
-				GUI.revertStatusBarText();
-				GUI.unlockStatusBarText();
-				GUI.hideStatusBarProgress();
+				sm.gui.revertStatusBarText();
+				sm.gui.unlockStatusBarText();
+				sm.gui.hideStatusBarProgress();
 				
 				this.cancel();
 			}
@@ -151,9 +151,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			timer.cancel();
 			
 			log.fine("Didn't receive Success upon /capture. Got: " + line);
-			GUI.revertStatusBarText();
-			GUI.unlockStatusBarText();
-			GUI.hideStatusBarProgress();
+			sm.gui.revertStatusBarText();
+			sm.gui.unlockStatusBarText();
+			sm.gui.hideStatusBarProgress();
 			return false;
 		}
 		
@@ -193,9 +193,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 
 			log.fine("Clear Stream done");	
 
-			GUI.revertStatusBarText();
-			GUI.unlockStatusBarText();
-			GUI.hideStatusBarProgress();
+			sm.gui.revertStatusBarText();
+			sm.gui.unlockStatusBarText();
+			sm.gui.hideStatusBarProgress();
 			
 			return false;
 		}
@@ -213,7 +213,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			//System.out.print(written);
 			
 			int percent = (int) (((float) written / (float) size) * 100);
-			GUI.setStatusBarProgress(percent);
+			sm.gui.setStatusBarProgress(percent);
 		}
 		
 		//System.out.println();
@@ -289,9 +289,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			sentSettings = false;
 		}
 		
-		GUI.revertStatusBarText();
-		GUI.unlockStatusBarText();
-		GUI.hideStatusBarProgress();
+		sm.gui.revertStatusBarText();
+		sm.gui.unlockStatusBarText();
+		sm.gui.hideStatusBarProgress();
 		
 		return true;	  
 	  }
@@ -315,10 +315,10 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				} catch (Exception e) {
 					log.fine("Stopping SSUpdater, Ex: " + e.getMessage());
 					idle = true;
-					GUI.revertStatusBarText();
-					GUI.unlockStatusBarText();
-					GUI.hideStatusBarProgress();
-					JGlideMon.getCurManager().connector.disconnect();
+					sm.gui.revertStatusBarText();
+					sm.gui.unlockStatusBarText();
+					sm.gui.hideStatusBarProgress();
+					sm.connector.disconnect();
 					return;
 				}
 				

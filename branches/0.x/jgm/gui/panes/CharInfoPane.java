@@ -37,8 +37,8 @@ public class CharInfoPane extends Pane {
 	private JLabel       manaLbl;
 	private JProgressBar mana;
 
-	public CharInfoPane() {
-		super();
+	public CharInfoPane(jgm.GUI gui) {
+		super(gui);
 
 		setLayout(new BorderLayout());
 

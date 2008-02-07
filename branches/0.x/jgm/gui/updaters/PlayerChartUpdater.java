@@ -35,7 +35,7 @@ public class PlayerChartUpdater {
 	
 	public PlayerChartUpdater(jgm.ServerManager sm) {
 		status = sm.status.s;
-		chart = sm.myGui.tabsPane.chartTab.chart;
+		chart = sm.gui.tabsPane.chartTab.chart;
 		
 		timer = new Timer();
 		timer.scheduleAtFixedRate(

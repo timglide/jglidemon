@@ -65,7 +65,7 @@ public class Connector {
 		if (state != State.DISCONNECTED) return;
 		
 		if (interactive)
-			reconnectTries = sm.cfg.getInt("net.autoreconnecttries");
+			reconnectTries = Config.c.getInt("net.autoreconnecttries");
 		
 		state = State.CONNECTING;
 		
@@ -77,34 +77,36 @@ public class Connector {
 				
 				boolean success = true;
 				
-				for (ConnectionListener c : listeners) {
-					try {
-						if (c.getConn() == null) continue;
-						c.getConn().connect();
-					} catch (java.net.UnknownHostException e) {
-						log.warning("Error connecting to " + c.getConn().host + ": " + e.getMessage());
-						jgm.GUI.setStatusBarText("Unable to connect to " + c.getConn().host + ":" + c.getConn().port + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
-						success = false;
-						break;
-					} catch (Exception e) {
-						log.warning("Error connecting to " + c.getConn().host + ": " + e.getMessage());
-						jgm.GUI.setStatusBarText("Unable to connect to " + c.getConn().host + ":" + c.getConn().port + " - " + e.getMessage(), true, true);						
-						success = false;
-						break;
+				synchronized (listeners) {
+					for (ConnectionListener c : listeners) {
+						try {
+							if (c.getConn() == null) continue;
+							c.getConn().connect();
+						} catch (java.net.UnknownHostException e) {
+							log.warning("Error connecting to " + c.getConn().sm.host + ": " + e.getMessage());
+							sm.gui.setStatusBarText("Unable to connect to " + c.getConn().sm.host + ":" + c.getConn().sm.port + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
+							success = false;
+							break;
+						} catch (Exception e) {
+							log.warning("Error connecting to " + c.getConn().sm.host + ": " + e.getMessage());
+							sm.gui.setStatusBarText("Unable to connect to " + c.getConn().sm.host + ":" + c.getConn().sm.port + " - " + e.getMessage(), true, true);						
+							success = false;
+							break;
+						}
 					}
 				}
 				
 				state = (success) ? State.CONNECTED : State.DISCONNECTED;
 				
 				if (success) {
-					reconnectTries = sm.cfg.getInt("net.autoreconnecttries");
+					reconnectTries = Config.c.getInt("net.autoreconnecttries");
 
 					fireConnect();
 					new Phrase(Audible.Type.STATUS, "Connection established.").play();
 				} else {
 					fireDisconnect();
 					
-					if (sm.cfg.getBool("net.autoReconnect")) {
+					if (Config.c.getBool("net.autoReconnect")) {
 						createReconnector();
 					}
 				}
@@ -151,14 +153,14 @@ public class Connector {
 				}
 				
 				state = State.DISCONNECTED;
-				jgm.GUI.setStatusBarText("Disconnected", false, true);
-				jgm.GUI.hideStatusBarProgress();
+				sm.gui.setStatusBarText("Disconnected", false, true);
+				sm.gui.hideStatusBarProgress();
 				
 				if (success) {
 					fireDisconnect();
 					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 					
-					if (!interactive && sm.cfg.getBool("net.autoreconnect")) {
+					if (!interactive && Config.c.getBool("net.autoreconnect")) {
 						createReconnector();
 					}
 				}
@@ -180,38 +182,46 @@ public class Connector {
 	}
 	
 	private void fireConnecting() {
-		log.finest("Firing connecting");
-		for (ConnectionListener c : listeners) {
-			c.onConnecting();
+		synchronized (listeners) {
+			log.finest("Firing connecting");
+			for (ConnectionListener c : listeners) {
+				c.onConnecting();
+			}
 		}
 	}
 	
 	private void fireConnect() {
-		log.finest("Fire connect");
-		for (ConnectionListener c : listeners) {
-			c.onConnect();
+		synchronized (listeners) {
+			log.finest("Fire connect");
+			for (ConnectionListener c : listeners) {
+				c.onConnect();
+			}
 		}
 	}
 	
 	private void fireDisconnecting() {
-		log.finest("Fire disconnecting");
-		for (ConnectionListener c : listeners) {
-			c.onDisconnecting();
+		synchronized (listeners) {
+			log.finest("Fire disconnecting");
+			for (ConnectionListener c : listeners) {
+				c.onDisconnecting();
+			}
 		}
 	}
 	
 	private void fireDisconnect() {
-		log.finest("Fire disconnect");
-		for (ConnectionListener c : listeners) {
-			c.onDisconnect();
+		synchronized (listeners) {
+			log.finest("Fire disconnect");
+			for (ConnectionListener c : listeners) {
+				c.onDisconnect();
+			}
 		}
 	}
 	
 	private void createReconnector() {
-		final int delay = sm.cfg.getInt("net.autoreconnectdelay");
+		final int delay = Config.c.getInt("net.autoreconnectdelay");
 		
 		if (reconnectTries == Integer.MIN_VALUE) {
-			reconnectTries = sm.cfg.getInt("net.autoreconnecttries");
+			reconnectTries = Config.c.getInt("net.autoreconnecttries");
 		}
 		
 		reconnectTries--;
@@ -227,7 +237,7 @@ public class Connector {
 				try {
 					log.fine("Reconnecting in " + i);
 					while (i > 0) {
-						jgm.GUI.setStatusBarText("Reconnecting in " + i + "...", false, true);
+						sm.gui.setStatusBarText("Reconnecting in " + i + "...", false, true);
 						Thread.sleep(1000);
 						i--;
 					}

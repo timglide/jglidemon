@@ -20,6 +20,8 @@
  */
 package jgm.gui.dialogs;
 
+import jgm.GUI;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -27,11 +29,14 @@ import javax.swing.*;
 public abstract class Dialog extends JDialog {
 	public static final int PADDING = jgm.GUI.PADDING;
 	
+	protected GUI gui;
 	protected String title;
 	protected GridBagConstraints c = new GridBagConstraints();
 	
-	public Dialog(Frame owner, String title) {
-		super(owner, title, true);
+	public Dialog(GUI gui, String title) {
+		super(gui.frame, title, true);
+		
+		this.gui = gui;
 		
 		JPanel spacer = new JPanel(new BorderLayout());
 		spacer.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));

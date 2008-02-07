@@ -267,7 +267,7 @@ public class RawChatLogEntry extends LogEntry {
 	
 	// group 1 = transparancy, 2 = color (both in hex)
 	private static final Pattern FORMATTING_REGEX =
-		Pattern.compile("\\|(?:c([0-9A-Fa-f]{2})([0-9A-Fa-f]{6}))");
+		Pattern.compile("\\|(?:[Cc]([0-9A-Fa-f]{2})([0-9A-Fa-f]{6}))");
 
 	public static String removeFormatting(String str) {
 		Matcher m = FORMATTING_REGEX.matcher(str);

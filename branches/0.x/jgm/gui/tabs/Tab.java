@@ -24,6 +24,7 @@ package jgm.gui.tabs;
 import java.awt.*;
 import javax.swing.*;
 
+import jgm.GUI;
 import jgm.glider.Status;
 
 /**
@@ -38,8 +39,8 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * Create a Tab with the specified name.
 	 * @param s The name of the Tab
 	 */
-	public Tab(String s) {
-		super();
+	public Tab(GUI gui, String s) {
+		super(gui);
 		name = s;
 	}
 
@@ -48,8 +49,8 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * @param lm The LayoutManager to use
 	 * @param s The name of the Tab
 	 */
-	public Tab(LayoutManager lm, String s) {
-		super(lm);
+	public Tab(GUI gui, LayoutManager lm, String s) {
+		super(gui, lm);
 		name = s;
 	}
 

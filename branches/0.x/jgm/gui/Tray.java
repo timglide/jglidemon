@@ -20,6 +20,8 @@
  */
 package jgm.gui;
 
+import jgm.GUI;
+
 import java.util.logging.*;
 
 import java.awt.*;
@@ -30,14 +32,9 @@ import javax.swing.*;
 public class Tray implements ActionListener {
 	static Logger log = Logger.getLogger(Tray.class.getName());
 	
-	// whether the icon has been added to the tray or not
-	private volatile boolean enabled = false;
+	static boolean supported = false;
 	
-	private static SystemTray tray;
-	private static TrayIcon icon;
-	private static PopupMenu menu;
-
-	public Tray() {		
+	static {
 		try {
 			Class.forName("java.awt.SystemTray");
 			
@@ -45,6 +42,26 @@ public class Tray implements ActionListener {
 				throw new Throwable("System tray not supported");
 			}
 			
+			supported = true;
+		} catch (Throwable t) {
+			log.log(Level.WARNING, "Unable to initialize system tray", t);
+			supported = false;
+		}
+	}
+	
+	// whether the icon has been added to the tray or not
+	private volatile boolean enabled = false;
+	
+	private SystemTray tray;
+	private TrayIcon icon;
+	private PopupMenu menu;
+
+	GUI gui;
+	
+	public Tray(GUI gui) {		
+		this.gui = gui;
+		
+		if (supported) {	
 			tray = SystemTray.getSystemTray();
 			
 			// apparantly can't use a JPopupMenu....
@@ -53,19 +70,16 @@ public class Tray implements ActionListener {
 			item.addActionListener(this);
 			menu.add(item);
 			
-			icon = new TrayIcon(jgm.GUI.frame.getIconImage(), jgm.GUI.BASE_TITLE, menu);
+			icon = new TrayIcon(gui.frame.getIconImage(), jgm.GUI.BASE_TITLE, menu);
 			icon.setImageAutoSize(true);
 			icon.addMouseListener(new MyMouseListener());
 			
-			if (jgm.Config.getInstance().getBool("general.showtray")) {
+			if (jgm.Config.c.getBool("general.showtray")) {
 				enable();
 			}
-		} catch (Throwable e) {
+		} else {
 			tray = null;
 			icon = null;
-			
-			log.log(Level.WARNING, "Unable to initialize system tray", e);
-			return;
 		}
 	}
 	
@@ -87,7 +101,7 @@ public class Tray implements ActionListener {
 	}
 	
 	public static boolean isSupported() {
-		return tray != null;
+		return supported;
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -106,7 +120,7 @@ public class Tray implements ActionListener {
 	 * @param text
 	 */
 	public void messageIfInactive(String caption, String text) {
-		if (jgm.GUI.frame.isActive())
+		if (gui.frame.isActive())
 			return;
 		
 		displayMessage(caption, text, MessageType.WARNING);
@@ -153,7 +167,7 @@ public class Tray implements ActionListener {
 	private class MyMouseListener extends MouseAdapter {
 		// when the tray icon is clicked
 		public void mouseClicked(MouseEvent e) {
-			JFrame f = jgm.GUI.frame;
+			JFrame f = gui.frame;
 			
 			// restore if we were minimized
 			if (e.getButton() == MouseEvent.BUTTON1 &&
@@ -167,5 +181,5 @@ public class Tray implements ActionListener {
 			f.requestFocus();
 			f.toFront();
 		}
-	} 
+	}
 }

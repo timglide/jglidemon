@@ -43,14 +43,29 @@ public class JGlideMon {
 	public static boolean debug = false;
 	
 	public static JGlideMon instance;
+	public static Config        cfg;
 	
-	public  GUI           gui;
-	public  Config        cfg;
+	public static List<ServerManager> managers = null;
 	
-	List<ServerManager> managers = new Vector<ServerManager>();
+	public static ServerManager sm = null;
 	
 	public static ServerManager getCurManager() {
-		return instance.managers.get(0);
+		return sm;
+	}
+	
+	public static ServerManager newManager() {
+		ServerManager ret = new ServerManager();
+//		ret.init(instance.gui);
+//		managers.add(ret);
+//		instance.gui.doServersMenu();
+		return ret;
+	}
+	
+	public static void removeManager(ServerManager sm) {
+		sm.connector.disconnect();
+//		instance.gui.desktop.remove(sm.myGui);
+//		instance.gui.doServersMenu();
+		managers.remove(sm);
 	}
 	
 	public JGlideMon() {
@@ -79,17 +94,19 @@ public class JGlideMon {
 		Sound.init();
 		Speech.init();
 		
-		managers.add(new ServerManager(0));
-
-		gui = new GUI();
+		ServerManager.loadServers();
+		managers = ServerManager.managers;
 		
-		for (ServerManager sm : managers) {
-			sm.init(gui);
+		if (managers.size() == 0) {
+			managers.add(new ServerManager());
+			managers.get(0).firstRun = true;
 		}
 		
-		gui.managerChanged(managers.get(0));
+		sm = managers.get(0);
 		
-		gui.makeVisible();
+		for (ServerManager sm : managers) {
+			sm.init();
+		}
 		
 		// not critical to get these loaded before the gui shows
 		jgm.wow.Item.Cache.loadIcons();
@@ -102,7 +119,7 @@ public class JGlideMon {
 			try {
 				HTTPD.instance.start(cfg.getInt("web.port"));
 			} catch (java.io.IOException e) {
-				JOptionPane.showMessageDialog(GUI.frame,
+				JOptionPane.showMessageDialog(sm.gui.frame,
 					"Unable to start web-server.\n" +
 					"Port " + cfg.getInt("web.port") + " is unavailible.",
 					"Error",
@@ -120,12 +137,16 @@ public class JGlideMon {
 					t.join();
 				} catch (InterruptedException e) {}
 			}
+			
+			sm.gui.frame.dispose();
 		}
 		
 		Speech.destroy();
 		jgm.wow.Item.Cache.saveIcons();
 		jgm.wow.Item.Cache.saveItems();
 		HTTPD.instance.stop(); // doesn't matter if it's actually running or not
+		
+		ServerManager.saveConfig();
 		jgm.Config.write();
 		
 		System.exit(0);

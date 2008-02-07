@@ -44,26 +44,26 @@ public class TabsPane extends Pane {
 	public LogTab        gliderLog;
 	public LogTab        rawLog;
 
-	public TabsPane() {
-		super(new BorderLayout());
+	public TabsPane(jgm.GUI gui) {
+		super(gui, new BorderLayout());
 
 		tabbedPane = new JTabbedPane();
 
-		screenshotTab = new ScreenshotTab();
+		screenshotTab = new ScreenshotTab(gui);
 		tabbedPane.addChangeListener(screenshotTab);
 		tabbedPane.addKeyListener(screenshotTab);
 		addTab(screenshotTab);
 		
-		chatLog    = new ChatTab();
-		urgentChatLog = new LogTab("Urgent Log", tabbedPane);
-		profiles   = new ProfilesTab();
-		combatLog  = new LogTab("Combat Log", tabbedPane);
-		gliderLog  = new LogTab("Glider Log", tabbedPane);
-		statusLog  = new LogTab("Status", tabbedPane);
+		chatLog    = new ChatTab(gui);
+		urgentChatLog = new LogTab(gui, "Urgent Log", tabbedPane);
+		profiles   = new ProfilesTab(gui);
+		combatLog  = new LogTab(gui, "Combat Log", tabbedPane);
+		gliderLog  = new LogTab(gui, "Glider Log", tabbedPane);
+		statusLog  = new LogTab(gui, "Status", tabbedPane);
 		
 		if (jgm.JGlideMon.debug) {
-			rawChatLog = new LogTab("Raw Chat Log", tabbedPane);
-			rawLog     = new LogTab("Raw Log", tabbedPane);
+			rawChatLog = new LogTab(gui, "Raw Chat Log", tabbedPane);
+			rawLog     = new LogTab(gui, "Raw Log", tabbedPane);
 		}
 
 		addTab(chatLog);
@@ -82,13 +82,13 @@ public class TabsPane extends Pane {
 			addTab(rawLog);
 		}
 
-		chartTab = new PlayerChartTab();
+		chartTab = new PlayerChartTab(gui);
 		addTab(chartTab);
 		
-		mobsTab = new MobsTab();
+		mobsTab = new MobsTab(gui);
 		addTab(mobsTab);
 		
-		lootsTab = new LootsTab();
+		lootsTab = new LootsTab(gui);
 		addTab(lootsTab);
 
 		try {

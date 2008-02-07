@@ -39,9 +39,7 @@ public class Conn {
 	
 	private static int instances = 0;
 	
-	public String host;
-	public int    port;
-	public String password;
+	public ServerManager sm;
 	
 	private Socket         s;
 	private PrintWriter    out;
@@ -49,9 +47,7 @@ public class Conn {
 	private BufferedReader in;
 	
 	public Conn(ServerManager sm) {
-		host = sm.host;
-		port = sm.port;
-		password = sm.password;
+		this.sm = sm;
 		
 		++instances;
 	}
@@ -60,13 +56,13 @@ public class Conn {
 		throws UnknownHostException, IOException {
 		s = null; out = null; inStream = null; in = null;
 
-		log.info("Connecting to " + host + "...");
-		s   = new Socket(host, port);
+		log.info("Connecting to " + sm.host + "...");
+		s   = new Socket(sm.host, sm.port);
 		out = new PrintWriter(s.getOutputStream(), false);
 		inStream = new BufferedInputStream(s.getInputStream());
 		in  = new BufferedReader(
 		          new InputStreamReader(inStream, "UTF-8"));
-		send(password);
+		send(sm.password);
 		in.readLine(); // ignore Authenticated OK line
 		
 		notifyAll();

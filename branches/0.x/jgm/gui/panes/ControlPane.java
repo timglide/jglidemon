@@ -37,8 +37,8 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public final JButton start;
 	public final JButton stop;
 
-	public ControlPane() {
-		super();
+	public ControlPane(jgm.GUI gui) {
+		super(gui);
 
 		connect = new JButton("Connect");
 		connect.setFocusable(false);

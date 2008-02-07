@@ -27,8 +27,8 @@ import java.awt.*;
 public class PlayerChartTab extends Tab {
 	public PlayerChart chart;
 	
-	public PlayerChartTab() {
-		super(new BorderLayout(), "Health/Mana Chart");
+	public PlayerChartTab(jgm.GUI gui) {
+		super(gui, new BorderLayout(), "Health/Mana Chart");
 		
 		chart = new PlayerChart();
 		chart.setBorder(null);

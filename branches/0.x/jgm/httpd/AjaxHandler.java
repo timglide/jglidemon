@@ -117,8 +117,8 @@ public class AjaxHandler extends Handler {
 							public void run() {
 								javax.swing.JButton btn = 
 									cmd.equals("start")
-									? sm.myGui.ctrlPane.start
-									: sm.myGui.ctrlPane.stop;
+									? sm.gui.ctrlPane.start
+									: sm.gui.ctrlPane.stop;
 								btn.doClick();
 							}
 						};
@@ -129,7 +129,7 @@ public class AjaxHandler extends Handler {
 							t = new Thread() {
 								public void run() {
 									jgm.gui.tabs.ChatTab tab = 
-										sm.myGui.tabsPane.chatLog;
+										sm.gui.tabsPane.chatLog;
 									Object last = tab.type.getSelectedItem();
 									tab.type.setSelectedItem(jgm.glider.ChatType.RAW);
 									tab.keys.setText(keys);

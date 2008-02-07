@@ -23,6 +23,7 @@ package jgm.gui.panes;
 import java.awt.*;
 import javax.swing.*;
 
+import jgm.GUI;
 import jgm.glider.Status;
 
 /**
@@ -32,13 +33,15 @@ import jgm.glider.Status;
  * @since 0.1
  */
 public abstract class Pane extends JPanel {
+	protected GUI gui;
 	protected GridBagConstraints c = null;
 
 	/**
 	 * Create a new Pane with the specified LayoutManager.
 	 * @param lm The LayoutManager to use
 	 */
-	public Pane(LayoutManager lm) {
+	public Pane(GUI gui, LayoutManager lm) {
+		this.gui = gui;
 		setLayout(lm);
 
 		c = new GridBagConstraints();
@@ -49,8 +52,8 @@ public abstract class Pane extends JPanel {
 	/**
 	 * Create a new Pane with a GridBagLayout.
 	 */
-	public Pane() {
-		this(new GridBagLayout());
+	public Pane(GUI gui) {
+		this(gui, new GridBagLayout());
 	}
 
 	/**

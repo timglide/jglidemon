@@ -28,7 +28,9 @@ public class JStatusBar extends jgm.gui.panes.Pane {
 	private JProgressBar progress = new JProgressBar();
 	//private JLabel extra = new JLabel("        ");
 	
-	public JStatusBar() {
+	public JStatusBar(jgm.GUI gui) {
+		super(gui);
+		
 		Insets insets = new Insets(0, 2, 0, 2);
 		javax.swing.border.Border b =
 			BorderFactory.createLoweredBevelBorder();

@@ -47,16 +47,16 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 	
 	private SendChatManager sendChat;
 	
-	public ChatTab() {
-		super(new BorderLayout(), "Chat");
+	public ChatTab(jgm.GUI gui) {
+		super(gui, new BorderLayout(), "Chat");
 		
 		sendChat = new SendChatManager();
 		
 		tabs = new JTabbedPane();
-		all = new LogTab("All Chat", tabs);
-		pub = new LogTab("Public Chat", tabs);
-		whisper = new LogTab("Whisper/Say/Yell", tabs);
-		guild = new LogTab("Guild", tabs);
+		all = new LogTab(gui, "All Chat", tabs);
+		pub = new LogTab(gui, "Public Chat", tabs);
+		whisper = new LogTab(gui, "Whisper/Say/Yell", tabs);
+		guild = new LogTab(gui, "Guild", tabs);
 		
 		addTab(all);
 		addTab(pub);

@@ -62,8 +62,8 @@ public class LogTab extends Tab implements Clearable {
 	private LogTableModel logEntries;
 	private JScrollPane   jsp;
 	
-	public LogTab(String s, JTabbedPane tp) {
-		super(new BorderLayout(), s);
+	public LogTab(jgm.GUI gui, String s, JTabbedPane tp) {
+		super(gui, new BorderLayout(), s);
 
 		this.setBackground(Color.BLACK);
 		this.setOpaque(true);
@@ -176,7 +176,7 @@ public class LogTab extends Tab implements Clearable {
 				if (centry.getSender() == null || !centry.fromPlayer) return;
 
 				ChatTab ct =
-					jgm.JGlideMon.getCurManager().myGui.tabsPane.chatLog;
+					gui.tabsPane.chatLog;
 	
 				ct.type.setSelectedItem(jgm.glider.ChatType.WHISPER);
 				ct.to.setText(centry.getSender());

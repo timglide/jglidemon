@@ -45,8 +45,8 @@ public class ScreenshotTab extends Tab
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
 	
-	public ScreenshotTab() {
-		super(new BorderLayout(), "Screenshot");
+	public ScreenshotTab(jgm.GUI gui) {
+		super(gui, new BorderLayout(), "Screenshot");
 		
 		ssLabel = new JLabel();
 		ssLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -72,7 +72,7 @@ public class ScreenshotTab extends Tab
 	public void actionPerformed(ActionEvent e) {
 		checkNulls();
 		
-		if (e.getSource() == jgm.JGlideMon.instance.gui.menu.refreshSS) {
+		if (e.getSource() == gui.menu.refreshSS) {
 			log.finer("Want to update SS");
 			
 			if (updater != null && updater.idle) {
@@ -104,8 +104,8 @@ public class ScreenshotTab extends Tab
 
 	public void mouseClicked(MouseEvent e) {	
 		checkNulls();
-		if (!JGlideMon.getCurManager().connector.isConnected() ||
-			!JGlideMon.instance.gui.menu.sendKeys.isSelected())
+		if (!gui.sm.connector.isConnected() ||
+			!gui.menu.sendKeys.isSelected())
 			return;
 		
 		Dimension s = ssLabel.getSize();
@@ -137,7 +137,7 @@ public class ScreenshotTab extends Tab
 	
 	public void keyPressed(KeyEvent e) {
 		if (!this.isCurrentTab() ||
-			!jgm.JGlideMon.instance.gui.menu.sendKeys.isSelected())
+			!gui.menu.sendKeys.isSelected())
 			return;
 		
 		checkNulls();
@@ -171,7 +171,7 @@ public class ScreenshotTab extends Tab
 	
 	public void keyReleased(KeyEvent e) {
 		if (!this.isCurrentTab() ||
-			!jgm.JGlideMon.instance.gui.menu.sendKeys.isSelected())
+			!gui.menu.sendKeys.isSelected())
 			return;
 		
 		checkNulls();
