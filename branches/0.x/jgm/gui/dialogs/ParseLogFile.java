@@ -179,7 +179,7 @@ public class ParseLogFile extends Dialog implements ActionListener {
 					ParseLogFile.this.validate();
 					
 					try {
-						jgm.JGlideMon.getCurManager().logUpdater.parseFile(
+						gui.sm.logUpdater.parseFile(
 							selectedFile,
 							(jgm.glider.log.LogFile) type.getSelectedItem());
 					} catch (Throwable t) {

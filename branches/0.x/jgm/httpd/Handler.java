@@ -20,11 +20,19 @@
  */
 package jgm.httpd;
 
+import jgm.HTTPD;
+
 import java.util.Properties;
 import java.util.logging.Logger;
 
 public abstract class Handler {
 	protected static Logger log = Logger.getLogger(Handler.class.getName());
+	
+	protected HTTPD httpd;
+	
+	public Handler(HTTPD httpd) {
+		this.httpd = httpd;
+	}
 	
 	public abstract Response handle(String uri, String method, Properties headers, Properties params);
 }

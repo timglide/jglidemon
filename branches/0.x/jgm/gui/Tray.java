@@ -104,6 +104,15 @@ public class Tray implements ActionListener {
 		return supported;
 	}
 	
+	public void setTitle(String title) {
+		if (icon != null)
+			icon.setToolTip(title);
+	}
+	
+	public void destroy() {
+		disable();
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Exit")) {
 			jgm.JGlideMon.instance.destroy();

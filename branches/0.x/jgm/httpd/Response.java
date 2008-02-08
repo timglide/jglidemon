@@ -24,7 +24,6 @@ import jgm.HTTPD;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Properties;
 
 /**
  * HTTP response.
@@ -91,5 +90,5 @@ public class Response
 	 * Headers for the HTTP response. Use addHeader()
 	 * to add lines.
 	 */
-	public Properties header = new Properties();
+	public java.util.Properties header = new java.util.Properties();
 }

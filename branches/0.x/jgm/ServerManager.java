@@ -1,7 +1,7 @@
 package jgm;
 
 import java.util.*;
-
+import java.util.logging.*;
 import javax.swing.*;
 
 import jgm.glider.Conn;
@@ -22,17 +22,32 @@ import jgm.gui.updaters.StatusUpdater;
  * @since 0.15
  */
 public class ServerManager {	
+	static Logger log = Logger.getLogger(ServerManager.class.getName());
+	
 	static public Config cfg = Config.c;
 	static Properties DEFAULTS = new Properties();
 	
 	static {
+		log.finest("Loading default server settings");
+		
+		try {
+			DEFAULTS.load(JGlideMon.class.getResourceAsStream("properties/JGlideMon.defaults.properties"));
+		} catch (java.io.IOException e) {
+			log.log(Level.WARNING, "Unable to load default server settings", e);
+			System.exit(-1);
+		}
+		
 		final String NEEDLE = "servers.0.";			
-		for (Object key : Config.DEFAULTS.keySet()) {
+		for (Object key : DEFAULTS.keySet().toArray()) {
 			String s = key.toString();
 			
 			if (s.startsWith(NEEDLE)) {
-				DEFAULTS.setProperty(s.substring(NEEDLE.length()), Config.DEFAULTS.getProperty(s));
+				String newKey = s.substring(NEEDLE.length());
+				log.finest(String.format("  %s=%s", newKey, DEFAULTS.get(s)));
+				DEFAULTS.setProperty(newKey, DEFAULTS.get(s));
 			}
+			
+			DEFAULTS.remove(key);
 		}
 	}
 	
@@ -41,13 +56,18 @@ public class ServerManager {
 	
 	public static void loadServers() {
 		for (int i = 0; ; i++) {
-			if (cfg.hasProp("servers." + i + ".name")) {
+			String needle = "servers." + i + ".";
+			
+			if (cfg.has(needle + "name")) {
 				Properties p = new Properties(DEFAULTS);
-				p.setProperty("name", cfg.get("servers." + i + ".name"));
-				p.setProperty("net.host", cfg.get("servers." + i + ".net.host"));
-				p.setProperty("net.port", cfg.get("servers." + i + ".net.port"));
-				p.setProperty("net.password", cfg.get("servers." + i + ".net.password"));
 				
+				for (Object o : cfg.p.keySet().toArray()) {
+					String key = o.toString();
+					if (key.startsWith(needle)) {
+						p.set(key.substring(needle.length()), cfg.get(key));
+					}
+				}
+								
 				managers.add(new ServerManager(p));
 			} else
 				break;
@@ -55,7 +75,7 @@ public class ServerManager {
 	}
 	
 	public static void saveConfig() {
-		Iterator<Object> it = cfg.props.keySet().iterator();
+		Iterator<Object> it = cfg.p.keySet().iterator();
 		
 		while (it.hasNext()) {
 			String s = it.next().toString();
@@ -68,14 +88,20 @@ public class ServerManager {
 		for (int i = 0; i < managers.size(); i++) {
 			ServerManager sm = managers.get(i);
 			
-			sm.props.setProperty("name", sm.name);
-			sm.props.setProperty("net.host", sm.host);
-			sm.props.setProperty("net.port", Integer.toString(sm.port));
-			sm.props.setProperty("net.password", sm.password);
+			log.finest("Saving config for \"" + sm.name + "\"");
 			
-			for (Object key : sm.props.keySet()) {
-				String s = key.toString();
-				cfg.set("servers." + i + "." + s, sm.props.getProperty(s));
+			sm.p.set("name", sm.name);
+			sm.p.set("net.host", sm.host);
+			sm.p.set("net.port", Integer.toString(sm.port));
+			sm.p.set("net.password", sm.password);
+			
+			for (Object o : sm.p.keySet().toArray()) {
+				String key = o.toString();
+				String newKey = "servers." + i + "." + key;
+				
+				log.finest(String.format("  %s=%s", newKey, sm.p.get(key)));
+				
+				cfg.set(newKey, sm.p.get(key));
 			}
 		}
 	}
@@ -85,24 +111,50 @@ public class ServerManager {
 		managers.add(sm);
 		sm.firstRun = true;
 		sm.init();
+		
+		fireServerAdded(sm);
 	}
 	
-	public static void removeServer(ServerManager sm) {
-		Thread t = sm.connector.disconnect();
+	public void suspend() {
+		suspendServer(this);
+	}
+	
+	public static void suspendServer(ServerManager sm) {
+//		if (!sm.p.getBool("enabled")) return; // already suspended
 		
-		if (t != null)
-			try {
-				t.join();
-			} catch (InterruptedException e) {}
-			
+		sm.p.set("enabled", false);
+		sm.destroy();
+		
+		fireServerSuspended(sm);
+	}
+	
+	public void resume() {
+		resumeServer(this);
+	}
+	
+	public static void resumeServer(ServerManager sm) {
+//		if (sm.p.getBool("enabled")) return; // already running
+		
+		sm.p.set("enabled", true);
+		sm.init();
+		
+		fireServerResumed(sm);
+	}
+	
+	public static void removeServer(ServerManager sm) {			
 		managers.remove(sm);
-		sm.gui.frame.dispose();
+		sm.destroy();
+		
+		fireServerRemoved(sm);
+		
+		System.gc();
 	}
 	
 	public boolean       firstRun = false;
 	
 	public Conn          keysConn;
 	public GUI           gui;
+	public HTTPD         httpd = null;
 	public StatusUpdater status;
 	public LogUpdater    logUpdater;
 	public SSUpdater     ssUpdater;
@@ -110,33 +162,29 @@ public class ServerManager {
 	
 	public Connector connector;
 
-	public Properties props;
+	public jgm.Properties p;
 	public String name;
 	public String host;
 	public int port;
 	public String password;
 	
-	public ServerManager() {
+	private ServerManager() {
 		this(null);
 	}
 	
 	private ServerManager(Properties p) {		
 		if (p == null) {			
 			p = new Properties(DEFAULTS);
-			p.setProperty("name", p.getProperty("name") + " " + managers.size());
+			p.setProperty("name", p.getProperty("name") + (managers.size() > 0 ? " " + managers.size() : ""));
 		}
 		
-		this.props = p;
+		this.p = p;
 		this.name = p.getProperty("name");
 		this.host = p.getProperty("net.host");
 		this.port = Integer.parseInt(p.getProperty("net.port"));
 		this.password = p.getProperty("net.password");
 		
 		connector = new Connector(this);
-	}
-	
-	public boolean isCurrent() {
-		return JGlideMon.getCurManager() == this;
 	}
 	
 	@Override
@@ -194,5 +242,125 @@ public class ServerManager {
 //
 //		Thread t = new Thread(r, "ServerManager.init");
 //		t.start();
+		
+		if (p.getBool("web.enabled")) {
+			try {
+				startHttpd();
+			} catch (java.io.IOException e) {
+				JOptionPane.showMessageDialog(gui.frame,
+					"Unable to start web-server.\n" +
+					"Port " + p.get("web.port") + " is unavailible.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE
+				);
+			}
+		}
+	}
+	
+	public void startHttpd() throws java.io.IOException {
+		if (httpd != null) return; // already started
+		
+		httpd = new HTTPD(this);
+		
+		try {
+			httpd.start();
+		} catch (java.io.IOException e) {
+			httpd = null;
+			throw e;
+		}
+	}
+	
+	public void stopHttpd() {
+		if (httpd == null) return; // already stopped
+		
+		httpd.stop();
+		httpd = null;
+		
+		System.gc();
+	}
+	
+	public void destroy() {
+		if (connector.isConnected()) {
+			try {
+				Thread t = connector.disconnect(true);
+				t.join();
+			} catch (InterruptedException e) {}
+		}
+		
+		stopHttpd();
+		gui.destroy();
+		gui = null;
+		
+		System.gc();
+	}
+	
+	
+	
+	///////////
+	// Listener
+	
+	public interface Listener extends EventListener {
+		public void serverAdded(ServerManager sm);
+		public void serverRemoved(ServerManager sm);
+		public void serverSuspended(ServerManager sm);
+		public void serverResumed(ServerManager sm);
+	}
+	
+	public class Adaptor implements Listener {
+		public void serverAdded(ServerManager sm) {}
+		public void serverRemoved(ServerManager sm) {}
+		public void serverSuspended(ServerManager sm) {}
+		public void serverResumed(ServerManager sm) {}
+	}
+	
+	static javax.swing.event.EventListenerList listeners = 
+		new javax.swing.event.EventListenerList();
+	
+	public static void addListener(Listener l) {
+		listeners.add(Listener.class, l);
+	}
+	
+	public static void removeListener(Listener l) {
+		listeners.remove(Listener.class, l);
+	}
+	
+	private static void fireServerAdded(ServerManager sm) {
+		Object[] ls = listeners.getListenerList();
+		
+		for (int i = ls.length - 2; i>=0; i-=2) {
+			if (ls[i] == Listener.class) {
+				((Listener) ls[i + 1]).serverAdded(sm);
+			}
+		}
+	}
+	
+	private static void fireServerRemoved(ServerManager sm) {
+		Object[] ls = listeners.getListenerList();
+		
+		for (int i = ls.length - 2; i>=0; i-=2) {
+			if (ls[i] == Listener.class) {
+				((Listener) ls[i + 1]).serverRemoved(sm);
+			}
+		}
+	}
+	
+	private static void fireServerSuspended(ServerManager sm) {
+		Object[] ls = listeners.getListenerList();
+		
+		for (int i = ls.length - 2; i>=0; i-=2) {
+			if (ls[i] == Listener.class) {
+				((Listener) ls[i + 1]).serverSuspended(sm);
+			}
+		}
+	}
+	
+	private static void fireServerResumed(ServerManager sm) {
+		Object[] ls = listeners.getListenerList();
+		
+		for (int i = ls.length - 2; i>=0; i-=2) {
+			if (ls[i] == Listener.class) {
+				((Listener) ls[i + 1]).serverResumed(sm);
+			}
+		}
 	}
 }

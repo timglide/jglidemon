@@ -41,6 +41,10 @@ public class AjaxHandler extends Handler {
 		"<message/>\n" +
 		"</response>";
 	
+	public AjaxHandler(HTTPD httpd) {
+		super(httpd);
+	}
+	
 	@Override
 	public Response handle(String uri, String method, Properties headers, Properties params) {
 		String out = createXML(uri, method, headers, params);
@@ -107,7 +111,7 @@ public class AjaxHandler extends Handler {
 			if (uri.equals("command")) {
 				final String cmd = params.getProperty("command");
 				
-				final jgm.ServerManager sm = jgm.JGlideMon.getCurManager();
+				final jgm.ServerManager sm = httpd.sm;
 				
 				if (cmd != null) {
 					Thread t = null;
@@ -160,7 +164,7 @@ public class AjaxHandler extends Handler {
 				_(xml, jgm_, "name", JGlideMon.app);
 				_(xml, jgm_, "version", JGlideMon.version);
 				
-				boolean connected = jgm.JGlideMon.getCurManager().connector.isConnected();
+				boolean connected = httpd.sm.connector.isConnected();
 				_(xml, jgm_, "connected", Boolean.toString(connected));
 				
 				_(xml, jgm_, "update-interval", jgm.Config.getInstance().getInt("web.updateinterval"));

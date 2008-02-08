@@ -21,8 +21,6 @@
 package jgm;
 
 import jgm.util.*;
-
-import java.util.Properties;
 import java.util.logging.*;
 import java.io.*;
 
@@ -34,6 +32,15 @@ import java.io.*;
  */
 public class Config {
 	static Logger log = Logger.getLogger(Config.class.getName());
+	
+	// all the old keys that need to be converted to
+	// servers.0.xxx
+	static final String[] OLD_KEYS = {
+		"net.host", "net.port", "net.password",
+		"window.", "general.lasttab",
+		"screenshot.scale", "screenshot.buffer",
+		"web.enabled", "web.port"
+	};
 	
 	static Properties DEFAULTS = new Properties();
 	
@@ -50,7 +57,7 @@ public class Config {
 	public static Config instance;
 	public static Config c;
 	
-	Properties props = new Properties(DEFAULTS);
+	Properties p = new Properties(DEFAULTS);
 	
 	static final File propsFile = new File("JGlideMon.properties");
 	
@@ -65,7 +72,7 @@ public class Config {
 	}
 	
 	public static Properties getProps() {
-		return instance.props;
+		return instance.p;
 	}
 	
 	public static Properties getDefaults() {
@@ -88,7 +95,7 @@ public class Config {
 				String cur = i.next();
 				
 				for (String s : qi.getAllPropertyNames(cur)) {
-					props.setProperty(cur + "." + s, qi.getStringProperty(cur, s));
+					p.setProperty(cur + "." + s, qi.getStringProperty(cur, s));
 				}
 			}
 			
@@ -99,92 +106,58 @@ public class Config {
 		if (propsFile.exists()) {
 			try {
 				FileInputStream fs = new FileInputStream(propsFile);
-				props.load(fs);
+				p.load(fs);
 			} catch (Throwable e) {
 				log.log(Level.WARNING, "Unable to load config properties", e);
 				System.exit(-1);
 			}
 		}
 		
-		if (hasProp("net.host")) {
-			log.info("Adding old server info to new format");
-			set("servers.0.name", "Default");
-			set("servers.0.net.host", get("net.host"));
-			set("servers.0.net.port", get("net.port"));
-			set("servers.0.net.password", get("net.password"));
-			
-			props.remove("net.host");
-			props.remove("net.port");
-			props.remove("net.password");
+		Object[] keys = p.keySet().toArray();
+		for (Object o : keys) {
+			String key = o.toString();
+			for (String oldKey : OLD_KEYS) {
+				if (key.startsWith(oldKey)) {
+					log.finest("Moving " + key + " to servers.0." + key);
+					set("servers.0." + key, get(key));
+					p.remove(key);
+				}
+			}
 		}
 		
 		validate();
 	}
 	
-	public boolean hasProp(String propertyName) {
-		return props.containsKey(propertyName);
+	public boolean has(String propertyName) {
+		return p.has(propertyName);
 	}
 	
 	public int getInt(String propertyName) {
-		int defaultValue = 0;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			defaultValue = 
-				Integer.parseInt(props.getProperty(propertyName));
-		} catch (Throwable e) {}
-		
-		return defaultValue;
+		return p.getInt(propertyName);
 	}
 	
 	public boolean getBool(String propertyName) {
-		boolean defaultValue = false;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			defaultValue =
-				Boolean.parseBoolean(props.getProperty(propertyName));
-		} catch (Throwable e) {}
-		
-		return defaultValue;
+		return p.getBool(propertyName);
 	}
 	
 	public long getLong(String propertyName) {
-		long defaultValue = 0L;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			defaultValue =
-				Long.parseLong(props.getProperty(propertyName));
-		} catch (Throwable e) {}
-		
-		return defaultValue;
+		return p.getLong(propertyName);
 	}
 	
 	public double getDouble(String propertyName) {
-		double defaultValue = 0.0;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			defaultValue =
-				Double.parseDouble(props.getProperty(propertyName));
-		} catch (Throwable e) {}
-		
-		return defaultValue;
+		return p.getDouble(propertyName);
 	}
 	
 	public String getString(String propertyName) {
-		propertyName = propertyName.toLowerCase();
-		
-		return props.getProperty(propertyName);
+		return get(propertyName);
 	}
 	
 	public String get(String propertyName) {
-		return getString(propertyName);
+		return p.get(propertyName);
 	}
 
 	public void set(String propertyName, Object value) {
-		props.setProperty(propertyName, value.toString());
+		p.set(propertyName, value);
 	}
 	
 	public void validate() {
@@ -192,16 +165,16 @@ public class Config {
 			set("log.maxentries", DEFAULTS.getProperty("log.maxentries"));
 		}
 
-		int i = getInt("screenshot.scale");
-		if (i > 100) set("screenshot.scale", 100); else
-		if (i < 10)  set("screenshot.scale", 10);
+//		int i = getInt("screenshot.scale");
+//		if (i > 100) set("screenshot.scale", 100); else
+//		if (i < 10)  set("screenshot.scale", 10);
 		
-		i = getInt("screenshot.quality");
+		int i = getInt("screenshot.quality");
 		if (i > 100) set("screenshot.quality", 100); else
 		if (i < 10)  set("screenshot.quality", 10);
 		
-		if (getDouble("screenshot.buffer") < 1.0)
-			set("screenshot.buffer", 1.0);
+//		if (getDouble("screenshot.buffer") < 1.0)
+//			set("screenshot.buffer", 1.0);
 		
 		if (getInt("screenshot.timeout") < 5)
 			set("screenshot.timeout", 5);
@@ -218,7 +191,7 @@ public class Config {
 		
 		try {
 			FileOutputStream fs = new FileOutputStream(propsFile);
-			instance.props.store(fs, "JGlideMon Settings");
+			instance.p.store(fs, "JGlideMon Settings");
 		} catch (Throwable t) {
 			log.log(Level.WARNING, "Error saving config properties", t);
 		}

@@ -33,7 +33,7 @@ import jgm.glider.Status;
  * @since 0.1
  */
 public abstract class Pane extends JPanel {
-	protected GUI gui;
+	protected final GUI gui;
 	protected GridBagConstraints c = null;
 
 	/**

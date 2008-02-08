@@ -121,7 +121,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		close.setMnemonic(KeyEvent.VK_C);
 		close.addActionListener(this);
 		
-		add(Dialog.makeNiceButtons(update, close), BorderLayout.SOUTH);
+		JPanel southPanel = new JPanel(new BorderLayout());
+		southPanel.add(new JLabel("* Indicates server specific setting.", JLabel.CENTER), BorderLayout.CENTER);
+		southPanel.add(Dialog.makeNiceButtons(update, close), BorderLayout.SOUTH);
+		
+		add(southPanel, BorderLayout.SOUTH);
 		
 		
 		//JPanel p = new JPanel(new GridLayout(2, 3, 10, 10));
@@ -215,14 +219,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0; c.gridy = 0; c.weightx = 0.0;
-		net.add(new JLabel("Name: "), c);
+		net.add(new JLabel("* Name: "), c);
 		
 		serverName = new JTextField();
 		c.gridx++; c.weightx = 1.0;
 		net.add(serverName, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
-		net.add(new JLabel("Host: "), c);
+		net.add(new JLabel("* Host: "), c);
 		
 		host = new JTextField();
 //		host.addActionListener(this);
@@ -230,7 +234,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		net.add(host, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
-		net.add(new JLabel("Port: " ), c);
+		net.add(new JLabel("* Port: " ), c);
 		
 		port = makeSpinner(PORT_SPINNER);
 		port.setEditor(new JSpinner.NumberEditor(port, "#")); // prevent comma grouping
@@ -239,7 +243,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		net.add(port, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
-		net.add(new JLabel("Password: " ), c);
+		net.add(new JLabel("* Password: " ), c);
 		
 		password = new JPasswordField();
 //		password.addActionListener(this);
@@ -293,10 +297,10 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(screenshotAutoScale, c);
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
-		screenshot.add(new JLabel("Scale: "), c);
+		screenshot.add(new JLabel("* Scale: "), c);
 		
 		screenshotScale =
-			new JSlider(JSlider.HORIZONTAL, 10, 100, cfg.getInt("screenshot.scale"));
+			new JSlider(JSlider.HORIZONTAL, 10, 100, gui.sm.p.getInt("screenshot.scale"));
 		screenshotScale.setMajorTickSpacing(30);
 		screenshotScale.setMinorTickSpacing(10);
 		screenshotScale.setPaintTicks(true);
@@ -318,7 +322,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(screenshotQuality, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
-		screenshot.add(new JLabel("Buffer Size (MB): "), c);
+		screenshot.add(new JLabel("* Buffer Size (MB): "), c);
 		
 		screenshotBuffer = new JSpinner(
 			new SpinnerNumberModel(1.0, 0.5, 10.0, 0.1)
@@ -481,7 +485,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++; c.weightx = 1.0;
 		stuck.add(stuckLimit, c);
 		
-		tmpLbl = new JLabel("  Limit Timeout (s): ");
+		tmpLbl = new JLabel("  Timeout (s): ");
 		tmpLbl.setToolTipText("Reset stuck timer after this many seconds");
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0;
@@ -523,11 +527,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		web = new JPanel(new GridBagLayout());
 		
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.gridheight = 1; c.weighty = 0.0; c.weightx = 1.0;
-		enableWeb = new JCheckBox("Enable Web-Server");
+		enableWeb = new JCheckBox(" * Enable Web-Server");
 		enableWeb.addChangeListener(this);
 		web.add(enableWeb, c);
 		
-		tmpLbl = new JLabel("  Port: ");
+		tmpLbl = new JLabel("  * Port: ");
 //		tmpLbl.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
 		
 		c.gridwidth = 1; c.gridy++; c.weightx = 0.0;
@@ -602,6 +606,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		log.finest(String.format("New server: %s:%s = %s",
 				gui.sm.host, gui.sm.port, gui.sm.password));
 		
+		gui.setTitle();
+		
 		if (!gui.sm.firstRun && reconnect) {
 			log.finer("Server info changed, need to reconnect...");
 			
@@ -636,15 +642,15 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		cfg.set("screenshot.updateinterval", screenshotInterval.getValue());
 		cfg.set("screenshot.autoscale", screenshotAutoScale.isSelected());
-		cfg.set("screenshot.scale", screenshotScale.getValue());
+		gui.sm.p.set("screenshot.scale", screenshotScale.getValue());
 		cfg.set("screenshot.quality", screenshotQuality.getValue());
-		cfg.set("screenshot.buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
+		gui.sm.p.set("screenshot.buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
 		cfg.set("screenshot.timeout", screenshotTimeout.getValue());
 
 		
 		// would be null on first-time startup
-		if (null != jgm.JGlideMon.getCurManager().ssUpdater)
-			jgm.JGlideMon.getCurManager().ssUpdater.sentSettings = false;
+		if (null != gui.sm.ssUpdater)
+			gui.sm.ssUpdater.sentSettings = false;
 		
 		cfg.set("sound.enabled", enableSound.isSelected());
 		cfg.set("sound.whisper", soundWhisper.isSelected());
@@ -667,30 +673,30 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("restarter.exception.enabled", restartOnException.isSelected());
 		cfg.set("restarter.exception.timeout", restartOnExceptionTime.getValue());
 		
-		boolean oldWebEnabled = cfg.getBool("web.enabled");
-		int oldWebPort = cfg.getInt("web.port");
+		boolean oldWebEnabled = gui.sm.p.getBool("web.enabled");
+		int oldWebPort = gui.sm.p.getInt("web.port");
 		
-		cfg.set("web.enabled", enableWeb.isSelected());
-		cfg.set("web.port", webPort.getValue());
+		gui.sm.p.set("web.enabled", enableWeb.isSelected());
+		gui.sm.p.set("web.port", webPort.getValue());
 		cfg.set("web.updateinterval", webInterval.getValue());
 
 		
 		// stop httpd if needed
-		if ((oldWebEnabled && oldWebPort != cfg.getInt("web.port")) ||
+		if ((oldWebEnabled && oldWebPort != gui.sm.p.getInt("web.port")) ||
 			(!enableWeb.isSelected())) {
-			jgm.HTTPD.instance.stop();
+			gui.sm.stopHttpd();
 		}
 		
 		// restart on different port if needed
-		if ((enableWeb.isSelected() && oldWebPort != cfg.getInt("web.port")) ||
+		if ((enableWeb.isSelected() && oldWebPort != gui.sm.p.getInt("web.port")) ||
 			(!oldWebEnabled && enableWeb.isSelected()) ||
-			(enableWeb.isSelected() && jgm.HTTPD.thread == null)) {
+			(enableWeb.isSelected())) {
 			try {
-				jgm.HTTPD.instance.start(cfg.getInt("web.port"));
+				gui.sm.startHttpd();
 			} catch (java.io.IOException x) {
-				JOptionPane.showMessageDialog(jgm.JGlideMon.getCurManager().gui.frame,
+				JOptionPane.showMessageDialog(gui.frame,
 					"Unable to start web-server.\n" +
-					"Port " + cfg.getInt("web.port") + " is unavailible.",
+					"Port " + gui.sm.p.get("web.port") + " is unavailible.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE
 				);
@@ -709,9 +715,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			minToTray.setEnabled(state);
 			
 			if (state) {
-				jgm.JGlideMon.getCurManager().gui.tray.enable();
+				gui.tray.enable();
 			} else {
-				jgm.JGlideMon.getCurManager().gui.tray.disable();
+				gui.tray.disable();
 			}
 		} else if (e.getSource() == netReconnect) {
 			boolean state = netReconnect.isEnabled() && netReconnect.isSelected();
@@ -778,12 +784,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		screenshotInterval.setValue(cfg.getInt("screenshot.updateinterval"));
 		screenshotAutoScale.setSelected(cfg.getBool("screenshot.autoscale"));
-		screenshotScale.setValue(cfg.getInt("screenshot.scale"));
+		screenshotScale.setValue(gui.sm.p.getInt("screenshot.scale"));
 		screenshotQuality.setValue(cfg.getInt("screenshot.quality"));
-		screenshotBuffer.setValue(cfg.getDouble("screenshot.buffer"));
+		screenshotBuffer.setValue(gui.sm.p.getDouble("screenshot.buffer"));
 		screenshotTimeout.setValue(cfg.getInt("screenshot.timeout"));
 		
-		Icon i = jgm.JGlideMon.getCurManager().gui.tabsPane.screenshotTab.ssLabel.getIcon();
+		Icon i = gui.tabsPane.screenshotTab.ssLabel.getIcon();
 		
 		if (i != null) {
 			int width = i.getIconWidth();
@@ -827,8 +833,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		restartOnException.setSelected(cfg.getBool("restarter.exception.enabled"));
 		restartOnExceptionTime.setValue(cfg.getInt("restarter.exception.timeout"));
 		
-		enableWeb.setSelected(cfg.getBool("web.enabled"));
-		webPort.setValue(cfg.getInt("web.port"));
+		enableWeb.setSelected(gui.sm.p.getBool("web.enabled"));
+		webPort.setValue(gui.sm.p.getInt("web.port"));
 		webInterval.setValue(cfg.getInt("web.updateinterval"));
 		
 		// to initialize enabled/disabled states

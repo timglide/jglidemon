@@ -27,8 +27,8 @@ import java.util.Properties;
 public class FilesHandler extends Handler {
 	File baseDir;
 	
-	public FilesHandler(File baseDir) {
-		super();
+	public FilesHandler(HTTPD httpd, File baseDir) {
+		super(httpd);
 		
 		if (!baseDir.isDirectory())
 			throw new IllegalArgumentException("baseDir must be a directory");

@@ -36,7 +36,9 @@ public class JarFilesHandler extends Handler {
 	static final String BASE_FOLDER = "jgm/resources/httpd/static/";
 	JarFile jar;
 	
-	public JarFilesHandler(File f) throws IOException {
+	public JarFilesHandler(HTTPD httpd, File f) throws IOException {
+		super(httpd);
+		
 		jar = new JarFile(f);
 		
 /*		java.util.Enumeration<JarEntry> e = jar.entries();

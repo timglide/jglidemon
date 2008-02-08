@@ -42,7 +42,7 @@ public class GUI
 	static Config cfg = Config.c;
 	public static final String BASE_TITLE = "JGlideMon " + JGlideMon.version;
 	
-	public ServerManager sm;
+	public final ServerManager sm;
 	
 	public JFrame frame;
 	public Tray tray;
@@ -87,29 +87,43 @@ public class GUI
 		JMenu     servers;
 		JMenuItem addServer;
 		JMenuItem removeServer;
-		java.util.List<JRadioButtonMenuItem> serverItems = new Vector<JRadioButtonMenuItem>();
+		java.util.List<JCheckBoxMenuItem> serverItems =
+			new Vector<JCheckBoxMenuItem>();
 		
 		JMenu     help;
 		JMenuItem debug;
 		JMenuItem about;
 	}
 	
+	ServerManager.Listener smlistener = new ServerManager.Listener() {
+    	void doit() {
+    		doServersMenu();
+    	}
+    	
+		public void serverAdded(ServerManager sm) {doit();}
+		public void serverRemoved(ServerManager sm) {doit();}
+		public void serverSuspended(ServerManager sm) {doit();}
+		public void serverResumed(ServerManager sm) {doit();}
+    };
+	
 	public GUI(ServerManager sm) {
 		this.sm = sm;
 		
 		frame = new JFrame(BASE_TITLE);
-
+		
 		ImageIcon img = new ImageIcon(
 			JGlideMon.class.getResource("resources/images/stitch/icon.png"));
 		
 		frame.setIconImage(img.getImage());
 		
-		frame.setSize(cfg.getInt("window.width"), cfg.getInt("window.height"));
-		frame.setLocation(cfg.getInt("window.x"), cfg.getInt("window.y"));
+		frame.setSize(sm.p.getInt("window.width"), sm.p.getInt("window.height"));
+		frame.setLocation(sm.p.getInt("window.x"), sm.p.getInt("window.y"));
 
 		tray = new Tray(this);
 		
-		if (cfg.getBool("window.maximized")) {
+		setTitle();
+		
+		if (sm.p.getBool("window.maximized")) {
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		}
 		
@@ -122,14 +136,15 @@ public class GUI
 		);
 		
 		frame.addWindowStateListener(new WindowStateListener() {
+			final ServerManager sm = GUI.this.sm;
 			public void windowStateChanged(WindowEvent e) {
 				if (JFrame.MAXIMIZED_BOTH ==
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
 					//System.out.println("Window is maximized");
-					cfg.set("window.maximized", true);
+					sm.p.set("window.maximized", true);
 				} else {
 					//System.out.println("Window not maximized");
-					cfg.set("window.maximized", false);
+					sm.p.set("window.maximized", false);
 				}
 				
 				if (JFrame.ICONIFIED ==
@@ -146,6 +161,7 @@ public class GUI
 		});
 
 		frame.addComponentListener(new ComponentAdapter() {
+			final ServerManager sm = GUI.this.sm;
 			public void componentResized(ComponentEvent e) {
 				Dimension s = frame.getSize();
 				//System.out.println("Window resized: " + s);
@@ -153,15 +169,13 @@ public class GUI
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
-					cfg.set("window.width", s.width);					
-					cfg.set("window.height", s.height);
+					sm.p.set("window.width", s.width);					
+					sm.p.set("window.height", s.height);
 				}
 				
 				// request to update the screenshot's scale
 				try {
-					for (ServerManager sm : JGlideMon.managers) {
-						sm.ssUpdater.redoScale = true;
-					}
+					sm.ssUpdater.redoScale = true;
 				} catch (Exception x) {}
 			}
 			
@@ -172,8 +186,8 @@ public class GUI
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
-					cfg.set("window.x", p.x);
-					cfg.set("window.y", p.y);
+					sm.p.set("window.x", p.x);
+					sm.p.set("window.y", p.y);
 				}
 			}
 		});
@@ -326,7 +340,6 @@ public class GUI
 	    	
 	    	public void onConnect() {
 				setStatusBarText("Connected", false, true);
-				setTitle(JGlideMon.getCurManager().host + ":" + JGlideMon.getCurManager().port);
 				hideStatusBarProgress();
 				
 				menu.sendKeys.setEnabled(true);
@@ -343,39 +356,51 @@ public class GUI
 	    	
 	    	public void onDisconnect() {
 				hideStatusBarProgress();
-				setTitle();
 	    	}
 	    });
+	    
+	    ServerManager.addListener(smlistener);
 	}
 	
 	public void doServersMenu() {
-//		menu.servers.removeAll();
-//		menu.serverItems.clear();
-//		
-//		ButtonGroup g = new ButtonGroup();
-//		JRadioButtonMenuItem item = null;
-//		
-//		for (final JInternalFrame f : desktop.getAllFrames()) {
-//			item = new JRadioButtonMenuItem(f.getTitle(), f == desktop.getSelectedFrame());
-//			menu.serverItems.add(item);
-//			menu.servers.add(item);
-//			g.add(item);
-//			
-//			item.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					f.toFront();
-//					
-//					try {
-//						f.setMaximum(true);
-//					} catch (java.beans.PropertyVetoException x) {}
-//				}
-//			});
-//		}
+		menu.servers.removeAll();
+		menu.serverItems.clear();
+		
+		menu.servers.add(menu.addServer);
+		menu.servers.add(menu.removeServer);
+		menu.servers.addSeparator();
+		
+		JCheckBoxMenuItem item = null;
+		
+		for (final ServerManager sm : ServerManager.managers) {
+			item = new JCheckBoxMenuItem(sm.name, sm.p.getBool("enabled"));
+			menu.serverItems.add(item);
+			menu.servers.add(item);
+			
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (!sm.p.getBool("enabled")) {
+						sm.resume();
+					}
+					
+					sm.gui.frame.setVisible(true);
+					sm.gui.frame.setExtendedState(sm.gui.frame.getExtendedState() & ~JFrame.ICONIFIED);
+					sm.gui.frame.requestFocus();
+					sm.gui.frame.toFront();
+				}
+			});
+		}
 	}
 	
 	public void makeVisible() {
 		frame.validate();
 		frame.setVisible(true);
+	}
+	
+	public void destroy() {
+		ServerManager.removeListener(smlistener);
+		frame.dispose();
+		tray.destroy();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -585,13 +610,14 @@ public class GUI
 	}
 	
 	public void setTitle() {
-		setTitle(null);
+		setTitle(sm.toFullString());
 	}
 
 	public void setTitle(String s) {
 		if (frame == null) return;
 
 		frame.setTitle((s != null && !s.equals("") ? s + " - " : "") + BASE_TITLE);
+		tray.setTitle(frame.getTitle());
 	}
 
 	

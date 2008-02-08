@@ -77,45 +77,6 @@ public class HTTPD implements Runnable
 {
 	protected static Logger log = Logger.getLogger(HTTPD.class.getName());
 	
-	protected static Map<String, Handler> handlers = new HashMap<String, Handler>();
-	
-	static {
-		File jf = null;
-		
-		// this should account for the jar file being named
-		// anything, not that people should be renaming stuff
-		try {
-			URI tmp = JGlideMon.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-			
-			if (!tmp.toString().endsWith(".jar")) throw new Exception();
-			
-			jf = new File(tmp);
-		} catch (Throwable t) {
-			jf = new File("JGlideMon.jar");
-		}
-		
-		File f = new File("jgm/resources/httpd/static");
-		// System.out.println("-=-=-=: " + jf.getAbsolutePath());
-		
-		try {
-			if (jf.exists()) {
-				log.finest("Reading static files from JAR: " + jf.getCanonicalPath());
-				handlers.put("static", new JarFilesHandler(jf));
-			} else if (f.exists()) {
-				log.finest("Reading static files from folder: " + f.getCanonicalPath());
-				handlers.put("static", new FilesHandler(f));
-			} else {
-				log.warning("Unable to locate static files to serve");
-			}
-		} catch (Throwable e) {
-			log.log(java.util.logging.Level.WARNING, "Exception initiating HTTPD", e);
-		}
-		
-		handlers.put("", handlers.get("static"));
-		handlers.put("ajax", new AjaxHandler());
-		handlers.put("screenshot", new ScreenshotHandler());
-	}
-	
 	// ==================================================
 	// API parts
 	// ==================================================
@@ -177,10 +138,12 @@ public class HTTPD implements Runnable
 		MIME_HTML = "text/html",
 		MIME_DEFAULT_BINARY = "application/octet-stream";
 
-	public static HTTPD instance = null;
-	public static Thread thread = null;
-	public static ServerSocket ss = null;
+	public Thread thread = null;
+	public ServerSocket ss = null;
 	private volatile boolean run_thread = true;
+	
+	protected Map<String, Handler> handlers = new HashMap<String, Handler>();
+	public ServerManager sm;
 	
 	// ==================================================
 	// Socket & server code
@@ -190,21 +153,47 @@ public class HTTPD implements Runnable
 	 * Starts a HTTP server to given port.<p>
 	 * Throws an IOException if the socket is already in use
 	 */
-	public HTTPD(int port)
+	public HTTPD(ServerManager sm)
 	{
-		myTcpPort = port;
-		instance = this;
+		this.sm = sm;
+		
+		File jf = null;
+		
+		// this should account for the jar file being named
+		// anything, not that people should be renaming stuff
+		try {
+			URI tmp = JGlideMon.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+			
+			if (!tmp.toString().endsWith(".jar")) throw new Exception();
+			
+			jf = new File(tmp);
+		} catch (Throwable t) {
+			jf = new File("JGlideMon.jar");
+		}
+		
+		File f = new File("jgm/resources/httpd/static");
+		// System.out.println("-=-=-=: " + jf.getAbsolutePath());
+		
+		try {
+			if (jf.exists()) {
+				log.finest("Reading static files from JAR: " + jf.getCanonicalPath());
+				handlers.put("static", new JarFilesHandler(this, jf));
+			} else if (f.exists()) {
+				log.finest("Reading static files from folder: " + f.getCanonicalPath());
+				handlers.put("static", new FilesHandler(this, f));
+			} else {
+				log.warning("Unable to locate static files to serve");
+			}
+		} catch (Throwable e) {
+			log.log(java.util.logging.Level.WARNING, "Exception initiating HTTPD", e);
+		}
+		
+		handlers.put("", handlers.get("static"));
+		handlers.put("ajax", new AjaxHandler(this));
+		handlers.put("screenshot", new ScreenshotHandler(this));
 	}
 	
-	public HTTPD() {
-		this(0);
-	}
-	
-	public void start() throws IOException {
-		start(myTcpPort);
-	}
-	
-	public void start(int port) throws IOException {		
+	public void start() throws IOException {	
 		if (thread != null) {
 			throw new IllegalStateException("Cannot start httpd with thread != null");
 		}
@@ -213,12 +202,13 @@ public class HTTPD implements Runnable
 			throw new IllegalStateException("Cannot start httpd with ss != null");
 		}
 		
+		int port = sm.p.getInt("web.port");
+		
 		log.info("Attempting to start httpd on port " + port);
 		
-		myTcpPort = port;
 		run_thread = true;
 
-		ss = new ServerSocket(myTcpPort);
+		ss = new ServerSocket(port);
 		thread = new Thread(this);
 		thread.setDaemon(true);
 		thread.start();
@@ -247,47 +237,47 @@ public class HTTPD implements Runnable
 	/**
 	 * Starts as a standalone file server and waits for Enter.
 	 */
-	public static void main( String[] args )
-	{
-		System.out.println( "NanoHTTPD 1.1 (C) 2001,2005-2007 Jarno Elonen\n" +
-							"(Command line options: [port] [--licence])\n" );
-
-		// Show licence if requested
-		int lopt = -1;
-		for ( int i=0; i<args.length; ++i )
-		if ( args[i].toLowerCase().endsWith( "licence" ))
-		{
-			lopt = i;
-			System.out.println( LICENCE + "\n" );
-		}
-
-		// Change port if requested
-		int port = 80;
-		if ( args.length > 0 && lopt != 0 )
-			port = Integer.parseInt( args[0] );
-
-		if ( args.length > 1 &&
-			 args[1].toLowerCase().endsWith( "licence" ))
-				System.out.println( LICENCE + "\n" );
-
-		try
-		{
-			new HTTPD( port );
-			HTTPD.instance.start();
-		}
-		catch( IOException ioe )
-		{
-			System.err.println( "Couldn't start server:\n" + ioe );
-			System.exit( -1 );
-		}
-		//nh.myFileDir = new File("");
-
-		System.out.println( "Now serving files in port " + port + " from \"" +
-							new File("").getAbsolutePath() + "\"" );
-		System.out.println( "Hit Enter to stop.\n" );
-
-		try { System.in.read(); } catch( Throwable t ) {};
-	}
+//	public static void main( String[] args )
+//	{
+//		System.out.println( "NanoHTTPD 1.1 (C) 2001,2005-2007 Jarno Elonen\n" +
+//							"(Command line options: [port] [--licence])\n" );
+//
+//		// Show licence if requested
+//		int lopt = -1;
+//		for ( int i=0; i<args.length; ++i )
+//		if ( args[i].toLowerCase().endsWith( "licence" ))
+//		{
+//			lopt = i;
+//			System.out.println( LICENCE + "\n" );
+//		}
+//
+//		// Change port if requested
+//		int port = 80;
+//		if ( args.length > 0 && lopt != 0 )
+//			port = Integer.parseInt( args[0] );
+//
+//		if ( args.length > 1 &&
+//			 args[1].toLowerCase().endsWith( "licence" ))
+//				System.out.println( LICENCE + "\n" );
+//
+//		try
+//		{
+//			new HTTPD( port );
+//			HTTPD.instance.start();
+//		}
+//		catch( IOException ioe )
+//		{
+//			System.err.println( "Couldn't start server:\n" + ioe );
+//			System.exit( -1 );
+//		}
+//		//nh.myFileDir = new File("");
+//
+//		System.out.println( "Now serving files in port " + port + " from \"" +
+//							new File("").getAbsolutePath() + "\"" );
+//		System.out.println( "Hit Enter to stop.\n" );
+//
+//		try { System.in.read(); } catch( Throwable t ) {};
+//	}
 
 	/**
 	 * Handles one session, i.e. parses the HTTP request
@@ -415,7 +405,7 @@ public class HTTPD implements Runnable
 				
 				// ensure password was provided
 				if (parms.containsKey("HTTP_PASS") &&
-					parms.getProperty("HTTP_PASS").equals(jgm.Config.getInstance().getString("net.password"))) {
+					parms.getProperty("HTTP_PASS").equals(sm.password)) {
 					r = serve(uri, method, header, parms);
 				} else {
 					r = new Response(HTTPD.HTTP_UNAUTHORIZED, HTTPD.MIME_PLAINTEXT, "Authorization required");
@@ -539,7 +529,7 @@ public class HTTPD implements Runnable
 		/**
 		 * Sends given response to the socket.
 		 */
-		private void sendResponse( String status, String mime, Properties header, InputStream data )
+		private void sendResponse( String status, String mime, java.util.Properties header, InputStream data )
 		{
 			try
 			{
@@ -621,8 +611,6 @@ public class HTTPD implements Runnable
 		return newUri;
 	}
 
-	private int myTcpPort;
-
 	/**
 	 * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
 	 */
@@ -667,29 +655,29 @@ public class HTTPD implements Runnable
 	/**
 	 * The distribution licence
 	 */
-	private static final String LICENCE =
-		"Copyright (C) 2001,2005 by Jarno Elonen <elonen@iki.fi>\n"+
-		"\n"+
-		"Redistribution and use in source and binary forms, with or without\n"+
-		"modification, are permitted provided that the following conditions\n"+
-		"are met:\n"+
-		"\n"+
-		"Redistributions of source code must retain the above copyright notice,\n"+
-		"this list of conditions and the following disclaimer. Redistributions in\n"+
-		"binary form must reproduce the above copyright notice, this list of\n"+
-		"conditions and the following disclaimer in the documentation and/or other\n"+
-		"materials provided with the distribution. The name of the author may not\n"+
-		"be used to endorse or promote products derived from this software without\n"+
-		"specific prior written permission. \n"+
-		" \n"+
-		"THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR\n"+
-		"IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES\n"+
-		"OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.\n"+
-		"IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,\n"+
-		"INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT\n"+
-		"NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n"+
-		"DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n"+
-		"THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"+
-		"(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"+
-		"OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
+//	public static final String LICENCE =
+//		"Copyright (C) 2001,2005 by Jarno Elonen <elonen@iki.fi>\n"+
+//		"\n"+
+//		"Redistribution and use in source and binary forms, with or without\n"+
+//		"modification, are permitted provided that the following conditions\n"+
+//		"are met:\n"+
+//		"\n"+
+//		"Redistributions of source code must retain the above copyright notice,\n"+
+//		"this list of conditions and the following disclaimer. Redistributions in\n"+
+//		"binary form must reproduce the above copyright notice, this list of\n"+
+//		"conditions and the following disclaimer in the documentation and/or other\n"+
+//		"materials provided with the distribution. The name of the author may not\n"+
+//		"be used to endorse or promote products derived from this software without\n"+
+//		"specific prior written permission. \n"+
+//		" \n"+
+//		"THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR\n"+
+//		"IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES\n"+
+//		"OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.\n"+
+//		"IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,\n"+
+//		"INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT\n"+
+//		"NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n"+
+//		"DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n"+
+//		"THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"+
+//		"(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"+
+//		"OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 }

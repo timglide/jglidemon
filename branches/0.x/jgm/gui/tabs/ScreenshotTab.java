@@ -20,7 +20,6 @@
  */
 package jgm.gui.tabs;
 
-import jgm.*;
 import jgm.glider.*;
 import jgm.gui.updaters.SSUpdater;
 
@@ -65,8 +64,8 @@ public class ScreenshotTab extends Tab
 	}
 	
 	private void checkNulls() {
-		if (conn == null) conn = JGlideMon.getCurManager().keysConn;
-		if (updater == null) updater = JGlideMon.getCurManager().ssUpdater;
+		if (conn == null) conn = gui.sm.keysConn;
+		if (updater == null) updater = gui.sm.ssUpdater;
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -141,7 +140,7 @@ public class ScreenshotTab extends Tab
 			return;
 		
 		checkNulls();
-		if (!JGlideMon.getCurManager().connector.isConnected()) return;
+		if (!gui.sm.connector.isConnected()) return;
 		
 		int code = e.getKeyCode();
 		
@@ -177,7 +176,7 @@ public class ScreenshotTab extends Tab
 		checkNulls();
 		//System.out.println(e);
 
-		if (!JGlideMon.getCurManager().connector.isConnected()) {
+		if (!gui.sm.connector.isConnected()) {
 			keysDown.clear();
 			return;
 		}

@@ -20,7 +20,6 @@
  */
 package jgm.gui.updaters;
 
-import jgm.JGlideMon;
 import jgm.glider.*;
 import jgm.glider.log.*;
 import jgm.gui.panes.TabsPane;
@@ -109,7 +108,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			conn.readLine(); // ---
 		} catch (IOException e) {
 			log.fine("Stopping LogUpdater, IOE: " + e.getMessage());
-			JGlideMon.getCurManager().connector.disconnect();
+			sm.connector.disconnect();
 			return; // connection died
 		}
 
@@ -122,7 +121,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				line = conn.readLine();
 			} catch (Throwable x) {
 				log.fine("Stopping LogUpdater, Ex: " + x.getMessage());
-				JGlideMon.getCurManager().connector.disconnect();
+				sm.connector.disconnect();
 				return;
 			}
 			

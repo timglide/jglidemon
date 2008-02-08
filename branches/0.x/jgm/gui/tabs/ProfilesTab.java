@@ -20,7 +20,6 @@
  */
 package jgm.gui.tabs;
 
-import jgm.JGlideMon;
 import jgm.gui.components.*;
 import jgm.glider.*;
 
@@ -77,7 +76,7 @@ public class ProfilesTab extends Tab
 		
 		validate();
 		
-		JGlideMon.getCurManager().connector.addListener(new ConnectionAdapter() {
+		gui.sm.connector.addListener(new ConnectionAdapter() {
 			public void onConnect() {
 				connected = true;
 				setEnabled(true);
@@ -113,7 +112,7 @@ public class ProfilesTab extends Tab
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (conn == null) conn = JGlideMon.getCurManager().keysConn;
+		if (conn == null) conn = gui.sm.keysConn;
 		Object source = e.getSource();
 		
 		if (source instanceof JButton) {			

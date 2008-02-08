@@ -20,7 +20,6 @@
  */
 package jgm.gui.panes;
 
-import jgm.JGlideMon;
 import jgm.glider.*;
 
 import java.util.logging.*;
@@ -90,7 +89,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (conn == null) conn = JGlideMon.getCurManager().keysConn;
+		if (conn == null) conn = gui.sm.keysConn;
 		
 		String cmd = e.getActionCommand();
 		String s = null;
@@ -103,10 +102,10 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 			s = "/stopglide";
 		} else if (cmd.equals("Disconnect")) {
 			connect.setEnabled(false);
-			JGlideMon.getCurManager().connector.disconnect(true);
+			gui.sm.connector.disconnect(true);
 		} else if (cmd.equals("Connect")) {
 			connect.setEnabled(false);
-			JGlideMon.getCurManager().connector.connect(true);
+			gui.sm.connector.connect(true);
 		}
 		
 		if (s != null) {

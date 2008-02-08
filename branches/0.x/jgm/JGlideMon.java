@@ -20,7 +20,6 @@
  */
 package jgm;
 
-import javax.swing.JOptionPane;
 import java.util.*;
 
 import jgm.util.*;
@@ -46,27 +45,6 @@ public class JGlideMon {
 	public static Config        cfg;
 	
 	public static List<ServerManager> managers = null;
-	
-	public static ServerManager sm = null;
-	
-	public static ServerManager getCurManager() {
-		return sm;
-	}
-	
-	public static ServerManager newManager() {
-		ServerManager ret = new ServerManager();
-//		ret.init(instance.gui);
-//		managers.add(ret);
-//		instance.gui.doServersMenu();
-		return ret;
-	}
-	
-	public static void removeManager(ServerManager sm) {
-		sm.connector.disconnect();
-//		instance.gui.desktop.remove(sm.myGui);
-//		instance.gui.doServersMenu();
-		managers.remove(sm);
-	}
 	
 	public JGlideMon() {
 		instance = this;
@@ -96,55 +74,42 @@ public class JGlideMon {
 		
 		ServerManager.loadServers();
 		managers = ServerManager.managers;
+				
+		boolean atLeastOneRunning = false;
 		
-		if (managers.size() == 0) {
-			managers.add(new ServerManager());
-			managers.get(0).firstRun = true;
+		// resume all the servers
+		for (ServerManager sm : managers) {
+			if (sm.p.getBool("enabled")) {
+				atLeastOneRunning = true;
+				ServerManager.resumeServer(sm);
+			}
 		}
 		
-		sm = managers.get(0);
+		// add a server if there are none
+		if (managers.size() == 0) {
+			ServerManager.addServer();
+		}
 		
-		for (ServerManager sm : managers) {
-			sm.init();
+		// if none are running force the first to resume
+		if (!atLeastOneRunning) {
+			ServerManager sm = managers.get(0);
+			sm.p.set("enabled", true);
+			ServerManager.resumeServer(sm);
 		}
 		
 		// not critical to get these loaded before the gui shows
 		jgm.wow.Item.Cache.loadIcons();
 		jgm.wow.Item.Cache.loadItems();
-		
-		
-		new HTTPD();
-		
-		if (cfg.getBool("web.enabled")) {
-			try {
-				HTTPD.instance.start(cfg.getInt("web.port"));
-			} catch (java.io.IOException e) {
-				JOptionPane.showMessageDialog(sm.gui.frame,
-					"Unable to start web-server.\n" +
-					"Port " + cfg.getInt("web.port") + " is unavailible.",
-					"Error",
-					JOptionPane.ERROR_MESSAGE
-				);
-			}
-		}
 	}
 
 	public void destroy() {
 		for (ServerManager sm : managers) {
-			if (sm.connector.isConnected()) {
-				try {
-					Thread t = sm.connector.disconnect();
-					t.join();
-				} catch (InterruptedException e) {}
-			}
-			
-			sm.gui.frame.dispose();
+			sm.destroy();
 		}
 		
 		Speech.destroy();
 		jgm.wow.Item.Cache.saveIcons();
 		jgm.wow.Item.Cache.saveItems();
-		HTTPD.instance.stop(); // doesn't matter if it's actually running or not
 		
 		ServerManager.saveConfig();
 		jgm.Config.write();

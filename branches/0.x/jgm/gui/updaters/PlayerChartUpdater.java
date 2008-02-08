@@ -20,7 +20,6 @@
  */
 package jgm.gui.updaters;
 
-import jgm.JGlideMon;
 import jgm.gui.components.PlayerChart;
 
 import java.util.*;
@@ -33,16 +32,20 @@ public class PlayerChartUpdater {
 	jgm.glider.Status status;
 	Timer timer;
 	
+	jgm.ServerManager sm;
+	
 	public PlayerChartUpdater(jgm.ServerManager sm) {
+		this.sm = sm;
 		status = sm.status.s;
 		chart = sm.gui.tabsPane.chartTab.chart;
 		
 		timer = new Timer();
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
+				final jgm.ServerManager sm = PlayerChartUpdater.this.sm;
 				public void run() {
 					// don't add points when we're dced or not attached
-					if (!JGlideMon.getCurManager().connector.isConnected() || !status.attached) return;
+					if (!sm.connector.isConnected() || !status.attached) return;
 					
 					chart.addData(status.health, status.mana, status.targetHealth);
 				}

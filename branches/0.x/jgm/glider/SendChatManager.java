@@ -24,7 +24,7 @@ import java.util.*;
 import java.io.*;
 import java.util.logging.*;
 
-import jgm.JGlideMon;
+import jgm.*;
 
 /**
  * This class will take care of sending chat
@@ -48,10 +48,13 @@ public class SendChatManager implements Runnable {
 	public volatile boolean idle = false;
 	private Thread thread = null;
 	
+	public ServerManager sm;
+	
 	private static int instances = 0;
 	
-	public SendChatManager() {		
+	public SendChatManager(ServerManager sm) {		
 		instances++;
+		this.sm = sm;
 		thread = new Thread(this);
 		thread.setName("SendChatManager" + instances);
 		thread.setDaemon(true);
@@ -69,9 +72,9 @@ public class SendChatManager implements Runnable {
 		if (null == keys)
 			throw new NullPointerException("keys cannot be null in sendKeys()");
 		
-		if (!JGlideMon.getCurManager().connector.isConnected()) return false;
+		if (!sm.connector.isConnected()) return false;
 		
-		if (conn == null) conn = JGlideMon.getCurManager().keysConn;
+		if (conn == null) conn = sm.keysConn;
 		
 		try {			
 			log.info("Sending keys: " + keys);

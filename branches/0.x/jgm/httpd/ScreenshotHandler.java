@@ -25,9 +25,13 @@ import java.util.Properties;
 import jgm.HTTPD;
 
 public class ScreenshotHandler extends Handler {	
+	public ScreenshotHandler(HTTPD httpd) {
+		super(httpd);
+	}
+	
 	@Override
 	public Response handle(String uri, String method, Properties headers, Properties params) {
-		jgm.ServerManager sm = jgm.JGlideMon.getCurManager();
+		jgm.ServerManager sm = httpd.sm;
 		
 		// updating of the screenshot is only done withon SSUpdater
 		// otherwise very bad things could happen....
