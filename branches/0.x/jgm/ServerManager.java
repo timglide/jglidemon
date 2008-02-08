@@ -150,8 +150,24 @@ public class ServerManager {
 		System.gc();
 	}
 	
+	public static int getActiveCount() {
+		int ret = 0;
+		
+		for (ServerManager sm : managers) {
+			if (sm.state == State.ACTIVE)
+				ret++;
+		}
+		
+		return ret;
+	}
+	
+	public enum State {
+		UNKNOWN, ACTIVE, SUSPENDED
+	}
+	
 	public boolean       firstRun = false;
 	
+	public State         state = State.UNKNOWN;
 	public Conn          keysConn;
 	public GUI           gui;
 	public HTTPD         httpd = null;
@@ -197,6 +213,9 @@ public class ServerManager {
 	}
 	
 	public void init() {
+		if (state == State.ACTIVE)
+			throw new IllegalStateException("Cannot init if already active");
+		
 		gui = new GUI(this);
 
 		// create a seperate thread to connect in case it
@@ -255,6 +274,8 @@ public class ServerManager {
 				);
 			}
 		}
+		
+		state = State.ACTIVE;
 	}
 	
 	public void startHttpd() throws java.io.IOException {
@@ -280,6 +301,9 @@ public class ServerManager {
 	}
 	
 	public void destroy() {
+		if (state != State.ACTIVE)
+			throw new IllegalStateException("Cannot destroy without active state");
+		
 		if (connector.isConnected()) {
 			try {
 				Thread t = connector.disconnect(true);
@@ -290,6 +314,8 @@ public class ServerManager {
 		stopHttpd();
 		gui.destroy();
 		gui = null;
+		
+		state = State.SUSPENDED;
 		
 		System.gc();
 	}

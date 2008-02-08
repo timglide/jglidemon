@@ -104,7 +104,8 @@ public class JGlideMon {
 
 	public void destroy() {
 		for (ServerManager sm : managers) {
-			sm.destroy();
+			if (sm.state == ServerManager.State.ACTIVE)
+				sm.destroy();
 		}
 		
 		Speech.destroy();

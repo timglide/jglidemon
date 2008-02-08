@@ -38,6 +38,12 @@ import javax.swing.*;
 
 public class GUI 
 	implements ActionListener, java.util.Observer, ContainerListener {
+	
+	static ImageIcon ONLINE_ICON =
+		new ImageIcon(JGlideMon.class.getResource("resources/images/status/online.png"));
+	static ImageIcon OFFLINE_ICON =
+		new ImageIcon(JGlideMon.class.getResource("resources/images/status/offline.png"));
+	
 	public static final int PADDING = 10;
 	static Config cfg = Config.c;
 	public static final String BASE_TITLE = "JGlideMon " + JGlideMon.version;
@@ -87,8 +93,8 @@ public class GUI
 		JMenu     servers;
 		JMenuItem addServer;
 		JMenuItem removeServer;
-		java.util.List<JCheckBoxMenuItem> serverItems =
-			new Vector<JCheckBoxMenuItem>();
+		java.util.List<JMenuItem> serverItems =
+			new Vector<JMenuItem>();
 		
 		JMenu     help;
 		JMenuItem debug;
@@ -106,10 +112,11 @@ public class GUI
 		public void serverResumed(ServerManager sm) {doit();}
     };
 	
-	public GUI(ServerManager sm) {
+	public GUI(final ServerManager sm) {
 		this.sm = sm;
 		
 		frame = new JFrame(BASE_TITLE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		ImageIcon img = new ImageIcon(
 			JGlideMon.class.getResource("resources/images/stitch/icon.png"));
@@ -130,7 +137,27 @@ public class GUI
 		frame.addWindowListener(
 			new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
-					JGlideMon.instance.destroy();
+					int ret =
+						// don't show if there's only one active server
+						ServerManager.getActiveCount() == 1
+						? JOptionPane.YES_OPTION :
+						JOptionPane.showConfirmDialog(frame,
+							"Yes: Close all instances of JGlideMon\n" +
+							"No: Close this server's instance of JGlideMon\n" +
+							"Cancel: Do nothing.",
+							"Do you want to exit?",
+							JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					
+					switch (ret) {
+						case JOptionPane.YES_OPTION:
+							JGlideMon.instance.destroy();
+							break;
+							
+						case JOptionPane.NO_OPTION:
+							sm.suspend();
+							break;
+					}
 				}
 			}
 		);
@@ -370,10 +397,10 @@ public class GUI
 		menu.servers.add(menu.removeServer);
 		menu.servers.addSeparator();
 		
-		JCheckBoxMenuItem item = null;
+		JMenuItem item = null;
 		
 		for (final ServerManager sm : ServerManager.managers) {
-			item = new JCheckBoxMenuItem(sm.name, sm.p.getBool("enabled"));
+			item = new JMenuItem(sm.name, sm.p.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
 			menu.serverItems.add(item);
 			menu.servers.add(item);
 			
