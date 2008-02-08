@@ -261,7 +261,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,Profiler.jar,Profiler.jar.MD5,*.properties"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,Profiler.jar,Profiler.jar.MD5"/>
 		</zip>
 	</target>
 
@@ -271,7 +271,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="src_zip" description="Create ${src_zip}">
 		<zip destfile="${src_zip}">
 			<fileset dir="${src_dir}" includes="**" 
-				excludes="**/*.class,lib/**,bin/**,**/*.MD5,**/.*,**/*.cache,**/*.dat,**/*.ini,php/phpglidemon.php,DebugInfo.txt,Log.txt"/>
+				excludes="**/*.class,lib/**,bin/**,**/*.MD5,**/.*,**/*.cache,**/*.dat,**/*.ini,**/*.properties,php/phpglidemon.php,DebugInfo.txt,Log.txt"/>
 		</zip>
 	</target>
 
