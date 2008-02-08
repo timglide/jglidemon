@@ -55,6 +55,7 @@ public class Tray implements ActionListener {
 	private SystemTray tray;
 	private TrayIcon icon;
 	private PopupMenu menu;
+	private MenuItem exit;
 
 	GUI gui;
 	
@@ -66,9 +67,9 @@ public class Tray implements ActionListener {
 			
 			// apparantly can't use a JPopupMenu....
 			menu = new PopupMenu();
-			MenuItem item = new MenuItem("Exit");
-			item.addActionListener(this);
-			menu.add(item);
+			exit = new MenuItem("Exit");
+			exit.addActionListener(this);
+			menu.add(exit);
 			
 			icon = new TrayIcon(gui.frame.getIconImage(), jgm.GUI.BASE_TITLE, menu);
 			icon.setImageAutoSize(true);
@@ -114,8 +115,8 @@ public class Tray implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Exit")) {
-			jgm.JGlideMon.instance.destroy();
+		if (e.getSource() == exit) {
+			gui.myWindowAdapter.windowClosing(null);
 		}
 	}
 	
@@ -128,26 +129,28 @@ public class Tray implements ActionListener {
 	 * @param caption
 	 * @param text
 	 */
-	public void messageIfInactive(String caption, String text) {
+	public void warnIfInactive(String caption, String text) {
 		if (gui.frame.isActive())
 			return;
 		
-		displayMessage(caption, text, MessageType.WARNING);
+		displayMessage(caption + " Alert", text, MessageType.WARNING);
+	}
+	
+	public void informIfInactive(String caption, String text) {
+		if (gui.frame.isActive())
+			return;
+		
+		displayMessage(caption + " Notice", text, MessageType.WARNING);
 	}
 	
 	// necessary to not have it break with java 1.5
+	// (i assume...)
 	public enum MessageType {
 		ERROR, INFO, NONE, WARNING
 	}
 	
 	// passthru for displayMessage
-	public void displayMessage(String caption, String text, MessageType type) {
-//		try {
-//			Class.forName("java.awt.TrayIcon");
-//		} catch (ClassNotFoundException e) {
-//			return;
-//		}
-		
+	public void displayMessage(String caption, String text, MessageType type) {		
 		if (icon == null) return;
 		
 		TrayIcon.MessageType realType = null;
@@ -170,7 +173,7 @@ public class Tray implements ActionListener {
 				break;
 		}
 		
-		icon.displayMessage(caption, text, realType);
+		icon.displayMessage("[" + gui.sm.name + "] " + caption, text, realType);
 	}
 	
 	private class MyMouseListener extends MouseAdapter {

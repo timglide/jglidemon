@@ -224,7 +224,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				
 				if (!fromLog) 
 					sm.gui.tray
-						.messageIfInactive("JGlideMon Glider Alert", e2.getText());
+						.warnIfInactive("Glider", e2.getText());
 				
 				if (!fromLog) {
 					if (e2.type == GliderLogEntry.Type.STUCK &&
@@ -266,7 +266,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			
 			if (!fromLog && e.getText().equals("Stopping glide")) {
 				sm.gui.tray
-					.messageIfInactive("JGlideMon Glider Alert", e.getText());
+					.warnIfInactive("Glider", e.getText());
 				
 				if (lastGliderException != null)
 					log.finer("Restarter check: " + (System.currentTimeMillis() - lastGliderException) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.exception.time")));
@@ -285,7 +285,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				
 				if (!fromLog) 
 					sm.gui.tray
-						.messageIfInactive("JGlideMon Chat Alert", e2.getRawText());
+						.warnIfInactive("Chat", e2.getRawText());
 			}
 			
 			chatLog.add(e2);
@@ -299,6 +299,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			if (e2.hasItemSet())  {
 //				System.out.println("Adding item: " + e2.getItem().toString());
 				lootsTab.add(e2.getItemSet());
+				
+				if (!fromLog && e2.getItemSet().getItem().quality >= jgm.wow.Item.RARE) 
+					sm.gui.tray
+						.informIfInactive("Phat Loot", e2.getRawText());
 			}
 			
 			if (e2.hasMoney()) {

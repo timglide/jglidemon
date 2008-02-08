@@ -332,7 +332,7 @@ public class ServerManager {
 		public void serverResumed(ServerManager sm);
 	}
 	
-	public class Adaptor implements Listener {
+	public class Adapter implements Listener {
 		public void serverAdded(ServerManager sm) {}
 		public void serverRemoved(ServerManager sm) {}
 		public void serverSuspended(ServerManager sm) {}

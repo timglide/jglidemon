@@ -101,7 +101,7 @@ public class GUI
 		JMenuItem about;
 	}
 	
-	ServerManager.Listener smlistener = new ServerManager.Listener() {
+	ServerManager.Listener mySmListener = new ServerManager.Listener() {
     	void doit() {
     		doServersMenu();
     	}
@@ -111,6 +111,32 @@ public class GUI
 		public void serverSuspended(ServerManager sm) {doit();}
 		public void serverResumed(ServerManager sm) {doit();}
     };
+    
+    public WindowAdapter myWindowAdapter = new WindowAdapter() {
+		public void windowClosing(WindowEvent e) {
+			int ret =
+				// don't show if there's only one active server
+				ServerManager.getActiveCount() == 1
+				? JOptionPane.YES_OPTION :
+				JOptionPane.showConfirmDialog(frame,
+					"Yes: Close all instances of JGlideMon\n" +
+					"No: Close this server's instance of JGlideMon\n" +
+					"Cancel: Do nothing.",
+					"Do you want to exit?",
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
+			
+			switch (ret) {
+				case JOptionPane.YES_OPTION:
+					JGlideMon.instance.destroy();
+					break;
+					
+				case JOptionPane.NO_OPTION:
+					sm.suspend();
+					break;
+			}
+		}
+	};
 	
 	public GUI(final ServerManager sm) {
 		this.sm = sm;
@@ -134,33 +160,7 @@ public class GUI
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		}
 		
-		frame.addWindowListener(
-			new WindowAdapter() {
-				public void windowClosing(WindowEvent e) {
-					int ret =
-						// don't show if there's only one active server
-						ServerManager.getActiveCount() == 1
-						? JOptionPane.YES_OPTION :
-						JOptionPane.showConfirmDialog(frame,
-							"Yes: Close all instances of JGlideMon\n" +
-							"No: Close this server's instance of JGlideMon\n" +
-							"Cancel: Do nothing.",
-							"Do you want to exit?",
-							JOptionPane.YES_NO_CANCEL_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
-					
-					switch (ret) {
-						case JOptionPane.YES_OPTION:
-							JGlideMon.instance.destroy();
-							break;
-							
-						case JOptionPane.NO_OPTION:
-							sm.suspend();
-							break;
-					}
-				}
-			}
-		);
+		frame.addWindowListener(myWindowAdapter);
 		
 		frame.addWindowStateListener(new WindowStateListener() {
 			final ServerManager sm = GUI.this.sm;
@@ -386,7 +386,7 @@ public class GUI
 	    	}
 	    });
 	    
-	    ServerManager.addListener(smlistener);
+	    ServerManager.addListener(mySmListener);
 	}
 	
 	public void doServersMenu() {
@@ -425,7 +425,7 @@ public class GUI
 	}
 	
 	public void destroy() {
-		ServerManager.removeListener(smlistener);
+		ServerManager.removeListener(mySmListener);
 		frame.dispose();
 		tray.destroy();
 	}
