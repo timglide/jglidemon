@@ -37,13 +37,13 @@ public class CharInfoPane extends Pane {
 	private JLabel       manaLbl;
 	private JProgressBar mana;
 
-	public CharInfoPane(jgm.GUI gui) {
+	public CharInfoPane(jgm.gui.GUI gui) {
 		super(gui);
 
 		setLayout(new BorderLayout());
 
 		JPanel p = new JPanel(new GridBagLayout());
-		p.setBorder(BorderFactory.createEmptyBorder(0, jgm.GUI.PADDING / 2, 0, 0));
+		p.setBorder(BorderFactory.createEmptyBorder(0, jgm.gui.GUI.PADDING / 2, 0, 0));
 		
 		c.gridx = 0; c.gridy = 0;
 		p.add(new JLabel("Name: "), c);
@@ -92,7 +92,7 @@ public class CharInfoPane extends Pane {
 		iconsPane.setLayout(new BoxLayout(iconsPane, BoxLayout.Y_AXIS));
 		iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		iconsPane.add(iconLabel);
-		iconsPane.add(Box.createRigidArea(new Dimension(0, jgm.GUI.PADDING / 2)));
+		iconsPane.add(Box.createRigidArea(new Dimension(0, jgm.gui.GUI.PADDING / 2)));
 		heading.setAlignmentX(Component.CENTER_ALIGNMENT);
 		iconsPane.add(heading);
 

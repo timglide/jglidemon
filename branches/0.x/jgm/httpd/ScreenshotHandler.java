@@ -22,7 +22,6 @@ package jgm.httpd;
 
 import java.io.*;
 import java.util.Properties;
-import jgm.HTTPD;
 
 public class ScreenshotHandler extends Handler {	
 	public ScreenshotHandler(HTTPD httpd) {

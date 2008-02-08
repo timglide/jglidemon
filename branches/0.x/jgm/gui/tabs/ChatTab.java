@@ -46,7 +46,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 	
 	private SendChatManager sendChat;
 	
-	public ChatTab(jgm.GUI gui) {
+	public ChatTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(), "Chat");
 		
 		sendChat = new SendChatManager(gui.sm);

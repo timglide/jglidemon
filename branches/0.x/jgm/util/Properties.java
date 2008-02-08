@@ -1,4 +1,4 @@
-package jgm;
+package jgm.util;
 
 public class Properties extends java.util.Properties {
 	public Properties() {

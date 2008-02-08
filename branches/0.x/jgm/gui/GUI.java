@@ -18,16 +18,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  * -----LICENSE END-----
  */
-package jgm;
+package jgm.gui;
 
+import jgm.Config;
+import jgm.JGlideMon;
+import jgm.ServerManager;
 import jgm.glider.*;
-import jgm.gui.Tray;
 import jgm.gui.components.JStatusBar;
 import jgm.gui.panes.CharInfoPane;
 import jgm.gui.panes.ControlPane;
 import jgm.gui.panes.ExperiencePane;
 import jgm.gui.panes.MobInfoPane;
 import jgm.gui.panes.TabsPane;
+import jgm.util.Util;
 
 import java.util.*;
 import java.awt.*;
@@ -110,6 +113,11 @@ public class GUI
 		public void serverRemoved(ServerManager sm) {doit();}
 		public void serverSuspended(ServerManager sm) {doit();}
 		public void serverResumed(ServerManager sm) {doit();}
+		public void serverPropChanged(ServerManager sm, String prop, Object value) {
+			if (prop.equals("name")) {
+				doit();
+			}
+		}
     };
     
     public WindowAdapter myWindowAdapter = new WindowAdapter() {
@@ -149,14 +157,14 @@ public class GUI
 		
 		frame.setIconImage(img.getImage());
 		
-		frame.setSize(sm.p.getInt("window.width"), sm.p.getInt("window.height"));
-		frame.setLocation(sm.p.getInt("window.x"), sm.p.getInt("window.y"));
+		frame.setSize(sm.getInt("window.width"), sm.getInt("window.height"));
+		frame.setLocation(sm.getInt("window.x"), sm.getInt("window.y"));
 
 		tray = new Tray(this);
 		
 		setTitle();
 		
-		if (sm.p.getBool("window.maximized")) {
+		if (sm.getBool("window.maximized")) {
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		}
 		
@@ -168,10 +176,10 @@ public class GUI
 				if (JFrame.MAXIMIZED_BOTH ==
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
 					//System.out.println("Window is maximized");
-					sm.p.set("window.maximized", true);
+					sm.set("window.maximized", true);
 				} else {
 					//System.out.println("Window not maximized");
-					sm.p.set("window.maximized", false);
+					sm.set("window.maximized", false);
 				}
 				
 				if (JFrame.ICONIFIED ==
@@ -196,8 +204,8 @@ public class GUI
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
-					sm.p.set("window.width", s.width);					
-					sm.p.set("window.height", s.height);
+					sm.set("window.width", s.width);					
+					sm.set("window.height", s.height);
 				}
 				
 				// request to update the screenshot's scale
@@ -213,8 +221,8 @@ public class GUI
 				// only save if not maximized
 				if (JFrame.MAXIMIZED_BOTH !=
 					(frame.getExtendedState() & JFrame.MAXIMIZED_BOTH)) {
-					sm.p.set("window.x", p.x);
-					sm.p.set("window.y", p.y);
+					sm.set("window.x", p.x);
+					sm.set("window.y", p.y);
 				}
 			}
 		});
@@ -400,13 +408,13 @@ public class GUI
 		JMenuItem item = null;
 		
 		for (final ServerManager sm : ServerManager.managers) {
-			item = new JMenuItem(sm.name, sm.p.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
+			item = new JMenuItem(sm.name, sm.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
 			menu.serverItems.add(item);
 			menu.servers.add(item);
 			
 			item.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (!sm.p.getBool("enabled")) {
+					if (!sm.getBool("enabled")) {
 						sm.resume();
 					}
 					

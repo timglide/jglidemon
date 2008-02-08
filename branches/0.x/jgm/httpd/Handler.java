@@ -20,7 +20,6 @@
  */
 package jgm.httpd;
 
-import jgm.HTTPD;
 
 import java.util.Properties;
 import java.util.logging.Logger;

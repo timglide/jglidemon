@@ -18,9 +18,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  * -----LICENSE END-----
  */
-package jgm;
+package jgm.httpd;
 
-import jgm.httpd.*;
+import jgm.JGlideMon;
+import jgm.ServerManager;
+import jgm.util.Properties;
 
 import java.io.*;
 import java.util.*;
@@ -202,7 +204,7 @@ public class HTTPD implements Runnable
 			throw new IllegalStateException("Cannot start httpd with ss != null");
 		}
 		
-		int port = sm.p.getInt("web.port");
+		int port = sm.getInt("web.port");
 		
 		log.info("Attempting to start httpd on port " + port);
 		

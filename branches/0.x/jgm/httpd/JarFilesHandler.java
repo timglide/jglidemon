@@ -24,7 +24,6 @@ import java.io.*;
 import java.util.jar.*;
 import java.util.Properties;
 
-import jgm.HTTPD;
 
 /**
  * This class is for serving the static httpd files

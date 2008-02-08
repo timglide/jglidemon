@@ -42,7 +42,7 @@ public class ProfilesTab extends Tab
 	
 	private volatile boolean connected = false;
 	
-	public ProfilesTab(jgm.GUI gui) {
+	public ProfilesTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(), "Profiles");
 						
 		JPanel prosPanel = new JPanel(new BorderLayout(10, 10));

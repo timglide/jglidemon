@@ -20,14 +20,14 @@
  */
 package jgm.gui.dialogs;
 
-import jgm.GUI;
+import jgm.gui.GUI;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 public abstract class Dialog extends JDialog {
-	public static final int PADDING = jgm.GUI.PADDING;
+	public static final int PADDING = jgm.gui.GUI.PADDING;
 	
 	protected GUI gui;
 	protected String title;

@@ -20,7 +20,6 @@
  */
 package jgm.gui;
 
-import jgm.GUI;
 
 import java.util.logging.*;
 
@@ -71,7 +70,7 @@ public class Tray implements ActionListener {
 			exit.addActionListener(this);
 			menu.add(exit);
 			
-			icon = new TrayIcon(gui.frame.getIconImage(), jgm.GUI.BASE_TITLE, menu);
+			icon = new TrayIcon(gui.frame.getIconImage(), jgm.gui.GUI.BASE_TITLE, menu);
 			icon.setImageAutoSize(true);
 			icon.addMouseListener(new MyMouseListener());
 			

@@ -23,8 +23,8 @@ package jgm.gui.panes;
 import java.awt.*;
 import javax.swing.*;
 
-import jgm.GUI;
 import jgm.glider.Status;
+import jgm.gui.GUI;
 
 /**
  * Abstract class representing one of the panels 

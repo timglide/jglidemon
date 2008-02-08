@@ -20,7 +20,6 @@
  */
 package jgm.httpd;
 
-import jgm.HTTPD;
 import java.io.*;
 import java.util.Properties;
 

@@ -20,7 +20,6 @@
  */
 package jgm.httpd;
 
-import jgm.HTTPD;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

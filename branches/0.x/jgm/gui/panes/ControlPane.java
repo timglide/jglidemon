@@ -36,7 +36,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public final JButton start;
 	public final JButton stop;
 
-	public ControlPane(jgm.GUI gui) {
+	public ControlPane(jgm.gui.GUI gui) {
 		super(gui);
 
 		connect = new JButton("Connect");
@@ -44,7 +44,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		connect.addActionListener(this);
 		//connect.setEnabled(false);
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
-		c.insets.bottom = jgm.GUI.PADDING / 2;
+		c.insets.bottom = jgm.gui.GUI.PADDING / 2;
 		add(connect, c);
 		
 		// attach is done automatically now

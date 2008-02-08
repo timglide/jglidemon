@@ -44,7 +44,7 @@ public class TabsPane extends Pane {
 	public LogTab        gliderLog;
 	public LogTab        rawLog;
 
-	public TabsPane(jgm.GUI gui) {
+	public TabsPane(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout());
 
 		tabbedPane = new JTabbedPane();
@@ -92,14 +92,14 @@ public class TabsPane extends Pane {
 		addTab(lootsTab);
 
 		try {
-			tabbedPane.setSelectedIndex(gui.sm.p.getInt("general.lasttab"));
+			tabbedPane.setSelectedIndex(gui.sm.getInt("general.lasttab"));
 		} catch (IndexOutOfBoundsException e) {}
 		
 		// save current tab in the config to restore when program is restarted
 		tabbedPane.addChangeListener(
 			new javax.swing.event.ChangeListener() {
 				public void stateChanged(javax.swing.event.ChangeEvent e) {
-					TabsPane.this.gui.sm.p.set("general.lasttab", tabbedPane.getSelectedIndex());
+					TabsPane.this.gui.sm.set("general.lasttab", tabbedPane.getSelectedIndex());
 				}
 			}
 		);

@@ -38,7 +38,7 @@ public class About extends Dialog implements ActionListener {
 	
 	private static java.util.Random r = new java.util.Random();
 	
-	public About(jgm.GUI gui) {
+	public About(jgm.gui.GUI gui) {
 		super(gui, "About JGlideMon");
 		
 		ImageIcon icon = new ImageIcon(

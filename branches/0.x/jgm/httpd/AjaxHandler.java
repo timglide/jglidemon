@@ -30,7 +30,6 @@ import java.io.*;
 import java.util.Properties;
 
 import jgm.JGlideMon;
-import jgm.HTTPD;
 import jgm.gui.updaters.StatusUpdater;
 
 public class AjaxHandler extends Handler {

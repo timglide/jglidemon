@@ -333,7 +333,7 @@ public class Item implements Comparable<Item>, Serializable {
 			try {
 				icon = new javax.swing.ImageIcon(
 					   new java.net.URL(ICON_BASE + iconPath));
-				icon = jgm.Util.resizeIcon(icon, 32, 32);
+				icon = jgm.util.Util.resizeIcon(icon, 32, 32);
 				iconCache.put(iconPath, icon);
 			} catch (java.net.MalformedURLException e) {
 				// shouldn't get in here...

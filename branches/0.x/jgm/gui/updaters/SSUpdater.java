@@ -92,7 +92,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		sm.gui.setStatusBarText("Updating screenshot...", true, false);
 		sm.gui.setStatusBarProgress(0);
 		
-		int buffSize = (int) (sm.p.getDouble("screenshot.buffer") * 1048576);
+		int buffSize = (int) (sm.getDouble("screenshot.buffer") * 1048576);
 		
 		if (buff == null || buff.length != buffSize) {
 			log.fine("Allocating ss buffer of size " + buffSize);
@@ -132,7 +132,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		
 		if (!sentSettings) {
 			log.finer("Sending screenshot settings");
-			conn.send("/capturescale " + sm.p.get("screenshot.scale"));
+			conn.send("/capturescale " + sm.get("screenshot.scale"));
 			//System.out.println(conn.readLine()); // set scale successfully
 			//System.out.println(conn.readLine()); // ---
 			log.finer(conn.readLine()); // set scale successfully
@@ -163,7 +163,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		conn.read(b);
 		//System.out.println("Read " + conn.read(b) + " for size");
 
-		int size = jgm.Util.byteArrayToInt(b);
+		int size = jgm.util.Util.byteArrayToInt(b);
 		//System.out.println("\nJPG Size: " + size);
 		//size &= 0x1FFFFF; // restrict to ~2 megs 
 		int written = 0;
@@ -241,7 +241,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		if (redoScale && cfg.getBool("screenshot.autoscale")) {
 			log.fine("Attempting to set screenshot scale...");
 			
-			double curScale = sm.p.getDouble("screenshot.scale") / 100;
+			double curScale = sm.getDouble("screenshot.scale") / 100;
 			double newScale = curScale;
 			int iwidth = icon.getIconWidth();
 			int iheight = icon.getIconHeight();
@@ -284,7 +284,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			
 			log.fine("Setting scale to " + newScaleInt + "%");
 			
-			sm.p.set("screenshot.scale", newScaleInt);
+			sm.set("screenshot.scale", newScaleInt);
 			redoScale = false;
 			sentSettings = false;
 		}
@@ -309,7 +309,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					// update if either the screenshot tab is viewable or if the
 					// webserver is enabled so that only one thread ever tries to
 					// update the screenshot
-					if (attached && (tab.isCurrentTab() || sm.p.getBool("web.enabled"))) update();
+					if (attached && (tab.isCurrentTab() || sm.getBool("web.enabled"))) update();
 				} catch (InterruptedException e) {
 					log.fine(thread.getName() + " interrupted within update()");
 				} catch (Exception e) {

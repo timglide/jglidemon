@@ -79,7 +79,7 @@ public class JGlideMon {
 		
 		// resume all the servers
 		for (ServerManager sm : managers) {
-			if (sm.p.getBool("enabled")) {
+			if (sm.getBool("enabled")) {
 				atLeastOneRunning = true;
 				ServerManager.resumeServer(sm);
 			}
@@ -93,7 +93,7 @@ public class JGlideMon {
 		// if none are running force the first to resume
 		if (!atLeastOneRunning) {
 			ServerManager sm = managers.get(0);
-			sm.p.set("enabled", true);
+			sm.set("enabled", true);
 			ServerManager.resumeServer(sm);
 		}
 		

@@ -42,7 +42,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 	private SkillTable skillTable;
 	private SkillTableModel skillEntries;
 	
-	public MobsTab(jgm.GUI gui) {
+	public MobsTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(20, 20), "Mobs/Rep/Skills");
 		
 		JPanel infoPanel = new JPanel(new GridLayout(1, 0));

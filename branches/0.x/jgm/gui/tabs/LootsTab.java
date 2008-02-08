@@ -52,7 +52,7 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 		"Poor", "Common", "Uncommon", "Rare", "Epic"
 	};
 
-	public LootsTab(jgm.GUI gui) {
+	public LootsTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(20, 20), "Loot");
 		
 		JPanel goldPanel = new JPanel(new GridLayout(1, 0));
@@ -148,7 +148,7 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 		if (totalGold <= 0) {
 			resetGPH();
 		} else {
-			int[] timeParts = jgm.Util.msToHMS(d);
+			int[] timeParts = jgm.util.Util.msToHMS(d);
 			goldPerHour.setMoney((int) (totalGold / diff));
 			goldPerHour.setToolTipText(
 				String.format("Earned %dg %ds %dc in %dhr %dmin %dsec",
@@ -277,7 +277,7 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 			
 			int itemId = is.getItem().id;
 			
-			jgm.Util.openURL(
+			jgm.util.Util.openURL(
 				String.format(
 					jgm.Config.getInstance().get("general.wowdb"),
 					itemId

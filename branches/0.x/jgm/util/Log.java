@@ -18,10 +18,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  * -----LICENSE END-----
  */
-package jgm;
+package jgm.util;
 
 import java.io.*;
 import java.util.logging.*;
+
+import jgm.Config;
+import jgm.JGlideMon;
 
 public class Log {
 	public static void reloadConfig() {

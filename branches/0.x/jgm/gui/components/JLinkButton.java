@@ -122,7 +122,7 @@ public class JLinkButton extends JButton {
     addActionListener(new java.awt.event.ActionListener() {
     	public void actionPerformed(java.awt.event.ActionEvent e) {
     		if (buttonURL != null) {
-    			jgm.Util.openURL(buttonURL.toExternalForm());
+    			jgm.util.Util.openURL(buttonURL.toExternalForm());
     			JLinkButton.this.setLinkVisited(true);
     		}
     	}

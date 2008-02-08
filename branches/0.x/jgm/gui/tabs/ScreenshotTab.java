@@ -44,7 +44,7 @@ public class ScreenshotTab extends Tab
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
 	
-	public ScreenshotTab(jgm.GUI gui) {
+	public ScreenshotTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(), "Screenshot");
 		
 		ssLabel = new JLabel();

@@ -28,7 +28,7 @@ public class JStatusBar extends jgm.gui.panes.Pane {
 	private JProgressBar progress = new JProgressBar();
 	//private JLabel extra = new JLabel("        ");
 	
-	public JStatusBar(jgm.GUI gui) {
+	public JStatusBar(jgm.gui.GUI gui) {
 		super(gui);
 		
 		Insets insets = new Insets(0, 2, 0, 2);

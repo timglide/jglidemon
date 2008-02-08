@@ -43,7 +43,7 @@ public class ParseLogFile extends Dialog implements ActionListener {
 	
 	JFileChooser fc = new JFileChooser();
 	
-	public ParseLogFile(jgm.GUI gui) {
+	public ParseLogFile(jgm.gui.GUI gui) {
 		super(gui, "Parse Log File");
 		
 		mainPanel = new JPanel(new BorderLayout());

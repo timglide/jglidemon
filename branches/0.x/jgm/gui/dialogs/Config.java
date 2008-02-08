@@ -26,7 +26,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import jgm.GUI;
+import jgm.gui.GUI;
 
 public class Config extends Dialog implements ActionListener, ChangeListener {
 	static Logger log = Logger.getLogger(Config.class.getName());
@@ -300,7 +300,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		screenshot.add(new JLabel("* Scale: "), c);
 		
 		screenshotScale =
-			new JSlider(JSlider.HORIZONTAL, 10, 100, gui.sm.p.getInt("screenshot.scale"));
+			new JSlider(JSlider.HORIZONTAL, 10, 100, gui.sm.getInt("screenshot.scale"));
 		screenshotScale.setMajorTickSpacing(30);
 		screenshotScale.setMinorTickSpacing(10);
 		screenshotScale.setPaintTicks(true);
@@ -588,23 +588,23 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			jgm.JGlideMon.debug = debug.isSelected();
 			
 			// this deletes the current log
-			jgm.Log.reloadConfig();
+			jgm.util.Log.reloadConfig();
 		}
 		
-		gui.sm.name = serverName.getText();
+		gui.sm.set("name", serverName.getText());
 		
 		log.finest(String.format("Old server: %s:%s = %s",
 			gui.sm.host, gui.sm.port, gui.sm.password));
 		
 		boolean reconnect = !gui.sm.host.equals(host.getText());
-		gui.sm.host = host.getText();
+		gui.sm.set("net.host", host.getText());
 		reconnect = reconnect || gui.sm.port != (Integer) port.getValue();
-		gui.sm.port = (Integer) port.getValue();
+		gui.sm.set("net.port", port.getValue());
 		reconnect = reconnect || !gui.sm.password.equals(password.getText());		
-		gui.sm.password = password.getText();
+		gui.sm.set("password", password.getText());
 		
 		log.finest(String.format("New server: %s:%s = %s",
-				gui.sm.host, gui.sm.port, gui.sm.password));
+			gui.sm.host, gui.sm.port, gui.sm.password));
 		
 		gui.setTitle();
 		
@@ -642,9 +642,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		cfg.set("screenshot.updateinterval", screenshotInterval.getValue());
 		cfg.set("screenshot.autoscale", screenshotAutoScale.isSelected());
-		gui.sm.p.set("screenshot.scale", screenshotScale.getValue());
+		gui.sm.set("screenshot.scale", screenshotScale.getValue());
 		cfg.set("screenshot.quality", screenshotQuality.getValue());
-		gui.sm.p.set("screenshot.buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
+		gui.sm.set("screenshot.buffer", ((Double) screenshotBuffer.getValue()).doubleValue());
 		cfg.set("screenshot.timeout", screenshotTimeout.getValue());
 
 		
@@ -673,22 +673,22 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("restarter.exception.enabled", restartOnException.isSelected());
 		cfg.set("restarter.exception.timeout", restartOnExceptionTime.getValue());
 		
-		boolean oldWebEnabled = gui.sm.p.getBool("web.enabled");
-		int oldWebPort = gui.sm.p.getInt("web.port");
+		boolean oldWebEnabled = gui.sm.getBool("web.enabled");
+		int oldWebPort = gui.sm.getInt("web.port");
 		
-		gui.sm.p.set("web.enabled", enableWeb.isSelected());
-		gui.sm.p.set("web.port", webPort.getValue());
+		gui.sm.set("web.enabled", enableWeb.isSelected());
+		gui.sm.set("web.port", webPort.getValue());
 		cfg.set("web.updateinterval", webInterval.getValue());
 
 		
 		// stop httpd if needed
-		if ((oldWebEnabled && oldWebPort != gui.sm.p.getInt("web.port")) ||
+		if ((oldWebEnabled && oldWebPort != gui.sm.getInt("web.port")) ||
 			(!enableWeb.isSelected())) {
 			gui.sm.stopHttpd();
 		}
 		
 		// restart on different port if needed
-		if ((enableWeb.isSelected() && oldWebPort != gui.sm.p.getInt("web.port")) ||
+		if ((enableWeb.isSelected() && oldWebPort != gui.sm.getInt("web.port")) ||
 			(!oldWebEnabled && enableWeb.isSelected()) ||
 			(enableWeb.isSelected())) {
 			try {
@@ -696,7 +696,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			} catch (java.io.IOException x) {
 				JOptionPane.showMessageDialog(gui.frame,
 					"Unable to start web-server.\n" +
-					"Port " + gui.sm.p.get("web.port") + " is unavailible.",
+					"Port " + gui.sm.get("web.port") + " is unavailible.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE
 				);
@@ -784,9 +784,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		screenshotInterval.setValue(cfg.getInt("screenshot.updateinterval"));
 		screenshotAutoScale.setSelected(cfg.getBool("screenshot.autoscale"));
-		screenshotScale.setValue(gui.sm.p.getInt("screenshot.scale"));
+		screenshotScale.setValue(gui.sm.getInt("screenshot.scale"));
 		screenshotQuality.setValue(cfg.getInt("screenshot.quality"));
-		screenshotBuffer.setValue(gui.sm.p.getDouble("screenshot.buffer"));
+		screenshotBuffer.setValue(gui.sm.getDouble("screenshot.buffer"));
 		screenshotTimeout.setValue(cfg.getInt("screenshot.timeout"));
 		
 		Icon i = gui.tabsPane.screenshotTab.ssLabel.getIcon();
@@ -833,8 +833,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		restartOnException.setSelected(cfg.getBool("restarter.exception.enabled"));
 		restartOnExceptionTime.setValue(cfg.getInt("restarter.exception.timeout"));
 		
-		enableWeb.setSelected(gui.sm.p.getBool("web.enabled"));
-		webPort.setValue(gui.sm.p.getInt("web.port"));
+		enableWeb.setSelected(gui.sm.getBool("web.enabled"));
+		webPort.setValue(gui.sm.getInt("web.port"));
 		webInterval.setValue(cfg.getInt("web.updateinterval"));
 		
 		// to initialize enabled/disabled states

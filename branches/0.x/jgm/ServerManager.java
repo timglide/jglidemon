@@ -7,10 +7,13 @@ import javax.swing.*;
 import jgm.glider.Conn;
 import jgm.glider.ConnectionAdapter;
 import jgm.glider.Connector;
+import jgm.gui.GUI;
 import jgm.gui.updaters.LogUpdater;
 import jgm.gui.updaters.PlayerChartUpdater;
 import jgm.gui.updaters.SSUpdater;
 import jgm.gui.updaters.StatusUpdater;
+import jgm.httpd.HTTPD;
+import jgm.util.Properties;
 
 /**
  * This class manages everything having to do
@@ -74,14 +77,12 @@ public class ServerManager {
 		}
 	}
 	
-	public static void saveConfig() {
-		Iterator<Object> it = cfg.p.keySet().iterator();
-		
-		while (it.hasNext()) {
-			String s = it.next().toString();
+	public static void saveConfig() {		
+		for (Object key : cfg.p.keySet().toArray()) {
+			String s = key.toString();
 			
 			if (s.startsWith("servers.")) {
-				it.remove();
+				cfg.p.remove(key);
 			}
 		}
 		
@@ -90,18 +91,18 @@ public class ServerManager {
 			
 			log.finest("Saving config for \"" + sm.name + "\"");
 			
-			sm.p.set("name", sm.name);
-			sm.p.set("net.host", sm.host);
-			sm.p.set("net.port", Integer.toString(sm.port));
-			sm.p.set("net.password", sm.password);
+			sm.set("name", sm.name);
+			sm.set("net.host", sm.host);
+			sm.set("net.port", Integer.toString(sm.port));
+			sm.set("net.password", sm.password);
 			
 			for (Object o : sm.p.keySet().toArray()) {
 				String key = o.toString();
 				String newKey = "servers." + i + "." + key;
 				
-				log.finest(String.format("  %s=%s", newKey, sm.p.get(key)));
+				log.finest(String.format("  %s=%s", newKey, sm.get(key)));
 				
-				cfg.set(newKey, sm.p.get(key));
+				cfg.set(newKey, sm.get(key));
 			}
 		}
 	}
@@ -120,9 +121,9 @@ public class ServerManager {
 	}
 	
 	public static void suspendServer(ServerManager sm) {
-//		if (!sm.p.getBool("enabled")) return; // already suspended
+//		if (!sm.getBool("enabled")) return; // already suspended
 		
-		sm.p.set("enabled", false);
+		sm.set("enabled", false);
 		sm.destroy();
 		
 		fireServerSuspended(sm);
@@ -133,9 +134,9 @@ public class ServerManager {
 	}
 	
 	public static void resumeServer(ServerManager sm) {
-//		if (sm.p.getBool("enabled")) return; // already running
+//		if (sm.getBool("enabled")) return; // already running
 		
-		sm.p.set("enabled", true);
+		sm.set("enabled", true);
 		sm.init();
 		
 		fireServerResumed(sm);
@@ -178,7 +179,7 @@ public class ServerManager {
 	
 	public Connector connector;
 
-	public jgm.Properties p;
+	private jgm.util.Properties p;
 	public String name;
 	public String host;
 	public int port;
@@ -210,6 +211,42 @@ public class ServerManager {
 	
 	public String toFullString() {
 		return name + " - " + host + ":" + port;
+	}
+	
+	public void set(String propertyName, Object value) {
+		p.set(propertyName, value);
+		
+		if (propertyName.equals("name")) {
+			name = value.toString();
+		} else if (propertyName.equals("net.host")) {
+			host = value.toString();
+		} else if (propertyName.equals("net.port")) {
+			port = Integer.parseInt(value.toString());
+		} else if (propertyName.equals("net.password")) {
+			password = value.toString();
+		}
+		
+		fireServerPropChanged(this, propertyName, value);
+	}
+	
+	public String get(String propertyName) {
+		return p.get(propertyName);
+	}
+	
+	public int getInt(String propertyName) {		
+		return p.getInt(propertyName);
+	}
+	
+	public boolean getBool(String propertyName) {		
+		return p.getBool(propertyName);
+	}
+	
+	public long getLong(String propertyName) {		
+		return p.getLong(propertyName);
+	}
+	
+	public double getDouble(String propertyName) {		
+		return p.getDouble(propertyName);
 	}
 	
 	public void init() {
@@ -330,6 +367,7 @@ public class ServerManager {
 		public void serverRemoved(ServerManager sm);
 		public void serverSuspended(ServerManager sm);
 		public void serverResumed(ServerManager sm);
+		public void serverPropChanged(ServerManager sm, String prop, Object value);
 	}
 	
 	public class Adapter implements Listener {
@@ -337,6 +375,7 @@ public class ServerManager {
 		public void serverRemoved(ServerManager sm) {}
 		public void serverSuspended(ServerManager sm) {}
 		public void serverResumed(ServerManager sm) {}
+		public void serverPropChanged(ServerManager sm, String prop, Object value) {}
 	}
 	
 	static javax.swing.event.EventListenerList listeners = 
@@ -386,6 +425,16 @@ public class ServerManager {
 		for (int i = ls.length - 2; i>=0; i-=2) {
 			if (ls[i] == Listener.class) {
 				((Listener) ls[i + 1]).serverResumed(sm);
+			}
+		}
+	}
+	
+	private static void fireServerPropChanged(ServerManager sm, String prop, Object value) {
+		Object[] ls = listeners.getListenerList();
+		
+		for (int i = ls.length - 2; i>=0; i-=2) {
+			if (ls[i] == Listener.class) {
+				((Listener) ls[i + 1]).serverPropChanged(sm, prop, value);
 			}
 		}
 	}

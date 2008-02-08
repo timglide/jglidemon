@@ -21,6 +21,7 @@
 package jgm;
 
 import jgm.util.*;
+
 import java.util.logging.*;
 import java.io.*;
 
@@ -80,6 +81,9 @@ public class Config {
 	}
 	
 	public Config() {
+		if (instance != null)
+			throw new IllegalStateException("Can only have one instance of Config");
+		
 		instance = this;
 		c = this;
 		

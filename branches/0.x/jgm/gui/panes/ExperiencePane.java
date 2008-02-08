@@ -32,7 +32,7 @@ public class ExperiencePane extends Pane {
 
 	private JProgressBar xpbar;
 
-	public ExperiencePane(jgm.GUI gui) {
+	public ExperiencePane(jgm.gui.GUI gui) {
 		super(gui);
 
 		c.weightx = 1.0; c.weighty = 0.0;
