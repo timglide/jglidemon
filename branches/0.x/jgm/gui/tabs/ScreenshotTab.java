@@ -37,8 +37,8 @@ public class ScreenshotTab extends Tab
 				KeyListener {
 	static Logger log = Logger.getLogger(ScreenshotTab.class.getName());
 	
-	private static Conn conn = null;
-	private static SSUpdater updater = null;
+	private Conn conn = null;
+	private SSUpdater updater = null;
 
 	public JScrollPane jsp;
 	public JLabel ssLabel;
@@ -131,7 +131,7 @@ public class ScreenshotTab extends Tab
 		//}
 	}
 	
-	private static Map<Integer, Boolean> keysDown
+	private Map<Integer, Boolean> keysDown
 		= new HashMap<Integer, Boolean>();
 	
 	public void keyPressed(KeyEvent e) {
