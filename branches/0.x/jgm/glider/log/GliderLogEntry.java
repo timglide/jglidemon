@@ -57,9 +57,11 @@ public class GliderLogEntry extends LogEntry {
 				type = Type.DIED;
 				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
 			} else if (s.contains("Exception")) {
-				isAlert = true;
-				type = Type.EXCEPTION;
-				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
+				if (!s.contains("being used by another process")) { // so annoying...
+					isAlert = true;
+					type = Type.EXCEPTION;
+					new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
+				}
 			} else if (s.contains("Stuck too many times")) {
 				isAlert = true;
 				type = Type.STUCK;

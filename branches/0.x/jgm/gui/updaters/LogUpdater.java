@@ -285,7 +285,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				
 				if (!fromLog) 
 					sm.gui.tray
-						.warnIfInactive("Chat", e2.getRawText());
+						.warnIfInactive("Chat", e2.getText());
 			}
 			
 			chatLog.add(e2);
@@ -302,7 +302,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				
 				if (!fromLog && e2.getItemSet().getItem().quality >= jgm.wow.Item.RARE) 
 					sm.gui.tray
-						.informIfInactive("Phat Loot", e2.getRawText());
+						.informIfInactive("Phat Loot", "[" + e2.getItemSet().getItem().name + "]");
 			}
 			
 			if (e2.hasMoney()) {

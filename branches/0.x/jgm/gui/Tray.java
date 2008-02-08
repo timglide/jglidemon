@@ -140,7 +140,7 @@ public class Tray implements ActionListener {
 		if (gui.frame.isActive())
 			return;
 		
-		displayMessage(caption + " Notice", text, MessageType.WARNING);
+		displayMessage(caption + " Notice", text, MessageType.INFO);
 	}
 	
 	// necessary to not have it break with java 1.5

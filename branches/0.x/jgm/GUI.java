@@ -458,7 +458,7 @@ public class GUI
 		} else if (source == menu.config) {
 			showConfig();
 		} else if (source == menu.exit) {
-			JGlideMon.instance.destroy();
+			myWindowAdapter.windowClosing(null);
 		} else if (source == menu.about) {
 			showAbout();
 		} else if (source == menu.debug) {
