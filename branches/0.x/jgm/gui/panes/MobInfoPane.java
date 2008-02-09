@@ -56,15 +56,16 @@ public class MobInfoPane extends Pane {
 		c.gridx++; c.weightx = 1.0;
 		lbls.add(level, c);
 
-		c.gridx = 0; c.gridy = 0; c.gridwidth = 3; c.weightx = 1.0;
-		add(lbls, c);
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		lbls.add(new JLabel("Target Health: "), c);
 		
 		health = new JProgressBar(0, 100);
-		health.setString("Target's Health");
-		health.setStringPainted(true);
 		health.setValue(0);
-		c.gridx = 0; c.gridy++; c.gridwidth = 3; c.weightx = 1.0;
-		add(health, c);
+		c.gridx++; c.weightx = 1.0;
+		lbls.add(health, c);
+		
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 3; c.weightx = 1.0;
+		add(lbls, c);
 
 		kills = new JLabel("Kills: 0", JLabel.CENTER);
 		c.gridx = 0; c.gridy++; c.gridwidth = 1;

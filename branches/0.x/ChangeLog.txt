@@ -2,6 +2,11 @@ JGlideMon ChangeLog
 
 Version 0.15
 ------------
+- Multiple Glider support is finally available. You no longer need
+  to run separate copies of JGlideMon to monitor multiple Gliders.
+  This functionality is accessible via the Servers menu.
+- You can now change JGlideMon's icon that appears in the tray
+  and the taskbar.
 - The configuration settings have been converted to Java's
   built in Properties type. Your JGlideMon.ini will automatically
   be converted to JGlideMon.properties.

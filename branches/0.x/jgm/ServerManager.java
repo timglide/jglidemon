@@ -224,6 +224,8 @@ public class ServerManager {
 			port = Integer.parseInt(value.toString());
 		} else if (propertyName.equals("net.password")) {
 			password = value.toString();
+		} else if (propertyName.equals("icon")) {
+			gui.setIcon();
 		}
 		
 		fireServerPropChanged(this, propertyName, value);

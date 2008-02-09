@@ -42,10 +42,31 @@ import javax.swing.*;
 public class GUI 
 	implements ActionListener, java.util.Observer, ContainerListener {
 	
-	static ImageIcon ONLINE_ICON =
+	static final ImageIcon ONLINE_ICON =
 		new ImageIcon(JGlideMon.class.getResource("resources/images/status/online.png"));
-	static ImageIcon OFFLINE_ICON =
+	static final ImageIcon OFFLINE_ICON =
 		new ImageIcon(JGlideMon.class.getResource("resources/images/status/offline.png"));
+	
+//	public static final String[] ICON_NAMES = {
+//		"Default", "Druid", "Hunter", "Mage",
+//		"Paladin", "Priest", "Rogue", "Shaman",
+//		"Warlock", "Warrior"
+//	};
+	
+	public static final ImageIcon[] ICONS = new ImageIcon[10];
+	
+	static {
+		ICONS[0] = new ImageIcon(JGlideMon.class.getResource("resources/images/stitch/icon.png"));
+		ICONS[1] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/druid.png"));
+		ICONS[2] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/hunter.png"));
+		ICONS[3] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/mage.png"));
+		ICONS[4] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/paladin.png"));
+		ICONS[5] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/priest.png"));
+		ICONS[6] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/rogue.png"));
+		ICONS[7] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/shaman.png"));
+		ICONS[8] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/warlock.png"));
+		ICONS[9] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/warrior.png"));
+	}
 	
 	public static final int PADDING = 10;
 	static Config cfg = Config.c;
@@ -96,6 +117,7 @@ public class GUI
 		JMenu     servers;
 		JMenuItem addServer;
 		JMenuItem removeServer;
+		JMenuItem activateServers;
 		java.util.List<JMenuItem> serverItems =
 			new Vector<JMenuItem>();
 		
@@ -152,17 +174,13 @@ public class GUI
 		frame = new JFrame(BASE_TITLE);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
-		ImageIcon img = new ImageIcon(
-			JGlideMon.class.getResource("resources/images/stitch/icon.png"));
-		
-		frame.setIconImage(img.getImage());
-		
 		frame.setSize(sm.getInt("window.width"), sm.getInt("window.height"));
 		frame.setLocation(sm.getInt("window.x"), sm.getInt("window.y"));
 
 		tray = new Tray(this);
 		
 		setTitle();
+		setIcon();
 		
 		if (sm.getBool("window.maximized")) {
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -337,7 +355,8 @@ public class GUI
 		menu.bar.add(menu.servers);
 		
 		menu.addServer = doMenuItem("Add New Server...", KeyEvent.VK_N, menu.servers, this);
-		menu.removeServer = doMenuItem("Remove Current Server", KeyEvent.VK_R, menu.servers, this); 
+		menu.removeServer = doMenuItem("Remove Current Server", KeyEvent.VK_R, menu.servers, this);
+		menu.activateServers = doMenuItem("Activate Inactive Servers", KeyEvent.VK_A, menu.servers, this);
 		// other items dynamically allocated
 		
 		
@@ -403,6 +422,7 @@ public class GUI
 		
 		menu.servers.add(menu.addServer);
 		menu.servers.add(menu.removeServer);
+		menu.servers.add(menu.activateServers);
 		menu.servers.addSeparator();
 		
 		JMenuItem item = null;
@@ -425,6 +445,16 @@ public class GUI
 				}
 			});
 		}
+	}
+	
+	public void setIcon() {
+		int i = sm.getInt("icon");
+		
+		if (i < 0 || i >= ICONS.length)
+			i = 0;
+		
+		frame.setIconImage(ICONS[i].getImage());
+		tray.setIcon(ICONS[i].getImage());
 	}
 	
 	public void makeVisible() {
@@ -462,6 +492,17 @@ public class GUI
 					"Error", JOptionPane.ERROR_MESSAGE);
 			} else {
 				ServerManager.removeServer(sm);
+			}
+		} else if (source == menu.activateServers) {
+			for (ServerManager sm : ServerManager.managers.toArray(new ServerManager[] {})) {
+				if (!sm.getBool("enabled")) {
+					sm.resume();
+					
+					sm.gui.frame.setVisible(true);
+					sm.gui.frame.setExtendedState(sm.gui.frame.getExtendedState() & ~JFrame.ICONIFIED);
+					sm.gui.frame.requestFocus();
+					sm.gui.frame.toFront();
+				}
 			}
 		} else if (source == menu.config) {
 			showConfig();

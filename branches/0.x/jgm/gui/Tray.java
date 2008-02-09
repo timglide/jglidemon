@@ -70,7 +70,7 @@ public class Tray implements ActionListener {
 			exit.addActionListener(this);
 			menu.add(exit);
 			
-			icon = new TrayIcon(gui.frame.getIconImage(), jgm.gui.GUI.BASE_TITLE, menu);
+			icon = new TrayIcon(GUI.ICONS[0].getImage(), jgm.gui.GUI.BASE_TITLE, menu);
 			icon.setImageAutoSize(true);
 			icon.addMouseListener(new MyMouseListener());
 			
@@ -107,6 +107,12 @@ public class Tray implements ActionListener {
 	public void setTitle(String title) {
 		if (icon != null)
 			icon.setToolTip(title);
+	}
+	
+	public void setIcon(Image image) {
+		if (icon != null) {
+			icon.setImage(image);
+		}
 	}
 	
 	public void destroy() {

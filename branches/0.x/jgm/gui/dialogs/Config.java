@@ -31,9 +31,9 @@ import jgm.gui.GUI;
 public class Config extends Dialog implements ActionListener, ChangeListener {
 	static Logger log = Logger.getLogger(Config.class.getName());
 	
-	static SpinnerNumberModel PORT_SPINNER
+	static final SpinnerNumberModel PORT_SPINNER
 		= new SpinnerNumberModel(1, 1, 65536, 1);
-	static SpinnerNumberModel INT_SPINNER
+	static final SpinnerNumberModel INT_SPINNER
 		= new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
 	
 	static JSpinner makeSpinner(SpinnerNumberModel sm) {
@@ -57,6 +57,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	
 	JPanel net;
 	JTextField serverName;
+	JComboBox serverIcon;
 	JTextField host;
 	JSpinner port;
 	JTextField password;
@@ -224,6 +225,13 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		serverName = new JTextField();
 		c.gridx++; c.weightx = 1.0;
 		net.add(serverName, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		net.add(new JLabel("* Icon: "), c);
+		
+		serverIcon = new JComboBox(GUI.ICONS);
+		c.gridx++; c.weightx = 1.0;
+		net.add(serverIcon, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		net.add(new JLabel("* Host: "), c);
@@ -601,7 +609,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		reconnect = reconnect || gui.sm.port != (Integer) port.getValue();
 		gui.sm.set("net.port", port.getValue());
 		reconnect = reconnect || !gui.sm.password.equals(password.getText());		
-		gui.sm.set("password", password.getText());
+		gui.sm.set("net.password", password.getText());
+		
+		gui.sm.set("icon", serverIcon.getSelectedIndex());
 		
 		log.finest(String.format("New server: %s:%s = %s",
 			gui.sm.host, gui.sm.port, gui.sm.password));
@@ -775,6 +785,13 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		minToTray.setSelected(cfg.getBool("general.mintotray"));
 		
 		serverName.setText(gui.sm.name);
+		
+		try {
+			serverIcon.setSelectedIndex(gui.sm.getInt("icon"));
+		} catch (IllegalArgumentException e) {
+			serverIcon.setSelectedIndex(0);
+		}
+		
 		host.setText(gui.sm.host);
 		port.setValue(gui.sm.port);
 		password.setText(gui.sm.password);
