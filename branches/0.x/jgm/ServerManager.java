@@ -162,6 +162,20 @@ public class ServerManager {
 		return ret;
 	}
 	
+	public static void connectAll() {
+		for (ServerManager sm : managers) {
+			if (sm.state == State.ACTIVE)
+				sm.connector.connect(true);
+		}
+	}
+	
+	public static void disconnectAll() {
+		for (ServerManager sm : managers) {
+			if (sm.state == State.ACTIVE)
+				sm.connector.disconnect(true);
+		}
+	}
+	
 	public enum State {
 		UNKNOWN, ACTIVE, SUSPENDED
 	}
@@ -249,6 +263,13 @@ public class ServerManager {
 	
 	public double getDouble(String propertyName) {		
 		return p.getDouble(propertyName);
+	}
+	
+	public void toFront() {
+		gui.frame.setVisible(true);
+		gui.frame.setExtendedState(gui.frame.getExtendedState() & ~JFrame.ICONIFIED);
+		gui.frame.requestFocus();
+		gui.frame.toFront();
 	}
 	
 	public void init() {

@@ -118,6 +118,8 @@ public class GUI
 		JMenuItem addServer;
 		JMenuItem removeServer;
 		JMenuItem activateServers;
+		JMenuItem connectServers;
+		JMenuItem disconnectServers;
 		java.util.List<JMenuItem> serverItems =
 			new Vector<JMenuItem>();
 		
@@ -356,6 +358,10 @@ public class GUI
 		
 		menu.addServer = doMenuItem("Add New Server...", KeyEvent.VK_N, menu.servers, this);
 		menu.removeServer = doMenuItem("Remove Current Server", KeyEvent.VK_R, menu.servers, this);
+				
+		menu.connectServers = doMenuItem("Connect All Servers", KeyEvent.VK_C, menu.servers, this);
+		menu.disconnectServers = doMenuItem("Disconnect All Servers", KeyEvent.VK_D, menu.servers, this);
+		
 		menu.activateServers = doMenuItem("Activate Inactive Servers", KeyEvent.VK_A, menu.servers, this);
 		// other items dynamically allocated
 		
@@ -422,6 +428,10 @@ public class GUI
 		
 		menu.servers.add(menu.addServer);
 		menu.servers.add(menu.removeServer);
+		menu.servers.addSeparator();
+		menu.servers.add(menu.connectServers);
+		menu.servers.add(menu.disconnectServers);
+		menu.servers.addSeparator();
 		menu.servers.add(menu.activateServers);
 		menu.servers.addSeparator();
 		
@@ -438,10 +448,7 @@ public class GUI
 						sm.resume();
 					}
 					
-					sm.gui.frame.setVisible(true);
-					sm.gui.frame.setExtendedState(sm.gui.frame.getExtendedState() & ~JFrame.ICONIFIED);
-					sm.gui.frame.requestFocus();
-					sm.gui.frame.toFront();
+					sm.toFront();
 				}
 			});
 		}
@@ -486,22 +493,38 @@ public class GUI
 		} else if (source == menu.addServer) {
 			ServerManager.addServer();
 		} else if (source == menu.removeServer) {
-			if (ServerManager.managers.size() == 1) {
+			if (ServerManager.getActiveCount() == 1) {
 				JOptionPane.showMessageDialog(frame,
-					"You cannot remove the only server.",
+					"You cannot remove the only active server.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 			} else {
-				ServerManager.removeServer(sm);
+				int ret = JOptionPane.showConfirmDialog(frame,
+					"Removing this server will delete it from\n" +
+					"your settings file and it will not reappear\n" +
+					"when JGlideMon is restarted.\n\n" +
+					
+					"Alternatively, you can deactivate this server\n" +
+					"by closing the window and selecting \"No\"\n" +
+					"to close only this server. Its setting will\n" +
+					"be saved but it will be in an inactive state\n" +
+					"until you activate it by clicking its name in\n" +
+					"the \"Servers\" menu.",
+					"Are you sure?",
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
+				
+				if (ret == JOptionPane.YES_OPTION)
+					ServerManager.removeServer(sm);
 			}
+		} else if (source == menu.connectServers) {
+			ServerManager.connectAll();
+		} else if (source == menu.disconnectServers) {
+			ServerManager.disconnectAll();
 		} else if (source == menu.activateServers) {
 			for (ServerManager sm : ServerManager.managers.toArray(new ServerManager[] {})) {
 				if (!sm.getBool("enabled")) {
 					sm.resume();
-					
-					sm.gui.frame.setVisible(true);
-					sm.gui.frame.setExtendedState(sm.gui.frame.getExtendedState() & ~JFrame.ICONIFIED);
-					sm.gui.frame.requestFocus();
-					sm.gui.frame.toFront();
+					sm.toFront();
 				}
 			}
 		} else if (source == menu.config) {

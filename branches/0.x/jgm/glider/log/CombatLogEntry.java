@@ -27,9 +27,8 @@ public class CombatLogEntry extends LogEntry {
 	public String killedMob = null;
 	public int xp = 0;
 	
-	public CombatLogEntry(String s) {
+	private CombatLogEntry(String s) {
 		super("Combat", s);
-		parseMob();
 	}
 	
 	public boolean hasMob() {
@@ -49,29 +48,31 @@ public class CombatLogEntry extends LogEntry {
 	
 	private static Pattern SLAIN_MOB_PATTERN =
 		Pattern.compile("You have slain (.+)!");
-	
-	private void parseMob() {
+		
+	public static CombatLogEntry factory(jgm.gui.updaters.LogUpdater updater, String rawText) {
+		CombatLogEntry ret = new CombatLogEntry(rawText);
+		
 		Matcher m = KILLED_MOB_PATTERN.matcher(rawText);
 		
 		if (m.matches()) {
-			killedMob = m.group(1);
+			ret.killedMob = m.group(1);
 			
 			try {
-				xp = Integer.parseInt(m.group(2));
+				ret.xp = Integer.parseInt(m.group(2));
 			} catch (NumberFormatException e) {}
 		} else {
 			// only check the slain pattern if at the 
-			// level cap
-			// ...i would if there were a simple way to
-			// doo the following:
-//			if (StatusUpdater.instance.s.atLevelCap()) {
+			// level cap to prevent duplicates
+			if (updater.sm.status.s.atLevelCap()) {
 				m = SLAIN_MOB_PATTERN.matcher(rawText);
 				
 				if (m.matches()) {
-					killedMob = m.group(1);
-					xp = 0;
+					ret.killedMob = m.group(1);
+					ret.xp = 0;
 				}
-//			}
+			}
 		}
+		
+		return ret;
 	}
 }

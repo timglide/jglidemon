@@ -111,7 +111,7 @@ public class Connector {
 					}
 				}
 			}
-		}, "Connector.connect");
+		}, sm.get("name") + ":Connector.connect");
 		
 		log.fine("Attempting to connect...");
 		t.start();
@@ -165,7 +165,7 @@ public class Connector {
 					}
 				}
 			}
-		}, "Connector.disconnect");
+		}, sm.get("name") + ":Connector.disconnect");
 		
 		log.fine("Attempting to disconnect...");
 		t.start();
@@ -247,7 +247,7 @@ public class Connector {
 				}
 				Connector.this.connect();
 			}
-		}, "AutoReconnector");
+		}, sm.get("name") + ":AutoReconnector");
 		reconnector.start();
 	}
 	

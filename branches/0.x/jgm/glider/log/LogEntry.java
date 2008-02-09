@@ -20,6 +20,8 @@
  */
 package jgm.glider.log;
 
+import jgm.gui.updaters.LogUpdater;
+
 import java.util.*;
 import java.util.regex.*;
 import java.util.logging.*;
@@ -119,8 +121,8 @@ public class LogEntry implements Comparable<LogEntry> {
 	
 	private static Calendar cal = new GregorianCalendar();
 	
-	public static LogEntry factory(String s) {
-		return factory(s, LogFile.None);
+	public static LogEntry factory(LogUpdater updater, String s) {
+		return factory(updater, s, LogFile.None);
 	}
 	
 	/**
@@ -131,7 +133,7 @@ public class LogEntry implements Comparable<LogEntry> {
 	 *                (it's format slightly different than from the telnet)
 	 * @return The appropriate subclass of LogEntry
 	 */
-	public static LogEntry factory(String s, LogFile logFile) {
+	public static LogEntry factory(LogUpdater updater, String s, LogFile logFile) {
 		Date overrideDate = null;
 		Matcher m = null;
 		
@@ -229,7 +231,8 @@ public class LogEntry implements Comparable<LogEntry> {
 		} else if (type.equals("ChatRaw")) {
 			ret = new RawChatLogEntry(rawText);
 		} else if (type.equals("Combat")) {
-			ret = new CombatLogEntry(rawText);
+			ret = CombatLogEntry.factory(updater, rawText);
+//			ret = new CombatLogEntry(rawText);
 		} else if (type.equals("Chat")) {
 			ret = ChatLogEntry.factory(rawText);
 		} else {

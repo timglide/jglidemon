@@ -53,7 +53,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	
 	private Thread thread;
 	
-	jgm.ServerManager sm;
+	public final jgm.ServerManager sm;
 	
 	public LogUpdater(jgm.ServerManager sm, TabsPane t) {
 		this.sm = sm;
@@ -200,7 +200,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 //		line = m.replaceAll("$1");
 //		line = org.apache.commons.lang.StringEscapeUtils.unescapeHtml(line);
 		
-		LogEntry e = LogEntry.factory(line, logFile);
+		LogEntry e = LogEntry.factory(this, line, logFile);
 
 		if (e == null) {
 			if (!logFile.equals(LogFile.None)) {
