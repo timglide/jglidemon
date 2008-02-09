@@ -99,7 +99,11 @@ public class Config {
 				String cur = i.next();
 				
 				for (String s : qi.getAllPropertyNames(cur)) {
-					p.setProperty(cur + "." + s, qi.getStringProperty(cur, s));
+					String newKey = cur + "." + s;
+					String value = qi.getStringProperty(cur, s);
+					
+					log.info(String.format("  %s=%s", newKey, value));
+					p.setProperty(newKey, value);
 				}
 			}
 			
@@ -117,12 +121,11 @@ public class Config {
 			}
 		}
 		
-		Object[] keys = p.keySet().toArray();
-		for (Object o : keys) {
-			String key = o.toString();
+		String[] keys = p.keySet().toArray(new String[] {});
+		for (String key : keys) {
 			for (String oldKey : OLD_KEYS) {
 				if (key.startsWith(oldKey)) {
-					log.finest("Moving " + key + " to servers.0." + key);
+					log.info("Moving " + key + " to servers.0." + key);
 					set("servers.0." + key, get(key));
 					p.remove(key);
 				}
@@ -133,7 +136,7 @@ public class Config {
 	}
 	
 	public boolean has(String propertyName) {
-		return p.has(propertyName);
+		return p.getProperty(propertyName) != null;
 	}
 	
 	public int getInt(String propertyName) {
