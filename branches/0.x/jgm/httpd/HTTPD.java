@@ -145,7 +145,7 @@ public class HTTPD implements Runnable
 	private volatile boolean run_thread = true;
 	
 	protected Map<String, Handler> handlers = new HashMap<String, Handler>();
-	public ServerManager sm;
+	public final ServerManager sm;
 	
 	// ==================================================
 	// Socket & server code

@@ -30,7 +30,6 @@ import java.io.*;
 import java.util.Properties;
 
 import jgm.JGlideMon;
-import jgm.gui.updaters.StatusUpdater;
 
 public class AjaxHandler extends Handler {
 	public static final String DEF_ERROR_XML = 
@@ -64,7 +63,9 @@ public class AjaxHandler extends Handler {
 	private String createXML(String uri, String method, Properties headers, Properties params) {
 		Document xml = null;
 		DocumentBuilderFactory factory = 
-		DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory.newInstance();
+		
+		final jgm.ServerManager sm = httpd.sm;
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -109,8 +110,6 @@ public class AjaxHandler extends Handler {
 			
 			if (uri.equals("command")) {
 				final String cmd = params.getProperty("command");
-				
-				final jgm.ServerManager sm = httpd.sm;
 				
 				if (cmd != null) {
 					Thread t = null;
@@ -174,8 +173,8 @@ public class AjaxHandler extends Handler {
 				// glider info
 				Element glider = CE(xml, "glider");
 				
-				if (connected && StatusUpdater.instance != null) {
-					jgm.glider.Status s = StatusUpdater.instance.s;
+				if (connected && sm.status != null) {
+					jgm.glider.Status s = sm.status.s;
 					
 					_(xml, glider, "version", s.version);
 					_(xml, glider, "attached", Boolean.toString(s.attached));

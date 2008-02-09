@@ -33,8 +33,6 @@ public class StatusUpdater extends Observable
 	implements Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(StatusUpdater.class.getName());
 	
-	public static StatusUpdater instance = null;
-	
 	public Status last = new Status();
 	public Status s = new Status();
 
@@ -47,7 +45,6 @@ public class StatusUpdater extends Observable
 	
 	public StatusUpdater(jgm.ServerManager sm) {
 		this.sm = sm;
-		instance = this;
 		conn = new Conn(sm);
 		cfg = jgm.Config.getInstance();
 	}

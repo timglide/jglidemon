@@ -22,8 +22,6 @@ package jgm.glider.log;
 
 import java.util.regex.*;
 
-import jgm.gui.updaters.StatusUpdater;
-
 // nothing special
 public class CombatLogEntry extends LogEntry {
 	public String killedMob = null;
@@ -64,15 +62,16 @@ public class CombatLogEntry extends LogEntry {
 		} else {
 			// only check the slain pattern if at the 
 			// level cap
-			
-			if (StatusUpdater.instance.s.atLevelCap()) {
+			// ...i would if there were a simple way to
+			// doo the following:
+//			if (StatusUpdater.instance.s.atLevelCap()) {
 				m = SLAIN_MOB_PATTERN.matcher(rawText);
 				
 				if (m.matches()) {
 					killedMob = m.group(1);
 					xp = 0;
 				}
-			}
+//			}
 		}
 	}
 }

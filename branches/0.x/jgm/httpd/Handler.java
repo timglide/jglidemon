@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public abstract class Handler {
 	protected static Logger log = Logger.getLogger(Handler.class.getName());
 	
-	protected HTTPD httpd;
+	protected final HTTPD httpd;
 	
 	public Handler(HTTPD httpd) {
 		this.httpd = httpd;
