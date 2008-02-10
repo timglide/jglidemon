@@ -596,10 +596,26 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			jgm.JGlideMon.debug = debug.isSelected();
 			
 			// this deletes the current log
-			jgm.util.Log.reloadConfig();
+			jgm.logging.Log.reloadConfig();
 		}
 		
-		gui.sm.set("name", serverName.getText());
+		String newName = serverName.getText().trim();
+		if (!gui.sm.name.equals(newName)) {
+			if (jgm.ServerManager.contains(newName)) {
+				JOptionPane.showMessageDialog(this,
+					"A server named \"" + newName + "\" already exists.\n" +
+					"Please choose a different name.",
+					"Error", JOptionPane.ERROR_MESSAGE);
+				
+				tabs.setSelectedIndex(1);
+				serverName.selectAll();
+				serverName.requestFocusInWindow();
+				
+				return;
+			} else {
+				gui.sm.set("name", serverName.getText());
+			}
+		}
 		
 		log.finest(String.format("Old server: %s:%s = %s",
 			gui.sm.host, gui.sm.port, gui.sm.password));

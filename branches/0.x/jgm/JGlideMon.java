@@ -21,7 +21,9 @@
 package jgm;
 
 import java.util.*;
+import java.util.logging.*;
 
+import jgm.logging.Log;
 import jgm.util.*;
 
 // this line edited so the svn revision gets updated
@@ -44,7 +46,7 @@ public class JGlideMon {
 	public static JGlideMon instance;
 	public static Config        cfg;
 	
-	public static List<ServerManager> managers = null;
+	public static Set<ServerManager> managers = null;
 	
 	public JGlideMon() {
 		instance = this;
@@ -78,10 +80,12 @@ public class JGlideMon {
 		boolean atLeastOneRunning = false;
 		
 		// resume all the servers
-		for (ServerManager sm : managers) {
-			if (sm.getBool("enabled")) {
-				atLeastOneRunning = true;
-				ServerManager.resumeServer(sm);
+		synchronized (managers) {
+			for (ServerManager sm : managers) {
+				if (sm.getBool("enabled")) {
+					atLeastOneRunning = true;
+					ServerManager.resumeServer(sm);
+				}
 			}
 		}
 		
@@ -92,7 +96,7 @@ public class JGlideMon {
 		
 		// if none are running force the first to resume
 		if (!atLeastOneRunning) {
-			ServerManager sm = managers.get(0);
+			ServerManager sm = managers.iterator().next();
 			sm.set("enabled", true);
 			ServerManager.resumeServer(sm);
 		}
@@ -103,9 +107,11 @@ public class JGlideMon {
 	}
 
 	public void destroy() {
-		for (ServerManager sm : managers) {
-			if (sm.state == ServerManager.State.ACTIVE)
-				sm.destroy();
+		synchronized (managers) {
+			for (ServerManager sm : managers) {
+				if (sm.state == ServerManager.State.ACTIVE)
+					sm.destroy();
+			}
 		}
 		
 		Speech.destroy();
@@ -118,7 +124,12 @@ public class JGlideMon {
 		System.exit(0);
 	}
 	
-	public static void main(String[] args) {
-		new JGlideMon();
+	public static void main(String[] args) throws Throwable {
+		try {
+			new JGlideMon();
+		} catch (Throwable t) {
+			Logger.getLogger(JGlideMon.class.getName()).log(Level.WARNING, "Unhandled exception thrown", t);
+//			throw t;
+		}
 	}
 }

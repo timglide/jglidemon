@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  * -----LICENSE END-----
  */
-package jgm.util;
+package jgm.logging;
 
 import java.io.*;
 import java.util.logging.*;

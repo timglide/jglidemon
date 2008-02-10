@@ -429,20 +429,23 @@ public class GUI
 		
 		JMenuItem item = null;
 		
-		for (final ServerManager sm : ServerManager.managers) {
-			item = new JMenuItem(sm.name, sm.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
-			menu.serversSub.add(item);
-			
-			item.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (!sm.getBool("enabled")) {
-						sm.resume();
+		synchronized (ServerManager.managers) {
+			for (final ServerManager sm : ServerManager.managers) {
+				item = new JMenuItem(sm.name,
+						sm.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
+				menu.serversSub.add(item);
+
+				item.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if (!sm.getBool("enabled")) {
+							sm.resume();
+						}
+
+						sm.toFront();
 					}
-					
-					sm.toFront();
-				}
-			});
-		}
+				});
+			}
+		}		
 	}
 	
 	public void setIcon() {
@@ -512,10 +515,12 @@ public class GUI
 		} else if (source == menu.disconnectServers) {
 			ServerManager.disconnectAll();
 		} else if (source == menu.activateServers) {
-			for (ServerManager sm : ServerManager.managers.toArray(new ServerManager[] {})) {
-				if (!sm.getBool("enabled")) {
-					sm.resume();
-					sm.toFront();
+			synchronized (ServerManager.managers) {
+				for (ServerManager sm : ServerManager.managers) {
+					if (!sm.getBool("enabled")) {
+						sm.resume();
+						sm.toFront();
+					}
 				}
 			}
 		} else if (source == menu.config) {

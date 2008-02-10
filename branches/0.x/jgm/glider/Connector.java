@@ -132,6 +132,8 @@ public class Connector {
 	private Thread disconnectImpl(final boolean interactive) {
 		if (state != State.CONNECTED) return null;
 		
+		cancelReconnect();
+		
 		state = State.DISCONNECTING;
 		
 		Thread t = new Thread(new Runnable() {

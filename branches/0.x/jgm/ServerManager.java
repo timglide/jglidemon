@@ -24,7 +24,7 @@ import jgm.util.Properties;
  * @author Tim
  * @since 0.15
  */
-public class ServerManager {	
+public final class ServerManager implements Comparable<ServerManager> {	
 	static Logger log = Logger.getLogger(ServerManager.class.getName());
 	
 	static public Config cfg = Config.c;
@@ -54,8 +54,9 @@ public class ServerManager {
 		}
 	}
 	
-	public static List<ServerManager> managers =
-		new Vector<ServerManager>();
+	// TreeSet to keep them ordered by name
+	public static Set<ServerManager> managers =
+		Collections.synchronizedSortedSet(new TreeSet<ServerManager>());
 	
 	public static void loadServers() {
 		for (int i = 0; ; i++) {
@@ -70,8 +71,14 @@ public class ServerManager {
 						p.set(key.substring(needle.length()), cfg.get(key));
 					}
 				}
-								
-				managers.add(new ServerManager(p));
+				
+				ServerManager sm = new ServerManager(p);
+				
+				if (managers.contains(sm)) {
+					log.warning("A server named \"" + sm.name + "\" already exists!");
+				} else {
+					managers.add(new ServerManager(p));
+				}
 			} else
 				break;
 		}
@@ -86,23 +93,26 @@ public class ServerManager {
 			}
 		}
 		
-		for (int i = 0; i < managers.size(); i++) {
-			ServerManager sm = managers.get(i);
-			
-			log.finest("Saving config for \"" + sm.name + "\"");
-			
-			sm.set("name", sm.name);
-			sm.set("net.host", sm.host);
-			sm.set("net.port", Integer.toString(sm.port));
-			sm.set("net.password", sm.password);
-			
-			for (Object o : sm.p.keySet().toArray()) {
-				String key = o.toString();
-				String newKey = "servers." + i + "." + key;
+		synchronized (managers) {
+			int i = 0;
+			for (ServerManager sm : managers) {			
+				log.finest("Saving config for \"" + sm.name + "\"");
 				
-				log.finest(String.format("  %s=%s", newKey, sm.get(key)));
+				sm.set("name", sm.name);
+				sm.set("net.host", sm.host);
+				sm.set("net.port", Integer.toString(sm.port));
+				sm.set("net.password", sm.password);
 				
-				cfg.set(newKey, sm.get(key));
+				for (Object o : sm.p.keySet().toArray()) {
+					String key = o.toString();
+					String newKey = "servers." + i + "." + key;
+					
+					log.finest(String.format("  %s=%s", newKey, sm.get(key)));
+					
+					cfg.set(newKey, sm.get(key));
+				}
+				
+				i++;
 			}
 		}
 	}
@@ -154,26 +164,41 @@ public class ServerManager {
 	public static int getActiveCount() {
 		int ret = 0;
 		
-		for (ServerManager sm : managers) {
-			if (sm.state == State.ACTIVE)
-				ret++;
-		}
-		
+		synchronized (managers) {
+			for (ServerManager sm : managers) {
+				if (sm.state == State.ACTIVE)
+					ret++;
+			}
+		}		
 		return ret;
 	}
 	
+	public static boolean contains(String name) {
+		synchronized (managers) {
+			for (ServerManager sm : managers) {
+				if (sm.name.equals(name))
+					return true;
+			}
+		}		
+		return false;
+	}
+	
 	public static void connectAll() {
-		for (ServerManager sm : managers) {
-			if (sm.state == State.ACTIVE)
-				sm.connector.connect(true);
-		}
+		synchronized (managers) {
+			for (ServerManager sm : managers) {
+				if (sm.state == State.ACTIVE)
+					sm.connector.connect(true);
+			}
+		}		
 	}
 	
 	public static void disconnectAll() {
-		for (ServerManager sm : managers) {
-			if (sm.state == State.ACTIVE)
-				sm.connector.disconnect(true);
-		}
+		synchronized (managers) {
+			for (ServerManager sm : managers) {
+				if (sm.state == State.ACTIVE)
+					sm.connector.disconnect(true);
+			}
+		}		
 	}
 	
 	public enum State {
@@ -380,7 +405,30 @@ public class ServerManager {
 		System.gc();
 	}
 	
+	/////////////
+	// Comparable
 	
+	public boolean equals(Object obj) {
+		if (obj == this) return true;
+		
+		if (obj instanceof String)
+			return ((String) obj).equals(name);
+		
+		if (obj instanceof ServerManager) {
+			ServerManager sm = (ServerManager) obj;
+			return
+				sm.name.equals(this.name) &&
+				sm.host.equals(this.host) &&
+				sm.port == this.port &&
+				sm.password == this.password;
+		}
+		
+		return false;
+	}
+	
+	public int compareTo(ServerManager sm) {
+		return this.name.compareTo(sm.name);
+	}
 	
 	///////////
 	// Listener
