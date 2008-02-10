@@ -36,7 +36,9 @@ public class Connector {
 	public volatile State state = State.DISCONNECTED;
 	
 	ServerManager sm;
-	Thread reconnector;
+	Thread connect = null;
+	Thread disconnect = null;
+	Thread reconnector = null;
 	int reconnectTries = Integer.MIN_VALUE;
 	
 	Vector<ConnectionListener> listeners
@@ -69,7 +71,7 @@ public class Connector {
 		
 		state = State.CONNECTING;
 		
-		Thread t = new Thread(new Runnable() {
+		connect = new Thread(new Runnable() {
 			public void run() {
 				if (interactive) cancelReconnect();
 				
@@ -114,7 +116,7 @@ public class Connector {
 		}, sm.get("name") + ":Connector.connect");
 		
 		log.fine("Attempting to connect...");
-		t.start();
+		connect.start();
 	}
 
 	public Thread disconnect() {
@@ -136,7 +138,7 @@ public class Connector {
 		
 		state = State.DISCONNECTING;
 		
-		Thread t = new Thread(new Runnable() {
+		disconnect = new Thread(new Runnable() {
 			public void run() {
 				fireDisconnecting();
 
@@ -170,9 +172,9 @@ public class Connector {
 		}, sm.get("name") + ":Connector.disconnect");
 		
 		log.fine("Attempting to disconnect...");
-		t.start();
+		disconnect.start();
 		
-		return t;
+		return disconnect;
 	}
 	
 	public void addListener(ConnectionListener cl) {

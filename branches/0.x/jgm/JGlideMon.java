@@ -124,12 +124,15 @@ public class JGlideMon {
 		System.exit(0);
 	}
 	
-	public static void main(String[] args) throws Throwable {
-		try {
-			new JGlideMon();
-		} catch (Throwable t) {
-			Logger.getLogger(JGlideMon.class.getName()).log(Level.WARNING, "Unhandled exception thrown", t);
-//			throw t;
-		}
+	static final Logger log = Logger.getLogger(JGlideMon.class.getName());
+	
+	public static void main(String[] args) {
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			public void uncaughtException(Thread thread, Throwable thrown) {
+				log.log(Level.WARNING, "Exception in thread \"" + thread.getName() + "\"", thrown);
+			}
+		});
+		
+		new JGlideMon();
 	}
 }

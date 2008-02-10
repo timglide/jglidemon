@@ -51,23 +51,24 @@ public class GliderLogEntry extends LogEntry {
 					new Sound(Audible.Type.FOLLOW, jgm.util.Sound.File.BEING_FOLLOWED).play(true);
 				}
 			}
-		} else {
-			if (s.contains("Died while gliding")) {
-				isAlert = true;
-				type = Type.DIED;
-				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
-			} else if (s.contains("Exception")) {
-				if (!s.contains("being used by another process")) { // so annoying...
-					isAlert = true;
-					type = Type.EXCEPTION;
-					new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
-				}
-			} else if (s.contains("Stuck too many times")) {
-				isAlert = true;
-				type = Type.STUCK;
-				new Sound(Audible.Type.STUCK, jgm.util.Sound.File.STOP).play(true);
-			}
 		}
+		
+		if (s.contains("Died while gliding")) {
+			isAlert = true;
+			type = Type.DIED;
+			new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
+		} else if (s.contains("Exception")) {
+			if (!s.contains("being used by another process")) { // so annoying...
+				isAlert = true;
+				type = Type.EXCEPTION;
+				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
+			}
+		} else if (s.contains("Stuck too many times")) {
+			isAlert = true;
+			type = Type.STUCK;
+			new Sound(Audible.Type.STUCK, jgm.util.Sound.File.STOP).play(true);
+		}
+		
 	}
 	
 	public boolean isAlert() {
