@@ -32,7 +32,6 @@ import jgm.gui.panes.MobInfoPane;
 import jgm.gui.panes.TabsPane;
 import jgm.util.Util;
 
-import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -120,8 +119,7 @@ public class GUI
 		JMenuItem activateServers;
 		JMenuItem connectServers;
 		JMenuItem disconnectServers;
-		java.util.List<JMenuItem> serverItems =
-			new Vector<JMenuItem>();
+		JMenu     serversSub;
 		
 		JMenu     help;
 		JMenuItem debug;
@@ -172,7 +170,7 @@ public class GUI
 	
 	public GUI(final ServerManager sm) {
 		this.sm = sm;
-		
+
 		frame = new JFrame(BASE_TITLE);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
@@ -358,11 +356,15 @@ public class GUI
 		
 		menu.addServer = doMenuItem("Add New Server...", KeyEvent.VK_N, menu.servers, this);
 		menu.removeServer = doMenuItem("Remove Current Server", KeyEvent.VK_R, menu.servers, this);
-				
+		menu.servers.addSeparator();
 		menu.connectServers = doMenuItem("Connect All Servers", KeyEvent.VK_C, menu.servers, this);
 		menu.disconnectServers = doMenuItem("Disconnect All Servers", KeyEvent.VK_D, menu.servers, this);
-		
+		menu.servers.addSeparator();
 		menu.activateServers = doMenuItem("Activate Inactive Servers", KeyEvent.VK_A, menu.servers, this);
+		menu.servers.addSeparator();
+		menu.serversSub = new JMenu("Activate Server...");
+		menu.serversSub.setMnemonic(KeyEvent.VK_V);
+		menu.servers.add(menu.serversSub);
 		// other items dynamically allocated
 		
 		
@@ -423,24 +425,13 @@ public class GUI
 	}
 	
 	public void doServersMenu() {
-		menu.servers.removeAll();
-		menu.serverItems.clear();
-		
-		menu.servers.add(menu.addServer);
-		menu.servers.add(menu.removeServer);
-		menu.servers.addSeparator();
-		menu.servers.add(menu.connectServers);
-		menu.servers.add(menu.disconnectServers);
-		menu.servers.addSeparator();
-		menu.servers.add(menu.activateServers);
-		menu.servers.addSeparator();
+		menu.serversSub.removeAll();
 		
 		JMenuItem item = null;
 		
 		for (final ServerManager sm : ServerManager.managers) {
 			item = new JMenuItem(sm.name, sm.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
-			menu.serverItems.add(item);
-			menu.servers.add(item);
+			menu.serversSub.add(item);
 			
 			item.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {

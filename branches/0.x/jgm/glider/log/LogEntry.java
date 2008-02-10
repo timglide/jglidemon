@@ -208,6 +208,7 @@ public class LogEntry implements Comparable<LogEntry> {
 			rawText = parts[1];
 		} catch (Throwable t) {
 			log.log(Level.WARNING, "Strange error parsing log entry", t);
+			log.warning("Raw line: " + s);
 			type = "UNKNOWN";
 			rawText = t.getClass().getName() + ": " + t.getMessage();
 		}
