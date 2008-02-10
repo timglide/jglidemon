@@ -20,11 +20,13 @@
  */
 package jgm;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+import javax.swing.UIManager;
 
 import jgm.logging.Log;
-import jgm.util.*;
+import jgm.gui.Splash;
 
 // this line edited so the svn revision gets updated
 
@@ -46,14 +48,14 @@ public class JGlideMon {
 	public static JGlideMon instance;
 	public static Config        cfg;
 	
-	public static Set<ServerManager> managers = null;
-	
 	public JGlideMon() {
 		instance = this;
 		init();
 	}
 	
 	private void init() {
+		splash.setStatus("Loading Settings...");
+		
 		// initialize logger
 		Log.reloadConfig();
 		cfg = new Config();
@@ -65,24 +67,31 @@ public class JGlideMon {
 		Log.reloadConfig();
 		
 		try {
+			splash.setStatus("Loading Profiles...");
 			jgm.glider.Profile.Cache.loadProfiles();
 		} catch (Throwable e) {} // doesn't matter here 
 
+		
+		splash.setStatus("Initializing Sound Resources...");
+		
 		// put this here so that the tts config options will
 		// be enabled if tts is available and JGM has yet to
 		// be configured for the first time
-		Sound.init();
-		Speech.init();
+		jgm.util.Sound.init();
+		jgm.util.Speech.init();
+		
+		splash.setStatus("Initializing Server Managers...");
 		
 		ServerManager.loadServers();
-		managers = ServerManager.managers;
 				
 		boolean atLeastOneRunning = false;
 		
 		// resume all the servers
-		synchronized (managers) {
-			for (ServerManager sm : managers) {
+		synchronized (ServerManager.managers) {
+			for (ServerManager sm : ServerManager.managers) {
 				if (sm.getBool("enabled")) {
+					splash.setStatus("Initializing \"" + sm.name + "\"...");
+					
 					atLeastOneRunning = true;
 					ServerManager.resumeServer(sm);
 				}
@@ -90,41 +99,75 @@ public class JGlideMon {
 		}
 		
 		// add a server if there are none
-		if (managers.size() == 0) {
+		if (ServerManager.managers.size() == 0) {
 			ServerManager.addServer();
 		}
 		
 		// if none are running force the first to resume
 		if (!atLeastOneRunning) {
-			ServerManager sm = managers.iterator().next();
+			ServerManager sm = ServerManager.managers.iterator().next();
+			
+			splash.setStatus("Initializing \"" + sm.name + "\"...");
+			
 			sm.set("enabled", true);
 			ServerManager.resumeServer(sm);
 		}
 		
+		splash.setStatus("JGlideMon Loaded Successfully!");
+		
 		// not critical to get these loaded before the gui shows
-		jgm.wow.Item.Cache.loadIcons();
-		jgm.wow.Item.Cache.loadItems();
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				jgm.wow.Item.Cache.loadIcons();
+				jgm.wow.Item.Cache.loadItems();	
+			}
+		});
+		
+		t.start();
+		
+		splash.setVisible(false);
+		splash.dispose();
+		splash = null;
+		
+		try {
+			Thread.sleep(3000); // yeah yeah...
+		} catch (InterruptedException e) {}
 	}
 
 	public void destroy() {
-		synchronized (managers) {
-			for (ServerManager sm : managers) {
-				if (sm.state == ServerManager.State.ACTIVE)
-					sm.destroy();
+		splash = new Splash("Shutting Down JGlideMon...");
+		
+		new Thread(new Runnable() {
+			public void run() {
+				// so it won't try to say disconnected
+				jgm.util.Speech.destroy();
+				
+				synchronized (ServerManager.managers) {
+					for (ServerManager sm : ServerManager.managers) {
+						if (sm.state == ServerManager.State.ACTIVE) {
+							splash.setStatus("Shutting Down \"" + sm.name + "\"...");
+							sm.destroy();
+						}
+					}
+				}
+				
+				splash.setStatus("Caching Icons and Items...");
+				jgm.wow.Item.Cache.saveIcons();
+				jgm.wow.Item.Cache.saveItems();
+				
+				splash.setStatus("Saving Settings...");
+				ServerManager.saveConfig();
+				jgm.Config.write();
+				
+				splash.dispose();
+				
+				System.exit(0);
 			}
-		}
-		
-		Speech.destroy();
-		jgm.wow.Item.Cache.saveIcons();
-		jgm.wow.Item.Cache.saveItems();
-		
-		ServerManager.saveConfig();
-		jgm.Config.write();
-		
-		System.exit(0);
+		}, "JGlideMon.destroy").start();
 	}
 	
 	static final Logger log = Logger.getLogger(JGlideMon.class.getName());
+	public static Splash splash;
 	
 	public static void main(String[] args) {
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
@@ -133,6 +176,20 @@ public class JGlideMon {
 			}
 		});
 		
-		new JGlideMon();
+		try {
+			// Set System L&F
+			UIManager.setLookAndFeel(
+				UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.err.println("Coultn'd set L&F: " + e.getMessage());
+		}
+		
+		splash = new Splash("Loading JGlideMon...");
+		
+		new Thread(new Runnable() {
+			public void run() {
+				new JGlideMon();
+			}
+		}, "JGlideMon.main").start();
 	}
 }

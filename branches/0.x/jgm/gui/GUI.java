@@ -244,14 +244,6 @@ public class GUI
 				}
 			}
 		});
-		
-		try {
-			// Set System L&F
-			UIManager.setLookAndFeel(
-				UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			System.err.println("Coultn'd set L&F: " + e.getMessage());
-		}
 
 		frame.setLayout(new BorderLayout());
 		
@@ -430,9 +422,15 @@ public class GUI
 		JMenuItem item = null;
 		
 		synchronized (ServerManager.managers) {
+			int i = KeyEvent.VK_1;
+			
 			for (final ServerManager sm : ServerManager.managers) {
 				item = new JMenuItem(sm.name,
 						sm.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
+				
+				if (i <= KeyEvent.VK_9)
+					item.setAccelerator(KeyStroke.getKeyStroke(i++, ActionEvent.CTRL_MASK | ActionEvent.ALT_MASK));
+				
 				menu.serversSub.add(item);
 
 				item.addActionListener(new ActionListener() {

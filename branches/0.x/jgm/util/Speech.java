@@ -113,6 +113,8 @@ public class Speech implements Runnable {
 			instance.thread.interrupt();
 		
 		voice.deallocate();
+		
+		voice = null;
 	}
 	
 	/**

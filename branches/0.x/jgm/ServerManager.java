@@ -148,6 +148,7 @@ public final class ServerManager implements Comparable<ServerManager> {
 		
 		sm.set("enabled", true);
 		sm.init();
+		sm.toFront();
 		
 		fireServerResumed(sm);
 	}
