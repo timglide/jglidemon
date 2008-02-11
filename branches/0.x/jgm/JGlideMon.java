@@ -127,7 +127,7 @@ public class JGlideMon {
 		t.start();
 		
 		try {
-			Thread.sleep(2000); // yeah yeah, but it's reassuring to see that it was successful...
+			Thread.sleep(1000); // yeah yeah, but it's reassuring to see that it was successful...
 		} catch (InterruptedException e) {}
 
 		splash.setVisible(false);

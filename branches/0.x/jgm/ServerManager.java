@@ -153,7 +153,7 @@ public final class ServerManager implements Comparable<ServerManager> {
 		fireServerResumed(sm);
 	}
 	
-	public static void removeServer(ServerManager sm) {			
+	public static void removeServer(ServerManager sm) {
 		managers.remove(sm);
 		sm.destroy();
 		
@@ -304,10 +304,29 @@ public final class ServerManager implements Comparable<ServerManager> {
 		
 		gui = new GUI(this);
 
+		keysConn = new Conn(ServerManager.this);
+		connector.addListener(new ConnectionAdapter() {
+			public Conn getConn() {
+				return keysConn;
+			}
+		});
+		logUpdater = new LogUpdater(ServerManager.this, gui.tabsPane);
+		connector.addListener(logUpdater);
+		ssUpdater  = new SSUpdater(ServerManager.this, gui.tabsPane.screenshotTab);
+		connector.addListener(ssUpdater);
+		status     = new StatusUpdater(ServerManager.this);
+		connector.addListener(status);
+		status.addObserver(gui);
+		status.addObserver(ssUpdater);
+		
+		chartUpdater = new PlayerChartUpdater(ServerManager.this);
+		
+		gui.makeVisible();
+		
 		// create a seperate thread to connect in case it
 		// takes a while to connect it won't slow the gui
-//		Runnable r = new Runnable() {
-//			public void run() {
+		Runnable r = new Runnable() {
+			public void run() {
 				if (firstRun || !jgm.Config.fileExists()) {					
 					JOptionPane.showMessageDialog(gui.frame,
 						"Please enter the remote host, port, and password.\n" +
@@ -321,32 +340,13 @@ public final class ServerManager implements Comparable<ServerManager> {
 					gui.showConfig(1);
 				}
 				
-				keysConn = new Conn(ServerManager.this);
-				connector.addListener(new ConnectionAdapter() {
-					public Conn getConn() {
-						return keysConn;
-					}
-				});
-				logUpdater = new LogUpdater(ServerManager.this, gui.tabsPane);
-				connector.addListener(logUpdater);
-				ssUpdater  = new SSUpdater(ServerManager.this, gui.tabsPane.screenshotTab);
-				connector.addListener(ssUpdater);
-				status     = new StatusUpdater(ServerManager.this);
-				connector.addListener(status);
-				status.addObserver(gui);
-				status.addObserver(ssUpdater);
-				
-				chartUpdater = new PlayerChartUpdater(ServerManager.this);
-				
-				connector.connect();
-				gui.makeVisible();
-				
+				connector.connect();				
 				firstRun = false;
-//			}
-//		};
-//
-//		Thread t = new Thread(r, "ServerManager.init");
-//		t.start();
+			}
+		};
+
+		Thread t = new Thread(r, this.name + ":ServerManager.init");
+		t.start();
 		
 		if (p.getBool("web.enabled")) {
 			try {
