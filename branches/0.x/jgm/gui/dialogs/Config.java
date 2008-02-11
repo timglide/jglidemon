@@ -281,7 +281,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		net.add(new JLabel(), c);
 		c.weighty = 0.0;
 		
-		addTab("Network", net);
+		addTab("Server", net);
 		//p.add(net);
 		
 		

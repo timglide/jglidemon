@@ -203,6 +203,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			<manifest>
 				<attribute name="Main-Class" value="jgm.JGlideMon"/>
 				<attribute name="Class-Path" value="lib/speech/freetts.jar"/>
+				<attribute name="SplashScreen-Image" value="jgm/resources/images/splash.png"/>
 
 				<section name="jgm">
 					<attribute name="Specification-Title" value="${title}"/>

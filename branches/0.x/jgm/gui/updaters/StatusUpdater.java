@@ -63,7 +63,7 @@ public class StatusUpdater extends Observable
 	
 	public void onConnect() {
 		stop = false;
-		thread = new Thread(this, "StatusUpdater");
+		thread = new Thread(this, sm.name + ":StatusUpdater");
 		thread.start();
 	}
 	

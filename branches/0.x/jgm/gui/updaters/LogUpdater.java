@@ -85,7 +85,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	
 	public void onConnect() {
 		stop = false;
-		thread = new Thread(this, "LogUpdater");
+		thread = new Thread(this, sm.name + ":LogUpdater");
 		thread.start();
 	}
 	
@@ -269,12 +269,20 @@ public class LogUpdater implements Runnable, ConnectionListener {
 					.warnIfInactive("Glider", e.getText());
 				
 				if (lastGliderException != null)
-					log.finer("Restarter check: " + (System.currentTimeMillis() - lastGliderException) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.exception.time")));
+					log.finer("Restarter check: " + (System.currentTimeMillis() - lastGliderException) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.exception.timeout")));
 				if (jgm.Config.getInstance().getBool("restarter.exception.enabled")
 					&& lastGliderException != null
-					&& System.currentTimeMillis() - lastGliderException <= 1000 * jgm.Config.getInstance().getInt("restarter.exception.time")) {
-					sm.gui.ctrlPane.start.doClick();
-					log.info("Restarting glide after an exception");
+					&& System.currentTimeMillis() - lastGliderException <= 1000 * jgm.Config.getInstance().getInt("restarter.exception.timeout")) {
+
+					java.util.Timer timer = new java.util.Timer(sm.name + ":Restarter");
+					timer.schedule(new java.util.TimerTask() {			
+						public void run() {
+							log.info("Restarting glide after an exception");
+							sm.gui.ctrlPane.start.doClick();
+
+							this.cancel();
+						}
+					}, 5000);
 				}
 			}
 		} else if (e instanceof ChatLogEntry) {

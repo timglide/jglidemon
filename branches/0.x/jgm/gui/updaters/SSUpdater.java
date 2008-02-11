@@ -65,7 +65,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 	public void onConnect() {
 		sentSettings = false;
 		stop = false;
-		thread = new Thread(this, "SSUpdater");
+		thread = new Thread(this, sm.name + ":SSUpdater");
 		thread.start();
 	}
 	
@@ -102,7 +102,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		/* This timer will interrupt the screenshot updater
 		 * in X seconds if it fails to update the screenshot.
 		 */
-		java.util.Timer timer = new java.util.Timer("SSWatcher");
+		java.util.Timer timer = new java.util.Timer(sm.name + ":SSWatcher");
 		timer.schedule(new java.util.TimerTask() {
 			final Thread t = Thread.currentThread();
 			

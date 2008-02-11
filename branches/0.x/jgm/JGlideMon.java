@@ -71,13 +71,14 @@ public class JGlideMon {
 			jgm.glider.Profile.Cache.loadProfiles();
 		} catch (Throwable e) {} // doesn't matter here 
 
-		
-		splash.setStatus("Initializing Sound Resources...");
-		
+				
 		// put this here so that the tts config options will
 		// be enabled if tts is available and JGM has yet to
 		// be configured for the first time
+		splash.setStatus("Initializing Sound Resources...");
 		jgm.util.Sound.init();
+
+		splash.setStatus("Initializing Text-to-Speech Resources...");
 		jgm.util.Speech.init();
 		
 		splash.setStatus("Initializing Server Managers...");
@@ -90,7 +91,7 @@ public class JGlideMon {
 		synchronized (ServerManager.managers) {
 			for (ServerManager sm : ServerManager.managers) {
 				if (sm.getBool("enabled")) {
-					splash.setStatus("Initializing \"" + sm.name + "\"...");
+					splash.setStatus("Initializing Server Manager \"" + sm.name + "\"...");
 					
 					atLeastOneRunning = true;
 					ServerManager.resumeServer(sm);
@@ -107,7 +108,7 @@ public class JGlideMon {
 		if (!atLeastOneRunning) {
 			ServerManager sm = ServerManager.managers.iterator().next();
 			
-			splash.setStatus("Initializing \"" + sm.name + "\"...");
+			splash.setStatus("Initializing Server Manager \"" + sm.name + "\"...");
 			
 			sm.set("enabled", true);
 			ServerManager.resumeServer(sm);
@@ -121,17 +122,17 @@ public class JGlideMon {
 				jgm.wow.Item.Cache.loadIcons();
 				jgm.wow.Item.Cache.loadItems();	
 			}
-		});
+		}, "JGlideMon.loadCache");
 		
 		t.start();
 		
+		try {
+			Thread.sleep(2000); // yeah yeah, but it's reassuring to see that it was successful...
+		} catch (InterruptedException e) {}
+
 		splash.setVisible(false);
 		splash.dispose();
 		splash = null;
-		
-		try {
-			Thread.sleep(3000); // yeah yeah...
-		} catch (InterruptedException e) {}
 	}
 
 	public void destroy() {
@@ -145,7 +146,7 @@ public class JGlideMon {
 				synchronized (ServerManager.managers) {
 					for (ServerManager sm : ServerManager.managers) {
 						if (sm.state == ServerManager.State.ACTIVE) {
-							splash.setStatus("Shutting Down \"" + sm.name + "\"...");
+							splash.setStatus("Shutting Down Server Manager \"" + sm.name + "\"...");
 							sm.destroy();
 						}
 					}

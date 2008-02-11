@@ -29,18 +29,19 @@ public class OneLineFormatter extends Formatter {
 	static final SimpleDateFormat df =
 		new SimpleDateFormat("HH:mm:ss");
 	static final String fmt =
-		"[%s][%-7s] %s: %s" + System.getProperty("line.separator");
+		"[%s][%-7s][%s][%s]: %s" + System.getProperty("line.separator");
 	
 	Date dt = new Date();
 	
 	public String format(LogRecord r) {
 		StringBuilder sb = new StringBuilder();
 		dt.setTime(r.getMillis());
-		
+
 		sb.append(String.format(
 			fmt,
 			getDateFormat().format(dt),
 			r.getLevel().toString(),
+			Thread.currentThread().getName(),
 			r.getLoggerName(),
 			r.getMessage()
 		));	
