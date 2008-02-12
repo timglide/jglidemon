@@ -26,4 +26,5 @@ public interface ConnectionListener {
 	public void onConnect();
 	public void onDisconnecting();
 	public void onDisconnect();
+	public void onDestroy();
 }

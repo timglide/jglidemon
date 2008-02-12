@@ -49,7 +49,7 @@ public class StatusUpdater extends Observable
 		cfg = jgm.Config.getInstance();
 	}
 	
-	public void close() {
+	public void onDestroy() {
 		stop = true;
 		if (thread != null) thread.interrupt();
 		if (conn != null) conn.close();
@@ -86,7 +86,7 @@ public class StatusUpdater extends Observable
 				Thread.sleep(cfg.getLong("status.updateInterval"));
 			} catch (Exception e) {
 				log.fine("Stopping StatusUpdater, Ex: " + e.getMessage());
-				sm.connector.disconnect();
+				sm.connector.someoneDisconnected();
 				return;
 			}
 		}

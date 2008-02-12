@@ -39,6 +39,9 @@ public class Connector {
 	Thread connect = null;
 	Thread disconnect = null;
 	Thread reconnector = null;
+	
+	volatile boolean interactiveDisconnect = false;
+	
 	int reconnectTries = Integer.MIN_VALUE;
 	
 	Vector<ConnectionListener> listeners
@@ -139,7 +142,11 @@ public class Connector {
 		return disconnectImpl(interactive);
 	}
 	
-	private Thread disconnectImpl(final boolean interactive) {
+	public void someoneDisconnected() {
+			disconnect();
+	}
+	
+	private Thread disconnectImpl(final boolean interactive) {		
 		if (state != State.CONNECTED) return null;
 		
 		cancelReconnect();
@@ -176,10 +183,12 @@ public class Connector {
 					new Phrase(Audible.Type.STATUS, "Disconnected from server.").play();
 					
 					if (!interactive && Config.c.getBool("net.autoreconnect")) {
+						log.finer("Creating Reconnector after disconnecting");
 						createReconnector();
 					}
 				}
 				
+				interactiveDisconnect = false;
 				disconnect = null;
 			}
 		}, sm.get("name") + ":Connector.disconnect");
@@ -259,11 +268,12 @@ public class Connector {
 						Thread.sleep(1000);
 						i--;
 					}
+					
+					Connector.this.connect();
 				} catch (InterruptedException e) {
 					log.fine("Cancelling auto-reconnect.");
 					return;
 				}
-				Connector.this.connect();
 			}
 		}, sm.get("name") + ":AutoReconnector");
 		reconnector.start();
@@ -277,19 +287,30 @@ public class Connector {
 	}
 	
 	public void destroy() {
-		state = State.DEAD;
-		
-		cancelReconnect();
-
-		if (connect != null) {
-			connect.interrupt();
-		}
-		
-		if (isConnected()) {
-			try {
-				Thread t = disconnect(true);
-				t.join();
-			} catch (InterruptedException e) {}
+		synchronized (state) {
+			state = State.DEAD;
+			
+			cancelReconnect();
+	
+			if (connect != null) {
+				connect.interrupt();
+			}
+			
+			if (isConnected()) {
+				try {
+					Thread t = disconnect(true);
+					t.join();
+				} catch (InterruptedException e) {}
+			}
+			
+			state = State.DEAD;
+			
+			synchronized (listeners) {
+				log.finest("Fire destroy");
+				for (ConnectionListener c : listeners) {
+					c.onDestroy();
+				}
+			}
 		}
 	}
 }

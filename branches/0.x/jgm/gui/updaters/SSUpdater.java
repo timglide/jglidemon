@@ -75,7 +75,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		stop = true;
 	}
 	
-	public void close() {
+	public void onDestroy() {
 		stop = true;
 		if (thread != null) thread.interrupt();
 		if (conn != null) conn.close();
@@ -318,7 +318,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 					sm.gui.revertStatusBarText();
 					sm.gui.unlockStatusBarText();
 					sm.gui.hideStatusBarProgress();
-					sm.connector.disconnect();
+					sm.connector.someoneDisconnected();
 					return;
 				}
 				

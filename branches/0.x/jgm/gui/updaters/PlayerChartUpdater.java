@@ -53,7 +53,7 @@ public class PlayerChartUpdater {
 		);
 	}
 	
-	public void close() {
+	public void destroy() {
 		timer.cancel();
 	}
 }

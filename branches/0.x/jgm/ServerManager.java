@@ -24,14 +24,9 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
 
-import jgm.glider.Conn;
-import jgm.glider.ConnectionAdapter;
-import jgm.glider.Connector;
+import jgm.glider.*;
 import jgm.gui.GUI;
-import jgm.gui.updaters.LogUpdater;
-import jgm.gui.updaters.PlayerChartUpdater;
-import jgm.gui.updaters.SSUpdater;
-import jgm.gui.updaters.StatusUpdater;
+import jgm.gui.updaters.*;
 import jgm.httpd.HTTPD;
 import jgm.util.Properties;
 
@@ -249,6 +244,12 @@ public final class ServerManager implements Comparable<ServerManager> {
 	
 	public Connector connector;
 
+	ConnectionListener myConnectionListener = new ConnectionAdapter() {
+		public Conn getConn() {
+			return keysConn;
+		}
+	};
+	
 	private jgm.util.Properties p;
 	public String name;
 	public String host;
@@ -270,8 +271,6 @@ public final class ServerManager implements Comparable<ServerManager> {
 		this.host = p.getProperty("net.host");
 		this.port = Integer.parseInt(p.getProperty("net.port"));
 		this.password = p.getProperty("net.password");
-		
-		connector = new Connector(this);
 	}
 	
 	@Override
@@ -332,14 +331,11 @@ public final class ServerManager implements Comparable<ServerManager> {
 		if (state == State.ACTIVE)
 			throw new IllegalStateException("Cannot init if already active");
 		
-		gui = new GUI(this);
-
-		keysConn = new Conn(ServerManager.this);
-		connector.addListener(new ConnectionAdapter() {
-			public Conn getConn() {
-				return keysConn;
-			}
-		});
+		connector  = new Connector(this);
+		gui        = new GUI(this);
+		
+		keysConn   = new Conn(ServerManager.this);
+		connector.addListener(myConnectionListener);
 		logUpdater = new LogUpdater(ServerManager.this, gui.tabsPane);
 		connector.addListener(logUpdater);
 		ssUpdater  = new SSUpdater(ServerManager.this, gui.tabsPane.screenshotTab);
@@ -422,12 +418,13 @@ public final class ServerManager implements Comparable<ServerManager> {
 		
 		stopHttpd();
 		
-		chartUpdater.close();
-		logUpdater.close();
-		ssUpdater.close();
-		status.close();
-		
+		chartUpdater.destroy();		
 		connector.destroy();
+		
+		connector.removeListener(myConnectionListener);
+		connector.removeListener(logUpdater);
+		connector.removeListener(ssUpdater);
+		connector.removeListener(status);
 		
 		gui.destroy();
 		gui = null;

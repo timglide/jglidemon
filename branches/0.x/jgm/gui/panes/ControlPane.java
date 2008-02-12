@@ -150,4 +150,6 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		start.setEnabled(false);
 		stop.setEnabled(false);
 	}
+	
+	public void onDestroy() {}
 }

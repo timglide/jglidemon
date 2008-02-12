@@ -531,7 +531,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		restartOnInventory = new JCheckBox("On Inventory Not Going Up");
 		restartOnInventory.setToolTipText("Try to restart when Glider stops when it can't resupply from a vendor");
 		restartOnInventory.addChangeListener(this);
-		c.gridy++;
+		c.gridy++; c.gridx = 0; c.gridwidth = 2;
 		stuck.add(restartOnInventory, c);
 		
 		c.gridwidth = 1; c.weightx = 0.0; c.gridy++;
@@ -804,6 +804,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		} else if (e.getSource() == restartOnException) {
 			boolean state = restartOnException.isEnabled() && restartOnException.isSelected();
 			restartOnExceptionTime.setEnabled(state);
+		} else if (e.getSource() == restartOnInventory) {
+			boolean state = restartOnInventory.isEnabled() && restartOnInventory.isSelected();
+			restartOnInventoryTime.setEnabled(state);
 		} else if (e.getSource() == enableWeb) {
 			boolean state = enableWeb.isEnabled() && enableWeb.isSelected();
 			
@@ -887,8 +890,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		restartOnException.setSelected(cfg.getBool("restarter.exception.enabled"));
 		restartOnExceptionTime.setValue(cfg.getInt("restarter.exception.timeout"));
-		restartOnException.setSelected(cfg.getBool("restarter.inventory.enabled"));
-		restartOnExceptionTime.setValue(cfg.getInt("restarter.inventory.timeout"));
+		restartOnInventory.setSelected(cfg.getBool("restarter.inventory.enabled"));
+		restartOnInventoryTime.setValue(cfg.getInt("restarter.inventory.timeout"));
 		
 		enableWeb.setSelected(gui.sm.getBool("web.enabled"));
 		webPort.setValue(gui.sm.getInt("web.port"));
@@ -902,6 +905,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		stateChanged(new ChangeEvent(enableTTS));
 		stateChanged(new ChangeEvent(enableStuck));
 		stateChanged(new ChangeEvent(restartOnException));
+		stateChanged(new ChangeEvent(restartOnInventory));
 		stateChanged(new ChangeEvent(enableWeb));
 	}
 	

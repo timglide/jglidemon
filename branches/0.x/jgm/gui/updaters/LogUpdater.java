@@ -72,12 +72,6 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		conn = new Conn(sm);
  	}
 
-	public void close() {
-		stop = true;
-		if (thread != null) thread.interrupt();
-		if (conn != null) conn.close();
-	}
-
 	public Conn getConn() {
 		return conn;
 	}
@@ -96,6 +90,12 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		stop = true;
 	}
 	
+	public void onDestroy() {
+		stop = true;
+		if (thread != null) thread.interrupt();
+		if (conn != null) conn.close();
+	}
+	
 	public void run() {
 		try {
 			conn.send("/escapehi on");
@@ -109,7 +109,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			conn.readLine(); // ---
 		} catch (IOException e) {
 			log.fine("Stopping LogUpdater, IOE: " + e.getMessage());
-			sm.connector.disconnect();
+			sm.connector.someoneDisconnected();
 			return; // connection died
 		}
 
@@ -122,7 +122,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				line = conn.readLine();
 			} catch (Throwable x) {
 				log.fine("Stopping LogUpdater, Ex: " + x.getMessage());
-				sm.connector.disconnect();
+				sm.connector.someoneDisconnected();
 				return;
 			}
 			
@@ -223,7 +223,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			if (e2.isAlert()) {
 				urgentChatLog.add(e, true);
 				
-				if (!fromLog) 
+				if (!fromLog && null != sm.gui)
 					sm.gui.tray
 						.warnIfInactive("Glider", e2.getText());
 				
@@ -270,8 +270,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			statusLog.add(e);
 			
 			if (!fromLog && e.getText().equals("Stopping glide")) {
-				sm.gui.tray
-					.warnIfInactive("Glider", e.getText());
+				if (null != sm.gui)
+					sm.gui.tray
+						.warnIfInactive("Glider", e.getText());
 				
 				if (lastGliderException != null)
 					log.finer("Restarter exception check: " + (System.currentTimeMillis() - lastGliderException) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.exception.timeout")));
@@ -315,7 +316,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			if (e2.isUrgent()) {
 				urgentChatLog.add(e, true);
 				
-				if (!fromLog) 
+				if (!fromLog && null != sm.gui) 
 					sm.gui.tray
 						.warnIfInactive("Chat", e2.getText());
 			}
@@ -332,9 +333,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 //				System.out.println("Adding item: " + e2.getItem().toString());
 				lootsTab.add(e2.getItemSet());
 				
-				if (!fromLog && e2.getItemSet().getItem().quality >= jgm.wow.Item.RARE) 
-					sm.gui.tray
-						.informIfInactive("Phat Loot", "[" + e2.getItemSet().getItem().name + "]");
+				if (!fromLog && e2.getItemSet().getItem().quality >= jgm.wow.Item.RARE)
+					if (null != sm.gui)
+						sm.gui.tray
+							.informIfInactive("Phat Loot", "[" + e2.getItemSet().getItem().name + "]");
 			}
 			
 			if (e2.hasMoney()) {

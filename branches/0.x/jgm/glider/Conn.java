@@ -145,7 +145,7 @@ public class Conn {
 	}
 
 	public void close() {
-		try {			
+		try {
 			if (isConnected()) {
 				try {
 					synchronized (s) {
