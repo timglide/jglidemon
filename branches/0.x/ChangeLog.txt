@@ -16,6 +16,9 @@ Version 0.15
   a status entry indicating Glider stopped as well as when
   "Inventory does not appear to be going up" (I have this
   problem when BottomlessBag autosells it lags).
+- Renamed Urgent Log tab to Urgent and added sub-tabs for
+  Logs and a new Followers tab that tracks "New friend",
+  "Removing friend", and "Being followed by" Glider log entries.
 
 Version 0.14
 ------------

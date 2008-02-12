@@ -12,7 +12,7 @@ public class Friend implements Comparable<Friend> {
 	public String id;
 	public String race;
 	public Status status = null;
-	public int    encounters = 1;
+	public int    encounters = 0;
 	public int    followingTimes = 0;
 	
 	public Friend(String name) {
@@ -24,6 +24,9 @@ public class Friend implements Comparable<Friend> {
 		this.id   = id;
 		this.race = race;
 		this.status = status;
+		
+		if (status == Status.ADDING)
+			encounters++;
 	}
 	
 	public boolean equals(Object o) {

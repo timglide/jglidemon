@@ -39,12 +39,13 @@ public class GliderLogEntry extends LogEntry {
 	private boolean isAlert = false;
 	public  Friend  friend  = null;
 	
-	Pattern BEING_FOLLOWED_PATTERN =
-		Pattern.compile("Being followed for (\\d+) seconds by: ([^\\s]+) \\(([^)]+)\\)$");
-	Pattern NEW_FRIEND_PATTERN =
-		Pattern.compile("New friend: ([^:]+): (.+)$");
-	Pattern REMOVING_FRIEND_PATTERN = 
-		Pattern.compile("Removing friend: (.+)$");
+	static Pattern BEING_FOLLOWED_PATTERN =
+		//               !! Being followed for 60 seconds by: Thesleeper (a97633)
+		Pattern.compile(".*Being followed for (\\d+) seconds by: (.*?) \\((.*?)\\)");
+	static Pattern NEW_FRIEND_PATTERN =
+		Pattern.compile(".*New friend: ([^:]+): (.+)$");
+	static Pattern REMOVING_FRIEND_PATTERN = 
+		Pattern.compile(".*Removing friend: (.+)$");
 	
 	public GliderLogEntry(String s) {
 		super("GliderLog", s);
@@ -63,7 +64,10 @@ public class GliderLogEntry extends LogEntry {
 					Matcher m = BEING_FOLLOWED_PATTERN.matcher(s);
 					
 					if (m.matches()) { // it should
-						friend = new Friend(m.group(1), m.group(2), null, Friend.Status.FOLLOWING);
+						friend = new Friend(m.group(2), m.group(3), null, Friend.Status.FOLLOWING);
+					} else {
+						log.finer("Didn't match BEING_FOLLOWED but should have");
+						log.finer("Line: " + s);
 					}
 					
 					type = Type.BEING_FOLLOWED;
@@ -91,9 +95,10 @@ public class GliderLogEntry extends LogEntry {
 			type = Type.DIED;
 			new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
 		} else if (s.contains("Exception")) {
+			type = Type.EXCEPTION;
+			
 			if (!s.contains("being used by another process")) { // so annoying...
 				isAlert = false; // not as helpful to make it an alert as i thought
-				type = Type.EXCEPTION;
 //				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
 			}
 		} else if (s.contains("Stuck too many times") && !s.contains("MoveToMonster")) {
