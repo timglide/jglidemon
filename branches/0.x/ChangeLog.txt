@@ -10,9 +10,6 @@ Version 0.15
 - The configuration settings have been converted to Java's
   built in Properties type. Your JGlideMon.ini will automatically
   be converted to JGlideMon.properties.
-- Glider log entries containing "Exception" are now considered
-  urgent chat. Previously not all exceptions were marked. An
-  exception often indicates Glider has stopped unexpectedly.
 - The Stuck configuration tab has been renamed Restarter.
   Additionally, options have been added to restart Glider
   when an exception log entry is received shortly before

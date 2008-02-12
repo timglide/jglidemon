@@ -37,7 +37,7 @@ public class TabsPane extends Pane {
 	
 	public ChatTab       chatLog;
 	
-	public LogTab        urgentChatLog;
+	public UrgentTab     urgent;
 	public ProfilesTab   profiles;
 	public LogTab        rawChatLog;
 	public LogTab        combatLog;
@@ -54,12 +54,12 @@ public class TabsPane extends Pane {
 		tabbedPane.addKeyListener(screenshotTab);
 		addTab(screenshotTab);
 		
-		chatLog    = new ChatTab(gui);
-		urgentChatLog = new LogTab(gui, "Urgent Log", tabbedPane);
-		profiles   = new ProfilesTab(gui);
-		combatLog  = new LogTab(gui, "Combat Log", tabbedPane);
-		gliderLog  = new LogTab(gui, "Glider Log", tabbedPane);
-		statusLog  = new LogTab(gui, "Status", tabbedPane);
+		chatLog   = new ChatTab(gui);
+		urgent    = new UrgentTab(gui);
+		profiles  = new ProfilesTab(gui);
+		combatLog = new LogTab(gui, "Combat Log", tabbedPane);
+		gliderLog = new LogTab(gui, "Glider Log", tabbedPane);
+		statusLog = new LogTab(gui, "Status", tabbedPane);
 		
 		if (jgm.JGlideMon.debug) {
 			rawChatLog = new LogTab(gui, "Raw Chat Log", tabbedPane);
@@ -67,7 +67,7 @@ public class TabsPane extends Pane {
 		}
 
 		addTab(chatLog);
-		addTab(urgentChatLog);
+		addTab(urgent);
 		addTab(profiles);
 		
 		if (rawChatLog != null) {

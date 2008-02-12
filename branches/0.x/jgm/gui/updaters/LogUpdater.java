@@ -41,7 +41,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	private LogTab gliderLog;
 	private LogTab rawChatLog;
 	private ChatTab chatLog;
-	private LogTab urgentChatLog;
+	private UrgentTab urgent;
 	private LogTab combatLog;
 	private MobsTab mobsTab;
 	private LootsTab lootsTab;
@@ -64,7 +64,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		gliderLog  = t.gliderLog;
 		rawChatLog = t.rawChatLog;
 		chatLog    = t.chatLog;
-		urgentChatLog = t.urgentChatLog;
+		urgent     = t.urgent;
 		combatLog  = t.combatLog;
 		mobsTab    = t.mobsTab;
 		lootsTab   = t.lootsTab;
@@ -220,8 +220,12 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			
 			GliderLogEntry e2 = (GliderLogEntry) e;
 			
+			if (null != e2.friend) {
+				urgent.followers.add(e2);
+			}
+			
 			if (e2.isAlert()) {
-				urgentChatLog.add(e, true);
+				urgent.add(e, true);
 				
 				if (!fromLog && null != sm.gui)
 					sm.gui.tray
@@ -314,7 +318,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			ChatLogEntry e2 = (ChatLogEntry) e;
 			
 			if (e2.isUrgent()) {
-				urgentChatLog.add(e, true);
+				urgent.add(e, true);
 				
 				if (!fromLog && null != sm.gui) 
 					sm.gui.tray
