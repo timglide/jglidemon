@@ -27,7 +27,8 @@ import jgm.sound.Sound;
 public class GliderLogEntry extends LogEntry {
 	public static enum Type {
 		NORMAL, BEING_ATTACKED, BEING_FOLLOWED,
-		LOGGING_OUT, STUCK, DIED, EXCEPTION
+		LOGGING_OUT, STUCK, DIED, EXCEPTION,
+		INVENTORY_NOT_GOING_UP
 	}
 	
 	public  Type    type    = Type.NORMAL;
@@ -63,12 +64,13 @@ public class GliderLogEntry extends LogEntry {
 				type = Type.EXCEPTION;
 				new Sound(Audible.Type.STATUS, jgm.util.Sound.File.STOP).play(true);
 			}
-		} else if (s.contains("Stuck too many times")) {
+		} else if (s.contains("Stuck too many times") && !s.contains("MoveToMonster")) {
 			isAlert = true;
 			type = Type.STUCK;
 			new Sound(Audible.Type.STUCK, jgm.util.Sound.File.STOP).play(true);
+		} else if (s.contains("Inventory doesn't seem to be going up")) {
+			type = Type.INVENTORY_NOT_GOING_UP;
 		}
-		
 	}
 	
 	public boolean isAlert() {

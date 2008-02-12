@@ -101,6 +101,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JCheckBox restartOnException;
 	JSpinner restartOnExceptionTime;
 	
+	JCheckBox restartOnInventory;
+	JSpinner restartOnInventoryTime;
+	
 	JPanel web;
 	JCheckBox enableWeb;
 	JSpinner webPort;
@@ -525,6 +528,21 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++; c.weightx = 1.0;
 		stuck.add(restartOnExceptionTime, c);
 		
+		restartOnInventory = new JCheckBox("On Inventory Not Going Up");
+		restartOnInventory.setToolTipText("Try to restart when Glider stops when it can't resupply from a vendor");
+		restartOnInventory.addChangeListener(this);
+		c.gridy++;
+		stuck.add(restartOnInventory, c);
+		
+		c.gridwidth = 1; c.weightx = 0.0; c.gridy++;
+		stuck.add(new JLabel("  Timeout (s): "), c);
+		
+		restartOnInventoryTime = Config.makeSpinner(Config.INT_SPINNER);
+		restartOnInventoryTime.setToolTipText("Glider will be restarted if an inventory not going up error occured within this many seconds before stopping");
+		restartOnInventoryTime.addChangeListener(this);
+		c.gridx++; c.weightx = 1.0;
+		stuck.add(restartOnInventoryTime, c);
+		
 		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 1.0;
 		stuck.add(new JLabel(), c);
 		
@@ -699,6 +717,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		cfg.set("restarter.exception.enabled", restartOnException.isSelected());
 		cfg.set("restarter.exception.timeout", restartOnExceptionTime.getValue());
+		cfg.set("restarter.inventory.enabled", restartOnInventory.isSelected());
+		cfg.set("restarter.inventory.timeout", restartOnInventoryTime.getValue());
 		
 		boolean oldWebEnabled = gui.sm.getBool("web.enabled");
 		int oldWebPort = gui.sm.getInt("web.port");
@@ -867,6 +887,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		restartOnException.setSelected(cfg.getBool("restarter.exception.enabled"));
 		restartOnExceptionTime.setValue(cfg.getInt("restarter.exception.timeout"));
+		restartOnException.setSelected(cfg.getBool("restarter.inventory.enabled"));
+		restartOnExceptionTime.setValue(cfg.getInt("restarter.inventory.timeout"));
 		
 		enableWeb.setSelected(gui.sm.getBool("web.enabled"));
 		webPort.setValue(gui.sm.getInt("web.port"));

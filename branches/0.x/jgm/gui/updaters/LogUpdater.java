@@ -50,6 +50,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	private int stuckCount = 0;
 	
 	private Long lastGliderException = null;
+	private Long lastInventoryNotGoingUp = null;
 	
 	private Thread thread;
 	
@@ -258,6 +259,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 								jgm.Config.getInstance().getBool("restarter.exception.enabled")) {
 						log.finer("Exception GliderLogEntry: " + e2.getText());
 						lastGliderException = System.currentTimeMillis();
+					} else if (e2.type == GliderLogEntry.Type.INVENTORY_NOT_GOING_UP &&
+								jgm.Config.c.getBool("restarter.inventory.enabled")) {
+						log.finer("Inventory GliderLogEntry: " + e2.getText());
+						lastInventoryNotGoingUp = System.currentTimeMillis();
 					}
 				}
 			}
@@ -269,7 +274,11 @@ public class LogUpdater implements Runnable, ConnectionListener {
 					.warnIfInactive("Glider", e.getText());
 				
 				if (lastGliderException != null)
-					log.finer("Restarter check: " + (System.currentTimeMillis() - lastGliderException) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.exception.timeout")));
+					log.finer("Restarter exception check: " + (System.currentTimeMillis() - lastGliderException) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.exception.timeout")));
+				
+				if (lastInventoryNotGoingUp != null)
+					log.finer("Restarter inventory check: " + (System.currentTimeMillis() - lastInventoryNotGoingUp) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.inventory.timeout")));
+				
 				if (jgm.Config.getInstance().getBool("restarter.exception.enabled")
 					&& lastGliderException != null
 					&& System.currentTimeMillis() - lastGliderException <= 1000 * jgm.Config.getInstance().getInt("restarter.exception.timeout")) {
@@ -284,6 +293,21 @@ public class LogUpdater implements Runnable, ConnectionListener {
 						}
 					}, 5000);
 				}
+				
+				if (jgm.Config.getInstance().getBool("restarter.inventory.enabled")
+						&& lastInventoryNotGoingUp != null
+						&& System.currentTimeMillis() - lastInventoryNotGoingUp <= 1000 * jgm.Config.c.getInt("restarter.inventory.timeout")) {
+
+						java.util.Timer timer = new java.util.Timer(sm.name + ":Restarter");
+						timer.schedule(new java.util.TimerTask() {			
+							public void run() {
+								log.info("Restarting glide after an inventory not going up message");
+								sm.gui.ctrlPane.start.doClick();
+
+								this.cancel();
+							}
+						}, 15000); // 15sec so bbag for example, can finish selling items
+					}
 			}
 		} else if (e instanceof ChatLogEntry) {
 			ChatLogEntry e2 = (ChatLogEntry) e;

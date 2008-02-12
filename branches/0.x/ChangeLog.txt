@@ -14,9 +14,11 @@ Version 0.15
   urgent chat. Previously not all exceptions were marked. An
   exception often indicates Glider has stopped unexpectedly.
 - The Stuck configuration tab has been renamed Restarter.
-  Additionally, an option has been added to restart Glider
+  Additionally, options have been added to restart Glider
   when an exception log entry is received shortly before
-  a status entry indicating Glider stopped.
+  a status entry indicating Glider stopped as well as when
+  "Inventory does not appear to be going up" (I have this
+  problem when BottomlessBag autosells it lags).
 
 Version 0.14
 ------------

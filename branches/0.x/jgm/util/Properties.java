@@ -30,65 +30,58 @@ public class Properties extends java.util.Properties {
 	}
 	
 	public boolean has(String key) {
-		return containsKey(key);
+		return null != getProperty(key);
 	}
 	
 	public int getInt(String propertyName) {
 		int defaultValue = 0;
-		propertyName = propertyName.toLowerCase();
 		
 		try {
 			defaultValue = 
-				Integer.parseInt(getProperty(propertyName));
-		} catch (Throwable e) {}
+				Integer.parseInt(get(propertyName));
+		} catch (NumberFormatException e) {}
 		
 		return defaultValue;
 	}
 	
 	public boolean getBool(String propertyName) {
 		boolean defaultValue = false;
-		propertyName = propertyName.toLowerCase();
 		
-		try {
-			defaultValue =
-				Boolean.parseBoolean(getProperty(propertyName));
-		} catch (Throwable e) {}
+		defaultValue =
+			Boolean.parseBoolean(get(propertyName));
 		
 		return defaultValue;
 	}
 	
 	public long getLong(String propertyName) {
 		long defaultValue = 0L;
-		propertyName = propertyName.toLowerCase();
 		
 		try {
 			defaultValue =
-				Long.parseLong(getProperty(propertyName));
-		} catch (Throwable e) {}
+				Long.parseLong(get(propertyName));
+		} catch (NumberFormatException e) {}
 		
 		return defaultValue;
 	}
 	
 	public double getDouble(String propertyName) {
 		double defaultValue = 0.0;
-		propertyName = propertyName.toLowerCase();
 		
 		try {
 			defaultValue =
-				Double.parseDouble(getProperty(propertyName));
-		} catch (Throwable e) {}
+				Double.parseDouble(get(propertyName));
+		} catch (NumberFormatException e) {}
 		
 		return defaultValue;
 	}
 	
-	public String getString(String propertyName) {
+	public String get(String propertyName) {
 		propertyName = propertyName.toLowerCase();
 		
+		if (!has(propertyName))
+			throw new NullPointerException("Key not found: " + propertyName);
+		
 		return getProperty(propertyName);
-	}
-	
-	public String get(String propertyName) {
-		return getString(propertyName.toLowerCase());
 	}
 
 	public void set(String propertyName, Object value) {
