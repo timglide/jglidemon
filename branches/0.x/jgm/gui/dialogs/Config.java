@@ -633,6 +633,12 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 				return;
 			} else {
 				gui.sm.set("name", serverName.getText());
+				
+				// to resort it
+				synchronized (ServerManager.managers) {
+					ServerManager.managers.remove(gui.sm);
+					ServerManager.managers.add(gui.sm);
+				}
 			}
 		}
 		

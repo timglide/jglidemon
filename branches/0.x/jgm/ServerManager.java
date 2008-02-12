@@ -287,12 +287,6 @@ public final class ServerManager implements Comparable<ServerManager> {
 		
 		if (propertyName.equals("name")) {
 			name = value.toString();
-			
-			// to resort it
-			synchronized (managers) {
-				managers.remove(this);
-				managers.add(this);
-			}
 		} else if (propertyName.equals("net.host")) {
 			host = value.toString();
 		} else if (propertyName.equals("net.port")) {
