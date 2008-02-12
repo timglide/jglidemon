@@ -86,12 +86,18 @@ public class Connector {
 							c.getConn().connect();
 						} catch (java.net.UnknownHostException e) {
 							log.warning("Error connecting to " + c.getConn().sm.host + ": " + e.getMessage());
-							sm.gui.setStatusBarText("Unable to connect to " + c.getConn().sm.host + ":" + c.getConn().sm.port + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
+							
+							if (null != sm.gui)
+								sm.gui.setStatusBarText("Unable to connect to " + c.getConn().sm.host + ":" + c.getConn().sm.port + " - Unknown host \"" + e.getMessage() + "\"", true, true);
+							
 							success = false;
 							break;
 						} catch (java.io.IOException e) {
 							log.warning("Error connecting to " + c.getConn().sm.host + ": " + e.getMessage());
-							sm.gui.setStatusBarText("Unable to connect to " + c.getConn().sm.host + ":" + c.getConn().sm.port + " - " + e.getMessage(), true, true);						
+							
+							if (null != sm.gui)
+								sm.gui.setStatusBarText("Unable to connect to " + c.getConn().sm.host + ":" + c.getConn().sm.port + " - " + e.getMessage(), true, true);
+							
 							success = false;
 							break;
 						}
@@ -159,8 +165,11 @@ public class Connector {
 				}
 				
 				state = State.DISCONNECTED;
-				sm.gui.setStatusBarText("Disconnected", false, true);
-				sm.gui.hideStatusBarProgress();
+				
+				if (null != sm.gui) {
+					sm.gui.setStatusBarText("Disconnected", false, true);
+					sm.gui.hideStatusBarProgress();
+				}
 				
 				if (success) {
 					fireDisconnect();
@@ -245,7 +254,8 @@ public class Connector {
 				try {
 					log.fine("Reconnecting in " + i);
 					while (i > 0) {
-						sm.gui.setStatusBarText("Reconnecting in " + i + "...", false, true);
+						if (null != sm.gui)
+							sm.gui.setStatusBarText("Reconnecting in " + i + "...", false, true);
 						Thread.sleep(1000);
 						i--;
 					}
