@@ -30,7 +30,7 @@ public class Connector {
 	static Logger log = Logger.getLogger(Connector.class.getName());
 	
 	public static enum State {
-		DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING
+		DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING, DEAD
 	}
 	
 	public volatile State state = State.DISCONNECTED;
@@ -89,7 +89,7 @@ public class Connector {
 							sm.gui.setStatusBarText("Unable to connect to " + c.getConn().sm.host + ":" + c.getConn().sm.port + " - Unknown host \"" + e.getMessage() + "\"", true, true);						
 							success = false;
 							break;
-						} catch (Exception e) {
+						} catch (java.io.IOException e) {
 							log.warning("Error connecting to " + c.getConn().sm.host + ": " + e.getMessage());
 							sm.gui.setStatusBarText("Unable to connect to " + c.getConn().sm.host + ":" + c.getConn().sm.port + " - " + e.getMessage(), true, true);						
 							success = false;
@@ -108,10 +108,12 @@ public class Connector {
 				} else {
 					fireDisconnect();
 					
-					if (Config.c.getBool("net.autoReconnect")) {
+					if (Config.c.getBool("net.autoreconnect")) {
 						createReconnector();
 					}
 				}
+				
+				connect = null;
 			}
 		}, sm.get("name") + ":Connector.connect");
 		
@@ -168,6 +170,8 @@ public class Connector {
 						createReconnector();
 					}
 				}
+				
+				disconnect = null;
 			}
 		}, sm.get("name") + ":Connector.disconnect");
 		
@@ -260,5 +264,22 @@ public class Connector {
 		
 		reconnector.interrupt();
 		reconnector = null;
+	}
+	
+	public void destroy() {
+		state = State.DEAD;
+		
+		cancelReconnect();
+
+		if (connect != null) {
+			connect.interrupt();
+		}
+		
+		if (isConnected()) {
+			try {
+				Thread t = disconnect(true);
+				t.join();
+			} catch (InterruptedException e) {}
+		}
 	}
 }

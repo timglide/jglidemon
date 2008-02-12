@@ -32,14 +32,17 @@ import jgm.gui.panes.MobInfoPane;
 import jgm.gui.panes.TabsPane;
 import jgm.util.Util;
 
+import java.util.logging.*;
+
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
 
 
 public class GUI 
 	implements ActionListener, java.util.Observer, ContainerListener {
+	
+	static Logger log = Logger.getLogger(GUI.class.getName());
 	
 	static final ImageIcon ONLINE_ICON =
 		new ImageIcon(JGlideMon.class.getResource("resources/images/status/online.png"));
@@ -422,11 +425,13 @@ public class GUI
 		JMenuItem item = null;
 		
 		synchronized (ServerManager.managers) {
+			log.finer(sm.name + ":doServersMenu()");
+			
 			int i = KeyEvent.VK_1;
 			
-			for (final ServerManager sm : ServerManager.managers) {
-				item = new JMenuItem(sm.name,
-						sm.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
+			for (final ServerManager s : ServerManager.managers) {
+				item = new JMenuItem(s.name,
+					s.getBool("enabled") ? ONLINE_ICON : OFFLINE_ICON);
 				
 				if (i <= KeyEvent.VK_9)
 					item.setAccelerator(KeyStroke.getKeyStroke(i++, ActionEvent.CTRL_MASK | ActionEvent.ALT_MASK));
@@ -434,12 +439,15 @@ public class GUI
 				menu.serversSub.add(item);
 
 				item.addActionListener(new ActionListener() {
+					final ServerManager mySm = s;
 					public void actionPerformed(ActionEvent e) {
-						if (!sm.getBool("enabled")) {
-							sm.resume();
+						log.finer("Activating " + mySm.name);
+						
+						if (!mySm.getBool("enabled")) {
+							mySm.resume();
 						}
 
-						sm.toFront();
+						mySm.toFront();
 					}
 				});
 			}

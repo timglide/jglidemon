@@ -52,4 +52,8 @@ public class PlayerChartUpdater {
 			}, 0, UPDATE_INTERVAL
 		);
 	}
+	
+	public void close() {
+		timer.cancel();
+	}
 }

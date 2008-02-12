@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 - 2008 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm;
 
 import java.util.*;
@@ -136,6 +156,9 @@ public final class ServerManager implements Comparable<ServerManager> {
 		sm.set("enabled", false);
 		sm.destroy();
 		
+		ServerManager.saveConfig();
+		jgm.Config.write();
+		
 		fireServerSuspended(sm);
 	}
 	
@@ -150,12 +173,19 @@ public final class ServerManager implements Comparable<ServerManager> {
 		sm.init();
 		sm.toFront();
 		
+		ServerManager.saveConfig();
+		jgm.Config.write();
+		
 		fireServerResumed(sm);
 	}
 	
 	public static void removeServer(ServerManager sm) {
+		log.finer("Removing server: " + sm.name);
 		managers.remove(sm);
 		sm.destroy();
+		
+		ServerManager.saveConfig();
+		jgm.Config.write();
 		
 		fireServerRemoved(sm);
 		
@@ -390,14 +420,15 @@ public final class ServerManager implements Comparable<ServerManager> {
 		if (state != State.ACTIVE)
 			throw new IllegalStateException("Cannot destroy without active state");
 		
-		if (connector.isConnected()) {
-			try {
-				Thread t = connector.disconnect(true);
-				t.join();
-			} catch (InterruptedException e) {}
-		}
-		
 		stopHttpd();
+		
+		chartUpdater.close();
+		logUpdater.close();
+		ssUpdater.close();
+		status.close();
+		
+		connector.destroy();
+		
 		gui.destroy();
 		gui = null;
 		
@@ -413,22 +444,19 @@ public final class ServerManager implements Comparable<ServerManager> {
 		if (obj == this) return true;
 		
 		if (obj instanceof String)
-			return ((String) obj).equals(name);
+			return ((String) obj).equalsIgnoreCase(name);
 		
 		if (obj instanceof ServerManager) {
 			ServerManager sm = (ServerManager) obj;
 			return
-				sm.name.equals(this.name) &&
-				sm.host.equals(this.host) &&
-				sm.port == this.port &&
-				sm.password == this.password;
+				sm.name.equalsIgnoreCase(this.name);
 		}
 		
 		return false;
 	}
 	
 	public int compareTo(ServerManager sm) {
-		return this.name.compareTo(sm.name);
+		return this.name.compareToIgnoreCase(sm.name);
 	}
 	
 	///////////

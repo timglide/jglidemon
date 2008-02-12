@@ -122,7 +122,7 @@ public class JGlideMon {
 				jgm.wow.Item.Cache.loadIcons();
 				jgm.wow.Item.Cache.loadItems();	
 			}
-		}, "JGlideMon.loadCache");
+		}, "JGlideMon.LoadCache");
 		
 		t.start();
 		

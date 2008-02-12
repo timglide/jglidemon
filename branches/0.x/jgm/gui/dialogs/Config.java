@@ -26,6 +26,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import jgm.ServerManager;
 import jgm.gui.GUI;
 
 public class Config extends Dialog implements ActionListener, ChangeListener {
@@ -729,6 +730,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			}
 		}
 		
+		ServerManager.saveConfig();
 		jgm.Config.write();
 		
 		setVisible(false);
