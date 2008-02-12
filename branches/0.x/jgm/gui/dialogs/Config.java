@@ -636,8 +636,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 				
 				// to resort it
 				synchronized (ServerManager.managers) {
-					ServerManager.managers.remove(gui.sm);
-					ServerManager.managers.add(gui.sm);
+					java.util.Collections.sort(ServerManager.managers);
 				}
 			}
 		}

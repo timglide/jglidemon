@@ -70,8 +70,8 @@ public final class ServerManager implements Comparable<ServerManager> {
 	}
 	
 	// TreeSet to keep them ordered by name
-	public static SortedSet<ServerManager> managers =
-		Collections.synchronizedSortedSet(new TreeSet<ServerManager>());
+	public static List<ServerManager> managers =
+		new Vector<ServerManager>();
 	
 	public static void loadServers() {
 		for (int i = 0; ; i++) {
@@ -92,7 +92,10 @@ public final class ServerManager implements Comparable<ServerManager> {
 				if (managers.contains(sm)) {
 					log.warning("A server named \"" + sm.name + "\" already exists!");
 				} else {
-					managers.add(new ServerManager(p));
+					synchronized (managers) {
+						managers.add(new ServerManager(p));
+						Collections.sort(managers);
+					}
 				}
 			} else
 				break;
@@ -134,7 +137,12 @@ public final class ServerManager implements Comparable<ServerManager> {
 	
 	public static void addServer() {
 		ServerManager sm = new ServerManager();
-		managers.add(sm);
+		
+		synchronized (managers) {
+			managers.add(sm);
+			Collections.sort(managers);
+		}
+		
 		sm.firstRun = true;
 		sm.init();
 		
@@ -176,7 +184,12 @@ public final class ServerManager implements Comparable<ServerManager> {
 	
 	public static void removeServer(ServerManager sm) {
 		log.finer("Removing server: " + sm.name);
-		managers.remove(sm);
+		
+		synchronized (managers) {
+			managers.remove(sm);
+			Collections.sort(managers);
+		}
+		
 		sm.destroy();
 		
 		ServerManager.saveConfig();
@@ -202,7 +215,7 @@ public final class ServerManager implements Comparable<ServerManager> {
 	public static boolean contains(String name) {
 		synchronized (managers) {
 			for (ServerManager sm : managers) {
-				if (sm.name.equals(name))
+				if (sm.name.equalsIgnoreCase(name))
 					return true;
 			}
 		}		
