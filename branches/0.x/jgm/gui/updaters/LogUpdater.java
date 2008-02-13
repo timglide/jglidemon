@@ -224,44 +224,44 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				if (!fromLog && null != sm.gui)
 					sm.gui.tray
 						.warnIfInactive("Glider", e2.getText());
-				
-				if (!fromLog) {
-					if (e2.type == GliderLogEntry.Type.STUCK &&
-						jgm.Config.getInstance().getBool("stuck.enabled")) {
-						long now = System.currentTimeMillis();
-						long timeout = 1000 * jgm.Config.getInstance().getInt("stuck.timeout");
-						int limit = jgm.Config.getInstance().getInt("stuck.limit");
-						
-						if (stuckTimer == null) {
-							stuckTimer = now;
-						} else if (now - stuckTimer >= timeout) {
-							// we're stuck but it's been long enough
-							// since the last time we were stuck
-							stuckTimer = now;
-							stuckCount = 0;
-						}
-						
-						log.fine("Stuck " + stuckCount + " times. Limit = " + limit);
-						
-						if (limit == 0 || stuckCount < limit) {
-							stuckCount++;
-							// simulate pressing the Start button
-							sm.gui.ctrlPane.start.doClick();
-							log.info("Restarting glide after being stuck");
-						} else {
-							stuckTimer = null;
-							stuckCount = 0;
-							log.warning("Stuck too many times in a row, giving up");
-						}
-					} else if (e2.type == GliderLogEntry.Type.EXCEPTION &&
-								jgm.Config.getInstance().getBool("restarter.exception.enabled")) {
-						log.finer("Exception GliderLogEntry: " + e2.getText());
-						lastGliderException = System.currentTimeMillis();
-					} else if (e2.type == GliderLogEntry.Type.INVENTORY_NOT_GOING_UP &&
-								jgm.Config.c.getBool("restarter.inventory.enabled")) {
-						log.finer("Inventory GliderLogEntry: " + e2.getText());
-						lastInventoryNotGoingUp = System.currentTimeMillis();
+			}
+			
+			if (!fromLog) {
+				if (e2.type == GliderLogEntry.Type.STUCK &&
+					jgm.Config.getInstance().getBool("stuck.enabled")) {
+					long now = System.currentTimeMillis();
+					long timeout = 1000 * jgm.Config.getInstance().getInt("stuck.timeout");
+					int limit = jgm.Config.getInstance().getInt("stuck.limit");
+					
+					if (stuckTimer == null) {
+						stuckTimer = now;
+					} else if (now - stuckTimer >= timeout) {
+						// we're stuck but it's been long enough
+						// since the last time we were stuck
+						stuckTimer = now;
+						stuckCount = 0;
 					}
+					
+					log.fine("Stuck " + stuckCount + " times. Limit = " + limit);
+					
+					if (limit == 0 || stuckCount < limit) {
+						stuckCount++;
+						// simulate pressing the Start button
+						sm.gui.ctrlPane.start.doClick();
+						log.info("Restarting glide after being stuck");
+					} else {
+						stuckTimer = null;
+						stuckCount = 0;
+						log.warning("Stuck too many times in a row, giving up");
+					}
+				} else if (e2.type == GliderLogEntry.Type.EXCEPTION &&
+							jgm.Config.getInstance().getBool("restarter.exception.enabled")) {
+					log.finer("Exception GliderLogEntry: " + e2.getText());
+					lastGliderException = System.currentTimeMillis();
+				} else if (e2.type == GliderLogEntry.Type.INVENTORY_NOT_GOING_UP &&
+							jgm.Config.c.getBool("restarter.inventory.enabled")) {
+					log.finer("Inventory GliderLogEntry: " + e2.getText());
+					lastInventoryNotGoingUp = System.currentTimeMillis();
 				}
 			}
 		} else if (e instanceof StatusEntry) {
