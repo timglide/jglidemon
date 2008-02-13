@@ -113,9 +113,12 @@ public class GUI
 		
 		JMenu     ssSize;
 		JMenuItem ssRestoreActivate;
-		JMenuItem ssShrink;
 		JMenuItem ssShrinkOthers;
+		JMenuItem ssHideOthers;
+		JMenuItem ssShrink;
 		JMenuItem ssShrinkAll;
+		JMenuItem ssHide;
+		JMenuItem ssHideAll;
 		
 		JMenu     logs;
 		JMenuItem clearCurLog;
@@ -343,9 +346,13 @@ public class GUI
 		menu.ssSize = new JMenu("Shrink/Restore");
 		menu.ssRestoreActivate = doMenuItem("Restore and Activate Window", menu.ssSize, this);
 		menu.ssShrinkOthers = doMenuItem("Restore and Shrink Others", menu.ssSize, this);
+		menu.ssHideOthers = doMenuItem("Restore and Hide Others", menu.ssSize, this);
 		menu.ssSize.addSeparator();
 		menu.ssShrink = doMenuItem("Shrink Window", menu.ssSize, this);
 		menu.ssShrinkAll = doMenuItem("Shrink All", menu.ssSize, this);
+		menu.ssSize.addSeparator();
+		menu.ssHide = doMenuItem("Hide Window", menu.ssSize, this);
+		menu.ssHideAll = doMenuItem("Hide All", menu.ssSize, this);
 		menu.screenshot.add(menu.ssSize);
 		
 		menu.logs = new JMenu("Logs");
@@ -495,16 +502,6 @@ public class GUI
 		if (source == menu.ssRestoreActivate) {
 			sm.cmd.add(Command.getSetGameWSCommand("normal"));
 			sm.cmd.add(Command.getSelectGameCommand());
-		} else if (source == menu.ssShrink) {
-			sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
-		} else if (source == menu.ssShrinkAll) {
-			synchronized (ServerManager.managers) {
-				for (ServerManager sm : ServerManager.managers) {
-					if (sm.getBool("enabled")) {
-						sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
-					}
-				}
-			}
 		} else if (source == menu.ssShrinkOthers) {
 			synchronized (ServerManager.managers) {
 				for (ServerManager sm : ServerManager.managers) {
@@ -516,6 +513,37 @@ public class GUI
 			
 			sm.cmd.add(Command.getSetGameWSCommand("normal"));
 			sm.cmd.add(Command.getSelectGameCommand());
+		} else if (source == menu.ssHideOthers) {
+			synchronized (ServerManager.managers) {
+				for (ServerManager sm : ServerManager.managers) {
+					if (!this.sm.equals(sm) && sm.getBool("enabled")) {
+						sm.cmd.add(Command.getSetGameWSCommand("hidden"));
+					}
+				}
+			}
+			
+			sm.cmd.add(Command.getSetGameWSCommand("normal"));
+			sm.cmd.add(Command.getSelectGameCommand());
+		} else if (source == menu.ssShrink) {
+			sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
+		} else if (source == menu.ssShrinkAll) {
+			synchronized (ServerManager.managers) {
+				for (ServerManager sm : ServerManager.managers) {
+					if (sm.getBool("enabled")) {
+						sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
+					}
+				}
+			}
+		} else if (source == menu.ssHide) {
+			sm.cmd.add(Command.getSetGameWSCommand("hidden"));
+		} else if (source == menu.ssHideAll) {
+			synchronized (ServerManager.managers) {
+				for (ServerManager sm : ServerManager.managers) {
+					if (sm.getBool("enabled")) {
+						sm.cmd.add(Command.getSetGameWSCommand("hidden"));
+					}
+				}
+			}
 		} else if (source == menu.parseLogFile) {
 			showParse();
 		} else if (source == menu.clearCurLog) {
