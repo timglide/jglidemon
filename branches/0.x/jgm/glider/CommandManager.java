@@ -35,14 +35,14 @@ import jgm.*;
  * @author Tim
  * @since 0.13
  */
-public class SendChatManager implements Runnable {
+public class CommandManager implements Runnable {
 	static final String SLASH_CHECK = "#13#/";
 	
-	static Logger log = Logger.getLogger(SendChatManager.class.getName());
+	static Logger log = Logger.getLogger(CommandManager.class.getName());
 	
 	private Conn conn;
-	private Queue<String> messages =
-		new LinkedList<String>();
+	private Queue<Command> commands =
+		new LinkedList<Command>();
 	
 	public volatile boolean stop = false;
 	public volatile boolean idle = false;
@@ -52,35 +52,39 @@ public class SendChatManager implements Runnable {
 	
 	private static int instances = 0;
 	
-	public SendChatManager(ServerManager sm) {		
+	public CommandManager(ServerManager sm) {		
 		instances++;
 		this.sm = sm;
-		thread = new Thread(this);
-		thread.setName("SendChatManager" + instances);
+		thread = new Thread(this, sm.name + ":CommandManager");
 		thread.setDaemon(true);
 		thread.start();
 	}
 	
-	public void add(String keys) {
-		messages.add(keys);
+	public void destroy() {
+		stop = true;
+		thread.interrupt();
+	}
+	
+	public void add(Command cmd) {
+		commands.add(cmd);
 		
 		if (idle)
 			thread.interrupt();
 	}
 	
-	private boolean sendKeys(String keys) {
+	private void sendKeys(String keys) {
 		if (null == keys)
 			throw new NullPointerException("keys cannot be null in sendKeys()");
 		
-		if (!sm.connector.isConnected()) return false;
+		if (!sm.connector.isConnected())
+			commands.clear();
 		
 		if (conn == null) conn = sm.keysConn;
 		
 		try {			
 			log.info("Sending keys: " + keys);
-			conn.send("/stopglide");
-			String test = conn.readLine(); // attempting stop
-			conn.readLine(); // ---
+			String test = 
+				Command.getStopCommand().getResult(conn);
 			
 			// if it's a slash command, try to send the keys
 			// one at a time with a delay to try to account
@@ -99,22 +103,20 @@ public class SendChatManager implements Runnable {
 				try {
 					Thread.sleep(250);
 				} catch (Exception e) {}
-				conn.send("/queuekeys #13#");
-				conn.readLine(); conn.readLine();
+				
+				Command.getChatCommand("#13#").getResult(conn);
 				
 				try {
 					Thread.sleep(250);
 				} catch (Exception e) {}			
 				
-				conn.send("/queuekeys /");
-				conn.readLine(); conn.readLine();
+				Command.getChatCommand("/").getResult(conn);
 				
 				try {
 					Thread.sleep(250);
 				} catch (Exception e) {}			
 				
-				conn.send("/queuekeys " + parts[0] + " ");
-				conn.readLine(); conn.readLine();
+				Command.getChatCommand(parts[0] + " ").getResult(conn);
 				
 				try {
 					Thread.sleep(250);
@@ -122,29 +124,37 @@ public class SendChatManager implements Runnable {
 			}
 
 			if (null != keys) {
-				conn.send("/queuekeys " + keys);
-				conn.readLine(); // queued keys
-				conn.readLine(); // ---
+				Command.getChatCommand(keys).getResult(conn);
 			}
 			
 			// don't start if we were stopped initially
 			if (!test.equals("Already stopped")) {
-				conn.send("/startglide");
-				conn.readLine(); // attempting start
-				conn.readLine(); // ---
+				Command.getStartCommand().getResult(conn);
 			} else {
 				log.finer("Already stopped, not starting glide");
 			}
 		} catch (IOException e) {
 			log.log(Level.WARNING, "Error sending chat", e);
 		}
+	}
+	
+	private void sendCommand(Command c) {
+		if (!sm.connector.isConnected()) {
+			commands.clear();
+		}
 		
-		return true;
+		if (conn == null) conn = sm.keysConn;
+		
+		try {
+			c.getResult(conn);
+		} catch (java.io.IOException e) {
+			log.log(Level.WARNING, "Error sending command", e);
+		}
 	}
 	
 	public void run() {
     	while (!stop) {
-    		if (messages.isEmpty()) {    			
+    		if (commands.isEmpty()) {    			
     			try {
     				idle = true;
     				Thread.sleep(1000);
@@ -157,13 +167,19 @@ public class SendChatManager implements Runnable {
 
 			idle = false;
     		
-    		String s = null;
+    		Command c = null;
     		
     		// send each item in the queue removing it
     		// if successful
-    		while (!stop && null != (s = messages.peek())) {
-    			if (sendKeys(s))
-    				messages.poll();
+    		while (!stop && null != (c = commands.peek())) {
+    			if (c.slash.equals("queuekeys")) {
+    				sendKeys(c.args);
+    				commands.poll();
+    				continue;
+    			}
+    			
+    			sendCommand(c);
+    			commands.poll();
     		}
     		
     		idle = true;

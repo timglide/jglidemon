@@ -69,7 +69,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		mobsTab    = t.mobsTab;
 		lootsTab   = t.lootsTab;
 		
-		conn = new Conn(sm);
+		conn = new Conn(sm, "LogUpdater");
  	}
 
 	public Conn getConn() {
@@ -98,15 +98,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	
 	public void run() {
 		try {
-			conn.send("/escapehi on");
-			conn.readLine(); // Escapehi mode: on
-			conn.readLine(); // ---
-			conn.send("/log all");
-			conn.readLine(); // Log mode added: all
-			conn.readLine(); // ---
-			conn.send("/nolog chat"); // making our own chat entries
-			conn.readLine(); // Log mode added: all
-			conn.readLine(); // ---
+			Command.getEscapeHiCommand("on").getResult(conn);
+			Command.getLogCommand("all").getResult(conn);
+			Command.getNoLogCommand("chat").getResult(conn);
 		} catch (IOException e) {
 			log.fine("Stopping LogUpdater, IOE: " + e.getMessage());
 			sm.connector.someoneDisconnected();

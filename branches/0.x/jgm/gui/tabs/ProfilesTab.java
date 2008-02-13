@@ -189,10 +189,8 @@ public class ProfilesTab extends Tab
 		
 		try {
 			log.fine("Loading profile: " + path);
-			conn.send("/loadprofile " + path);
-			String ret = conn.readLine(); // queued keys
+			String ret = Command.getLoadProfileCommand(path).getResult(conn);
 			log.fine(ret);
-			conn.readLine(); // ---
 			
 			if (ret.toLowerCase().contains("failed")) {
 				JOptionPane.showMessageDialog(

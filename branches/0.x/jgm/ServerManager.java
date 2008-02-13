@@ -249,6 +249,7 @@ public final class ServerManager implements Comparable<ServerManager> {
 	public State         state = State.UNKNOWN;
 	public Conn          keysConn;
 	public GUI           gui;
+	public CommandManager cmd;
 	public HTTPD         httpd = null;
 	public StatusUpdater status;
 	public LogUpdater    logUpdater;
@@ -257,11 +258,7 @@ public final class ServerManager implements Comparable<ServerManager> {
 	
 	public Connector connector;
 
-	ConnectionListener myConnectionListener = new ConnectionAdapter() {
-		public Conn getConn() {
-			return keysConn;
-		}
-	};
+	ConnectionListener myConnectionListener = null;
 	
 	private jgm.util.Properties p;
 	public String name;
@@ -345,9 +342,19 @@ public final class ServerManager implements Comparable<ServerManager> {
 			throw new IllegalStateException("Cannot init if already active");
 		
 		connector  = new Connector(this);
+		cmd        = new CommandManager(this);
 		gui        = new GUI(this);
 		
-		keysConn   = new Conn(ServerManager.this);
+		keysConn   = new Conn(ServerManager.this, "KeysConn");
+		
+		myConnectionListener = new ConnectionAdapter() {
+			final Conn myConn = keysConn;
+			
+			public Conn getConn() {
+				return myConn;
+			}
+		};
+		
 		connector.addListener(myConnectionListener);
 		logUpdater = new LogUpdater(ServerManager.this, gui.tabsPane);
 		connector.addListener(logUpdater);
@@ -431,8 +438,16 @@ public final class ServerManager implements Comparable<ServerManager> {
 		
 		stopHttpd();
 		
+		cmd.destroy();
+		cmd = null;
+		
 		chartUpdater.destroy();		
 		connector.destroy();
+		
+		// TODO
+		// i would think this should be closed by
+		// connector.destroy() but it's not
+		keysConn.close();
 		
 		connector.removeListener(myConnectionListener);
 		connector.removeListener(logUpdater);

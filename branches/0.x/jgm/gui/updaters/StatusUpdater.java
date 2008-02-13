@@ -45,7 +45,7 @@ public class StatusUpdater extends Observable
 	
 	public StatusUpdater(jgm.ServerManager sm) {
 		this.sm = sm;
-		conn = new Conn(sm);
+		conn = new Conn(sm, "StatusUpdater");
 		cfg = jgm.Config.getInstance();
 	}
 	
@@ -101,7 +101,7 @@ public class StatusUpdater extends Observable
 		try {
 		BufferedReader r = conn.getIn();
 
-		conn.send("/status");
+		Command.getStatusCommand().send(conn);
 
 		while ((line = r.readLine()) != null) {
 			if (line.equals("---")) break;

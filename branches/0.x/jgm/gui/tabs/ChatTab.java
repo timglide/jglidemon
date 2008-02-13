@@ -44,12 +44,8 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 	public  JButton send;
 	public  JButton reset;
 	
-	private SendChatManager sendChat;
-	
 	public ChatTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(), "Chat");
-		
-		sendChat = new SendChatManager(gui.sm);
 		
 		tabs = new JTabbedPane();
 		all = new LogTab(gui, "All Chat", tabs);
@@ -231,7 +227,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 
 			String keys = sb.toString();
 			log.fine("Queuing keys: " + keys);
-			sendChat.add(keys);
+			gui.sm.cmd.add(Command.getChatCommand(keys));
 			
 			resetFields();
 			setEnabled(true);

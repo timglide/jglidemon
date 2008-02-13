@@ -119,10 +119,10 @@ public class ScreenshotTab extends Tab
 		
 		//System.out.println(btn + " click @ " + x + "," + y + " (" + xp + "," + yp + ") [" + s.width + "x" + s.height + "]");
 		try {
-			conn.send("/setmouse " + xp + "/" + yp);
-			log.fine(conn.readLine()); conn.readLine();
-			conn.send("/clickmouse " + btn);
-			log.fine(conn.readLine()); conn.readLine();
+			log.fine(
+				Command.getSetMouseCommand(xp, yp).getResult(conn));
+			log.fine(
+				Command.getClickMouseCommand(btn).getResult(conn));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -161,8 +161,9 @@ public class ScreenshotTab extends Tab
 		keysDown.put(code, Boolean.TRUE);
 		
 		try {
-			conn.send("/holdkey " + code);
-			log.fine(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+			log.fine(
+				Command.getHoldKeyCommand(code).getResult(conn)
+				+ " " + KeyEvent.getKeyText(code));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -191,8 +192,9 @@ public class ScreenshotTab extends Tab
 		}
 
 		try {
-			conn.send("/releasekey " + code);
-			log.fine(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+			log.fine(
+				Command.getReleaseKeyCommand(code).getResult(conn)
+				+ " " + KeyEvent.getKeyText(code));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

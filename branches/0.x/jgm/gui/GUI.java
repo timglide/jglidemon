@@ -111,6 +111,12 @@ public class GUI
 		public JCheckBoxMenuItem sendKeys;
 		public JMenuItem refreshSS;
 		
+		JMenu     ssSize;
+		JMenuItem ssRestoreActivate;
+		JMenuItem ssShrink;
+		JMenuItem ssShrinkOthers;
+		JMenuItem ssShrinkAll;
+		
 		JMenu     logs;
 		JMenuItem clearCurLog;
 		JMenuItem clearAllLogs;
@@ -334,6 +340,14 @@ public class GUI
 			KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		menu.refreshSS.setEnabled(false);
 		
+		menu.ssSize = new JMenu("Shrink/Restore");
+		menu.ssRestoreActivate = doMenuItem("Restore and Activate Window", menu.ssSize, this);
+		menu.ssShrinkOthers = doMenuItem("Restore and Shrink Others", menu.ssSize, this);
+		menu.ssSize.addSeparator();
+		menu.ssShrink = doMenuItem("Shrink Window", menu.ssSize, this);
+		menu.ssShrinkAll = doMenuItem("Shrink All", menu.ssSize, this);
+		menu.screenshot.add(menu.ssSize);
+		
 		menu.logs = new JMenu("Logs");
 		menu.logs.setMnemonic(KeyEvent.VK_L);
 		menu.bar.add(menu.logs);
@@ -478,7 +492,31 @@ public class GUI
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		
-		if (source == menu.parseLogFile) {
+		if (source == menu.ssRestoreActivate) {
+			sm.cmd.add(Command.getSetGameWSCommand("normal"));
+			sm.cmd.add(Command.getSelectGameCommand());
+		} else if (source == menu.ssShrink) {
+			sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
+		} else if (source == menu.ssShrinkAll) {
+			synchronized (ServerManager.managers) {
+				for (ServerManager sm : ServerManager.managers) {
+					if (sm.getBool("enabled")) {
+						sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
+					}
+				}
+			}
+		} else if (source == menu.ssShrinkOthers) {
+			synchronized (ServerManager.managers) {
+				for (ServerManager sm : ServerManager.managers) {
+					if (!this.sm.equals(sm) && sm.getBool("enabled")) {
+						sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
+					}
+				}
+			}
+			
+			sm.cmd.add(Command.getSetGameWSCommand("normal"));
+			sm.cmd.add(Command.getSelectGameCommand());
+		} else if (source == menu.parseLogFile) {
 			showParse();
 		} else if (source == menu.clearCurLog) {
 			if (tabsPane.tabbedPane.getSelectedComponent() instanceof jgm.gui.tabs.Clearable) {

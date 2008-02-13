@@ -91,33 +91,28 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public void actionPerformed(ActionEvent e) {
 		if (conn == null) conn = gui.sm.keysConn;
 		
+		Object src = e.getSource();
 		String cmd = e.getActionCommand();
-		String s = null;
+		Command c = null;
+		
 		//System.out.println("Cmd: " + cmd);
-		if (cmd.equals("Attach")) {
-			s = "/attach";
-		} else if (cmd.equals("Start Glide")) {
-			s = "/startglide";
-		} else if (cmd.equals("Stop Glide")) {
-			s = "/stopglide";
-		} else if (cmd.equals("Disconnect")) {
-			connect.setEnabled(false);
-			gui.sm.connector.disconnect(true);
-		} else if (cmd.equals("Connect")) {
-			connect.setEnabled(false);
-			gui.sm.connector.connect(true);
+		if (src == start) {
+			c = Command.getStartCommand();
+		} else if (src == stop) {
+			c = Command.getStopCommand();
+		} else if (src == connect) {
+			if (cmd.equals("Disconnect")) {
+				connect.setEnabled(false);
+				gui.sm.connector.disconnect(true);
+			} else if (cmd.equals("Connect")) {
+				connect.setEnabled(false);
+				gui.sm.connector.connect(true);
+			}
 		}
 		
-		if (s != null) {
-			log.fine("Sending: " + s);
-			
-			try {
-				conn.send(s);
-				log.fine(conn.readLine()); // status
-				conn.readLine(); // ---
-			} catch (Exception x) {
-				x.printStackTrace();
-			}
+		if (c != null) {
+			log.fine("Sending: " + c);
+			gui.sm.cmd.add(c);
 		}
 	}
 	

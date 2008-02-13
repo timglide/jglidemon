@@ -40,14 +40,17 @@ public class Conn {
 	private static int instances = 0;
 	
 	public ServerManager sm;
+	public String        name;
 	
 	private Socket         s;
 	private PrintWriter    out;
 	private InputStream    inStream;
 	private BufferedReader in;
 	
-	public Conn(ServerManager sm) {
+	public Conn(ServerManager sm, String name) {
+		log.finest(String.format("new Conn(%s, %s);", sm.name, name));
 		this.sm = sm;
+		this.name = name;
 		
 		++instances;
 	}
@@ -86,22 +89,39 @@ public class Conn {
 //		return out;
 //	}
 
+	/**
+	 * Sends the supplied command, adding a slash,
+	 * and returns the result.
+	 * 
+	 * @param cmd
+	 * @return Glider's response to the command
+	 */
 	public String cmd(String cmd) throws IOException {
-		send(cmd);
+		log.finer("Sending /" + cmd);
+		send("/" + cmd);
 		
 		String line = null;
 		StringBuilder sb = new StringBuilder();
 		
-		while (in.ready() && null != (line = in.readLine())) {
+		while (/*in.ready() &&*/ null != (line = in.readLine())) {
+			log.finest("  Line: " + line);
 			if (line.equals("---"))
 				break;
 			
 			sb.append(line);
 		}
 		
-		return sb.toString();
+		String ret = sb.toString();
+		log.finer("Result: " + ret);
+		return ret;
 	}
 	
+	/**
+	 * Sends a line of text to this Conn and appends
+	 * \r\n and flushes the output stream.
+	 * 
+	 * @param str
+	 */
 	public void send(String str) {
 		while (!isConnected()) {}
 		
@@ -145,14 +165,17 @@ public class Conn {
 	}
 
 	public void close() {
+		log.finer(String.format("Closing Conn(%s, %s)", sm.name, name));
+		
 		try {
 			if (isConnected()) {
 				try {
-					synchronized (s) {
+//					synchronized (s) {
 						send("/exit");
-						in.readLine(); // Bye!
+						log.finest("  Result: " + in.readLine());
+//						in.readLine(); // Bye!
 //						Thread.sleep(500);
-					}
+//					}
 				} catch (IOException e) {}
 			}
 			

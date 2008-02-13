@@ -19,6 +19,9 @@ Version 0.15
 - Renamed Urgent Log tab to Urgent and added sub-tabs for
   Logs and a new Followers tab that tracks "New friend",
   "Removing friend", and "Being followed by" Glider log entries.
+- Added a sub-menu to the Screenshots menu for restoring and
+  shrinking the WoW windows (assuming you're dual gliding/
+  running background mode).
 
 Version 0.14
 ------------

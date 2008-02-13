@@ -53,7 +53,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		this.sm = sm;
 		cfg = jgm.Config.getInstance();
 		tab  = t;
-		conn = new Conn(sm);
+		conn = new Conn(sm, "SSUpdater");
 	}
 
 	public Conn getConn() {
@@ -111,7 +111,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				t.interrupt();
 
 				conn.close();
-				conn = new Conn(sm);
+				conn = new Conn(sm, "SSUpdater.Watcher");
 				
 				try {
 					//conn.getInStream().skip(conn.getInStream().available());
@@ -132,19 +132,11 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		
 		if (!sentSettings) {
 			log.finer("Sending screenshot settings");
-			conn.send("/capturescale " + sm.get("screenshot.scale"));
-			//System.out.println(conn.readLine()); // set scale successfully
-			//System.out.println(conn.readLine()); // ---
-			log.finer(conn.readLine()); // set scale successfully
-			conn.readLine(); // ---
-			conn.send("/capturequality " + cfg.get("screenshot.quality"));
-			//System.out.println(conn.readLine()); // set quality successfully
-			//System.out.println(conn.readLine()); // ---
-			log.finer(conn.readLine()); // set quality successfully
-			conn.readLine(); // ---
+			Command.getCaptureScaleCommand(sm.getInt("screenshot.scale")).getResult(conn);
+			Command.getCaptureQualityCommand(cfg.getInt("screenshot.quality")).getResult(conn);			
 		}
 		
-		conn.send("/capture");
+		Command.getCaptureCommand().send(conn);
 		String line = conn.readLine(); // info stating stuff about the datastream
 		
 		if (!line.startsWith("Success")) {
