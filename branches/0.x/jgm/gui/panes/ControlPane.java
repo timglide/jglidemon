@@ -23,6 +23,7 @@ package jgm.gui.panes;
 import jgm.glider.*;
 
 import java.util.logging.*;
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -32,10 +33,13 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	private static Conn conn;
 	
 	public final JButton connect;
-//	public final JButton attach;
 	public final JButton start;
 	public final JButton stop;
 
+	public final JButton restore;
+	public final JButton shrink;
+	public final JButton hide;
+	
 	public ControlPane(jgm.gui.GUI gui) {
 		super(gui);
 
@@ -43,49 +47,56 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		connect.setFocusable(false);
 		connect.addActionListener(this);
 		//connect.setEnabled(false);
-		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 6;
+		c.weightx = 0.0; c.fill = GridBagConstraints.HORIZONTAL;
 		c.insets.bottom = jgm.gui.GUI.PADDING / 2;
 		add(connect, c);
-		
-		// attach is done automatically now
-//		attach = new JButton("Attach");
-//		attach.setFocusable(false);
-//		attach.addActionListener(this);
-//		attach.setEnabled(false);
-//		c.gridy++;
-//		add(attach, c);
 
 		start = new JButton("Start Glide");
 		start.setFocusable(false);
 		start.addActionListener(this);
-		start.setEnabled(false);
-		c.gridy++; c.gridwidth = 1;
+		c.gridy++; c.gridwidth = 3;
 		c.insets.right = c.insets.bottom;
-		c.insets.bottom = 0;
 		add(start, c);
 		
 		stop = new JButton("Stop Glide");
 		stop.setFocusable(false);
 		stop.addActionListener(this);
-		stop.setEnabled(false);
-		c.gridx++;
+		c.gridx += 3;
 		c.insets.right = 0;
 		add(stop, c);
+		
+		restore = new JButton("Restore");
+		restore.setToolTipText("Restore the WoW window for this connection");
+		restore.setFocusable(false);
+		restore.addActionListener(this);
+		c.gridx = 0; c.gridy++; c.gridwidth = 2;
+		c.insets.right = c.insets.bottom;
+		c.insets.bottom = 0;
+		add(restore, c);
+		
+		shrink = new JButton("Shrink");
+		shrink.setToolTipText("Shrink the WoW window for this connection");
+		shrink.setFocusable(false);
+		shrink.addActionListener(this);
+		c.gridx += 2;
+		add(shrink, c);
+		
+		hide = new JButton("Hide");
+		hide.setToolTipText("Hide the WoW window for this connection");
+		hide.setFocusable(false);
+		hide.addActionListener(this);
+		c.gridx += 2;
+		c.insets.right = 0;
+		add(hide, c);
+		
+		setEnabled(false);
 	}
 
 	public void update(Status s) {
 		//System.out.println("ControlPane.update()");
 		
-		if (s.attached) {
-//			attach.setEnabled(false);
-			start.setEnabled(true);
-			stop.setEnabled(true);
-		} else {
-//			if (Connector.isConnected())
-//				attach.setEnabled(true);
-			start.setEnabled(false);
-			stop.setEnabled(false);
-		}
+		setEnabled(s.attached);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -108,12 +119,27 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 				connect.setEnabled(false);
 				gui.sm.connector.connect(true);
 			}
+		} else if (src == restore) {
+			gui.menu.ssRestoreActivate.doClick();
+		} else if (src == shrink) {
+			gui.menu.ssShrink.doClick();
+		} else if (src == hide) {
+			gui.menu.ssHide.doClick();
 		}
 		
 		if (c != null) {
 			log.fine("Sending: " + c);
 			gui.sm.cmd.add(c);
 		}
+	}
+	
+	public void setEnabled(boolean b) {		
+//		connect.setEnabled(b);
+		start.setEnabled(b);
+		stop.setEnabled(b);
+		restore.setEnabled(b);
+		shrink.setEnabled(b);
+		hide.setEnabled(b);
 	}
 	
 	public Conn getConn() {
@@ -128,9 +154,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public void onDisconnect() {
 		connect.setText("Connect");
 		connect.setEnabled(true);
-//		attach.setEnabled(false);
-		start.setEnabled(false);
-		stop.setEnabled(false);
+		setEnabled(false);
 	}
 	
 	public void onConnecting() {
@@ -141,9 +165,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public void onDisconnecting() {
 		connect.setText("Disconnecting...");
 		connect.setEnabled(false);
-//		attach.setEnabled(false);
-		start.setEnabled(false);
-		stop.setEnabled(false);
+		setEnabled(false);
 	}
 	
 	public void onDestroy() {}

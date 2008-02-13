@@ -112,12 +112,12 @@ public class GUI
 		public JMenuItem refreshSS;
 		
 		JMenu     ssSize;
-		JMenuItem ssRestoreActivate;
+		public JMenuItem ssRestoreActivate;
 		JMenuItem ssShrinkOthers;
 		JMenuItem ssHideOthers;
-		JMenuItem ssShrink;
+		public JMenuItem ssShrink;
 		JMenuItem ssShrinkAll;
-		JMenuItem ssHide;
+		public JMenuItem ssHide;
 		JMenuItem ssHideAll;
 		
 		JMenu     logs;
@@ -258,7 +258,7 @@ public class GUI
 		});
 
 		frame.setLayout(new BorderLayout());
-		
+				
 		////////////////
 		// set up panels
 		JPanel mainPanel = new JPanel(new GridBagLayout());
