@@ -104,6 +104,11 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JCheckBox restartOnInventory;
 	JSpinner restartOnInventoryTime;
 	
+	ButtonGroup onRestartGroup;
+	JRadioButton onRestartNothing;
+	JRadioButton onRestartShrink;
+	JRadioButton onRestartHide;
+	
 	JPanel web;
 	JCheckBox enableWeb;
 	JSpinner webPort;
@@ -543,6 +548,28 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++; c.weightx = 1.0;
 		stuck.add(restartOnInventoryTime, c);
 		
+		c.gridwidth = 2; c.weightx = 1.0; c.gridx = 0; c.gridy += 2;
+		JLabel lbl = new JLabel("After restarting,");
+		lbl.setToolTipText("<html>Shrink, hide, or do nothing to the wow window when restarting.<br>This also affects when you send chat.");
+		stuck.add(lbl, c);
+		
+		onRestartGroup = new ButtonGroup();
+		
+		onRestartNothing = new JRadioButton("do nothing");
+		onRestartGroup.add(onRestartNothing);
+		c.gridy++;
+		stuck.add(onRestartNothing, c);
+		
+		onRestartShrink = new JRadioButton("shrink the WoW window");
+		onRestartGroup.add(onRestartShrink);
+		c.gridy++;
+		stuck.add(onRestartShrink, c);
+		
+		onRestartHide = new JRadioButton("hide the WoW window");
+		onRestartGroup.add(onRestartHide);
+		c.gridy++;
+		stuck.add(onRestartHide, c);
+		
 		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 1.0;
 		stuck.add(new JLabel(), c);
 		
@@ -725,6 +752,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("restarter.inventory.enabled", restartOnInventory.isSelected());
 		cfg.set("restarter.inventory.timeout", restartOnInventoryTime.getValue());
 		
+		cfg.set("restarter.onrestart",
+			onRestartShrink.isSelected()
+			? "shrink"
+			: onRestartHide.isSelected()
+			  ? "hide"
+			  : "nothing"
+		);
+		
 		boolean oldWebEnabled = gui.sm.getBool("web.enabled");
 		int oldWebPort = gui.sm.getInt("web.port");
 		
@@ -897,6 +932,15 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		restartOnExceptionTime.setValue(cfg.getInt("restarter.exception.timeout"));
 		restartOnInventory.setSelected(cfg.getBool("restarter.inventory.enabled"));
 		restartOnInventoryTime.setValue(cfg.getInt("restarter.inventory.timeout"));
+		
+		String tmp = cfg.get("restarter.onrestart");
+		
+		if (tmp.equals("shrink"))
+			onRestartShrink.setSelected(true);
+		else if (tmp.equals("hide"))
+			onRestartHide.setSelected(true);
+		else
+			onRestartNothing.setSelected(true);
 		
 		enableWeb.setSelected(gui.sm.getBool("web.enabled"));
 		webPort.setValue(gui.sm.getInt("web.port"));

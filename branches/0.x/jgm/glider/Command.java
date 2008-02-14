@@ -180,12 +180,12 @@ public final class Command {
 		
 		if (state.equals("normal"))
 			return WS_NORMAL;
-		if (state.equals("shrunk"))
+		if (state.equals("shrunk") || state.equals("shrink"))
 			return WS_SHRUNK;
-		if (state.equals("hidden"))
+		if (state.equals("hidden") || state.equals("hide"))
 			return WS_HIDDEN;
 		
-		throw new IllegalArgumentException("State must be one of normal, shrunk, hidden");
+		throw new IllegalArgumentException("State must be one of normal, shrunk, shrink, hidden, hide");
 	}
 	
 	static final Command ESCAPE_HI_ON = new Command("escapehi", "on");

@@ -248,6 +248,13 @@ public class LogUpdater implements Runnable, ConnectionListener {
 						stuckCount++;
 						// simulate pressing the Start button
 						sm.gui.ctrlPane.start.doClick();
+						
+						String tmp = jgm.Config.c.get("restarter.onrestart");
+						if (tmp.equals("shrink"))
+							sm.gui.ctrlPane.shrink.doClick();
+						else if (tmp.equals("hide"))
+							sm.gui.ctrlPane.hide.doClick();
+						
 						log.info("Restarting glide after being stuck");
 					} else {
 						stuckTimer = null;
@@ -288,6 +295,12 @@ public class LogUpdater implements Runnable, ConnectionListener {
 							log.info("Restarting glide after an exception");
 							sm.gui.ctrlPane.start.doClick();
 
+							String tmp = jgm.Config.c.get("restarter.onrestart");
+							if (tmp.equals("shrink"))
+								sm.gui.ctrlPane.shrink.doClick();
+							else if (tmp.equals("hide"))
+								sm.gui.ctrlPane.hide.doClick();
+							
 							this.cancel();
 						}
 					}, 5000);
@@ -303,6 +316,12 @@ public class LogUpdater implements Runnable, ConnectionListener {
 								log.info("Restarting glide after an inventory not going up message");
 								sm.gui.ctrlPane.start.doClick();
 
+								String tmp = jgm.Config.c.get("restarter.onrestart");
+								if (tmp.equals("shrink"))
+									sm.gui.ctrlPane.shrink.doClick();
+								else if (tmp.equals("hide"))
+									sm.gui.ctrlPane.hide.doClick();
+								
 								this.cancel();
 							}
 						}, 15000); // 15sec so bbag for example, can finish selling items

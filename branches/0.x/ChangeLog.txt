@@ -24,6 +24,10 @@ Version 0.15
   dual gliding/running background mode). Note that if a
   window is hidden, it must be restored first before you
   can shrink it again. This is a limitation of Glider.
+- There is now a setting in the Restarter configuration tab
+  to shrink/hide/do nothing to the WoW window after JGM
+  has restarted Glider. This also affects when you send
+  chat.
 
 Version 0.14
 ------------

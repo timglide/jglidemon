@@ -130,6 +130,14 @@ public class CommandManager implements Runnable {
 			// don't start if we were stopped initially
 			if (!test.equals("Already stopped")) {
 				Command.getStartCommand().getResult(conn);
+				
+				String s = Config.c.get("restarter.onrestart");
+				
+				if (!s.equals("nothing")) {
+					try {
+						Command.getSetGameWSCommand(s).getResult(conn);
+					} catch (IllegalArgumentException e) {}
+				}
 			} else {
 				log.finer("Already stopped, not starting glide");
 			}
