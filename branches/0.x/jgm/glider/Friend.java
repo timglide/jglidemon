@@ -26,10 +26,11 @@ public class Friend implements Comparable<Friend> {
 	public static enum Status {
 		ADDED, REMOVED, FOLLOWING;
 		
+		@Override
 		public String toString() {
 			String s = super.toString();
 			
-			return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+			return Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
 		}
 	}
 	
