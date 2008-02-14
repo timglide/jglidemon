@@ -17,7 +17,7 @@ Version 0.15
   "Inventory does not appear to be going up" is received,
   (I have this problem when BottomlessBag autosells it lags,
   this affects profiles that have vendor waypoints),
-  and when "Couldn't activate light" is received when running
+  and when "Couldn't activate flight" is received when running
   profile groups. There is a built in delay before sending the
   /startglide command again for all options.
 - Renamed Urgent Log tab to Urgent and added sub-tabs for

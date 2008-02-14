@@ -28,7 +28,7 @@ import javax.swing.UIManager;
 import jgm.logging.Log;
 import jgm.gui.Splash;
 
-// this line edited so the svn revision gets updated
+// this line edited so the svn revision gets updated.
 
 /**
  * The main program.
@@ -37,7 +37,7 @@ import jgm.gui.Splash;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.15 beta";
+	public static final String version = "0.15";
 	public static final String _revision = "$Revision$";
 	public static final String revision = _revision.substring(1, _revision.length() - 1);
 	public static final String _date = "$Date$";
@@ -185,7 +185,10 @@ public class JGlideMon {
 	
 	@Override
 	protected void finalize() {
-		destroy();
+		// pretend it's like the shutdown hook
+		try {
+			destroy(true).join();
+		} catch (InterruptedException e) {}
 	}
 	
 	static final Logger log = Logger.getLogger(JGlideMon.class.getName());
