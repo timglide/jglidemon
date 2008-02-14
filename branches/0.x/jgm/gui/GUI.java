@@ -502,17 +502,20 @@ public class GUI
 		if (source == menu.ssRestoreActivate) {
 			sm.cmd.add(Command.getSetGameWSCommand("normal"));
 			sm.cmd.add(Command.getSelectGameCommand());
+			sm.ssUpdater.redoScale = true;
 		} else if (source == menu.ssShrinkOthers) {
 			synchronized (ServerManager.managers) {
 				for (ServerManager sm : ServerManager.managers) {
 					if (!this.sm.equals(sm) && sm.getBool("enabled")) {
 						sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
+						sm.ssUpdater.redoScale = true;
 					}
 				}
 			}
 			
 			sm.cmd.add(Command.getSetGameWSCommand("normal"));
 			sm.cmd.add(Command.getSelectGameCommand());
+			sm.ssUpdater.redoScale = true;
 		} else if (source == menu.ssHideOthers) {
 			synchronized (ServerManager.managers) {
 				for (ServerManager sm : ServerManager.managers) {
@@ -524,13 +527,16 @@ public class GUI
 			
 			sm.cmd.add(Command.getSetGameWSCommand("normal"));
 			sm.cmd.add(Command.getSelectGameCommand());
+			sm.ssUpdater.redoScale = true;
 		} else if (source == menu.ssShrink) {
 			sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
+			sm.ssUpdater.redoScale = true;
 		} else if (source == menu.ssShrinkAll) {
 			synchronized (ServerManager.managers) {
 				for (ServerManager sm : ServerManager.managers) {
 					if (sm.getBool("enabled")) {
 						sm.cmd.add(Command.getSetGameWSCommand("shrunk"));
+						sm.ssUpdater.redoScale = true;
 					}
 				}
 			}
