@@ -162,9 +162,15 @@ public class JGlideMon {
 				
 				splash.dispose();
 				
+				instance = null;
 				System.exit(0);
 			}
 		}, "JGlideMon.destroy").start();
+	}
+	
+	@Override
+	protected void finalize() {
+		destroy();
 	}
 	
 	static final Logger log = Logger.getLogger(JGlideMon.class.getName());
@@ -190,6 +196,13 @@ public class JGlideMon {
 		new Thread(new Runnable() {
 			public void run() {
 				new JGlideMon();
+				
+				Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+					public void run() {
+						if (null != JGlideMon.instance)
+							JGlideMon.instance.destroy();
+					}
+				}, "JGlideMon.ShutdownHook"));
 			}
 		}, "JGlideMon.main").start();
 	}

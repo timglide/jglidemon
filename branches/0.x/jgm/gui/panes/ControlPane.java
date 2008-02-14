@@ -96,7 +96,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public void update(Status s) {
 		//System.out.println("ControlPane.update()");
 		
-		setEnabled(s.attached);
+		setEnabled(gui.sm.connector.isConnected() && s.attached);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -160,6 +160,7 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 	public void onConnecting() {
 		connect.setText("Connecting...");
 		connect.setEnabled(false);
+		setEnabled(false);
 	}
 	
 	public void onDisconnecting() {
