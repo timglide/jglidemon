@@ -433,6 +433,10 @@ public final class ServerManager implements Comparable<ServerManager> {
 	}
 	
 	public void destroy() {
+		destroy(false);
+	}
+	
+	public void destroy(boolean fromHook) {
 		if (state != State.ACTIVE)
 			throw new IllegalStateException("Cannot destroy without active state");
 		
@@ -454,7 +458,9 @@ public final class ServerManager implements Comparable<ServerManager> {
 		connector.removeListener(ssUpdater);
 		connector.removeListener(status);
 		
-		gui.destroy();
+		// seems to hang the shutdown hook
+		if (!fromHook)
+			gui.destroy();
 		gui = null;
 		
 		state = State.SUSPENDED;

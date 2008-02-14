@@ -66,6 +66,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		sentSettings = false;
 		stop = false;
 		thread = new Thread(this, sm.name + ":SSUpdater");
+		thread.setDaemon(true);
 		thread.start();
 	}
 	

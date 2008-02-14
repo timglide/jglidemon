@@ -135,10 +135,15 @@ public class JGlideMon {
 		splash = null;
 	}
 
-	public void destroy() {
-		splash = new Splash("Shutting Down JGlideMon...");
+	public Thread destroy() {
+		return destroy(false);
+	}
+	
+	public Thread destroy(final boolean fromHook) {
+		if (!fromHook)
+			splash = new Splash("Shutting Down JGlideMon...");
 		
-		new Thread(new Runnable() {
+		Thread t = new Thread(new Runnable() {
 			public void run() {
 				// so it won't try to say disconnected
 				jgm.util.Speech.destroy();
@@ -146,26 +151,36 @@ public class JGlideMon {
 				synchronized (ServerManager.managers) {
 					for (ServerManager sm : ServerManager.managers) {
 						if (sm.state == ServerManager.State.ACTIVE) {
-							splash.setStatus("Shutting Down Server Manager \"" + sm.name + "\"...");
-							sm.destroy();
+							if (null != splash)
+								splash.setStatus("Shutting Down Server Manager \"" + sm.name + "\"...");
+							sm.destroy(fromHook);
 						}
 					}
 				}
 				
-				splash.setStatus("Caching Icons and Items...");
+				if (null != splash)
+					splash.setStatus("Caching Icons and Items...");
 				jgm.wow.Item.Cache.saveIcons();
 				jgm.wow.Item.Cache.saveItems();
 				
-				splash.setStatus("Saving Settings...");
+				if (null != splash)
+					splash.setStatus("Saving Settings...");
 				ServerManager.saveConfig();
 				jgm.Config.write();
 				
-				splash.dispose();
+				if (null != splash)
+					splash.dispose();
 				
 				instance = null;
-				System.exit(0);
+				
+				if (!fromHook)
+					System.exit(0);
 			}
-		}, "JGlideMon.destroy").start();
+		}, "JGlideMon.destroy");
+		
+		t.start();
+		
+		return t;
 	}
 	
 	@Override
@@ -200,7 +215,9 @@ public class JGlideMon {
 				Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 					public void run() {
 						if (null != JGlideMon.instance)
-							JGlideMon.instance.destroy();
+							try {
+								JGlideMon.instance.destroy(true).join();
+							} catch (InterruptedException e) {}
 					}
 				}, "JGlideMon.ShutdownHook"));
 			}

@@ -125,6 +125,7 @@ public class Connector {
 				connect = null;
 			}
 		}, sm.get("name") + ":Connector.connect");
+		connect.setDaemon(true);
 		
 		log.fine("Attempting to connect...");
 		connect.start();
@@ -143,7 +144,7 @@ public class Connector {
 	}
 	
 	public void someoneDisconnected() {
-			disconnect();
+		disconnect();
 	}
 	
 	private Thread disconnectImpl(final boolean interactive) {		
@@ -192,6 +193,7 @@ public class Connector {
 				disconnect = null;
 			}
 		}, sm.get("name") + ":Connector.disconnect");
+		disconnect.setDaemon(true);
 		
 		log.fine("Attempting to disconnect...");
 		disconnect.start();
@@ -276,6 +278,7 @@ public class Connector {
 				}
 			}
 		}, sm.get("name") + ":AutoReconnector");
+		reconnector.setDaemon(true);
 		reconnector.start();
 	}
 	

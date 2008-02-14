@@ -82,6 +82,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	public void onConnect() {
 		stop = false;
 		thread = new Thread(this, sm.name + ":LogUpdater");
+		thread.setDaemon(true);
 		thread.start();
 	}
 	
