@@ -31,7 +31,7 @@ public class GliderLogEntry extends LogEntry {
 	public static enum Type {
 		NORMAL, BEING_ATTACKED, BEING_FOLLOWED,
 		LOGGING_OUT, STUCK, DIED, EXCEPTION,
-		INVENTORY_NOT_GOING_UP,
+		INVENTORY_NOT_GOING_UP, FLIGHT_ERROR,
 		NEW_FRIEND, REMOVING_FRIEND
 	}
 	
@@ -107,6 +107,8 @@ public class GliderLogEntry extends LogEntry {
 			new Sound(Audible.Type.STUCK, jgm.util.Sound.File.STOP).play(true);
 		} else if (s.contains("Inventory doesn't seem to be going up")) {
 			type = Type.INVENTORY_NOT_GOING_UP;
+		} else if (s.contains("Couldn't activate flight, stopping")) {
+			type = Type.FLIGHT_ERROR;
 		}
 	}
 	

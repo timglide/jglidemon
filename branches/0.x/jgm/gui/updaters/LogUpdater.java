@@ -51,6 +51,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 	
 	private Long lastGliderException = null;
 	private Long lastInventoryNotGoingUp = null;
+	private Long lastFlightError = null;
 	
 	private Thread thread;
 	
@@ -285,11 +286,14 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				if (lastInventoryNotGoingUp != null)
 					log.finer("Restarter inventory check: " + (System.currentTimeMillis() - lastInventoryNotGoingUp) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.inventory.timeout")));
 				
-				if (jgm.Config.getInstance().getBool("restarter.exception.enabled")
-					&& lastGliderException != null
+				if (lastFlightError != null)					
+					log.finer("Restarter flight check: " + (System.currentTimeMillis() - lastFlightError) + " <=? " + (1000 * jgm.Config.c.getInt("restarter.flight.timeout")));
+				
+				if (lastGliderException != null
+					&& jgm.Config.getInstance().getBool("restarter.exception.enabled")
 					&& System.currentTimeMillis() - lastGliderException <= 1000 * jgm.Config.getInstance().getInt("restarter.exception.timeout")) {
 
-					java.util.Timer timer = new java.util.Timer(sm.name + ":Restarter");
+					java.util.Timer timer = new java.util.Timer(sm.name + ":ExceptionRestarter");
 					timer.schedule(new java.util.TimerTask() {			
 						public void run() {
 							log.info("Restarting glide after an exception");
@@ -304,28 +308,55 @@ public class LogUpdater implements Runnable, ConnectionListener {
 							this.cancel();
 						}
 					}, 5000);
+					
+					lastGliderException = null;
 				}
 				
-				if (jgm.Config.getInstance().getBool("restarter.inventory.enabled")
-						&& lastInventoryNotGoingUp != null
-						&& System.currentTimeMillis() - lastInventoryNotGoingUp <= 1000 * jgm.Config.c.getInt("restarter.inventory.timeout")) {
+				if (lastInventoryNotGoingUp != null
+					&& jgm.Config.getInstance().getBool("restarter.inventory.enabled")
+					&& System.currentTimeMillis() - lastFlightError <= 1000 * jgm.Config.c.getInt("restarter.inventory.timeout")) {
 
-						java.util.Timer timer = new java.util.Timer(sm.name + ":Restarter");
-						timer.schedule(new java.util.TimerTask() {			
-							public void run() {
-								log.info("Restarting glide after an inventory not going up message");
-								sm.gui.ctrlPane.start.doClick();
+					java.util.Timer timer = new java.util.Timer(sm.name + ":InventoryRestarter");
+					timer.schedule(new java.util.TimerTask() {			
+						public void run() {
+							log.info("Restarting glide after an inventory message");
+							sm.gui.ctrlPane.start.doClick();
 
-								String tmp = jgm.Config.c.get("restarter.onrestart");
-								if (tmp.equals("shrink"))
-									sm.gui.ctrlPane.shrink.doClick();
-								else if (tmp.equals("hide"))
-									sm.gui.ctrlPane.hide.doClick();
+							String tmp = jgm.Config.c.get("restarter.onrestart");
+							if (tmp.equals("shrink"))
+								sm.gui.ctrlPane.shrink.doClick();
+							else if (tmp.equals("hide"))
+								sm.gui.ctrlPane.hide.doClick();
 								
-								this.cancel();
-							}
-						}, 15000); // 15sec so bbag for example, can finish selling items
-					}
+							this.cancel();
+						}
+					}, 15000); // 15 seconds, if they're auto selling, it could lag
+					
+					lastInventoryNotGoingUp = null;
+				}
+				
+				if (lastFlightError != null
+					&& jgm.Config.getInstance().getBool("restarter.flight.enabled")
+					&& System.currentTimeMillis() - lastFlightError <= 1000 * jgm.Config.c.getInt("restarter.flight.timeout")) {
+
+					java.util.Timer timer = new java.util.Timer(sm.name + ":FlightRestarter");
+					timer.schedule(new java.util.TimerTask() {			
+						public void run() {
+							log.info("Restarting glide after a flight error message");
+							sm.gui.ctrlPane.start.doClick();
+
+							String tmp = jgm.Config.c.get("restarter.onrestart");
+							if (tmp.equals("shrink"))
+								sm.gui.ctrlPane.shrink.doClick();
+							else if (tmp.equals("hide"))
+								sm.gui.ctrlPane.hide.doClick();
+								
+							this.cancel();
+						}
+					}, 15000); // 15 seconds, again, if they're auto selling, it could lag
+					
+					lastFlightError = null;
+				}
 			}
 		} else if (e instanceof ChatLogEntry) {
 			ChatLogEntry e2 = (ChatLogEntry) e;

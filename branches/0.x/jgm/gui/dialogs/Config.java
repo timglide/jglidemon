@@ -104,6 +104,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JCheckBox restartOnInventory;
 	JSpinner restartOnInventoryTime;
 	
+	JCheckBox restartOnFlight;
+	JSpinner restartOnFlightTime;
+	
 	ButtonGroup onRestartGroup;
 	JRadioButton onRestartNothing;
 	JRadioButton onRestartShrink;
@@ -534,7 +537,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		stuck.add(restartOnExceptionTime, c);
 		
 		restartOnInventory = new JCheckBox("On Inventory Not Going Up");
-		restartOnInventory.setToolTipText("Try to restart when Glider stops when it can't resupply from a vendor");
+		restartOnInventory.setToolTipText("Try to restart when Glider stops when it can't resupply from a vendor.");
 		restartOnInventory.addChangeListener(this);
 		c.gridy++; c.gridx = 0; c.gridwidth = 2;
 		stuck.add(restartOnInventory, c);
@@ -543,12 +546,29 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		stuck.add(new JLabel("  Timeout (s): "), c);
 		
 		restartOnInventoryTime = Config.makeSpinner(Config.INT_SPINNER);
-		restartOnInventoryTime.setToolTipText("Glider will be restarted if an inventory not going up error occured within this many seconds before stopping");
+		restartOnInventoryTime.setToolTipText("Glider will be restarted if an inventory not going up error occured within this many seconds before stopping.");
 		restartOnInventoryTime.addChangeListener(this);
 		c.gridx++; c.weightx = 1.0;
 		stuck.add(restartOnInventoryTime, c);
 		
+		restartOnFlight = new JCheckBox("On Flight Error");
+		restartOnFlight.setToolTipText("<html>Try to restart when Glider stops a profile group when it can't interact with the flight master.<br>This would help with auto-vendoring/repairing profile groups.");
+		restartOnFlight.addChangeListener(this);
+		c.gridy++; c.gridx = 0; c.gridwidth = 2;
+		stuck.add(restartOnFlight, c);
+		
+		c.gridwidth = 1; c.weightx = 0.0; c.gridy++;
+		c.insets.bottom = GUI.PADDING;
+		stuck.add(new JLabel("  Timeout (s): "), c);
+		
+		restartOnFlightTime = Config.makeSpinner(Config.INT_SPINNER);
+		restartOnFlightTime.setToolTipText("Glider will be restarted if a flight error occured within this many seconds before stopping.");
+		restartOnFlightTime.addChangeListener(this);
+		c.gridx++; c.weightx = 1.0;
+		stuck.add(restartOnFlightTime, c);
+		
 		c.gridwidth = 2; c.weightx = 1.0; c.gridx = 0; c.gridy += 2;
+		c.insets.bottom = 0;
 		JLabel lbl = new JLabel("After restarting,");
 		lbl.setToolTipText("<html>Shrink, hide, or do nothing to the wow window when restarting.<br>This also affects when you send chat.");
 		stuck.add(lbl, c);
@@ -751,6 +771,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("restarter.exception.timeout", restartOnExceptionTime.getValue());
 		cfg.set("restarter.inventory.enabled", restartOnInventory.isSelected());
 		cfg.set("restarter.inventory.timeout", restartOnInventoryTime.getValue());
+		cfg.set("restarter.flight.enabled", restartOnFlight.isSelected());
+		cfg.set("restarter.flight.timeout", restartOnFlightTime.getValue());
 		
 		cfg.set("restarter.onrestart",
 			onRestartShrink.isSelected()
@@ -847,6 +869,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		} else if (e.getSource() == restartOnInventory) {
 			boolean state = restartOnInventory.isEnabled() && restartOnInventory.isSelected();
 			restartOnInventoryTime.setEnabled(state);
+		} else if (e.getSource() == restartOnFlight) {
+			boolean state = restartOnFlight.isEnabled() && restartOnFlight.isSelected();
+			restartOnFlightTime.setEnabled(state);
 		} else if (e.getSource() == enableWeb) {
 			boolean state = enableWeb.isEnabled() && enableWeb.isSelected();
 			
@@ -932,6 +957,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		restartOnExceptionTime.setValue(cfg.getInt("restarter.exception.timeout"));
 		restartOnInventory.setSelected(cfg.getBool("restarter.inventory.enabled"));
 		restartOnInventoryTime.setValue(cfg.getInt("restarter.inventory.timeout"));
+		restartOnFlight.setSelected(cfg.getBool("restarter.flight.enabled"));
+		restartOnFlightTime.setValue(cfg.getInt("restarter.flight.timeout"));
 		
 		String tmp = cfg.get("restarter.onrestart");
 		
@@ -955,6 +982,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		stateChanged(new ChangeEvent(enableStuck));
 		stateChanged(new ChangeEvent(restartOnException));
 		stateChanged(new ChangeEvent(restartOnInventory));
+		stateChanged(new ChangeEvent(restartOnFlight));
 		stateChanged(new ChangeEvent(enableWeb));
 	}
 	

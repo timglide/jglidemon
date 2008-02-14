@@ -13,9 +13,13 @@ Version 0.15
 - The Stuck configuration tab has been renamed Restarter.
   Additionally, options have been added to restart Glider
   when an exception log entry is received shortly before
-  a status entry indicating Glider stopped as well as when
-  "Inventory does not appear to be going up" (I have this
-  problem when BottomlessBag autosells it lags).
+  a status entry indicating Glider stopped, when
+  "Inventory does not appear to be going up" is received,
+  (I have this problem when BottomlessBag autosells it lags,
+  this affects profiles that have vendor waypoints),
+  and when "Couldn't activate light" is received when running
+  profile groups. There is a built in delay before sending the
+  /startglide command again for all options.
 - Renamed Urgent Log tab to Urgent and added sub-tabs for
   Logs and a new Followers tab that tracks "New friend",
   "Removing friend", and "Being followed by" Glider log entries.
