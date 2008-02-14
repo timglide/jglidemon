@@ -118,7 +118,8 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 	
 		//System.out.println("Adding [" + item.name + "]x" + i.getQuantity() + " to loot tab");
 		items[quality].add(i);
-		tables[quality].changeSelection(0, 1, false, false);
+		tables[quality].changeSelection(0, 0, false, false);
+		tables[quality].clearSelection();
 		doGoldPerHour();
 	}
 

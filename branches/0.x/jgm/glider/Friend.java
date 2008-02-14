@@ -24,7 +24,13 @@ import java.util.Date;
 
 public class Friend implements Comparable<Friend> {
 	public static enum Status {
-		ADDING, REMOVING, FOLLOWING
+		ADDED, REMOVED, FOLLOWING;
+		
+		public String toString() {
+			String s = super.toString();
+			
+			return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+		}
 	}
 	
 	public Date   timestamp = new Date();
@@ -36,7 +42,7 @@ public class Friend implements Comparable<Friend> {
 	public int    followingTimes = 0;
 	
 	public Friend(String name) {
-		this(name, null, null, Status.REMOVING);
+		this(name, null, null, Status.REMOVED);
 	}
 	
 	public Friend(String name, String id, String race, Status status) {
@@ -45,7 +51,7 @@ public class Friend implements Comparable<Friend> {
 		this.race = race;
 		this.status = status;
 		
-		if (status == Status.ADDING)
+		if (status == Status.ADDED)
 			encounters++;
 	}
 	
@@ -68,7 +74,7 @@ public class Friend implements Comparable<Friend> {
 	public void update(Friend f) {
 		status = f.status;
 		
-		if (status == Status.ADDING)
+		if (status == Status.ADDED)
 			encounters++;
 		
 		if (status == Status.FOLLOWING)

@@ -79,7 +79,7 @@ public class GliderLogEntry extends LogEntry {
 			
 			if (m.matches()) {
 				type = Type.NEW_FRIEND;
-				friend = new Friend(m.group(1), null, m.group(2), Friend.Status.ADDING);
+				friend = new Friend(m.group(1), null, m.group(2), Friend.Status.ADDED);
 			} else {
 				m = REMOVING_FRIEND_PATTERN.matcher(s);
 				

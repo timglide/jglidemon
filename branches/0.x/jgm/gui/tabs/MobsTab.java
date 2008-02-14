@@ -89,9 +89,11 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 			}
 		}
 		
+		// scroll to top and clear selection
 		table.changeSelection(
-			table.getRowCount() - 1, 1, false, false
+			0, 0, false, false
 		);
+		table.clearSelection();
 	}
 
 	public void actionPerformed(ActionEvent e) {

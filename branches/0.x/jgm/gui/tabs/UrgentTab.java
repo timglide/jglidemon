@@ -116,7 +116,7 @@ public class UrgentTab extends Tab implements Clearable {
 
 		private class FollowersTableModel extends AbstractTableModel {
 			private final String[] columnNames =
-				{"Last Seen", "Last Type", "# Encounters", "# Follow Alerts", "Name", "ID", "Race/Class"};
+				{"Last Seen", "Last Event", "# Encounters", "# Follow Alerts", "Name", "ID", "Race/Class"};
 			
 			private Vector<Friend> entries;
 
