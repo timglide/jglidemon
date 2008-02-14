@@ -52,8 +52,14 @@ public class Friend implements Comparable<Friend> {
 		this.race = race;
 		this.status = status;
 		
-		if (status == Status.ADDED)
-			encounters++;
+		switch (status) {
+			case FOLLOWING:
+				followingTimes++;
+		}
+		
+		// this is necessary in case a friend is following
+		// or removed before jgm sees an added message
+		encounters++;
 	}
 	
 	public boolean equals(Object o) {
