@@ -20,7 +20,7 @@
  */
 package jgm;
 
-import jgm.util.*;
+import jgm.util.Properties;
 
 import java.util.logging.*;
 import java.io.*;
@@ -33,15 +33,6 @@ import java.io.*;
  */
 public class Config {
 	static Logger log = Logger.getLogger(Config.class.getName());
-	
-	// all the old keys that need to be converted to
-	// servers.0.xxx
-	static final String[] OLD_KEYS = {
-		"net.host", "net.port", "net.password",
-		"window.", "general.lasttab",
-		"screenshot.scale", "screenshot.buffer",
-		"web.enabled", "web.port"
-	};
 	
 	static Properties DEFAULTS = new Properties();
 	
@@ -91,7 +82,7 @@ public class Config {
 		if (iniFile.exists() && !propsFile.exists()) {
 			log.info("Converting JGlideMon.ini to new format");
 			
-			QuickIni qi = new QuickIni(iniFile.getName());
+			jgm.util.QuickIni qi = new jgm.util.QuickIni(iniFile.getName());
 			
 			java.util.Iterator<String> i = qi.getAllSectionNames();
 				
@@ -120,6 +111,15 @@ public class Config {
 				System.exit(-1);
 			}
 		}
+		
+		// all the old keys that need to be converted to
+		// servers.0.xxx
+		final String[] OLD_KEYS = {
+			"net.host", "net.port", "net.password",
+			"window.", "general.lasttab",
+			"screenshot.scale", "screenshot.buffer",
+			"web.enabled", "web.port"
+		};
 		
 		String[] keys = p.keySet().toArray(new String[] {});
 		for (String key : keys) {
