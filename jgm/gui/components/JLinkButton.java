@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.components;
 
 import java.awt.Color;
@@ -18,6 +38,7 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.metal.MetalButtonUI;
 
+@SuppressWarnings("unused")
 public class JLinkButton extends JButton {
   private static final String uiString = "LinkButtonUI";
 
@@ -101,7 +122,7 @@ public class JLinkButton extends JButton {
     addActionListener(new java.awt.event.ActionListener() {
     	public void actionPerformed(java.awt.event.ActionEvent e) {
     		if (buttonURL != null) {
-    			jgm.Util.openURL(buttonURL.toExternalForm());
+    			jgm.util.Util.openURL(buttonURL.toExternalForm());
     			JLinkButton.this.setLinkVisited(true);
     		}
     	}
@@ -263,6 +284,7 @@ class BasicLinkButtonUI extends MetalButtonUI {
     return ui;
   }
 
+  @SuppressWarnings("unused")
   protected void paintText(Graphics g, JComponent com, Rectangle rect,
       String s) {
     JLinkButton bn = (JLinkButton) com;

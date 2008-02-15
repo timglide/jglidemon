@@ -1,10 +1,34 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm;
 
-import javax.swing.JOptionPane;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
-import jgm.glider.*;
-import jgm.gui.updaters.*;
-import jgm.util.*;
+import javax.swing.UIManager;
+
+import jgm.logging.Log;
+import jgm.gui.Splash;
+
+// this line edited so the svn revision gets updated.
 
 /**
  * The main program.
@@ -13,112 +37,193 @@ import jgm.util.*;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.10 beta";
-	public static boolean debug = true;
+	public static final String version = "0.15";
+	public static final String _revision = "$Revision$";
+	public static final String revision = _revision.substring(1, _revision.length() - 1);
+	public static final String _date = "$Date$";
+	public static final String date = _date.substring(1, _date.length() - 1);
+	
+	public static boolean debug = false;
 	
 	public static JGlideMon instance;
-	
-	public  Conn          keysConn;
-	private Config        cfg;
-	public  GUI           gui;
-	private StatusUpdater status;
-	private LogUpdater    logUpdater;
-	public  SSUpdater     ssUpdater;
-
-	public Connector connector;
+	public static Config        cfg;
 	
 	public JGlideMon() {
 		instance = this;
-		cfg = new Config();		
 		init();
 	}
 	
 	private void init() {
-		try {
-			Class.forName("jgm.glider.log.RawChatLogEntry");
-		} catch (Throwable e) {}
+		splash.setStatus("Loading Settings...");
 		
+		// initialize logger
 		Log.reloadConfig();
-
+		cfg = new Config();
+		
+		// yeah... so that if it converts JGlideMon.ini
+		// the log line for it looks nice but this
+		// needs to be called again in case the config
+		// has log.debug=true
+		Log.reloadConfig();
+		
 		try {
+			splash.setStatus("Loading Profiles...");
 			jgm.glider.Profile.Cache.loadProfiles();
 		} catch (Throwable e) {} // doesn't matter here 
-		
-	  	connector = new Connector();
-		gui = new GUI();
 
+				
 		// put this here so that the tts config options will
 		// be enabled if tts is available and JGM has yet to
 		// be configured for the first time
-		Sound.init();
-		Speech.init();
+		splash.setStatus("Initializing Sound Resources...");
+		jgm.util.Sound.init();
+
+		splash.setStatus("Initializing Text-to-Speech Resources...");
+		jgm.util.Speech.init();
 		
-		if (!jgm.Config.iniFileExists() || cfg.getString("net", "host").equals("")) {
-			JOptionPane.showMessageDialog(GUI.frame,
-				Locale._("Main.notconfiguredtext"),
-				Locale._("Main.configrequired"),
-				/*"Please enter the remote host, port, and password.\n" +
-				"Next, click Save Settings, then click Connect.\n\n" +
-				"Remember to click Save Settings any time you change a setting.\n" +
-				"You may access the configuration screen later via the File menu.",
-				"Configuration Required",*/
-				JOptionPane.INFORMATION_MESSAGE);
-			
-			// select the network tab
-			gui.showConfig(1);
+		splash.setStatus("Initializing Server Managers...");
+		
+		ServerManager.loadServers();
+				
+		boolean atLeastOneRunning = false;
+		
+		// resume all the servers
+		synchronized (ServerManager.managers) {
+			for (ServerManager sm : ServerManager.managers) {
+				if (sm.getBool("enabled")) {
+					splash.setStatus("Initializing Server Manager \"" + sm.name + "\"...");
+					
+					atLeastOneRunning = true;
+					ServerManager.resumeServer(sm);
+				}
+			}
 		}
 		
-		gui.makeVisible();
+		// add a server if there are none
+		if (ServerManager.managers.size() == 0) {
+			ServerManager.addServer();
+		}
 		
-		// create a seperate thread to connect in case it
-		// takes a while to connect it won't slow the gui
-		Runnable r = new Runnable() {
-			public void run() {
-				keysConn = new Conn();
-				Connector.addListener(new ConnectionAdapter() {
-					public Conn getConn() {
-						return keysConn;
-					}
-				});
-				logUpdater = new LogUpdater(gui.tabsPane);
-				Connector.addListener(logUpdater);
-				ssUpdater  = new SSUpdater(gui.tabsPane.screenshotTab);
-				Connector.addListener(ssUpdater);
-				status     = new StatusUpdater();
-				Connector.addListener(status);
-				status.addObserver(gui);
-				status.addObserver(ssUpdater);
-				
-				Connector.connect();
-			}
-		};
-
-		new Thread(r, "JGlideMon.Init").start();
+		// if none are running force the first to resume
+		if (!atLeastOneRunning) {
+			ServerManager sm = ServerManager.managers.iterator().next();
+			
+			splash.setStatus("Initializing Server Manager \"" + sm.name + "\"...");
+			
+			sm.set("enabled", true);
+			ServerManager.resumeServer(sm);
+		}
 		
-		gui.makeVisible();
-
+		splash.setStatus("JGlideMon Loaded Successfully!");
+		
 		// not critical to get these loaded before the gui shows
-		jgm.wow.Item.Cache.loadIcons();
-		jgm.wow.Item.Cache.loadItems();
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				jgm.wow.Item.Cache.loadIcons();
+				jgm.wow.Item.Cache.loadItems();	
+			}
+		}, "JGlideMon.LoadCache");
+		
+		t.start();
+		
+		try {
+			Thread.sleep(1000); // yeah yeah, but it's reassuring to see that it was successful...
+		} catch (InterruptedException e) {}
+
+		splash.setVisible(false);
+		splash.dispose();
+		splash = null;
 	}
 
-	public void destroy() {
-		if (Connector.isConnected()) {
-			try {
-				Thread t = Connector.disconnect();
-				t.join();
-			} catch (InterruptedException e) {}
-		}
-		
-		Speech.destroy();
-		jgm.wow.Item.Cache.saveIcons();
-		jgm.wow.Item.Cache.saveItems();
-		jgm.Config.writeIni();
-		
-		System.exit(0);
+	public Thread destroy() {
+		return destroy(false);
 	}
 	
+	public Thread destroy(final boolean fromHook) {
+		if (!fromHook)
+			splash = new Splash("Shutting Down JGlideMon...");
+		
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				// so it won't try to say disconnected
+				jgm.util.Speech.destroy();
+				
+				synchronized (ServerManager.managers) {
+					for (ServerManager sm : ServerManager.managers) {
+						if (sm.state == ServerManager.State.ACTIVE) {
+							if (null != splash)
+								splash.setStatus("Shutting Down Server Manager \"" + sm.name + "\"...");
+							sm.destroy(fromHook);
+						}
+					}
+				}
+				
+				if (null != splash)
+					splash.setStatus("Caching Icons and Items...");
+				jgm.wow.Item.Cache.saveIcons();
+				jgm.wow.Item.Cache.saveItems();
+				
+				if (null != splash)
+					splash.setStatus("Saving Settings...");
+				ServerManager.saveConfig();
+				jgm.Config.write();
+				
+				if (null != splash)
+					splash.dispose();
+				
+				instance = null;
+				
+				if (!fromHook)
+					System.exit(0);
+			}
+		}, "JGlideMon.destroy");
+		
+		t.start();
+		
+		return t;
+	}
+	
+	@Override
+	protected void finalize() {
+		// pretend it's like the shutdown hook
+		try {
+			destroy(true).join();
+		} catch (InterruptedException e) {}
+	}
+	
+	static final Logger log = Logger.getLogger(JGlideMon.class.getName());
+	public static Splash splash;
+	
 	public static void main(String[] args) {
-		new JGlideMon();
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			public void uncaughtException(Thread thread, Throwable thrown) {
+				log.log(Level.WARNING, "Exception in thread \"" + thread.getName() + "\"", thrown);
+			}
+		});
+		
+		try {
+			// Set System L&F
+			UIManager.setLookAndFeel(
+				UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.err.println("Coultn'd set L&F: " + e.getMessage());
+		}
+		
+		splash = new Splash("Loading JGlideMon...");
+		
+		new Thread(new Runnable() {
+			public void run() {
+				new JGlideMon();
+				
+				Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+					public void run() {
+						if (null != JGlideMon.instance)
+							try {
+								JGlideMon.instance.destroy(true).join();
+							} catch (InterruptedException e) {}
+					}
+				}, "JGlideMon.ShutdownHook"));
+			}
+		}, "JGlideMon.main").start();
 	}
 }

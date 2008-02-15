@@ -1,4 +1,24 @@
 /*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
+/*
  * Written by Mike Wallace (mfwallace at gmail.com).  Available
  * on the web site http://mfwallace.googlepages.com/.
  * 
@@ -693,8 +713,8 @@ public class QuickIni
         (sectionName == null) || (sectionName.length() < 1) ||
         (propertyName == null) || (propertyName.length() < 1))
     {
-//    	if (jgm.JGlideMon.debug)
-//    		System.out.println(sectionName + "." + propertyName + " def val 1");
+    	//if (jgm.JGlideMon.debug)
+    	//	System.out.println(sectionName + "." + propertyName + " def val 1");
       return defaultValue;
     }
     
@@ -703,8 +723,8 @@ public class QuickIni
     if ((props == null) || (props.size() < 1))
     {
       // Return
-//    	if (jgm.JGlideMon.debug)
-//    		System.out.println(sectionName + "." + propertyName + " def val 2");
+    	//if (jgm.JGlideMon.debug)
+    	//	System.out.println(sectionName + "." + propertyName + " def val 2");
       return defaultValue;
     }
     
@@ -713,8 +733,8 @@ public class QuickIni
     if (value == null)
     {
       // It was null, so it wasn't found
-//    	if (jgm.JGlideMon.debug)
-//    		System.out.println(sectionName + "." + propertyName + " def val 3");
+    	//if (jgm.JGlideMon.debug)
+    	//	System.out.println(sectionName + "." + propertyName + " def val 3");
       return defaultValue;
     }
     

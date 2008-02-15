@@ -1,8 +1,27 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.wow;
 
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.ImageIcon;
 import java.util.*;
 import java.util.logging.*;
@@ -15,7 +34,7 @@ import java.io.*;
  */
 public class Item implements Comparable<Item>, Serializable {
 	static Logger log = Logger.getLogger(Item.class.getName());
-
+	
 	public static final Font TITLE_FONT = new Font(null, Font.BOLD, 20);
 	
 	private transient static Map<Integer, Item> itemCache = new HashMap<Integer, Item>();
@@ -314,10 +333,10 @@ public class Item implements Comparable<Item>, Serializable {
 			try {
 				icon = new javax.swing.ImageIcon(
 					   new java.net.URL(ICON_BASE + iconPath));
-				icon = jgm.Util.resizeIcon(icon, 32, 32);
+				icon = jgm.util.Util.resizeIcon(icon, 32, 32);
 				iconCache.put(iconPath, icon);
 			} catch (java.net.MalformedURLException e) {
-				// shouldn't get here...
+				// shouldn't get in here...
 				System.err.println("Unable to make icon in Item: " + e.getMessage());
 				icon = null;
 			}

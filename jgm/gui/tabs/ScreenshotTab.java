@@ -1,6 +1,25 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.tabs;
 
-import jgm.*;
 import jgm.glider.*;
 import jgm.gui.updaters.SSUpdater;
 
@@ -17,26 +36,17 @@ public class ScreenshotTab extends Tab
 	implements ActionListener, ChangeListener, MouseListener,
 				KeyListener {
 	static Logger log = Logger.getLogger(ScreenshotTab.class.getName());
-
-	private static Conn conn = null;
-	private static SSUpdater updater = null;
 	
-	public JCheckBox keysEnabled;
+	private Conn conn = null;
+	private SSUpdater updater = null;
+
+	public JScrollPane jsp;
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
-
-	private JButton refresh;
 	
-	public ScreenshotTab() {
-		super(new BorderLayout(), "Screenshot");
+	public ScreenshotTab(jgm.gui.GUI gui) {
+		super(gui, new BorderLayout(), "Screenshot");
 		
-		JPanel jp = new JPanel(new GridBagLayout());
-		c.weightx = 0.0;
-		keysEnabled = new JCheckBox("Enable Sending Keystrokes", false);
-		keysEnabled.setFocusable(false);
-		jp.add(keysEnabled, c);
-		add(jp, BorderLayout.NORTH);
-
 		ssLabel = new JLabel();
 		ssLabel.setHorizontalAlignment(JLabel.CENTER);
 		ssLabel.addMouseListener(this);
@@ -45,42 +55,23 @@ public class ScreenshotTab extends Tab
 		JPanel p = new JPanel();
 		p.add(ssLabel);
 		
-		add(p, BorderLayout.CENTER);
-		
-		refresh = new JButton("Refresh Screenshot Immediately");
-		refresh.setFocusable(false);
-		refresh.addActionListener(this);
-		add(refresh, BorderLayout.SOUTH);
+		jsp = new JScrollPane(p);
+		// jsp.setBorder(null);
+		// jsp.setBorder(BorderFactory.createLineBorder(Color.red, 10));
+		add(jsp, BorderLayout.CENTER);
 		
 		checkNulls();
-		
-		setEnabled(false);
-		
-		Connector.addListener(new ConnectionAdapter() {
-			public void connectionEstablished() {
-				setEnabled(true);
-			}
-			
-			public void disconnecting() {
-				setEnabled(false);
-			}
-		});
 	}
 	
 	private void checkNulls() {
-		if (conn == null) conn = JGlideMon.instance.keysConn;
-		if (updater == null) updater = JGlideMon.instance.ssUpdater;
-	}
-	
-	public void setEnabled(boolean b) {
-		//super.setEnabled(b);
-		refresh.setEnabled(b);
+		if (conn == null) conn = gui.sm.keysConn;
+		if (updater == null) updater = gui.sm.ssUpdater;
 	}
 	
 	public void actionPerformed(ActionEvent e) {
 		checkNulls();
 		
-		if (e.getSource() == refresh) {
+		if (e.getSource() == gui.menu.refreshSS) {
 			log.finer("Want to update SS");
 			
 			if (updater != null && updater.idle) {
@@ -112,7 +103,9 @@ public class ScreenshotTab extends Tab
 
 	public void mouseClicked(MouseEvent e) {	
 		checkNulls();
-		if (!Connector.isConnected() || !keysEnabled.isSelected()) return;
+		if (!gui.sm.connector.isConnected() ||
+			!gui.menu.sendKeys.isSelected())
+			return;
 		
 		Dimension s = ssLabel.getSize();
 		int x = e.getX(); int y = e.getY();
@@ -126,10 +119,10 @@ public class ScreenshotTab extends Tab
 		
 		//System.out.println(btn + " click @ " + x + "," + y + " (" + xp + "," + yp + ") [" + s.width + "x" + s.height + "]");
 		try {
-			conn.send("/setmouse " + xp + "/" + yp);
-			log.fine(conn.readLine()); conn.readLine();
-			conn.send("/clickmouse " + btn);
-			log.fine(conn.readLine()); conn.readLine();
+			log.fine(
+				Command.getSetMouseCommand(xp, yp).getResult(conn));
+			log.fine(
+				Command.getClickMouseCommand(btn).getResult(conn));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -138,14 +131,16 @@ public class ScreenshotTab extends Tab
 		//}
 	}
 	
-	private static Map<Integer, Boolean> keysDown
+	private Map<Integer, Boolean> keysDown
 		= new HashMap<Integer, Boolean>();
 	
 	public void keyPressed(KeyEvent e) {
-		if (!this.isCurrentTab() || !keysEnabled.isSelected()) return;
+		if (!this.isCurrentTab() ||
+			!gui.menu.sendKeys.isSelected())
+			return;
 		
 		checkNulls();
-		if (!Connector.isConnected()) return;
+		if (!gui.sm.connector.isConnected()) return;
 		
 		int code = e.getKeyCode();
 		
@@ -166,20 +161,23 @@ public class ScreenshotTab extends Tab
 		keysDown.put(code, Boolean.TRUE);
 		
 		try {
-			conn.send("/holdkey " + code);
-			log.fine(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+			log.fine(
+				Command.getHoldKeyCommand(code).getResult(conn)
+				+ " " + KeyEvent.getKeyText(code));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 	
 	public void keyReleased(KeyEvent e) {
-		if (!this.isCurrentTab() || !keysEnabled.isSelected()) return;
+		if (!this.isCurrentTab() ||
+			!gui.menu.sendKeys.isSelected())
+			return;
 		
 		checkNulls();
 		//System.out.println(e);
 
-		if (!Connector.isConnected()) {
+		if (!gui.sm.connector.isConnected()) {
 			keysDown.clear();
 			return;
 		}
@@ -194,8 +192,9 @@ public class ScreenshotTab extends Tab
 		}
 
 		try {
-			conn.send("/releasekey " + code);
-			log.fine(conn.readLine() + " " + KeyEvent.getKeyText(code)); conn.readLine();
+			log.fine(
+				Command.getReleaseKeyCommand(code).getResult(conn)
+				+ " " + KeyEvent.getKeyText(code));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

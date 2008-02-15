@@ -1,6 +1,28 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.glider.log;
 
-import java.util.Date;
+import jgm.gui.updaters.LogUpdater;
+
+import java.util.*;
 import java.util.regex.*;
 import java.util.logging.*;
 import java.text.SimpleDateFormat;
@@ -13,8 +35,8 @@ import java.text.SimpleDateFormat;
  */
 public class LogEntry implements Comparable<LogEntry> {
 	protected static Logger log = Logger.getLogger(LogEntry.class.getName());
-
-	protected Date timestamp = new Date();
+	
+	public    Date timestamp = new Date();
 	protected String type = "Unknown";
 	
 	protected String rawText = null;
@@ -44,8 +66,20 @@ public class LogEntry implements Comparable<LogEntry> {
 		return rawText;
 	}
 
+	public String getPlainText() {
+		return rawText;
+	}
+	
+	public boolean supportsHtmlText() {
+		return false;
+	}
+	
+	public String getHtmlText() {
+		return rawText;
+	}
+	
 	public String getText() {
-		return getRawText();
+		return rawText;
 	}
 
 	/**
@@ -57,25 +91,106 @@ public class LogEntry implements Comparable<LogEntry> {
 		return this.timestamp.compareTo(e.timestamp);
 	}
 
+	public Date getTimestamp() {
+		return timestamp;
+	}
+	
+	
+	private static SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+	
 	/**
 	 * Returns the timestamp in HH:mm:ss format.
 	 * @return The formatted timestamp
 	 */
+	public static String getFormattedTimestamp(Date d) {
+		return df.format(d);
+	}
+	
 	public String getFormattedTimestamp() {
-		SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-		return df.format(timestamp);
+		return getFormattedTimestamp(timestamp);
 	}
 
 	private static Pattern TIMESTAMP_PATTERN =
 		Pattern.compile("^\\s*\\[\\d+(?::\\d\\d)+\\s*(?:AM|PM)?\\]\\s*(.*)$", Pattern.CASE_INSENSITIVE);
 	
+	private static Pattern LOGFILE_TIMESTAMP_PATTERN =
+		Pattern.compile("^(\\d+):(\\d+)\\s+(AM|PM)\\s+(.*)$");
+	
+	private static Pattern LOGFILE_DEBUG_TIMESTAMP_PATTERN =
+		Pattern.compile("^\\d+:\\d+:\\d+\\.\\d+\\s+.*$");
+	
+	private static Calendar cal = new GregorianCalendar();
+	
+	public static LogEntry factory(LogUpdater updater, String s) {
+		return factory(updater, s, LogFile.None);
+	}
+	
 	/**
 	 * Create a subclass of LogEntry depending on the
 	 * content of s.
 	 * @param s The raw String to parse
+	 * @param logFile The type of log file s is from, if applicable
+	 *                (it's format slightly different than from the telnet)
 	 * @return The appropriate subclass of LogEntry
 	 */
-	public static LogEntry factory(String s) {
+	public static LogEntry factory(LogUpdater updater, String s, LogFile logFile) {
+		Date overrideDate = null;
+		Matcher m = null;
+		
+		switch (logFile) {
+			case Chat:
+			case _NormalChat:
+			case Combat:
+//				System.out.println("PARSING: " + s);
+				// parse the timestamp
+				m = LOGFILE_TIMESTAMP_PATTERN.matcher(s);
+				
+				if (!m.matches()) {
+					m = LOGFILE_DEBUG_TIMESTAMP_PATTERN.matcher(s);
+					
+					if (m.matches()) {
+						log.finer("Ignoring debug line while parsing log file");
+						return null;
+					}
+				}
+				
+//				System.out.println("  Parsed Time");
+				
+				cal.setTime(new Date());
+				
+				if (m.matches()) {
+					cal.set(Calendar.AM_PM, m.group(3).equals("AM") ? Calendar.AM : Calendar.PM);
+					cal.set(Calendar.HOUR, Integer.parseInt(m.group(1)));
+					cal.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
+					cal.set(Calendar.SECOND, 0);
+					overrideDate = cal.getTime();
+					
+					// remove the timestamp;
+					s = m.group(4);
+				}
+				
+//				System.out.println("  1st: " + s);
+				// add the correct type
+				String prepend = "";
+				
+				switch (logFile) {
+					case Chat: prepend = "[ChatRaw] "; break;
+					case _NormalChat: prepend = "[Chat] "; break;
+					case Combat: prepend = "[Combat] "; break;
+				}
+				
+				s = prepend + s;
+//				System.out.println("  final: " + s);
+				break;
+				
+			case None:
+				break;
+				
+			default:
+				log.warning("Invalid LogFile type while parsing line: " + logFile.toString());
+				return null;
+		}
+				
 		String[] parts = s.split(" ", 2);
 
 		if (parts.length != 2) {
@@ -83,11 +198,23 @@ public class LogEntry implements Comparable<LogEntry> {
 			return null;
 		}
 
-		String type    = parts[0].substring(1, parts[0].length() - 1);
-		String rawText = parts[1];
+		String type    = null;
+		String rawText = null;
 
+		// i don't know why but rarely an exception is thrown here
+		// added the try/catch just to be safe
+		try {
+			type    = parts[0].substring(1, parts[0].length() - 1);
+			rawText = parts[1];
+		} catch (Throwable t) {
+			log.log(Level.WARNING, "Invalid LogEntry line", t);
+			log.warning("Raw line: " + s);
+			type = "UNKNOWN";
+			rawText = t.getClass().getName() + ": " + t.getMessage();
+		}
+		
 		// remove leading timestamp in case user has a timestamp mod
-		Matcher m = TIMESTAMP_PATTERN.matcher(rawText);
+		m = TIMESTAMP_PATTERN.matcher(rawText);
 		
 		if (m.matches()) {
 			rawText = m.group(1);
@@ -105,11 +232,16 @@ public class LogEntry implements Comparable<LogEntry> {
 		} else if (type.equals("ChatRaw")) {
 			ret = new RawChatLogEntry(rawText);
 		} else if (type.equals("Combat")) {
-			ret = new CombatLogEntry(rawText);
+			ret = CombatLogEntry.factory(updater, rawText);
+//			ret = new CombatLogEntry(rawText);
 		} else if (type.equals("Chat")) {
 			ret = ChatLogEntry.factory(rawText);
 		} else {
 			ret = new LogEntry(type, rawText);
+		}
+		
+		if (overrideDate != null) {
+			ret.timestamp = overrideDate;
 		}
 
 		return ret;
