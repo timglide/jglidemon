@@ -21,7 +21,7 @@ import javax.sound.sampled.SourceDataLine;
  */
 // see http://www.anyexample.com/programming/java/java_play_wav_sound_file.xml
 public class Sound extends Thread {
-	static Logger log = Logger.getLogger(SoundPlayer.class.getName());
+	static Logger log = Logger.getLogger(Sound.class.getName());
 	
 	public enum File {
 		WHISPER        ("Whisper.wav"),
@@ -44,7 +44,7 @@ public class Sound extends Thread {
 				uri = f.exists() ? f.toURI() :
 					jgm.JGlideMon.class.getResource("resources/sounds/" + name).toURI();
 			} catch (java.net.URISyntaxException e) {				
-				log.log(Level.WARNING, "Exception instantiating SoundPlayer.File", e);
+				log.log(Level.WARNING, "Exception instantiating Sound.File", e);
 				System.exit(-1);
 			}
 		}
@@ -90,7 +90,7 @@ public class Sound extends Thread {
 		try {
 			this.url = uri.toURL();
 		} catch (java.net.MalformedURLException e) {
-			log.log(Level.WARNING, "Exception instantiating SoundPlayer", e);
+			log.log(Level.WARNING, "Exception instantiating Sound", e);
 			System.exit(-1);
 		}
 		

@@ -28,7 +28,7 @@ import javax.swing.UIManager;
 import jgm.logging.Log;
 import jgm.gui.Splash;
 
-// this line edited so the svn revision gets updated.
+// this line edited so the svn revision gets updated
 
 /**
  * The main program.
@@ -75,9 +75,6 @@ public class JGlideMon {
 		// put this here so that the tts config options will
 		// be enabled if tts is available and JGM has yet to
 		// be configured for the first time
-		splash.setStatus("Initializing Sound Resources...");
-		jgm.util.Sound.init();
-
 		splash.setStatus("Initializing Text-to-Speech Resources...");
 		jgm.util.Speech.init();
 		

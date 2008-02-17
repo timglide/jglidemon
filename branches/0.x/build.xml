@@ -114,8 +114,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<copy todir="${bin_dir}/jgm/resources">
 			<fileset dir="${src_dir}/jgm/resources"
 				includes="httpd/**/*,images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav"
-				excludes="**/*.psd,**/psd/,**/gif/"/>
+				excludes="**/fonts/,**/*.psd,**/psd/,**/gif/"/>
 		</copy>
+		<mkdir dir="${bin_dir}/sounds"/>
 	</target>
 
 	<target name="compress_httpd_resources"
@@ -153,9 +154,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}/lib">
 			<fileset dir="${src_dir}/lib" includes="**/*"/>
-		</copy>
-		<copy todir="${bin_dir}">
-			<fileset dir="${src_dir}" includes="*.properties"/>
 		</copy>
 	</target>
 
@@ -262,7 +260,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="core_zip" depends="jars,libs,docs"
 			description="Create ${core_zip}">
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,Profiler.jar,Profiler.jar.MD5"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,Profiler.jar,Profiler.jar.MD5,sounds"/>
 		</zip>
 	</target>
 

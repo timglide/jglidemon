@@ -32,6 +32,11 @@ Version 0.15
   to shrink/hide/do nothing to the WoW window after JGM
   has restarted Glider. This also affects when you send
   chat.
+- Added support for custom sounds. If you want to replace a sound,
+  create a directory called "sounds" and drop in an aptly named
+  WAV file. The files you can replace are: "Whisper.wav",
+  "GMWhisper.wav", "PlayerAttack.wav", "PlayerNear.wav",
+  "GlideStop.wav".
 
 Version 0.14
 ------------
