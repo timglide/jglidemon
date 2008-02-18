@@ -178,12 +178,12 @@ public class Conn {
 //					}
 				} catch (IOException e) {}
 			}
-			
+		} catch (Throwable e) {
+			log.log(Level.SEVERE, "Exception during close", e);
+		} finally {
 			if (in != null) in.close();
 			if (out != null) out.close();
 			if (s != null) s.close();
-		} catch (Throwable e) {
-			log.log(Level.SEVERE, "Exception during close", e);
 		}
 		
 		in = null; out = null; s = null;
