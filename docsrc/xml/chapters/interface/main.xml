@@ -1,0 +1,58 @@
+<section id="chapters.interface.main">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>main</primary><secondary>interface</secondary></indexterm>
+  <title>Main Interface</title>
+  
+  <para>
+		  The main interface is composed of the following components:
+		  <itemizedlist>
+				  <listitem>Character Info Pane</listitem>
+				  <listitem>Target Info Pane</listitem>
+				  <listitem>Control Pane</listitem>
+				  <listitem>Experience Pane</listitem>
+				  <listitem>Tabs Pane</listitem>
+				  <listitem>Status Bar</listitem>
+		  </itemizedlist>
+  </para>
+
+  <screenshot>
+		  <screeninfo>Main Window</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/main.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <para>
+		  The character info pane displays your character's name, class,
+		  level, health, mana, and heading. Additioinally, an icon representing
+		  the class is displayed.
+  </para>
+  <para>
+		  The target info pane displays your target's name, level, and
+		  health as well as the number of kills, loots, and deaths that
+		  Glider has accumulated since it last started running a profile.
+  </para>
+  <para>
+		  The control pane provides buttons that allow you to connect to/
+		  disconnect from Glider, start and stop Glider, and to restore,
+		  shrink, and hide the WoW window.
+  </para>
+  <para>
+		  The experience pane displays your estimated time to level,
+		  your current experience, the total experience needed to level,
+		  the experience percentage, and experience per hour.
+  </para>
+  <para>
+		  The tabs pane contains the various tabs that are described
+		  in the next section.
+  </para>
+  <para>
+		  The status bar informs you when you are connected or disconnected
+		  from Glider, if Glider is attached, what profile Glider is
+		  currently running, and the status when the screenshot is
+		  being updated.
+  </para>
+</section>

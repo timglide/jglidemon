@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+
+  <!ENTITY % file.entities SYSTEM "../entities/file-entities.ent">
+
+  %file.entities;
+
+]>
+
+<book>
+  &bookinfo;
+  &introduction;
+
+  &chapters.features;
+  &chapters.installation;
+  &chapters.upgrading;
+  &chapters.config;
+  &chapters.interface;
+  &chapters.multiglide;
+  &chapters.profiles;
+  &chapters.web;
+
+  &manual-index;
+</book>

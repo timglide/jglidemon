@@ -1,0 +1,42 @@
+<section id="chapters.installation.requirements">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>installation</primary><secondary>requirements</secondary></indexterm>
+  <title>Requirements</title>
+  
+  <para>
+		  In order to run JGlideMon, you first need to install Java.
+		  JGlideMon should run on Java 1.5, but some features are only available
+		  with Java 1.6+. You can download and install Java from
+		  <ulink url="http://www.java.com">Java's web site</ulink>.
+  </para>
+
+  <para>
+		  JGlideMon also requires that you enable the remote server in
+		  Glider's configuration. In order to do this,
+
+		  <orderedlist>
+				  <listitem>Open Glider's configuration window by clicking the button.
+						  <screenshot>
+								  <screeninfo>Glider Window</screeninfo>
+								  <imageobject>
+										  <imagedata fileref="images/chapters/installation/glider_config_button.jpg" format="JPG" />
+								  </imageobject>
+						  </screenshot>
+				  </listitem>
+				  <listitem>On the "General" tab, ensure "Enable" is checked in the "Remote Control" section.
+						  <screenshot>
+								  <screeninfo>Glider Remote Configuration</screeninfo>
+								  <imageobject>
+										  <imagedata fileref="images/chapters/installation/glider_config_remote.jpg" format="JPG" />
+								  </imageobject>
+						  </screenshot>
+				  </listitem>
+				  <listitem>Note the port number. By default, it is 3200. You may change it if you wish.</listitem>
+				  <listitem>Enter a password. Remember this as well.</listitem>
+				  <listitem>Click "Ok" to save and close the configuration window.</listitem>
+		  </orderedlist>
+  </para>
+</section>

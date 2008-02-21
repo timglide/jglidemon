@@ -1,0 +1,113 @@
+<section id="chapters.interface.tabs.chat">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>chat</primary><secondary>tab</secondary></indexterm>
+  <title>Chat Tab</title>
+  
+  <para>
+		  The Chat Tab allows you to review all chat log entries that have
+		  occured since you connected to Glider. They are colored similarly
+		  to how they appear in-game to make it easier to pick out lines
+		  of interest.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Chat Tab</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/chat_tab.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+
+  <para>
+		  The following sub-tabs help by separating specific types
+		  of chat:
+
+		  <itemizedlist>
+				  <listitem>All Chat</listitem>
+				  <listitem>Public Chat</listitem>
+				  <listitem>Whisper/Say/Yell</listitem>
+				  <listitem>Guild</listitem>
+		  </itemizedlist>
+  </para>
+
+  <section id="chapters.interface.tabs.chat.sendchat">
+		  <indexterm><primary>send</primary><secondary>chat</secondary></indexterm>
+		  <title>Sending Chat</title>
+
+		  <para>
+				  From the bottom of this tab, you can send chat. In order to
+				  do so, you must select the type of message you wish to send.
+				  The options are:
+				  <itemizedlist>
+						  <listitem>Whisper</listitem>
+						  <listitem>Reply</listitem>
+						  <listitem>Say</listitem>
+						  <listitem>Guild</listitem>
+						  <listitem>Raw</listitem>
+				  </itemizedlist>
+		  </para>
+		  <para>
+				  When sending a whisper, a smaller textbox appears for
+				  you to enter the recipient's name.
+		  </para>
+		  <tip>
+				  <para>
+						  You can double click on a line of chat that is from another player,
+						  i.e. a whisper from them, or a line where they said something in
+						  any channel, and their name will be filled into the whisper to
+						  textbox.
+				  </para>
+		  </tip>
+		  <para>
+				  Type your message in the large textbox and press "Send" or
+				  the Enter key. Your message will be queued and sent.
+		  </para>
+		  <caution>
+				  <para>
+						  Do <emphasis>not</emphasis> add a slash or a vertical bar unless
+						  you are using the "Raw" type. They will be added automatically 
+						  for you. If you are using "Raw", a vertical bar (|) will
+						  represent an Enter keystroke and #VK# will represent a
+						  keystroke with a virtual key code number of VK. #13#
+						  is another way to indicate an Enter keystroke.
+				  </para>
+		  </caution>
+		  <note>
+				  <para>
+						  Glider is limited to pressing individual keys as if on
+						  a keyboard. It can only send one keystroke at a time. This
+						  means that it cannot send anything that would require you
+						  to hold down the shift key, namely uppercase letters,
+						  most punctuation, and foreign characters. This also implies
+						  that you cannot send whispers to people who have special
+						  characters in their name.
+				  </para>
+		  </note>
+		  <tip>
+				  <para>
+						  If you wish to say something in a public chat channel or
+						  to send an emote, select Guild or Say as the type and then
+						  for these cases you <emphasis>should</emphasis> add the slash command.
+				  </para>
+		  </tip>
+		  <para>
+				  When JGlideMon sends chat, it first stops Glider, pauses, sends
+				  an Enter keystroke, pauses, sends the slash command, pauses, and
+				  finally sends the rest of the message. These pauses have been added
+				  to overcome Glider's difficulty in sending one long message at once.
+				  While JGlideMon is very reliable at sending the message to the proper
+				  channel, i.e. actually whispering someone instead of saying
+				  "r person message", the last couple of characters sometimes get cut
+				  off. This is an issue with Glider.
+		  </para>
+		  <tip>
+				  <para>
+						  To help overcome the last couple of characters sometimes getting
+						  cut off, try appending several spaces or periods to your message.
+				  </para>
+		  </tip>
+  </section>
+</section>

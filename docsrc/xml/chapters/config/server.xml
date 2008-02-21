@@ -1,0 +1,61 @@
+<section id="chapters.config.server">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>server</primary><secondary>settings</secondary></indexterm>
+  <title>Server Settings</title>
+
+  <screenshot>
+		  <screeninfo>Server Settings</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/config/server.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <table>
+	  <title>Server Settings</title>
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+		  <thead>
+				  <row>
+						  <entry>Setting</entry>
+						  <entry>Description</entry>
+				  </row>
+		  </thead>
+		  <tbody>
+				  <row>
+						  <entry>* Name</entry>
+						  <entry>This value will be used to refer to this particular connection. It is mainly for your reference to keep track of which Glider a given window is for.</entry>
+				  </row>
+				  <row>
+						  <entry>* Icon</entry>
+						  <entry>The selected icon will be used for the window and the tray icon (if enabled).</entry>
+				  </row>
+				  <row>
+						  <entry>* Host</entry>
+						  <entry>This is the name or IP address of the computer where Glider is running. If it is the same computer that JGlideMon is running on, you can use "localhost".</entry>
+				  </row>
+				  <row>
+						  <entry>* Port</entry>
+						  <entry>This is the port that Glider has been configured to use for the remote client. By default, Glider uses port 3200.</entry>
+				  </row>
+				  <row>
+						  <entry>* Password</entry>
+						  <entry>This is the password that Glider has been configured with for the remote client. You will be unable to connect with an incorrect password.</entry>
+				  </row>
+				  <row>
+						  <entry>Auto Reconnect</entry>
+						  <entry>If enabled, JGlideMon will attempt to reconnect to Glider automatically if it is disconnected. Otherwise you will have to manually press the "Connect" button.</entry>
+				  </row>
+				  <row>
+						  <entry>Delay Between Tries</entry>
+						  <entry>This is amount of time in seconds that JGlideMon waits in between tries when reconnecting automatically.</entry>
+				  </row>
+				  <row>
+						  <entry>Max Number of Tries</entry>
+						  <entry>When reconnecting automatically, JGlideMon will try at most this many times.</entry>
+				  </row>
+		  </tbody>
+	  </tgroup>
+  </table>
+</section>

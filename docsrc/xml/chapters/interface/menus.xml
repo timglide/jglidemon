@@ -1,0 +1,316 @@
+<section id="chapters.interface.menus">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>menus</primary></indexterm>
+  <title>Menus</title>
+  <variablelist>
+		  <varlistentry>
+				  <term>
+						  <menuchoice>
+								  <guimenu>File</guimenu>
+								  <guimenuitem>Configuration</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						  <para>
+								  <action>Opens the configuration dialog. See the chapter on <link linkend="chapters.config">configuration</link>.</action>
+						  </para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						  <menuchoice>
+								  <shortcut>
+										  <keycombo>
+												  <keycap>Alt</keycap>
+												  <keycap>F4</keycap>
+										  </keycombo>
+								  </shortcut>
+								  <guimenu>File</guimenu>
+								  <guimenuitem>Exit</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						  <para>
+								  <action>Closes the application. If you are connected to multiple Gliders, you will be prompted to close all connections or just the current one.</action>
+						  </para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						  <menuchoice>
+								  <shortcut>
+										  <keycombo>
+												  <keycap>Alt</keycap>
+												  <keycap>K</keycap>
+										  </keycombo>
+								  </shortcut>
+								  <guimenu>Screenshot</guimenu>
+								  <guimenuitem>Enable Sending Keystrokes</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						  <para>
+								  <action>Allows sending of keystrokes and mouse clicks when the screenshot tab is active.</action>
+						  </para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						  <menuchoice>
+								  <shortcut>
+										  <keycombo>
+												  <keycap>F5</keycap>
+										  </keycombo>
+								  </shortcut>
+								  <guimenu>Screenshot</guimenu>
+								  <guimenuitem>Refresh Immediately</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						  <para>
+								  <action>Refreshes the screenshot immediately if the screenshot tab is active, regardless of the <link linkend="chapters.config.screenshot">screenshot refresh setting</link>.</action>
+						  </para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Screenshot</guimenu>
+								<guisubmenu>Shrink/Restore</guisubmenu>
+								<guimenuitem>Restore and Activate Window</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Causes Glider to restore the WoW window for the current connection and bring it in front of other windows.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Screenshot</guimenu>
+								<guisubmenu>Shrink/Restore</guisubmenu>
+								<guimenuitem>Restore and Shrink Others</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Causes Glider to restore the WoW window for the current connection and shrink the WoW window for all other connections.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Screenshot</guimenu>
+								<guisubmenu>Shrink/Restore</guisubmenu>
+								<guimenuitem>Restore and Hide Others</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Causes Glider to restore the WoW window for the current connection and hide the WoW window for all other connections.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Screenshot</guimenu>
+								<guisubmenu>Shrink/Restore</guisubmenu>
+								<guimenuitem>Shrink Window</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Causes Glider to shrink the WoW window for the current connection.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Screenshot</guimenu>
+								<guisubmenu>Shrink/Restore</guisubmenu>
+								<guimenuitem>Shrink All</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Shrinks the WoW window for all connections.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Screenshot</guimenu>
+								<guisubmenu>Shrink/Restore</guisubmenu>
+								<guimenuitem>Hide Window</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Causes Glider to hide thw WoW window for the current connection.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Screenshot</guimenu>
+								<guisubmenu>Shrink/Restore</guisubmenu>
+								<guimenuitem>Hide All</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Hides the WoW window for all connections.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Logs</guimenu>
+								<guimenuitem>Clear Current Tab</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Clears the active tab of any information it is displaying.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Logs</guimenu>
+								<guimenuitem>Clear All Tabs</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Clears all tabs of any information being displayed.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Logs</guimenu>
+								<guimenuitem>Parse Log File</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Opens a dialog where you can browse for a Glider log file and parse it as if you had been connected to Glider while it was running.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Servers</guimenu>
+								<guimenuitem>Add New Server...</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Opens a new JGlideMon window that prompts you for information to connect to a new Glider instance.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Servers</guimenu>
+								<guimenuitem>Remove Current Server</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Removes the current window and deletes its settings from JGlideMon's configuration. It will not reappear when JGlideMon is restarted.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Servers</guimenu>
+								<guimenuitem>Connect All Servers</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Connects all disconnected connections to their respective Glider as if you had pressed the "Connect" button for each.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Servers</guimenu>
+								<guimenuitem>Disconnect All Servers</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Disconnects all connected connections from their respective Glider as if you had pressed the "Disconnect" button for each.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Servers</guimenu>
+								<guimenuitem>Activate Inactive Servers</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>Activates and connects (if <link linkend="chapters.config.network">auto reconnect</link> is enabled) all suspended servers.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						<menuchoice>
+								<guimenu>Servers</guimenu>
+								<guimenuitem>Activate Server...</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						<para>
+								<action>If the given server is suspended (indicated by a red light), it will be activated and connected to Glider. If it is already active (indicated by a green light), its window will be brought to the foreground.</action>
+						</para>
+				  </listitem>
+		  </varlistentry>
+
+  </variablelist>
+
+
+</section>

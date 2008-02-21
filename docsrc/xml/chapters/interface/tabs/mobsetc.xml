@@ -1,0 +1,24 @@
+<section id="chapters.interface.tabs.mobsetc">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>mobs</primary><primary>reputation</primary><primary>skills</primary><secondary>tab</secondary></indexterm>
+  <title>Mobs/Rep/Skills Tab</title>
+  
+  <para>
+		  This tab displays tables that track the mobs you kill, your reputation
+		  gains/losses, and any skill increases. For reputation and skills,
+		  the time column indicates the time of the last update. Gained indicates
+		  the total reputation points that have been gained since JGlideMon
+		  has started. Level indicates the current level of the given skill.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Mobs/Rep/Skills Tab</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/mobs_tab.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+</section>

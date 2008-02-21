@@ -1,0 +1,56 @@
+<section id="chapters.config.web">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>web</primary><secondary>settings</secondary></indexterm>
+  <title>Web Settings</title>
+
+  <para>
+		  For more details on the built-in web server, see <link linkend="chapters.web">the web server chapter</link>.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Web Settings</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/config/web.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <table>
+	  <title>Web Settings</title>
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+		  <thead>
+				  <row>
+						  <entry>Setting</entry>
+						  <entry>Description</entry>
+				  </row>
+		  </thead>
+		  <tbody>
+				  <row>
+						  <entry>* Enabled</entry>
+						  <entry>If enabled, the built-in web server will be started.</entry>
+				  </row>
+				  <row>
+						  <entry>* Port</entry>
+						  <entry>The built-in webserver will run on this port, if enabled. 
+								  <tip>
+										  <para>
+												  If connecting to multiple Gliders, you can enable a web server for each by specifying a different port.
+										  </para>
+								  </tip>
+						  </entry>
+
+				  </row>
+				  <row>
+						  <entry>Update Interval</entry>
+						  <entry>This is the delay in milliseconds between updates of the web page. This is separate from General->Status Refresh Interval.
+								  <note>
+										  <para>This setting should be higher than  or equal to the Status Refresh Interval. If it is lower, then the page will reload but the status information will not have been updated.</para>
+								  </note>
+						  </entry>
+				  </row>
+		  </tbody>
+	  </tgroup>
+  </table>
+</section>

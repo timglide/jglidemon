@@ -1,0 +1,73 @@
+<chapter id="chapters.web">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>web server</primary></indexterm>
+  <title>Built-in Web Server</title>
+  
+  <para>
+		  JGlideMon includes an embedded web server so that you can
+		  monitor Glider remotely via a web browser. To enable it,
+		  you must configure it in the <link linkend="chapters.config.web">web settings</link>
+		  tab of the configuration dialog.
+
+				  <screenshot>
+						  <screeninfo>Web Server Screenshot</screeninfo>
+						  <imageobject>
+							  <imagedata fileref="images/chapters/web/main.jpg" format="JPG" />
+						  </imageobject>
+				  </screenshot>
+  </para>
+
+  <para>
+		  Once enabled, it can be viewed by browsing to 
+		  "http://localhost:3201", assuming you use the default port of
+		  3201. To view it from a different computer, you must browse
+		  to "http://&lt;host or ip of computer&gt;:3201". If you want to
+		  view it over the internet, you will need to confiure your
+		  router to forward the appropriate port.
+  </para>
+  <tip>
+		  <para>
+				  If you have configured JGlideMon to connect to multiple Glider instances,
+				  you can enable a separate web server for each by specifying a different
+				  port.
+		  </para>
+  </tip>
+
+  <section id="chapters.web.features">
+		  <title>Features</title>
+
+		  <para>
+				  The features of the web server are limited, but useful if you cannot
+				  run JGlideMon itself on the computer you will be monitoring Glider from.
+				  They include:
+				  <itemizedlist>
+						  <listitem>Screenshots</listitem>
+						  <listitem>Character Stats (health/mana/xp)</listitem>
+						  <listitem>Send Chat Ability</listitem>
+						  <listitem>Stop/Start Glider</listitem>
+				  </itemizedlist>
+		  </para>
+  </section>
+
+  <section id="chapters.web.config">
+		  <title>Configuration Notes</title>
+
+		  <para>
+				  The <link linkend="chapters.config.web">update interval</link> setting is separate from the
+				  <link linkend="chapters.config.general">status update interval</link>. The web server simply
+				  reports whatever JGlideMon's current status is. This means that the web server's update interval
+				  must be greater than or equal to the status update interval. If it is lower, then the web page
+				  will be refreshed but JGlideMon's status will not have changed, thus making the web page refresh
+				  useless.
+		  </para>
+		  <para>
+				  The screenshot displayed on the web page is copied directly from what you would see on the
+				  screenshot tab. If it appears too large on the web page, you should decrease the capture
+				  scale. You may want to uncheck the option to automatically adjust the scale. See
+				  <link linkend="chapters.config.screenshot">screenshot settings</link> for details.
+		  </para>
+  </section>
+</chapter>

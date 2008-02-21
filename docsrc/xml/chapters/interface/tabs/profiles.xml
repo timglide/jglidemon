@@ -1,0 +1,41 @@
+<section id="chapters.interface.tabs.profiles">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>profiles</primary><secondary>tab</secondary></indexterm>
+  <title>Profiles Tab</title>
+  
+  <para>
+		  This tab allows you to tell Glider to load a new profile or profile group.
+		  In order to utilize this feature, you must first run Profiler.jar.
+		  For the exact details, see <link linkend="chapters.profiles">the loading profiles chapter</link> for more details.
+  </para>
+  <para>
+		  In order to load a new profile, browse to its location in the tree list,
+		  select it, and click the "Load Selected Profile" button. You will
+		  need to separately press the "Start Glide" button.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Profiles Tab</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/profiles_tab.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <note>
+		  <para>
+				  You cannot load a new profile unless Glider is stopped.
+		  </para>
+  </note>
+  <tip>
+		  <para>
+				  You can also load a profile by clicking the "Manually Enter Profile To Load"
+				  button and then entering the full path to the profile you
+				  wish to load. This profile must exist on the computer that
+				  Glider is running on and you must provide the exact
+				  path.
+		  </para>
+  </tip>
+</section>

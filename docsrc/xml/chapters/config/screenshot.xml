@@ -1,0 +1,53 @@
+<section id="chapters.config.screenshot">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>screenshot</primary><secondary>settings</secondary></indexterm>
+  <title>Screenshot Settings</title>
+
+  <screenshot>
+		  <screeninfo>Screenshot Settings</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/config/screenshot.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <table>
+	  <title>Screenshot Settings</title>
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+		  <thead>
+				  <row>
+						  <entry>Setting</entry>
+						  <entry>Description</entry>
+				  </row>
+		  </thead>
+		  <tbody>
+				  <row>
+						  <entry>Refresh</entry>
+						  <entry>This is the delay in milliseconds betwen screenshot updates. Setting this value too low may cause issues.</entry>
+				  </row>
+				  <row>
+						  <entry>Automatically adjust scale to fit window</entry>
+						  <entry>If enabled, JGlideMon will automatically set the scale property so that the screenshot will fit within the window.</entry>
+				  </row>
+				  <row>
+						  <entry>* Scale</entry>
+						  <entry>When sending a screenshot, Glider can resize the image before sending it, which can save bandwidth and make the image load faster. This is the percentage of the WoW window's size that Glider will scale the image to.</entry>
+				  </row>
+				  <row>
+						  <entry>Quality</entry>
+						  <entry>This is a percentage representing the compression level of the screenshot. A lower value will make the image smaller and faster to load but if you need to read text in the image you may need to set this to a higher value.</entry>
+				  </row>
+				  <row>
+						  <entry>* Buffer Size</entry>
+						  <entry>JGlideMon allocates a certain amount of memory for storing the screenshot. The default value is usually fine but if you set WoW to have a very high resolution you may need to increase this setting.</entry>
+				  </row>
+				  <row>
+						  <entry>Update Timeout</entry>
+						  <entry>This is the amount of time in seconds JGlideMon will allow for a screenshot to be received after requesting it from Glider.</entry>
+				  </row>
+		  </tbody>
+	  </tgroup>
+  </table>
+</section>

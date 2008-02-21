@@ -1,0 +1,106 @@
+<section id="chapters.interface.tabs.urgent">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>urgent</primary><secondary>tab</secondary></indexterm>
+  <title>Urgent Tab</title>
+  
+  <para>
+		  The urgent tab will contain information that you may find particularly
+		  important. 
+  </para>
+
+  <section id="chapters.interface.tabs.urgent.log">
+		  <indexterm><primary>log</primary><secondary>tab</secondary></indexterm>
+		  <title>Log Sub-Tab</title>
+
+		  <para>
+				  This tab will contain log entries that you should be made aware of.
+				  An entry will appear here when you are whispered, when someone
+				  says something nearby, when you are being followed, when you die,
+				  as well as any log entry from Glider that starts with an exclamation
+				  point (!) or an asterisk (*).
+		  </para>
+
+  <screenshot>
+		  <screeninfo>Urgent Log Tab</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/urgent_log_tab.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+		  <para>
+				  Some log entries, such as whispers and follower alerts will play the
+				  appropriate sound when they are received. See <link linkend="chapters.config.sound">Sound Settings</link>
+				  if you would like to disable sounds. Whenever any urgent log entry is
+				  added, this tab will automatically be selected.
+		  </para>
+  </section>
+
+  <section id="chapters.interface.tabs.urgent.followers">
+		  <indexterm><primary>followers</primary><secondary>tab</secondary></indexterm>
+		  <title>Followers Sub-Tab</title>
+
+		  <para>
+				  This tab displays a table that tracks when Glider says "New friend: XXX",
+				  "Removing friend: XXX", and "Being followed by XXX". It may be useful
+				  to know if someone has caused a follower alert multiple times.
+		  </para>
+
+  <screenshot>
+		  <screeninfo>Urgent Followers Tab</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/urgent_followers_tab.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+		  <table>
+				  <title>Follower Table Columns</title>
+				  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+						  <thead>
+								  <row>
+										  <entry>Column</entry>
+										  <entry>Description</entry>
+								  </row>
+						  </thead>
+						  <tbody>
+								  <row>
+										  <entry>Last Seen</entry>
+										  <entry>This is the time that Glider last saw this person, either adding, removing, or following.</entry>
+								  </row>
+								  <row>
+										  <entry>Last Event</entry>
+										  <entry>This is what was occuring when Glider last saw this person.
+												  <itemizedlist>
+														  <listitem>"Adding" indicates that this person has come near your character but has not been in your area for your follower alert time.</listitem>
+														  <listitem>"Following" indicates that this person has been near your character for at least as long as your follower alert time.</listitem>
+														  <listitem>"Removing" indicates that this person has left your character's vicinity.</listitem>
+												  </itemizedlist>
+										  </entry>
+								  </row>
+								  <row>
+										  <entry># Encounters</entry>
+										  <entry>This is the number of times that the same person has come within your character's vicinity but not nessarily followed you.</entry>
+								  </row>
+								  <row>
+										  <entry># Follow Alerts</entry>
+										  <entry>This is the number of times that the same person has triggered Glider's follower alert. If this is very high, it could potentially indicate the person is following you intentionally.</entry>
+								  </row>
+								  <row>
+										  <entry>Name</entry>
+										  <entry>This is the name of the person. Note that it may be "(unknown)" when Glider is unable to determine the person's name.</entry>
+								  </row>
+								  <row>
+										  <entry>ID</entry>
+										  <entry>This is the ID of the person that Glider reports, if available.</entry>
+								  </row>
+								  <row>
+										  <entry>Race/Class</entry>
+										  <entry>This is the race and class of the person, if available.</entry>
+								  </row>
+						  </tbody>
+				  </tgroup>
+		  </table>
+  </section>
+</section>

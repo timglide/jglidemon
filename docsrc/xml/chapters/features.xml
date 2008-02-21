@@ -1,0 +1,91 @@
+<chapter id="chapters.features">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>features</primary></indexterm>
+  <title>Features</title>
+  
+  <para>
+		  JGlideMon's core features list includes:
+
+		  <itemizedlist>
+				  <listitem>
+						  Screenshots
+						  <itemizedlist>
+								  <listitem>Auto-refresh</listitem>
+								  <listitem>Auto-scaling</listitem>
+								  <listitem>Shrinking/restoring/hiding of the WoW window</listitem>
+						  </itemizedlist>
+				  </listitem>
+				  <listitem>
+						  Reading chat logs
+						  <itemizedlist>
+								  <listitem>Receives chat in real-time</listitem>
+								  <listitem>Colored like in WoW</listitem>
+								  <listitem>Organized by channel, public, whisper, guild, etc.</listitem>
+								  <listitem>JGlideMon can also parse Glider log files</listitem>
+						  </itemizedlist>
+				  </listitem>
+				  <listitem>
+						  Sending chat
+						  <itemizedlist>
+								  <listitem>Can send whispers, replies, guild, say, and raw</listitem>
+								  <listitem>Quick whispering by double clicking on a chat entry</listitem>
+								  <listitem>JGlideMon pauses Glider, which results in reliable chat</listitem>
+						  </itemizedlist>
+				  </listitem>
+				  <listitem>
+						  Sending mouse clicks/key strokes
+						  <itemizedlist>
+								  <listitem>From the screenshot tab, you can press keys and click the mouse and it will be sent to Glider</listitem>
+								  <listitem>This allows for limited control when you are away from the computer</listitem>
+						  </itemizedlist>
+				  </listitem>
+				  <listitem>
+						  Tracking followers
+				  </listitem>
+				  <listitem>
+						  Loading profiles
+				  </listitem>
+				  <listitem>
+						  Charting health and mana over time
+				  </listitem>
+				  <listitem>
+						  Tracking mobs, reputation, and skills
+						  <itemizedlist>
+								  <listitem>Tracks mob names, average XP, and number killed</listitem>
+								  <listitem>Tracks reputation gained with what faction</listitem>
+								  <listitem>Tracks skill increases</listitem>
+						  </itemizedlist>
+				  </listitem>
+				  <listitem>
+						  Tracking gold and loot
+						  <itemizedlist>
+								  <listitem>All looted items are organized by quality into tables</listitem>
+								  <listitem>The value of each item is downloaded from Allakhazam and used to estimate gold earned per hour</listitem>
+								  <listitem>Clicking an item will open a user-selectable web page, i.e. Thottbot, Allakhazam, or Wowhead</listitem>
+						  </itemizedlist>
+				  </listitem>
+				  <listitem>
+						  Support for multiple Gliders
+						  <itemizedlist>
+								  <listitem>You only need to run one instance of JGlideMon in order to be able to monitor several Gliders</listitem>
+						  </itemizedlist>
+				  </listitem>
+		  </itemizedlist>
+  </para>
+
+  <para>
+		  Optional features include:
+
+		  <itemizedlist>
+				  <listitem>
+						  Text-to-Speech
+						  <itemizedlist>
+								  <listitem>JGlideMon can speak what someone whispers you</listitem>
+						  </itemizedlist>
+				  </listitem>
+		  </itemizedlist>
+  </para>
+</chapter>

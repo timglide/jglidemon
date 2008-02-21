@@ -1,0 +1,77 @@
+<section id="chapters.config.restarter">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>restarter</primary><secondary>settings</secondary></indexterm>
+  <title>Restarter Settings</title>
+
+  <screenshot>
+		  <screeninfo>Restarter Settings</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/config/restarter.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <table>
+	  <title>Restarter Settings</title>
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+		  <thead>
+				  <row>
+						  <entry>Setting</entry>
+						  <entry>Description</entry>
+				  </row>
+		  </thead>
+		  <tbody>
+				  <row>
+						  <entry>Stuck</entry>
+						  <entry>If enabled, JGlideMon will attempt to restart Glider when it stopped as a result of being stuck too many times.</entry>
+				  </row>
+				  <row>
+						  <entry>Stuck Limit</entry>
+						  <entry>This is the number of times JGlideMon will restart Glider if it has gotten stuck before no longer trying to restart Glider.</entry>
+				  </row>
+				  <row>
+						  <entry>Timeout</entry>
+						  <entry>After this many seconds, JGlideMon will reset the stuck counter. If, for example, Stuck Limit is set to five and you get stuck five times within 300 seconds, JGlideMon will no longer restart Glider. If, however, you only get stuck four times within 300 seconds, the counter will be reset.</entry>
+				  </row>
+				  <row>
+						  <entry>On Glider Exception</entry>
+						  <entry>If enabled, JGlideMon will attempt to restart Glider when it stopped as a result of an exception being thrown. This is very useful if a custom class has a bug that causes an exception that stops Glider.</entry>
+				  </row>
+				  <row>
+						  <entry>Timeout</entry>
+						  <entry>This is the number of seconds before Glider stopped that the exception must have occured within for JGlideMon to consider it necessary to restart Glider.</entry>
+				  </row>
+				  <row>
+						  <entry>On Inventory Not Going Up</entry>
+						  <entry>If enabled, JGlideMon will attempt to restart Glider when it stopped because it could not resupply from a vendor when using vendor waypoints. This may be useful if you use BottomlessBag with auto-selling and it causes lag.</entry>
+				  </row>
+				  <row>
+						  <entry>Timeout</entry>
+						  <entry>This is the number of seconds before Glider stopped that the inventory not going up error must have occured within for JGlideMon to consider it necessary to restart Glider.</entry>
+				  </row>
+				  <row>
+						  <entry>On Flight Error</entry>
+						  <entry>If enabled, JGlideMon will attempt to restart Glider when it stopped because it could not interact with a flight master when using a profile group. This may be useful if you are using the flight master setting of a profile group to auto-sell or repair instead of to fly somewhere.</entry>
+				  </row>
+				  <row>
+						  <entry>Timeout</entry>
+						  <entry>This is the number of seconds before Glider stopped that the flight error must have occured within for JGlideMon to consider it necessary to restart Glider.</entry>
+				  </row>
+				  <row>
+						  <entry>After restarting: do nothing</entry>
+						  <entry>After JGlideMon has restarted Glider, it will not change the WoW window state. This setting also applies to when JGlideMon restarts Glider after sending chat. See <link linkend="chapters.interface.tabs.chat.sendchat">the send chat section</link> for more details.</entry>
+				  </row>
+				  <row>
+						  <entry>shrink the WoW window</entry>
+						  <entry>After JGlideMon has restarted Glider, it will shrinkg the WoW window.</entry>
+				  </row>
+				  <row>
+						  <entry>hide the WoW window</entry>
+						  <entry>After JGlideMon has restarted Glider, it will hide the WoW window.</entry>
+				  </row>
+		  </tbody>
+	  </tgroup>
+  </table>
+</section>

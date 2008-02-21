@@ -1,0 +1,15 @@
+<chapter id="chapters.upgrading">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>upgrading</primary></indexterm>
+  <title>Upgrading</title>
+  
+  <para>
+		  In order to upgrade to a new version of JGlideMon, simply extract the zip file
+		  to the folder where JGlideMon is currently installed and overrite all files when
+		  prompted. Your configuration settings will not be deleted.
+  </para>
+  
+</chapter>

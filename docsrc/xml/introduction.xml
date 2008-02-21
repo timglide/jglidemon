@@ -1,0 +1,17 @@
+<preface id="introduction">
+  <prefaceinfo>
+    <date>$Date$</date>
+  </prefaceinfo>
+
+  <indexterm><primary>Introduction</primary></indexterm>
+  <title>Introduction</title>
+  <para>
+		  JGlideMon is a Java-based remote monotoring tool
+		  for MMOGlider. It can monitor your character's health, mana, target,
+		  and much more.
+  </para>
+  <para>
+		  This manual serves to document the features of the
+		  JGlideMon project and to provide a general setup guide.
+  </para>
+</preface>

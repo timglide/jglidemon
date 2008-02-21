@@ -1,0 +1,50 @@
+<section id="chapters.config.sound">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>sound</primary><secondary>settings</secondary></indexterm>
+  <title>Sound Settings</title>
+
+  <para>
+		  Most of the settings in this section are self-explanatory. Ones of special interested
+		  are listed below.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Sound Settings</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/config/sound.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <table>
+	  <title>Sound Settings</title>
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+		  <thead>
+				  <row>
+						  <entry>Setting</entry>
+						  <entry>Description</entry>
+				  </row>
+		  </thead>
+		  <tbody>
+				  <row>
+						  <entry>Enable Sound</entry>
+						  <entry>If disabled, JGlideMon will not play any sounds.</entry>
+				  </row>
+				  <row>
+						  <entry>Sound: On Status Event</entry>
+						  <entry>If enabled, an alert will sound when your character dies or Glider stops.</entry>
+				  </row>
+				  <row>
+						  <entry>Enable TTS</entry>
+						  <entry>If disabled, JGlideMon will not synthesize speech.</entry>
+				  </row>
+				  <row>
+						  <entry>TTS: On Status Event</entry>
+						  <entry>If enabled, JGlideMon will announce "Connected to/Disconnected from server" as appropriate.</entry>
+				  </row>
+		  </tbody>
+	  </tgroup>
+  </table>
+</section>

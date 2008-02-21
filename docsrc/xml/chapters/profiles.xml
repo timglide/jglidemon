@@ -1,0 +1,40 @@
+<chapter id="chapters.profiles">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>profiles</primary></indexterm>
+  <title>Loading Profiles</title>
+  
+  <para>
+		  From <link linkend="chapters.interface.tabs.profiles">the profiles tab</link>
+		  you can tell Glider to load a profile by specifying the path to the file. This
+		  requires you to know the exact path to the profile, however.
+  </para>
+  <para>
+		  JGlideMon provides an easier solution for this. In the same folder as
+		  <filename>JGlideMon.jar</filename> is another file, <filename>Profiler.jar</filename>,
+		  that can be used to generate a file containing all of your profiles so that you don't
+		  need to memorize their paths.
+  </para>
+  <para>
+		  You will need to launch <filename>Profiler.jar</filename> on the computer where you
+		  are running Glider. This implies that Java must also be installed on that computer
+		  before hand. You do <emphasis>not</emphasis> necessarily need to install JGlideMon itself on
+		  the computer running Glider, assuming you intend to run JGlideMon on a different computer.
+		  You only need to copy <filename>Profiler.jar</filename> by itself to the computer
+		  running Glider. Double-click it and you will be prompted to browse and select
+		  your Glider's exe file (whatever you named it). 
+  </para>
+  <para>
+		  Once you've selected Glider, <filename>profiles.dat</filename> will be generated in the
+		  same directory as <filename>Profiler.jar</filename>. You need to copy this file back
+		  to the computer where JGlideMon will be running into the folder containing
+		  <filename>JGlideMon.jar</filename>.
+  </para>
+  <para>
+		  The profile list will appear on the "Profiles" tab the next time you start JGlideMon.
+		  If JGlideMon is already running, you can click the button to
+		  "Reload Profiles List from profiles.dat" on the "Profiles" tab.
+  </para>
+</chapter>

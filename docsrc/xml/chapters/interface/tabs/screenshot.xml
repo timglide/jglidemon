@@ -1,0 +1,62 @@
+<section id="chapters.interface.tabs.screenshot">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>screenshot</primary><secondary>tab</secondary></indexterm>
+  <title>Screenshot Tab</title>
+  
+  <para>
+		  The screenshot will be updated in accordance with the
+		  <link linkend="chapters.config.screenshot">screenshot settings</link>.
+		  In order to reduce bandwidth, the screenshot will only be updated
+		  if the screenshot tab is the current tab or if the built-in
+		  webserver is running. When the screenshot is being updated,
+		  the status bar at the bottom of the window is updated to 
+		  indicate the current progress. You can manually force an immediate
+		  update of the screenshot by selecting "Refresh Screenshot Immediately"
+		  from the "Screenshot" menu or by pressing F5.
+  </para>
+
+  <note>
+		  <para>
+				  Screenshots only work when Glider is attached to WoW.
+		  </para>
+  </note>
+
+  <section id="chapters.interface.tabs.screenshot.sendkeys">
+		  <indexterm><primary>keys</primary><secondary>mouse</secondary></indexterm>
+		  <title>Sending Keystrokes and Mouse Clicks</title>
+
+	  <para>
+		  In addition to displaying the screenshot itself, you can send keystrokes and
+		  mouse clicks to Glider while this tab is active. In order to do either, you must
+		  first enable that option via the "Screenshots" menu and selecting 
+		  "Enable Sending Keystrokes" or by pressing Alt+K. This setting will always be disabled when
+		  JGlideMon is started in order to prevent accidental key sending.
+	  </para>
+
+  <screenshot>
+		  <screeninfo>Enable Sending Keystrokes</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/enable_keystrokes.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+	  <para>
+			  Next, to send a keystroke, simply start pressing keys as if you were actually
+			  playing WoW. If you press the C key, your character info pane will appear.
+	  </para>
+	  <para>
+			  To send mouse clicks, simply click on the screenshot image. Right and left
+			  clicking both work. You can, for example, press the N key, then click to 
+			  spend talent points.
+	  </para>
+	  <note>
+			  <para>
+					  Mouse clicks only work while Glider is actively running a profile.
+					  This is a limitation of Glider.
+			  </para>
+	  </note>
+  </section>
+</section>

@@ -1,0 +1,144 @@
+<chapter id="chapters.multiglide">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>multi-glide</primary></indexterm>
+  <title>Multi-Glider Support</title>
+
+  <section id="chapters.multiglide.introduction">
+		  <title>Introduction</title>
+		  
+		  <para>
+		  JGlideMon has the ability to connect to more than one instance
+		  of Glider without having to install a separate copy of JGlideMon
+		  and start another instance. This also means that you only have
+		  to have one copy of the Java Virtual Machine running, which
+		  results in less overall memory usage. 
+  		  </para>
+
+		  <para>
+				  Before going into the details of configuring multiple Glider
+				  connections, some terminology needs to be addressed.
+				  For simplicity's sake, think of Glider as a server. After all, that
+				  is exactly what Glider is doing with regard to the remote connection.
+		  </para>
+  </section>
+
+  <section id="chapters.multiglide.procedure">
+		  <title>Procedure</title>
+
+		  <para>
+				  You should already have one server configured. The configuration dialog was
+				  displayed the first time you ran JGlideMon. If you upgraded from an older
+				  version, your old settings were converted to the "Default" server settings.
+		  </para>
+		  <para>
+				  To add an additional server, click "Add New Server..." from the "Servers" menu.
+
+				  <screenshot>
+						  <screeninfo>Add New Server</screeninfo>
+						  <imageobject>
+							  <imagedata fileref="images/chapters/multiglide/add_new.jpg" format="JPG" />
+						  </imageobject>
+				  </screenshot>
+		  </para>
+		  <para>
+				  You will be prompted to enter the connection information and the configuration dialog
+				  will be opened. Enter the required information as you did for the first server. See
+				  <link linkend="chapters.config">the configuration chapter</link> for more details. It
+				  is necessary for you to enter a unique name for each server. This name helps identify
+				  which JGlideMon window is which when you start having several windows open.
+		  </para>
+		  <para>
+				  Assuming your connection information is correct and Glider is running, you should now
+				  be connecting to your second instance of Glider.
+		  </para>
+  </section>
+
+  <section id="chapters.multiglide.control">
+		  <title>Control</title>
+
+		  <para>
+				  To start with, you can quickly switch between JGlideMon windows via
+				  "Servers->Activate Server...". The "Activate Server..." sub-menu lists
+				  all of the servers you have configured JGlideMon to connect to. This is
+				  where the name you give a server helps you distinguis which window you want
+				  to view. Clicking on a name (or using the accelerator key CTRL-ALT-##) will
+				  maximize that server's window, if necessary, and bring it to the foreground.
+		  </para>
+		  <para>
+				  For conveinance, the "Connect All Servers" and "Disconnect All Servers" options
+				  are available in the "Servers" menu to quickly connect or disconnect each Glider
+				  connection as if you had gone to each JGlideMon window and manually clicked the
+				  "Connect" or "Disconnect" button. 
+		  </para>
+		  <para>
+				  If you no longer need to connect to a particular Glider instance, you can click
+				  "Remove Current Server" from the "Servers" menu from the JGlideMon window of the
+				  server you want to remove. This will close the window and all settings for the
+				  particular connection <emphasis>will be deleted</emphasis>. It will not reappear
+				  when JGlideMon is restarted.
+		  </para>
+		  <note>
+				  <para>
+						  You cannot remove a server if there is only one configured.
+				  </para>
+		  </note>
+		  <para>
+				  If you would like to temporarily remove a server's window but retain its
+				  settings so that you can connect to it at some point in the future, you can
+				  put the server in an "inactive" state by closing its window via "File->Exit"
+				  or pressing the X in the upper right and clicking "No" on the dialog that 
+				  appears.
+
+				  <screenshot>
+						  <screeninfo>Do you want to exit?</screeninfo>
+						  <imageobject>
+							  <imagedata fileref="images/chapters/multiglide/suspend.jpg" format="JPG" />
+						  </imageobject>
+				  </screenshot>
+		  </para>
+		  <para>
+				  Once a server is deactivated, it will not reappear, even when JGlideMon is restarted,
+				  until you explicity reactivate it. In order to reactivate an inactive server, click
+				  its name via "Servers->Activate Server...". You will notice that there is a red light
+				  next to its name to indicate its inactive status. Previously it was green. For conveinance,
+				  you can activate all inactive servers at once by cicking "Servers->Activate Inactive Servers".
+		  </para>
+  </section>
+
+  <section id="chapters.multiglide.screenshotcontrol">
+		  <title>Screenshot Control</title>
+
+		  <para>
+				  If you need to connect to multiple Glider instances, it is likely that you are running
+				  some of the instances on the same computer. In this case, it is useful to be able to
+				  control the WoW window state. There are several features to aid with this.
+		  </para>
+		  <para>
+				  For any particular server, you can quickly make its WoW window the foreground window
+				  so that screenshots will not have any other windows on top of the window you actually 
+				  want to see. The simplest command is to just restore and activate the WoW window.
+				  If the WoW window is hidden or shrunk, it will be restored to regular size and 
+				  activated so that it is the top-most window. This command is available via
+				  "Screenshot->Shrink/Restore->Restore and Activate Window".
+		  </para>
+		  <note>
+				  <para>
+						  It seems that sometimes Glider may restore the WoW window but it does not
+						  get activated and other windows still appear on top. Simply clicking
+						  the option to restore the window again should fix it.
+				  </para>
+		  </note>
+		  <para>
+				  In addition to simply restoring the window, you can restore the current window and
+				  shrink or hide the other server's respective WoW windows by the approriate commands
+				  in "Screenshot->Shrink/Restore".
+		  </para>
+		  <para>
+				  For completeness, commands to shrink or hide the current or all WoW windows are also
+				  available.
+		  </para>
+  </section>
+</chapter>

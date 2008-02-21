@@ -1,0 +1,27 @@
+<chapter id="chapters.config">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>configuration</primary><secondary>settings</secondary></indexterm>
+  <title>Configuration</title>
+  
+  <para>
+		  The configuration dialog can be invoked at any time via the "File" menu.
+		  It is also opened automatically the first time JGlideMon is run.
+  </para>
+
+  <para>
+		  Many settings are global and used for each Glider connection but some
+		  are specific to a particular connection, the host, for example. Server
+		  specific settings are indicated with an asterisk (*).
+  </para>
+
+  &chapters.config.general;
+  &chapters.config.server;
+  &chapters.config.screenshot;
+  &chapters.config.sound;
+  &chapters.config.restarter;
+  &chapters.config.web;
+
+</chapter>

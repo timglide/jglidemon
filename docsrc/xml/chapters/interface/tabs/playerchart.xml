@@ -1,0 +1,33 @@
+<section id="chapters.interface.tabs.playerchart">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>health</primary><primary>mana</primary><primary>chart</primary><secondary>tab</secondary></indexterm>
+  <title>Health/Mana Chart</title>
+  
+  <para>
+		  This tab displays a chart of your character's health, mana and target's
+		  health over time. The main idea of this chart is to help you gauge your
+		  character's overall efficienty and effectiveness. If you notice long
+		  periods of time with no target, for example, your profile might be
+		  poorly written or you may be resting excessively. If, on the other hand,
+		  your target's health crosses zero several times per minute, your character
+		  is likely doing very well.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Health/Mana Tab</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/chart_tab.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <para>
+		  Each tick on the chart represents one minute (each pixel represents one second).
+		  The chart is updated once per second, regardless of your
+		  <link linkend="chapters.config.general">Status Refresh Interval</link> setting.
+		  The chart automatically scrolls as needed from left to right. About two hours
+		  worth of data is stored at the most.
+  </para>
+</section>

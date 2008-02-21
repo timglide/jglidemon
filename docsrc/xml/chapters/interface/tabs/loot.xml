@@ -1,0 +1,61 @@
+<section id="chapters.interface.tabs.loot">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>loot</primary><secondary>tab</secondary></indexterm>
+  <title>Loot Tab</title>
+  
+  <para>
+		  This tab tracks loot and gold that your character has aquired.
+		  The tab is divided into several tables that group loot by
+		  quality. The tables are sorted by the quantity of the item
+		  looted, and then alphabetically.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Loot Tab</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/interface/loot_tab.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+
+  <tip>
+		  <para>
+				  When you move your mouse over an item, a tooltip
+				  will appear, similar to the in-game tooltip, to give you
+				  more details.
+		  </para>
+  </tip>
+  <tip>
+		  <para>
+				  Clicking on an item will open your web browser to the
+				  page specified in your <link linkend="chapters.config.general">WoW DB Site</link> setting.
+		  </para>
+  </tip>
+  <para>
+		  On the top part of the tab, "Gold Looted" indicates the amount
+		  of actual coin that you have looted. "Loot Worth" is the
+		  calculated worth of all the items you looted if you were to
+		  sell them to a vendor. "Gold/Hour" calculates the rate at which
+		  you are making gold by adding "Gold Looted" and "Loot Worth" and
+		  dividing that by the amount of time that JGlideMon has been
+		  tracking your loot.
+  </para>
+  <para>
+		  JGlideMon retrieves the information about items from Allakhazam. If Allakhazam
+		  cannot be contacted, then JGlideMon cannot determine an item's quality or icon.
+		  In this case, the item will appear in the "Poor" quality table with the
+		  question mark icon.
+  </para>
+  <tip>
+		  <para>
+				  JGlideMon caches this information the first time it
+				  retrieves it so that it is not connecting to Allakhazam every single time
+				  you loot something. If you are experiencing problems, you can try
+				  deleting the cache files, <filename>icons.cache</filename> and <filename>items.cache</filename>, after you
+				  have shut down JGlideMon.
+		  </para>
+  </tip>
+</section>

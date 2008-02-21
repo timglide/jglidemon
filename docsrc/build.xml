@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+JGlideMon - A Java based remote monitor for MMO Glider
+Copyright (C) 2007 - 2008 Tim
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+-->
+
+<project basedir="." default="all" name="JGlideMon Documentation">
+	<property name="src_dir"		value="${basedir}"/>
+	<property name="xml_dir"        value="${src_dir}/xml"/>
+	<property name="xsl_dir"        value="${src_dir}/xsl"/>
+	<property name="out_dir"        value="output"/>
+	<property name="html_dir"       value="${out_dir}/html"/>
+	<property name="chunk_dir"      value="${out_dir}/chunk"/>
+	<property name="htmlhelp_dir"   value="${out_dir}/htmlhelp"/>
+
+	<target name="all" depends="html,chunk,htmlhelp">
+		<echo message="Build complete."/>
+	</target>
+
+
+
+	<target name="clean" depends="clean_html,clean_chunk,clean_htmlhelp">
+			<delete dir="${out_dir}"/>
+	</target>
+
+	<target name="clean_html">
+			<delete dir="${html_dir}"/>
+	</target>
+
+	<target name="clean_chunk">
+			<delete dir="${chunk_dir}"/>
+	</target>
+
+	<target name="clean_htmlhelp">
+			<delete dir="${htmlhelp_dir}"/>
+	</target>
+
+
+
+	<target name="entities" depends="file-entities"/>
+
+	<target name="file-entities">
+		<exec executable="cmd" osfamily="Windows">
+			<arg value="/c"/>
+			<arg value="php"/>
+			<arg value="${src_dir}/scripts/file-entities.php"/>
+		</exec>
+	</target>
+
+	<taskdef resource="svntask.properties"/>
+	<target name="svn_revision">
+		<!--property name="svn.revision" value="0"/-->
+
+		<svn>
+			<status path="${src_dir}" revisionProperty="svn.revision" />
+		</svn>
+	</target>
+	
+	<target name="zip" depends="htmlhelp,svn_revision">
+		<zip destfile="${out_dir}/JGlideMon_help_r${svn.revision}.zip">
+			<fileset dir="${htmlhelp_dir}" includes="JGlideMon.chm"/>
+		</zip>
+	</target>
+
+
+	<target name="html" depends="entities">
+		<mkdir dir="${html_dir}"/>
+		<copy todir="${html_dir}">
+			<fileset dir="${src_dir}" includes="images/**/*,css/**/*" excludes="**/*.psd"/>
+		</copy>
+
+		<exec executable="xsltproc" osfamily="Windows">
+			<arg value="--nonet"/>
+			<arg value="--novalid"/>
+			<arg value="-o"/>
+			<arg value="${html_dir}/index.html"/>
+			<arg value="${xsl_dir}/jgm_html.xsl"/>
+			<arg value="${xml_dir}/jgm.xml"/>
+		</exec>
+	</target>
+
+	<target name="chunk" depends="entities">
+		<mkdir dir="${chunk_dir}"/>
+		<copy todir="${chunk_dir}">
+			<fileset dir="${src_dir}" includes="images/**/*,css/**/*" excludes="**/*.psd"/>
+		</copy>
+
+		<exec executable="xsltproc" osfamily="Windows">
+			<arg value="--nonet"/>
+			<arg value="--novalid"/>
+			<arg value="-o"/>
+			<arg value="${chunk_dir}/"/>
+			<arg value="${xsl_dir}/jgm_chunk.xsl"/>
+			<arg value="${xml_dir}/jgm.xml"/>
+		</exec>
+	</target>
+
+	<target name="htmlhelp" depends="entities">
+		<mkdir dir="${htmlhelp_dir}"/>
+		<copy todir="${htmlhelp_dir}">
+			<fileset dir="${src_dir}" includes="images/**/*,css/**/*" excludes="**/*.psd"/>
+		</copy>
+
+		<exec executable="xsltproc" osfamily="Windows">
+			<arg value="--nonet"/>
+			<arg value="--novalid"/>
+			<arg value="-o"/>
+			<arg value="${htmlhelp_dir}/"/>
+			<arg value="${xsl_dir}/jgm_htmlhelp.xsl"/>
+			<arg value="${xml_dir}/jgm.xml"/>
+		</exec>
+
+		<exec executable="hhc" osfamily="Windows">
+			<arg value="${htmlhelp_dir}/htmlhelp.hhp"/>
+		</exec>
+	</target>
+
+</project>

@@ -1,0 +1,34 @@
+<section id="chapters.interface.tabs.combatetc">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>combat</primary><primary>glider</primary><primary>status</primary><secondary>tab</secondary></indexterm>
+  <title>Combat, Glider, and Status Tabs</title>
+  
+  <table>
+		  <title>Combat, Glider, and Status Tabs</title>
+		  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+				  <thead>
+						  <row>
+								  <entry>Tab</entry>
+								  <entry>Description</entry>
+						  </row>
+				  </thead>
+				  <tbody>
+						  <row>
+								  <entry>Combat</entry>
+								  <entry>This tab displays the combat log, as if you viewed the combat log tab in-game.</entry>
+						  </row>
+						  <row>
+								  <entry>Glider</entry>
+								  <entry>This tab displays Glider's log, as if you were observing the log in the main Glider window.</entry>
+						  </row>
+						  <row>
+								  <entry>Status</entry>
+								  <entry>This tab displays entries when Glider starts and stops gliding.</entry>
+						  </row>
+				  </tbody>
+		  </tgroup>
+  </table>
+</section>

@@ -1,0 +1,25 @@
+<chapter id="chapters.interface">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>interface</primary><secondary>GUI</secondary></indexterm>
+  <title>Interface</title>
+  
+  <para>
+		  This chapter describes the components that comprise the interface
+		  and how to use them.
+  </para>
+
+  &chapters.interface.main;
+  &chapters.interface.menus;
+  &chapters.interface.tabs.screenshot;
+  &chapters.interface.tabs.chat;
+  &chapters.interface.tabs.urgent;
+  &chapters.interface.tabs.profiles;
+  &chapters.interface.tabs.combatetc;
+  &chapters.interface.tabs.playerchart;
+  &chapters.interface.tabs.mobsetc;
+  &chapters.interface.tabs.loot;
+
+</chapter>

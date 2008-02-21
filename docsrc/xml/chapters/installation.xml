@@ -1,0 +1,11 @@
+<chapter id="chapters.installation">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>installation</primary></indexterm>
+  <title>Installation</title>
+  
+  &chapters.installation.requirements;
+  &chapters.installation.procedure;  
+</chapter>

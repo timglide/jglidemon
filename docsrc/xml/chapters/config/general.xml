@@ -1,0 +1,53 @@
+<section id="chapters.config.general">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>general</primary><secondary>settings</secondary></indexterm>
+  <title>General Settings</title>
+
+  <screenshot>
+		  <screeninfo>General Settings</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/config/general.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <table>
+	  <title>General Settings</title>
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+		  <thead>
+				  <row>
+						  <entry>Setting</entry>
+						  <entry>Description</entry>
+				  </row>
+		  </thead>
+		  <tbody>
+				  <row>
+						  <entry>Log Debugging Info</entry>
+						  <entry>This will log extra information to Log.txt. This is generally not necessary unless you are experiencing a problem.</entry>
+				  </row>
+				  <row>
+						  <entry>Status Refresh Interval</entry>
+						  <entry>This is the delay in milliseconds between updates of your character's health, mana, etc. Setting this value too low may cause issues.</entry>
+				  </row>
+				  <row>
+						  <entry>Max Entries Per Log Tab</entry>
+						  <entry>This is the maximum number of lines that will be saved on any given tab. Setting this value very high may cause issues.</entry>
+				  </row>
+				  <row>
+						  <entry>Show Tray Icon</entry>
+						  <entry>If enabled, an icon will appear in the system tray, near the clock, for JGlideMon.</entry>
+				  </row>
+				  <row>
+						  <entry>Minimize To Tray</entry>
+						  <entry>If enabled, the JGlideMon window will be hidden and it will not appear in the taskbar when you minimize it.</entry>
+				  </row>
+				  <row>
+						  <entry>WoW DB Site</entry>
+						  <entry>On the "Loot" tab, when you click an item, your web browser will be launched to this URL. "%s" will be replaced with the item's ID number.</entry>
+				  </row>
+		  </tbody>
+	  </tgroup>
+  </table>
+</section>

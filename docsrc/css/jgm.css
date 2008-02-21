@@ -1,0 +1,6 @@
+body {	font-family: Helvetica, Tahoma, Arial, sans-serif;    font-size: 0.85em;	color: #222;	background-color: #fff;}
+a:link, a:active, a:visited {    color: #00c;    background-color: transparent;}a:hover	{    text-decoration: underline;    color: #00e;    background-color: transparent;}
+hr	{ height: 0px; border: solid #444 0px; border-top-width: 1px;}
+img { border: 0px; }
+h2 {    color: #C42830;}
+h3 {    color: #007;}

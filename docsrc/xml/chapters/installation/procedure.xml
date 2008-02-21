@@ -1,0 +1,45 @@
+<section id="chapters.installation.procedure">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>installation</primary><secondary>procedure</secondary></indexterm>
+  <title>Procedure</title>
+  
+  <para>
+		  JGlideMon is distributed as a zip file named something like <filename>JGlideMon_core_vX.X.YYY.zip</filename>.
+		  X.X refers to the major version number. This number increases when there are signicant changes
+		  or additions to JGlideMon. YYY refers to the revision number. JGlideMon uses version control
+		  software called Subversion. This helps track changes and saves copies of older version of code
+		  in case something breaks and it needs to be reverted. The revision number is Subversion's internal
+		  version of JGlideMon. It increases whenever a change (large or small) is commited. It is possible
+		  that a version of JGlideMon will be released with the same major version number but different
+		  revision numbers. This would occur when a bug has been fixed or something minor has change.
+  </para>
+
+  <para>
+		  After you have downloaded the core zip file, you must extract it to a folder. It does not
+		  matter where this folder is or what it is named but you should make it something
+		  meaningful, say <filename>C:\Program Files\JGlideMon</filename>. 
+  </para>
+
+  <para>
+		  For optional components, like text-to-speech, simply extract the zip file into the
+		  same folder that JGlideMon has been installed to. It is safe to overrite any
+		  files or folders if you are prompted to do so.
+  </para>
+  <para>
+		  In order to launch JGlideMon, simply double-click on <filename>JGlideMon.jar</filename>. For conveinance on Windows,
+		  you can right-click on <filename>JGlideMon.jar</filename> and click "Send To->Desktop (create shortcut)". If you prefer
+		  to start JGlideMon from the command line, you must invoke it like:
+		  <screen>
+				  <prompt>C:\&gt;</prompt> <command>cd path\to\JGlideMon\Folder</command>
+				  <prompt>C:\path\to\JGlideMon\folder\&gt;</prompt> <command>java -jar JGlideMon.jar</command>
+		  </screen>
+  </para>
+  <para>
+		  When you launch JGlideMon for the first time, you will be prompted to enter the network settings to connect
+		  to Glider. At this point you can configure other settings as you like.
+		  For further details, see <link linkend="chapters.config">the configuration chapter</link>.
+  </para>
+</section>

@@ -1,0 +1,13 @@
+<chapter id="chapters.XXX">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>xxx</primary></indexterm>
+  <title>XXX</title>
+  
+  <para>
+		  XXX
+  </para>
+  
+</chapter>
