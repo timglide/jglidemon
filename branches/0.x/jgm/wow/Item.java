@@ -373,17 +373,26 @@ public class Item implements Comparable<Item>, Serializable {
 	 * @return An item representing the supplied parameters
 	 */
 	public static Item factory(int id, String name) {
-		if (itemCache.containsKey(id)) return itemCache.get(id);
-		
-		Item item = new Item(id, name);
+		Item ret = null;
 
-		if (!ItemFactory.factory(id, item)) return null;
+		if (itemCache.containsKey(id)) {
+			ret = itemCache.get(id);
+			
+			if (ret.retrievedInfo)
+				return ret;
 
-		Effect.factory(item);
+			itemCache.remove(id);
+		}
 		
-		itemCache.put(id, item);
+		ret = new Item(id, name);
+
+		if (!ItemFactory.factory(id, ret)) return null;
+
+		Effect.factory(ret);
 		
-		return item;
+		itemCache.put(id, ret);
+		
+		return ret;
 	}
 	
 	@SuppressWarnings("unchecked")
