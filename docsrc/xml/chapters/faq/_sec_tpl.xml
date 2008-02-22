@@ -1,0 +1,20 @@
+<section id="chapters.faq.XXX">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>XXX</primary><secondary>faq</secondary></indexterm>
+  <title>XXX</title>
+
+  <qandaset>
+		  <qandaentry>
+				  <question>
+						  <para></para>
+				  </question>
+				  <answer>
+						  <para></para>
+				  </answer>
+		  </qandaentry>
+  </qandaset>
+
+</section>

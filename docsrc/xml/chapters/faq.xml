@@ -1,0 +1,11 @@
+<chapter id="chapters.faq">
+  <chapterinfo>
+    <date>$Date$</date>
+  </chapterinfo>
+
+  <indexterm><primary>faq</primary></indexterm>
+  <title>FAQ</title>
+  
+  &chapters.faq.general;
+  
+</chapter>

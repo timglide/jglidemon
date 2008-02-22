@@ -122,7 +122,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			<arg value="-o"/>
 			<arg value="${htmlhelp_dir}/"/>
 			<arg value="${xsl_dir}/jgm_htmlhelp.xsl"/>
-			<arg value="${xml_dir}/jgm.xml"/>
+			<arg value="${xml_dir}/jgm_htmlhelp.xml"/>
 		</exec>
 
 		<exec executable="hhc" osfamily="Windows">
