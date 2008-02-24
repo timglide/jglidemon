@@ -152,7 +152,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 	// send keys related stuff
 	
 	public void resetFields() {
-		to.setText("");
+//		to.setText("");
 		keys.setText("");
 	}
 	
