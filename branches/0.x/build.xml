@@ -62,11 +62,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	     from the version property below if you downloaded the source zip since
 		 you didn't get the source from my svn repository -->
 	<taskdef resource="svntask.properties"/>
-	<svn>
-		<status path="${src_dir}" revisionProperty="svn.revision" />
-	</svn>
-
-	<property name="version" value="${_version}.${svn.revision}" />
+	<target name="svn_revision">
+		<svn>
+			<status path="${src_dir}" revisionProperty="svn.revision" />
+		</svn>
+		<property name="version" value="${_version}.${svn.revision}" />
+	</target>
 
 
     <!-- ********************************************************** -->
@@ -82,7 +83,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 	<target name="dist"
-			depends="all,jars,zips">
+			depends="svn_revision,all,jars,zips">
 		<echo message="Built JGlideMon v${version} distribution"/>
 	</target>
 
@@ -158,7 +159,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 	<!-- this would need to be changed in order to build on *nix -->
-	<target name="phpglidemon" description="Compile PHPGlideMon files">
+	<target name="phpglidemon" description="Compile PHPGlideMon files" depends="svn_revision,compress_httpd_resources">
 		<!-- doesn't work on windows... -->
 		<!-- exec executable="php" searchpath="true" -->
 		<exec executable="cmd" osfamily="Windows">
@@ -191,7 +192,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<property name="JGlideMon_jar" value="${bin_dir}/${title}.jar"/>
 
     <target name="JGlideMon_jar" 
-			depends="compile_src"
+			depends="compile_src,svn_revision"
 			description="Create ${JGlideMon_jar}">
 		<mkdir dir="${bin_dir}"/>
 		<jar destfile="${JGlideMon_jar}" 
@@ -255,49 +256,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 
-	<property name="core_zip" value="${bin_dir}/${title}_v${version}_core.zip"/>
-
-	<target name="core_zip" depends="jars,libs,docs"
+	<target name="core_zip" depends="jars,libs,docs,svn_revision"
 			description="Create ${core_zip}">
+		<property name="core_zip" value="${bin_dir}/${title}_v${version}_core.zip"/>
 		<zip destfile="${core_zip}">
 			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,Profiler.jar,Profiler.jar.MD5,sounds"/>
 		</zip>
 	</target>
 
-
-	<property name="src_zip" value="${bin_dir}/${title}_v${version}_src.zip"/>
-
-	<target name="src_zip" description="Create ${src_zip}">
+	<target name="src_zip" description="Create ${src_zip}" depends="svn_revision">
+		<property name="src_zip" value="${bin_dir}/${title}_v${version}_src.zip"/>
 		<zip destfile="${src_zip}">
 			<fileset dir="${src_dir}" includes="**" 
 				excludes="**/*.class,lib/**,bin/**,**/*.MD5,**/.*,**/*.cache,**/*.dat,**/*.ini,**/*.properties,php/phpglidemon.php,DebugInfo.txt,Log.txt"/>
 		</zip>
 	</target>
 
-	<property name="profiler_zip" value="${bin_dir}/${title}_v${version}_Profiler.zip"/>
-
-	<target name="profiler_zip" depends="Profiler_jar"
+	<target name="profiler_zip" depends="Profiler_jar,svn_revision"
 			description="Create ${profiler_zip}">
+		<property name="profiler_zip" value="${bin_dir}/${title}_v${version}_Profiler.zip"/>
 		<zip destfile="${profiler_zip}">
 			<fileset dir="${bin_dir}" includes="Profiler.jar,Profiler.jar.MD5,License.txt"/>
 		</zip>
 	</target>
 
 
-	<property name="tts_zip" value="${bin_dir}/${title}_v${version}_tts.zip"/>
-
-	<target name="tts_zip" depends="libs"
+	<target name="tts_zip" depends="libs,svn_revision"
 			description="Create ${tts_zip}">
+		<property name="tts_zip" value="${bin_dir}/${title}_v${version}_tts.zip"/>
 		<zip destfile="${tts_zip}">
 			<fileset dir="${bin_dir}" includes="lib/speech/**/*"/>
 		</zip>
 	</target>
 
 
-	<property name="phpglidemon_zip" value="${bin_dir}/PHPGlideMon_v${version}.zip"/>
-
-	<target name="phpglidemon_zip" depends="phpglidemon"
+	<target name="phpglidemon_zip" depends="phpglidemon,svn_revision"
 			description="Create ${phpglidemon_zip}">
+		<property name="phpglidemon_zip" value="${bin_dir}/PHPGlideMon_v${version}.zip"/>
 		<zip destfile="${phpglidemon_zip}">
 			<fileset dir="php" includes="phpglidemon.php,phpglidemon.php.MD5"/>
 			<fileset dir="${bin_dir}" includes="License.txt"/>
@@ -305,7 +300,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 
-	<property name="javadoc_desc"	value="JGlideMon v${version}"/>
     <property name="javadoc_pkgs"	
 			value="jgm,
 			       jgm.glider,
@@ -321,7 +315,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 				   jgm.util,
 				   jgm.wow"/>
 
-	<target name="javadoc" description="Generate javadoc">
+   <target name="javadoc" description="Generate javadoc" depends="svn_revision">
+		<property name="javadoc_desc"	value="JGlideMon v${version}"/>
 		<mkdir dir="${javadoc_dir}"/>
 		<javadoc sourcepath="${src_dir}"
 				source="1.5"

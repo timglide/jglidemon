@@ -172,12 +172,18 @@ public class Config {
 			set("log.maxentries", DEFAULTS.getProperty("log.maxentries"));
 		}
 
-//		int i = getInt("screenshot.scale");
-//		if (i > 100) set("screenshot.scale", 100); else
-//		if (i < 10)  set("screenshot.scale", 10);
+		int i = 0;
 		
-		int i = getInt("screenshot.quality");
-		if (i > 100) set("screenshot.quality", 100); else
+		synchronized (ServerManager.managers) {
+			for (ServerManager sm : ServerManager.managers) {
+				i = sm.getInt("screenshot.scale");
+				if (i > 99) sm.set("screenshot.scale", 99); else
+				if (i < 10)  sm.set("screenshot.scale", 10);
+			}
+		}
+		
+		i = getInt("screenshot.quality");
+		if (i > 99) set("screenshot.quality", 99); else
 		if (i < 10)  set("screenshot.quality", 10);
 		
 //		if (getDouble("screenshot.buffer") < 1.0)
@@ -196,6 +202,8 @@ public class Config {
 	public static void write() {
 		log.fine("Saving configuration to " + propsFile.getName());
 		
+		c.validate();
+
 		try {
 			FileOutputStream fs = new FileOutputStream(propsFile);
 			instance.p.store(fs, "JGlideMon Settings");
