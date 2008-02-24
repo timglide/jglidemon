@@ -28,6 +28,9 @@ import javax.swing.*;
 public class Profiler {
 	public static final String app = "JGlideMon Profiler";
 	
+	static int numGroups = 0;
+	static int numProfiles = 0;
+
 	public static void main(String[] args) {
 		try {
 			// Set System L&F
@@ -39,7 +42,7 @@ public class Profiler {
 		
 		int ret = JOptionPane.showConfirmDialog(
 			null,
-			"Browse to where Glider.exe is and your profile names will be\n" +
+			"Select the folder Glider is installed in and your profile names will be\n" +
 			"saved to \"profiles.dat\" in the current directory.\n\n" +
 			"Copy this file to the same directory as JGlideMon.jar on\n" +
 			"the remote computer you intend to run JGlideMon on.",
@@ -62,18 +65,19 @@ public class Profiler {
 		}
 		
 		fc.setMultiSelectionEnabled(false);
-		fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
-			public String getDescription() {
-				return "Glider.exe";
-			}
-			
-			public boolean accept(File f) {
-				return f.isDirectory() || f.getName().toLowerCase().equals("glider.exe");
-			}
-		});
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//		fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
+//			public String getDescription() {
+//				return "*.exe";
+//			}
+//			
+//			public boolean accept(File f) {
+//				return f.isDirectory() || f.getName().toLowerCase().endsWith(".exe");
+//			}
+//		});
 		fc.setAcceptAllFileFilterUsed(false);
 		
-		ret = fc.showDialog(null, "Select Glider");
+		ret = fc.showDialog(null, "Select Folder");
 		
 		switch (ret) {
 			case JFileChooser.CANCEL_OPTION:
@@ -95,31 +99,34 @@ public class Profiler {
 		File f = fc.getSelectedFile();
 		System.out.println("Selected: " + f);
 		
-		if (!f.getName().toLowerCase().equals("glider.exe")) {
-			JOptionPane.showMessageDialog(
-				null,
-				"You have selected a file other than Glider.exe.\n" +
-				"Run this program again and select Glider.exe.",
-				"Invalid File",
-				JOptionPane.ERROR_MESSAGE
-			);
-			System.exit(1);
-		}
+//		if (!f.getName().toLowerCase().endsWith(".exe")) {
+//			JOptionPane.showMessageDialog(
+//				null,
+//				"You have selected a file other than Glider.exe.\n" +
+//				"Run this program again and select Glider.exe.",
+//				"Invalid File",
+//				JOptionPane.ERROR_MESSAGE
+//			);
+//			System.exit(1);
+//		}
 		
-		f = f.getParentFile();
+//		f = f.getParentFile();
 		File groups = new File(f, "groups");
 		File profiles = new File(f, "profiles");
 		
-		doDir(groups);
-		doDir(profiles);
+		doDir(groups, true);
+		doDir(profiles, false);
 		
 		Profile.Cache.saveProfiles();
 		
 		JOptionPane.showMessageDialog(
 			null,
-			"Profiles saved to \"" + Profile.Cache.profileFile.getName() + "\" successfully.\n\n" +
-			"Copy this file to the folder where JGlideMon.jar\n" +
-			"is located on the remote computer.",
+			String.format(
+				"%s groups and %s profiles saved to \"%s\" successfully\n\n" +
+				"Copy this file to the folder where JGlideMon.jar\n" +
+				"is located on the remote computer.",
+				numGroups, numProfiles, Profile.Cache.profileFile.getName()
+			),
 			app,
 			JOptionPane.INFORMATION_MESSAGE
 		);
@@ -150,11 +157,11 @@ public class Profiler {
 		}
 	};
 	
-	private static void doDir(File f) {
-		doDir(f, Profile.root);
+	private static void doDir(File f, boolean isGroups) {
+		doDir(f, Profile.root, isGroups);
 	}
 	
-	private static void doDir(File f, Profile parent) {
+	private static void doDir(File f, Profile parent, boolean isGroups) {
 		if (!f.isDirectory() || !f.canRead()) return;
 		
 		File[] children = f.listFiles(ff);
@@ -165,9 +172,10 @@ public class Profiler {
 		
 		for (File child : children) {
 			if (child.isDirectory()) {
-				doDir(child, parent);
+				doDir(child, parent, isGroups);
 			} else {
 				Profile.createLeaf(parent, child.getName());
+				if (isGroups) numGroups++; else numProfiles++;
 			}
 		}
 	}
