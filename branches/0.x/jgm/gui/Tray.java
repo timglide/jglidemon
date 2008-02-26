@@ -157,6 +157,7 @@ public class Tray implements ActionListener {
 	// passthru for displayMessage
 	public void displayMessage(String caption, String text, MessageType type) {		
 		if (icon == null) return;
+		if (!enabled) return;
 		if (!jgm.Config.c.getBool("alerts.enabled")) return;
 		
 		TrayIcon.MessageType realType = null;

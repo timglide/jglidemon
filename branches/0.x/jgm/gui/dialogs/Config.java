@@ -221,13 +221,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 				}
 			}
 		});*/
+		wowDbSite.setPrototypeDisplayValue("X");
 		wowDbSite.setEditable(true);
 		wowDbSite.setSelectedItem(cfg.get("general.wowdb"));		
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 1; c.weightx = 0.0;
 		general.add(new JLabel("WoW DB Site: "), c);
 		
-		c.gridx++; c.weightx = 0.75;
+		c.gridx++; c.weightx = 1.0;
 		general.add(wowDbSite, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 1.0;
@@ -500,17 +501,17 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		alerts = new JPanel(new GridBagLayout());
 		
-		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.weighty = 0.0;
-		c.weightx = 0.5;
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.weighty = 0.0;
+		c.weightx = 0.0; c.gridwidth = 1;
 		alerts.add(new JLabel("Minimum Character Level: "), c);
 		
 		minAlertLevel = makeSpinner(INT_SPINNER);
 		minAlertLevel.setToolTipText("Only display alerts when character is at least this level");
-		c.gridx += 2; c.weightx = 0.4; c.gridwidth = 1;
+		c.gridx++; c.weightx = 1.0; c.gridwidth = 1;
 		alerts.add(minAlertLevel, c);
 		
 		enableAutoUrgent = new JCheckBox("Automatically switch to Urgent Chat tab");
-		c.gridx = 0; c.gridy++; c.gridwidth = 3;
+		c.gridx = 0; c.gridy++; c.gridwidth = 2;
 		alerts.add(enableAutoUrgent, c);
 		
 		enableAlerts = new JCheckBox("Enable Popup Alerts");
@@ -519,52 +520,61 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridy++;
 		alerts.add(enableAlerts, c);
 		
-		alertOnDeath = new JCheckBox("  On Death");
-		alertOnChat = new JCheckBox("  On Chat");
-		alertOnFollow = new JCheckBox("  On Follow");
-		alertOnPVP = new JCheckBox("  On PVP");
-		alertOnStatus = new JCheckBox("  On Status");
+		alertOnDeath = new JCheckBox("On Death");
+		alertOnChat = new JCheckBox("On Chat");
+		alertOnFollow = new JCheckBox("On Follow");
+		alertOnPVP = new JCheckBox("On PVP");
+		alertOnStatus = new JCheckBox("On Status");
 		alertOnStatus.setToolTipText("Display alert when Glider stops");
-		alertOnLoot = new JCheckBox("  On Phat Loot");
-		alertOnOther = new JCheckBox("  On Other");
+		alertOnLoot = new JCheckBox("On Phat Loot");
+		alertOnOther = new JCheckBox("On Other");
 		alertOnOther.setToolTipText("Display alert when a log entry starting with \"!\" is received");
 		
-		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
-		alerts.add(new JLabel("    "), c);
-		c.gridwidth = 2;
-		c.gridx++; c.weightx = 1.0; alerts.add(alertOnDeath, c);
+		int oldY = c.gridy;
 		
-		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
-		alerts.add(new JLabel("    "), c);
-		c.gridwidth = 2;
-		c.gridx++; c.weightx = 1.0; alerts.add(alertOnChat, c);
+		JPanel leftCol = new JPanel(new GridBagLayout());
 		
-		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
-		alerts.add(new JLabel("    "), c);
-		c.gridwidth = 2;
-		c.gridx++; c.weightx = 1.0; alerts.add(alertOnFollow, c);
+		c.gridx = 0; c.gridy = 0; c.weightx = 0.0; c.gridwidth = 1;
+		leftCol.add(new JLabel("    "), c);
+		c.gridx++; c.weightx = 1.0; leftCol.add(alertOnDeath, c);
 		
-		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
-		alerts.add(new JLabel("    "), c);
-		c.gridwidth = 2;
-		c.gridx++; c.weightx = 1.0; alerts.add(alertOnPVP, c);
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		leftCol.add(new JLabel("    "), c);
+		c.gridx++; c.weightx = 1.0; leftCol.add(alertOnChat, c);
 		
-		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
-		alerts.add(new JLabel("    "), c);
-		c.gridwidth = 2;
-		c.gridx++; c.weightx = 1.0; alerts.add(alertOnStatus, c);
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		leftCol.add(new JLabel("    "), c);
+		c.gridx++; c.weightx = 1.0; leftCol.add(alertOnFollow, c);
 		
-		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
-		alerts.add(new JLabel("    "), c);
-		c.gridwidth = 2;
-		c.gridx++; c.weightx = 1.0; alerts.add(alertOnLoot, c);
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		leftCol.add(new JLabel("    "), c);
+		c.gridx++; c.weightx = 1.0; leftCol.add(alertOnPVP, c);
 		
-		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
-		alerts.add(new JLabel("    "), c);
-		c.gridwidth = 2;
-		c.gridx++; c.weightx = 1.0; alerts.add(alertOnOther, c);
 		
-		c.gridx = 0; c.gridy++; c.weighty = 1.0;
+		JPanel rightCol = new JPanel(new GridBagLayout());
+		
+		c.gridx = 0; c.gridy = 0; c.weightx = 0.0; c.gridwidth = 1;
+		rightCol.add(new JLabel("    "), c);
+		c.gridx++; c.weightx = 1.0; rightCol.add(alertOnStatus, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		rightCol.add(new JLabel("    "), c);
+		c.gridx++; c.weightx = 1.0; rightCol.add(alertOnLoot, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+		rightCol.add(new JLabel("    "), c);
+		c.gridx++; c.weightx = 1.0; rightCol.add(alertOnOther, c);
+		
+		c.gridx = 0; c.gridy++; c.gridwidth = 2; c.weighty = 1.0;
+		rightCol.add(new JLabel(), c);
+		
+		c.gridx = 0; c.gridy = oldY + 1; c.weightx = 0.5; c.weighty = 0.0;
+		c.gridwidth = 1;
+		alerts.add(leftCol, c);
+		c.gridx++;
+		alerts.add(rightCol, c);
+		
+		c.gridx = 0; c.gridy++; c.weighty = 1.0; c.gridwidth = 2;
 		alerts.add(new JLabel(), c);
 		
 		
@@ -964,12 +974,16 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			boolean state = showTray.isEnabled() && showTray.isSelected();
 			
 			minToTray.setEnabled(state);
+			enableAlerts.setEnabled(state);
 			
 			if (state) {
 				gui.tray.enable();
 			} else {
 				gui.tray.disable();
 			}
+			
+			// since it depends on this being enabled
+			stateChanged(new ChangeEvent(enableAlerts));
 		} else if (e.getSource() == netReconnect) {
 			boolean state = netReconnect.isEnabled() && netReconnect.isSelected();
 			
@@ -1000,7 +1014,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			ttsGM.setEnabled(state);
 			ttsStatus.setEnabled(state);
 		} else if (e.getSource() == enableAlerts) {
-			boolean state = enableAlerts.isEnabled() && enableAlerts.isSelected();
+			boolean state =	enableAlerts.isEnabled() && enableAlerts.isSelected();
 			
 			alertOnDeath.setEnabled(state);
 			alertOnChat.setEnabled(state);
