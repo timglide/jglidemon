@@ -198,8 +198,23 @@ public class LogUpdater implements Runnable, ConnectionListener {
 //		line = m.replaceAll("$1");
 //		line = org.apache.commons.lang.StringEscapeUtils.unescapeHtml(line);
 		
+		// consider something an alert if either we aren't connected or
+		// we are connected and we are at least the min level
+		boolean isAlertLevel = fromLog || !sm.connector.isConnected() || sm.status.s.isAlertLevel(); 
+		boolean resetSound = false;
+		boolean lastEnableSounds = jgm.sound.Audible.ENABLE_SOUNDS;
+		// disable sounds if we are connected and below the alert level threshold
+		if (!isAlertLevel) {
+			resetSound = true;
+			jgm.sound.Audible.ENABLE_SOUNDS = false;	
+		}
+		
 		LogEntry e = LogEntry.factory(this, line, logFile);
 
+		if (resetSound) {
+			jgm.sound.Audible.ENABLE_SOUNDS = lastEnableSounds;	
+		}
+		
 		if (e == null) {
 			if (!logFile.equals(LogFile.None)) {
 				jgm.sound.Audible.ENABLE_SOUNDS = true;
@@ -221,7 +236,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				urgent.followers.add(e2);
 			}
 			
-			if (e2.isAlert()) {
+			if (e2.isAlert() && isAlertLevel) {
 				urgent.add(e, Config.c.getBool("alerts.autourgent"));
 				
 				String key = null;
@@ -378,7 +393,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		} else if (e instanceof ChatLogEntry) {
 			ChatLogEntry e2 = (ChatLogEntry) e;
 			
-			if (e2.isUrgent()) {
+			if (e2.isUrgent() && isAlertLevel) {
 				urgent.add(e, Config.c.getBool("alerts.autourgent"));
 				
 				if (!fromLog && null != sm.gui && Config.c.getBool("alerts.chat")) 

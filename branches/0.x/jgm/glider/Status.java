@@ -88,6 +88,10 @@ public class Status {
 		return level >= 70 && level % 10 == 0 && xpPercent < 2;
 	}
 	
+	public boolean isAlertLevel() {
+		return !attached || level >= jgm.Config.c.getInt("alerts.minlevel");
+	}
+	
 	public Status clone() {
 		Status ret = new Status();
 		
