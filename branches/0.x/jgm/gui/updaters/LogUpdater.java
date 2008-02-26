@@ -308,8 +308,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 							
 							this.cancel();
 						}
-					}, 5000);
+					}, jgm.Config.c.getInt("restarter.exception.delay"));
 					
+					lastGliderException = null;
+				} else {
 					lastGliderException = null;
 				}
 				
@@ -331,8 +333,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 								
 							this.cancel();
 						}
-					}, 15000); // 15 seconds, if they're auto selling, it could lag
+					}, jgm.Config.c.getInt("restarter.inventory.delay")); // 15 seconds, if they're auto selling, it could lag
 					
+					lastInventoryNotGoingUp = null;
+				} else {
 					lastInventoryNotGoingUp = null;
 				}
 				
@@ -354,8 +358,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 								
 							this.cancel();
 						}
-					}, 15000); // 15 seconds, again, if they're auto selling, it could lag
+					}, jgm.Config.c.getInt("restarter.flight.delay")); // 15 seconds, again, if they're auto selling, it could lag
 					
+					lastFlightError = null;
+				} else {
 					lastFlightError = null;
 				}
 			}

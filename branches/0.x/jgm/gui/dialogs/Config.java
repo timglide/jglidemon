@@ -93,6 +93,18 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JCheckBox ttsGM;
 	JCheckBox ttsStatus;
 	
+	JPanel alerts;
+	JSpinner  minAlertLevel;
+	JCheckBox enableAutoUrgent;
+	JCheckBox enableAlerts;
+	JCheckBox alertOnDeath;
+	JCheckBox alertOnChat;
+	JCheckBox alertOnFollow;
+	JCheckBox alertOnPVP;
+	JCheckBox alertOnStatus;
+	JCheckBox alertOnLoot;
+	JCheckBox alertOnOther;
+	
 	JPanel stuck;
 	JCheckBox enableStuck;
 	JSpinner stuckLimit;
@@ -100,12 +112,15 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 
 	JCheckBox restartOnException;
 	JSpinner restartOnExceptionTime;
+	JSpinner restartOnExceptionDelay;
 	
 	JCheckBox restartOnInventory;
 	JSpinner restartOnInventoryTime;
+	JSpinner restartOnInventoryDelay;
 	
 	JCheckBox restartOnFlight;
 	JSpinner restartOnFlightTime;
+	JSpinner restartOnFlightDelay;
 	
 	ButtonGroup onRestartGroup;
 	JRadioButton onRestartNothing;
@@ -369,11 +384,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		//p.add(screenshot);
 		
 		
-		// sound config
+		/// sound config
+		
 		JPanel tmp = new JPanel(new GridLayout(1, 0, 10, 10));
-		//GUI.setTitleBorder(tmp, "Sound");
-		//tmp.setBorder(
-		//		BorderFactory.createTitledBorder(lineBorder, "Sound"));
 			
 		sound = new JPanel(new GridBagLayout());
 		
@@ -482,92 +495,204 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		//p.add(sound);
 		
 		
+		
+		/// alert config
+		
+		alerts = new JPanel(new GridBagLayout());
+		
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 2; c.weighty = 0.0;
+		c.weightx = 0.5;
+		alerts.add(new JLabel("Minimum Character Level: "), c);
+		
+		minAlertLevel = makeSpinner(INT_SPINNER);
+		minAlertLevel.setToolTipText("Only display alerts when character is at least this level");
+		c.gridx += 2; c.weightx = 0.4; c.gridwidth = 1;
+		alerts.add(minAlertLevel, c);
+		
+		enableAutoUrgent = new JCheckBox("Automatically switch to Urgent Chat tab");
+		c.gridx = 0; c.gridy++; c.gridwidth = 3;
+		alerts.add(enableAutoUrgent, c);
+		
+		enableAlerts = new JCheckBox("Enable Popup Alerts");
+		enableAlerts.addChangeListener(this);
+		enableAlerts.setToolTipText("When enabled, popup alerts will be displayed when the window is not active");
+		c.gridy++;
+		alerts.add(enableAlerts, c);
+		
+		alertOnDeath = new JCheckBox("  On Death");
+		alertOnChat = new JCheckBox("  On Chat");
+		alertOnFollow = new JCheckBox("  On Follow");
+		alertOnPVP = new JCheckBox("  On PVP");
+		alertOnStatus = new JCheckBox("  On Status");
+		alertOnStatus.setToolTipText("Display alert when Glider stops");
+		alertOnLoot = new JCheckBox("  On Phat Loot");
+		alertOnOther = new JCheckBox("  On Other");
+		alertOnOther.setToolTipText("Display alert when a log entry starting with \"!\" is received");
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		alerts.add(new JLabel("    "), c);
+		c.gridwidth = 2;
+		c.gridx++; c.weightx = 1.0; alerts.add(alertOnDeath, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		alerts.add(new JLabel("    "), c);
+		c.gridwidth = 2;
+		c.gridx++; c.weightx = 1.0; alerts.add(alertOnChat, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		alerts.add(new JLabel("    "), c);
+		c.gridwidth = 2;
+		c.gridx++; c.weightx = 1.0; alerts.add(alertOnFollow, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		alerts.add(new JLabel("    "), c);
+		c.gridwidth = 2;
+		c.gridx++; c.weightx = 1.0; alerts.add(alertOnPVP, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		alerts.add(new JLabel("    "), c);
+		c.gridwidth = 2;
+		c.gridx++; c.weightx = 1.0; alerts.add(alertOnStatus, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		alerts.add(new JLabel("    "), c);
+		c.gridwidth = 2;
+		c.gridx++; c.weightx = 1.0; alerts.add(alertOnLoot, c);
+		
+		c.gridx = 0; c.gridy++; c.weightx = 0.0; c.gridwidth = 1;
+		alerts.add(new JLabel("    "), c);
+		c.gridwidth = 2;
+		c.gridx++; c.weightx = 1.0; alerts.add(alertOnOther, c);
+		
+		c.gridx = 0; c.gridy++; c.weighty = 1.0;
+		alerts.add(new JLabel(), c);
+		
+		
+		addTab("Alerts", alerts);
+		
+		
+		
 		// stuck options
+		
+		//          Enabled Timeout Limit
+		// Stuck       x      #      #
+		//                          Delay (ms)
+		//
 		stuck = new JPanel(new GridBagLayout());
 		
-		c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
-		c.weightx = 1.0; c.weighty = 0.0;		
-		enableStuck = new JCheckBox("Stuck");
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 1;
+		c.weightx = 1.0; c.weighty = 0.0;
+		
+		// headers
+		stuck.add(new JLabel(), c);
+		c.weightx = 0.0; c.gridx++;
+		stuck.add(new JLabel("Enabled", JLabel.CENTER), c);
+		c.gridx++;
+		stuck.add(new JLabel("Timeout (s)", JLabel.CENTER), c);
+		c.gridx++;
+		stuck.add(new JLabel("Limit", JLabel.CENTER), c);
+		
+		enableStuck = new JCheckBox();
 		enableStuck.setToolTipText("Try to restart when stuck");
 		enableStuck.addChangeListener(this);
+		c.gridx = 0; c.gridy++; c.insets.bottom = GUI.PADDING;
+		stuck.add(new JLabel("Stuck: "), c);
+		c.gridx++;
 		stuck.add(enableStuck, c);
 		
-		JLabel tmpLbl = new JLabel("  Stuck Limit: ");
-		tmpLbl.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
-		
-		c.gridwidth = 1; c.gridy++; c.weightx = 0.0;
-		stuck.add(tmpLbl, c);
+		stuckTimeout = new JSpinner(
+				new SpinnerNumberModel(300, 5, 10000, 1)
+			);
+			stuckTimeout.setToolTipText("Reset stuck timer after this many seconds");
+			stuckTimeout.addChangeListener(this);
+			c.gridx++;
+			stuck.add(stuckTimeout, c);
 		
 		stuckLimit = new JSpinner(
 			new SpinnerNumberModel(5, 0, 10000, 1)
 		);
+		stuckLimit.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
 		stuckLimit.addChangeListener(this);
-		c.gridx++; c.weightx = 1.0;
+		c.gridx++;
 		stuck.add(stuckLimit, c);
 		
-		tmpLbl = new JLabel("  Timeout (s): ");
-		tmpLbl.setToolTipText("Reset stuck timer after this many seconds");
-		
-		c.gridx = 0; c.gridy++; c.weightx = 0;
-		stuck.add(tmpLbl, c);
-
-		stuckTimeout = new JSpinner(
-			new SpinnerNumberModel(300, 5, 10000, 1)
-		);
-		stuckTimeout.addChangeListener(this);
-		c.gridx++; c.weightx = 1.0;
-		stuck.add(stuckTimeout, c);
-		
-		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 0.0;
+//		c.gridx = 0; c.gridwidth = 2; c.gridy++; c.weighty = 0.0;
+//		stuck.add(new JLabel(), c);
+	
+		// headers
+		c.gridy++; c.gridx = 0; c.weightx = 1.0;
+		c.insets.bottom = 0;
 		stuck.add(new JLabel(), c);
+		c.weightx = 0.0; c.gridx++;
+		stuck.add(new JLabel(), c);
+		c.gridx++;
+		stuck.add(new JLabel(), c);
+		c.gridx++;
+		stuck.add(new JLabel("Delay (ms)", JLabel.CENTER), c);
 		
-		restartOnException = new JCheckBox("On Glider Exception");
+		restartOnException = new JCheckBox();
 		restartOnException.setToolTipText("Try to restart when Glider stops as a result of an exception");
 		restartOnException.addChangeListener(this);
-		c.gridy++;
+		c.gridx = 0; c.gridy++;
+		stuck.add(new JLabel("Exception: "), c);
+		c.gridx++;
 		stuck.add(restartOnException, c);
-		
-		c.gridwidth = 1; c.weightx = 0.0; c.gridy++;
-		stuck.add(new JLabel("  Timeout (s): "), c);
-		
-		restartOnExceptionTime = Config.makeSpinner(Config.INT_SPINNER);
+				
+		restartOnExceptionTime = makeSpinner(INT_SPINNER);
 		restartOnExceptionTime.setToolTipText("Glider will be restarted if an exception occured within this many seconds before stopping");
 		restartOnExceptionTime.addChangeListener(this);
-		c.gridx++; c.weightx = 1.0;
+		c.gridx++;
 		stuck.add(restartOnExceptionTime, c);
 		
-		restartOnInventory = new JCheckBox("On Inventory Not Going Up");
+		restartOnExceptionDelay = makeSpinner(INT_SPINNER);
+		restartOnExceptionDelay.setToolTipText("Glider will be restarted after waiting this long");
+		restartOnExceptionDelay.addChangeListener(this);
+		c.gridx++;
+		stuck.add(restartOnExceptionDelay, c);
+		
+		
+		restartOnInventory = new JCheckBox();
 		restartOnInventory.setToolTipText("Try to restart when Glider stops when it can't resupply from a vendor.");
 		restartOnInventory.addChangeListener(this);
-		c.gridy++; c.gridx = 0; c.gridwidth = 2;
+		c.gridy++; c.gridx = 0;
+		stuck.add(new JLabel("Inventory: "), c);
+		c.gridx++;
 		stuck.add(restartOnInventory, c);
-		
-		c.gridwidth = 1; c.weightx = 0.0; c.gridy++;
-		stuck.add(new JLabel("  Timeout (s): "), c);
-		
+				
 		restartOnInventoryTime = Config.makeSpinner(Config.INT_SPINNER);
 		restartOnInventoryTime.setToolTipText("Glider will be restarted if an inventory not going up error occured within this many seconds before stopping.");
 		restartOnInventoryTime.addChangeListener(this);
-		c.gridx++; c.weightx = 1.0;
+		c.gridx++;
 		stuck.add(restartOnInventoryTime, c);
 		
-		restartOnFlight = new JCheckBox("On Flight Error");
+		restartOnInventoryDelay = makeSpinner(INT_SPINNER);
+		restartOnInventoryDelay.setToolTipText("Glider will be restarted after waiting this long");
+		restartOnInventoryDelay.addChangeListener(this);
+		c.gridx++;
+		stuck.add(restartOnInventoryDelay, c);
+		
+		restartOnFlight = new JCheckBox();
 		restartOnFlight.setToolTipText("<html>Try to restart when Glider stops a profile group when it can't interact with the flight master.<br>This would help with auto-vendoring/repairing profile groups.");
 		restartOnFlight.addChangeListener(this);
-		c.gridy++; c.gridx = 0; c.gridwidth = 2;
-		stuck.add(restartOnFlight, c);
-		
-		c.gridwidth = 1; c.weightx = 0.0; c.gridy++;
+		c.gridy++; c.gridx = 0;
 		c.insets.bottom = GUI.PADDING;
-		stuck.add(new JLabel("  Timeout (s): "), c);
+		stuck.add(new JLabel("Flight: "), c);
+		c.gridx++;
+		stuck.add(restartOnFlight, c);
 		
 		restartOnFlightTime = Config.makeSpinner(Config.INT_SPINNER);
 		restartOnFlightTime.setToolTipText("Glider will be restarted if a flight error occured within this many seconds before stopping.");
 		restartOnFlightTime.addChangeListener(this);
-		c.gridx++; c.weightx = 1.0;
+		c.gridx++;
 		stuck.add(restartOnFlightTime, c);
 		
-		c.gridwidth = 2; c.weightx = 1.0; c.gridx = 0; c.gridy += 2;
+		restartOnFlightDelay = makeSpinner(INT_SPINNER);
+		restartOnFlightDelay.setToolTipText("Glider will be restarted after waiting this long");
+		restartOnFlightDelay.addChangeListener(this);
+		c.gridx++;
+		stuck.add(restartOnFlightDelay, c);
+		
+		c.gridwidth = 4; c.weightx = 1.0; c.gridx = 0; c.gridy += 2;
 		c.insets.bottom = 0;
 		JLabel lbl = new JLabel("After restarting,");
 		lbl.setToolTipText("<html>Shrink, hide, or do nothing to the wow window when restarting.<br>This also affects when you send chat.");
@@ -605,7 +730,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		enableWeb.addChangeListener(this);
 		web.add(enableWeb, c);
 		
-		tmpLbl = new JLabel("  * Port: ");
+		JLabel tmpLbl = new JLabel("  * Port: ");
 //		tmpLbl.setToolTipText("Give up if stuck this many times in a row or 0 to never give up");
 		
 		c.gridwidth = 1; c.gridy++; c.weightx = 0.0;
@@ -763,16 +888,32 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("sound.tts.gm", ttsGM.isSelected());
 		cfg.set("sound.tts.status", ttsStatus.isSelected());
 		
+		cfg.set("alerts.minlevel", minAlertLevel.getValue());
+		cfg.set("alerts.autourgent", enableAutoUrgent.isSelected());
+		cfg.set("alerts.enabled", enableAlerts.isSelected());
+		cfg.set("alerts.death", alertOnDeath.isSelected());
+		cfg.set("alerts.chat", alertOnChat.isSelected());
+		cfg.set("alerts.follow", alertOnFollow.isSelected());
+		cfg.set("alerts.pvp", alertOnPVP.isSelected());
+		cfg.set("alerts.status", alertOnStatus.isSelected());
+		cfg.set("alerts.loot", alertOnLoot.isSelected());
+		cfg.set("alerts.other", alertOnOther.isSelected());
+		
+		
 		cfg.set("stuck.enabled", enableStuck.isSelected());
 		cfg.set("stuck.limit", ((Integer) stuckLimit.getValue()).intValue());
 		cfg.set("stuck.timeout", ((Integer) stuckTimeout.getValue()).intValue());
 		
 		cfg.set("restarter.exception.enabled", restartOnException.isSelected());
 		cfg.set("restarter.exception.timeout", restartOnExceptionTime.getValue());
+		cfg.set("restarter.exception.delay", restartOnExceptionDelay.getValue());
 		cfg.set("restarter.inventory.enabled", restartOnInventory.isSelected());
 		cfg.set("restarter.inventory.timeout", restartOnInventoryTime.getValue());
+		cfg.set("restarter.inventory.delay", restartOnInventoryDelay.getValue());
 		cfg.set("restarter.flight.enabled", restartOnFlight.isSelected());
 		cfg.set("restarter.flight.timeout", restartOnFlightTime.getValue());
+		cfg.set("restarter.flight.delay", restartOnFlightDelay.getValue());
+		
 		
 		cfg.set("restarter.onrestart",
 			onRestartShrink.isSelected()
@@ -858,6 +999,16 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 			ttsSay.setEnabled(state);
 			ttsGM.setEnabled(state);
 			ttsStatus.setEnabled(state);
+		} else if (e.getSource() == enableAlerts) {
+			boolean state = enableAlerts.isEnabled() && enableAlerts.isSelected();
+			
+			alertOnDeath.setEnabled(state);
+			alertOnChat.setEnabled(state);
+			alertOnFollow.setEnabled(state);
+			alertOnPVP.setEnabled(state);
+			alertOnStatus.setEnabled(state);
+			alertOnLoot.setEnabled(state);
+			alertOnOther.setEnabled(state);
 		} else if (e.getSource() == enableStuck) {
 			boolean state = enableStuck.isEnabled() && enableStuck.isSelected();
 			
@@ -949,16 +1100,32 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		ttsGM.setSelected(cfg.getBool("sound.tts.gm"));
 		ttsStatus.setSelected(cfg.getBool("sound.tts.status"));
 		
+		minAlertLevel.setValue(cfg.getInt("alerts.minlevel"));
+		enableAutoUrgent.setSelected(cfg.getBool("alerts.autourgent"));
+		enableAlerts.setEnabled(jgm.gui.Tray.isSupported());
+		enableAlerts.setSelected(cfg.getBool("alerts.enabled"));
+		alertOnDeath.setSelected(cfg.getBool("alerts.death"));
+		alertOnChat.setSelected(cfg.getBool("alerts.chat"));
+		alertOnFollow.setSelected(cfg.getBool("alerts.follow"));
+		alertOnPVP.setSelected(cfg.getBool("alerts.pvp"));
+		alertOnStatus.setSelected(cfg.getBool("alerts.status"));
+		alertOnLoot.setSelected(cfg.getBool("alerts.loot"));
+		alertOnOther.setSelected(cfg.getBool("alerts.other"));
+		
+		
 		enableStuck.setSelected(cfg.getBool("stuck.enabled"));
 		stuckLimit.setValue(cfg.getInt("stuck.limit"));
 		stuckTimeout.setValue(cfg.getInt("stuck.timeout"));
 		
 		restartOnException.setSelected(cfg.getBool("restarter.exception.enabled"));
 		restartOnExceptionTime.setValue(cfg.getInt("restarter.exception.timeout"));
+		restartOnExceptionDelay.setValue(cfg.getInt("restarter.exception.delay"));
 		restartOnInventory.setSelected(cfg.getBool("restarter.inventory.enabled"));
 		restartOnInventoryTime.setValue(cfg.getInt("restarter.inventory.timeout"));
+		restartOnInventoryDelay.setValue(cfg.getInt("restarter.inventory.delay"));
 		restartOnFlight.setSelected(cfg.getBool("restarter.flight.enabled"));
 		restartOnFlightTime.setValue(cfg.getInt("restarter.flight.timeout"));
+		restartOnFlightDelay.setValue(cfg.getInt("restarter.flight.delay"));
 		
 		String tmp = cfg.get("restarter.onrestart");
 		
@@ -979,6 +1146,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		stateChanged(new ChangeEvent(screenshotAutoScale));
 		stateChanged(new ChangeEvent(enableSound));
 		stateChanged(new ChangeEvent(enableTTS));
+		stateChanged(new ChangeEvent(enableAlerts));
 		stateChanged(new ChangeEvent(enableStuck));
 		stateChanged(new ChangeEvent(restartOnException));
 		stateChanged(new ChangeEvent(restartOnInventory));
