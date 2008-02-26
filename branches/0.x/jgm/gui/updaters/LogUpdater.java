@@ -20,6 +20,7 @@
  */
 package jgm.gui.updaters;
 
+import jgm.Config;
 import jgm.glider.*;
 import jgm.glider.log.*;
 import jgm.gui.panes.TabsPane;
@@ -221,9 +222,18 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			}
 			
 			if (e2.isAlert()) {
-				urgent.add(e, true);
+				urgent.add(e, Config.c.getBool("alerts.autourgent"));
 				
-				if (!fromLog && null != sm.gui)
+				String key = null;
+				
+				switch (e2.type) {
+					case DIED: key = "alerts.death"; break;
+					case BEING_FOLLOWED: key = "alerts.follow"; break;
+					case BEING_ATTACKED: key = "alerts.pvp"; break;
+					default: key = "alerts.other"; break;
+				}
+				
+				if (!fromLog && null != sm.gui && Config.c.getBool(key))
 					sm.gui.tray
 						.warnIfInactive("Glider", e2.getText());
 			}
@@ -277,7 +287,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			statusLog.add(e);
 			
 			if (!fromLog && e.getText().equals("Stopping glide")) {
-				if (null != sm.gui)
+				if (null != sm.gui && Config.c.getBool("alerts.status"))
 					sm.gui.tray
 						.warnIfInactive("Glider", e.getText());
 				
@@ -339,7 +349,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 				} else {
 					lastInventoryNotGoingUp = null;
 				}
-				
+
 				if (lastFlightError != null
 					&& jgm.Config.getInstance().getBool("restarter.flight.enabled")
 					&& System.currentTimeMillis() - lastFlightError <= 1000 * jgm.Config.c.getInt("restarter.flight.timeout")) {
@@ -369,9 +379,9 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			ChatLogEntry e2 = (ChatLogEntry) e;
 			
 			if (e2.isUrgent()) {
-				urgent.add(e, true);
+				urgent.add(e, Config.c.getBool("alerts.autourgent"));
 				
-				if (!fromLog && null != sm.gui) 
+				if (!fromLog && null != sm.gui && Config.c.getBool("alerts.chat")) 
 					sm.gui.tray
 						.warnIfInactive("Chat", e2.getText());
 			}
@@ -388,10 +398,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 //				System.out.println("Adding item: " + e2.getItem().toString());
 				lootsTab.add(e2.getItemSet());
 				
-				if (!fromLog && e2.getItemSet().getItem().quality >= jgm.wow.Item.RARE)
-					if (null != sm.gui)
-						sm.gui.tray
-							.informIfInactive("Phat Loot", "[" + e2.getItemSet().getItem().name + "]");
+				if (!fromLog && e2.getItemSet().getItem().quality >= jgm.wow.Item.RARE &&
+					null != sm.gui && Config.c.getBool("alerts.loot"))
+					sm.gui.tray
+						.informIfInactive("Phat Loot", "[" + e2.getItemSet().getItem().name + "]");
 			}
 			
 			if (e2.hasMoney()) {

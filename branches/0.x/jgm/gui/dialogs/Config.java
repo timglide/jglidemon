@@ -1017,12 +1017,15 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		} else if (e.getSource() == restartOnException) {
 			boolean state = restartOnException.isEnabled() && restartOnException.isSelected();
 			restartOnExceptionTime.setEnabled(state);
+			restartOnExceptionDelay.setEnabled(state);
 		} else if (e.getSource() == restartOnInventory) {
 			boolean state = restartOnInventory.isEnabled() && restartOnInventory.isSelected();
 			restartOnInventoryTime.setEnabled(state);
+			restartOnInventoryDelay.setEnabled(state);
 		} else if (e.getSource() == restartOnFlight) {
 			boolean state = restartOnFlight.isEnabled() && restartOnFlight.isSelected();
 			restartOnFlightTime.setEnabled(state);
+			restartOnFlightDelay.setEnabled(state);
 		} else if (e.getSource() == enableWeb) {
 			boolean state = enableWeb.isEnabled() && enableWeb.isSelected();
 			
