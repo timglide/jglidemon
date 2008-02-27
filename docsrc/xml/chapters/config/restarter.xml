@@ -74,4 +74,9 @@
 		  </tbody>
 	  </tgroup>
   </table>
+
+  <para>
+		  The Delay setting is the number of milliseconds JGlideMon will wait before
+		  telling Glider to start again for the respective restart condition.
+  </para>
 </section>
