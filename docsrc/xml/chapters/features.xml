@@ -63,7 +63,7 @@
 						  Tracking gold and loot
 						  <itemizedlist>
 								  <listitem>All looted items are organized by quality into tables</listitem>
-								  <listitem>The value of each item is downloaded from Allakhazam and used to estimate gold earned per hour</listitem>
+								  <listitem>The median AH price or vendor price (configurable) of each item is downloaded from Allakhazam and used to estimate gold earned per hour</listitem>
 								  <listitem>Clicking an item will open a user-selectable web page, i.e. Thottbot, Allakhazam, or Wowhead</listitem>
 						  </itemizedlist>
 				  </listitem>
@@ -71,6 +71,7 @@
 						  Support for multiple Gliders
 						  <itemizedlist>
 								  <listitem>You only need to run one instance of JGlideMon in order to be able to monitor several Gliders</listitem>
+								  <listitem>Popup alerts help distinguish which Glider connection needs your attention</listitem>
 						  </itemizedlist>
 				  </listitem>
 		  </itemizedlist>
