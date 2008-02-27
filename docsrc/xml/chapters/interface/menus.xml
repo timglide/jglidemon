@@ -319,7 +319,7 @@
 				  </term>
 				  <listitem>
 						<para>
-								<action>Activates and connects (if <link linkend="chapters.config.network">auto reconnect</link> is enabled) all suspended servers.</action>
+								<action>Activates and connects (if <link linkend="chapters.config.server">auto reconnect</link> is enabled) all suspended servers.</action>
 						</para>
 				  </listitem>
 		  </varlistentry>
