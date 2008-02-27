@@ -268,7 +268,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<property name="src_zip" value="${bin_dir}/${title}_v${version}_src.zip"/>
 		<zip destfile="${src_zip}">
 			<fileset dir="${src_dir}" includes="**" 
-				excludes="**/*.class,lib/**,bin/**,**/*.MD5,**/.*,**/*.cache,**/*.dat,**/*.ini,**/*.properties,php/phpglidemon.php,DebugInfo.txt,Log.txt"/>
+				excludes="_TODO.txt,**/*.class,lib/**,bin/**,**/*.MD5,**/.*,**/*.cache,**/*.dat,**/*.ini,**/*.properties,php/phpglidemon.php,sounds/*,installer/*.exe,DebugInfo.txt,Log.txt*"/>
 		</zip>
 	</target>
 
@@ -302,8 +302,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	<target name="helpfile">
 		<ant antfile="${src_dir}/../docsrc/build.xml" inheritAll="false" target="htmlhelp"/>
-		<copy todir="${bin_dir}">
-			<fileset dir="${src_dir}/../docsrc" includes="JGlideMon.chm"/>
+		<copy todir="${bin_dir}" overwrite="true" verbose="true">
+			<fileset dir="${src_dir}/../docsrc/output/htmlhelp" includes="JGlideMon.chm"/>
 		</copy>
 	</target>
 
@@ -315,7 +315,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 	<target name="full_installer" depends="helpfile,svn_revision">
-		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows">
+		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
 			<arg value="/V3"/>
 			<arg value="/DAppVersion=${version}"/>
 			<arg value="/DInstallerType=full"/>
@@ -324,7 +324,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 	<target name="core_installer" depends="helpfile,svn_revision">
-		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows">
+		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
 			<arg value="/V3"/>
 			<arg value="/DAppVersion=${version}"/>
 			<arg value="/DInstallerType=core"/>
@@ -376,5 +376,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<delete dir="${bin_dir}"/>
 		<delete dir="${build_dir}"/>
 		<delete dir="${javadoc_dir}"/>
+		<delete>
+			<fileset dir="${src_dir}/php" includes="phpglidemon.php"/>
+		</delete>
+		<delete>
+			<fileset dir="${src_dir}/installer" includes="*_setup.exe"/>
+		</delete>
     </target>
 </project>

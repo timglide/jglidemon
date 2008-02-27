@@ -244,13 +244,6 @@ FunctionEnd
 
 
 Function GetJRE
-        MessageBox MB_OKCANCEL|MB_ICONQUESTION "${AppName} requires Java ${MIN_JRE_VERSION} or greater. \
-                         Press Ok to download and install the latest version or cancel to exit." \
-                         IDOK getjava
-  Quit
-;  Abort "${AppName} cannot be isntalled without Java."
-
-  getjava: 
         StrCpy $2 "$TEMP\Java Runtime Environment.exe"
         nsisdl::download /TIMEOUT=30000 ${JRE_URL} $2
         Pop $R0 ;Get the return value
@@ -266,9 +259,21 @@ FunctionEnd
 Function DetectJRE
   ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
   ${VersionCompare} $2 ${MIN_JRE_VERSION} $R0
-  StrCmp $R0 "0" detectdone
+  StrCmp $R0 "0" upgradejava
   StrCmp $R0 "1" detectdone
-  
+ 
+  MessageBox MB_OKCANCEL|MB_ICONQUESTION "${AppName} requires Java ${MIN_JRE_VERSION} or greater. \
+                         Press Ok to download and install the latest version or cancel to exit." \
+                         IDOK getjava
+  Quit ; didn't want to install, can't run without it.
+
+  upgradejava:
+  MessageBox MB_YESNO|MB_ICONQUESTION "${AppName} will run with Java $2 but some features may not work. \
+                         Would you like to download and install the latest version?" \
+                         IDYES getjava
+  Goto detectdone ; didn't want to upgrade but they have min version so it's ok
+
+  getjava: 
   Call GetJRE
   Call JustDetectJRE
   detectdone:

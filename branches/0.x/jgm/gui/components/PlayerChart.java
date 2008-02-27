@@ -238,7 +238,10 @@ public class PlayerChart extends JPanel {
 		rh = new RenderingHints(
 			RenderingHints.KEY_ANTIALIASING,
 			RenderingHints.VALUE_ANTIALIAS_ON);
-		rh.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		
+		try {
+			rh.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		} catch (NoSuchFieldError e) {} // java 1.5 compat
 	}
 	
 	protected static final void doRenderingHints(Graphics2D g) {
