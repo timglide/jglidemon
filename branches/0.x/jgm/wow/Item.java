@@ -47,18 +47,6 @@ public class Item implements Comparable<Item>, Serializable {
 	public static final int EPIC = 4;
 	public static final int LEGENDARY = 5;
 	public static final int RELIC = 6;
-
-	public static final Color[] DARK_COLORS = {
-		Color.DARK_GRAY, Color.BLACK, Color.GREEN,
-		Color.BLUE, new Color(128, 0, 128),
-		Color.ORANGE, Color.RED
-	};
-	
-	public static final Color[] LIGHT_COLORS = {
-		Color.GRAY, Color.WHITE, new Color(0x1EFF00),
-		new Color(0x0070DD), new Color(0xA434EE),
-		new Color(0xD17C22), new Color(0xFF0000)
-	};
 	
 	public static final Color GOLD = new Color(0xffd200);
 	
@@ -181,7 +169,7 @@ public class Item implements Comparable<Item>, Serializable {
 	
 	public int id = 0;
 	public int quality = POOR;
-	
+	public Quality quality_ = Quality.POOR;
 	public String name;
 	
 	public String description = null;
@@ -303,24 +291,11 @@ public class Item implements Comparable<Item>, Serializable {
 	}
 	
 	public Color getDarkColor() {
-		return getColor(false);
+		return quality_.darkColor;
 	}
 	
 	public Color getLightColor() {
-		return getColor(true);
-	}
-	
-	public Color getColor(boolean light) {
-		return getColor(quality, light);
-	}
-
-	public static Color getColor(int i, boolean light) {
-		i = (i > RELIC)
-			  ? RELIC
-			  : (i < POOR)
-			    ? POOR
-				: i;
-		return light ? LIGHT_COLORS[i] : DARK_COLORS[i];
+		return quality_.lightColor;
 	}
 
 	public ImageIcon getIcon() {
@@ -440,6 +415,11 @@ public class Item implements Comparable<Item>, Serializable {
 			}
 		}
 		
+		public static void clearIcons() {
+			iconCache.clear();
+			iconFile.delete();
+		}
+		
 		public static void saveItems() {
 			Item cur = null;
 			
@@ -488,6 +468,11 @@ public class Item implements Comparable<Item>, Serializable {
 			} catch (IOException e) {
 				log.log(Level.WARNING, "Error loading item cache", e);
 			}
+		}
+		
+		public static void clearItems() {
+			itemCache.clear();
+			itemFile.delete();
 		}
 	}
 }

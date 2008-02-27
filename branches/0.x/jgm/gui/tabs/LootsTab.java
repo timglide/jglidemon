@@ -199,7 +199,7 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 			
 			javax.swing.border.TitledBorder ttlBorder =
 				BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), s);
-			ttlBorder.setTitleColor(Item.getColor(quality, false));
+			ttlBorder.setTitleColor(Quality.intToQuality(quality).darkColor);
 			ttlBorder.setTitleFont(Item.TITLE_FONT);
 			ttlBorder.setTitleJustification(javax.swing.border.TitledBorder.CENTER);
 			setBorder(ttlBorder);

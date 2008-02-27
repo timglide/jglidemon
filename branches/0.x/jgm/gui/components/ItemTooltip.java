@@ -145,7 +145,7 @@ public class ItemTooltip extends JPanel {
 		
 		for (int i = 0; i < 3; i++) {
 			effectLabels[i] = new JLabel("Effect: some effect " + i);
-			effectLabels[i].setForeground(Item.getColor(Item.UNCOMMON, true));
+			effectLabels[i].setForeground(Quality.UNCOMMON.lightColor);
 			c.gridy++;
 			p.add(effectLabels[i], c);
 		}

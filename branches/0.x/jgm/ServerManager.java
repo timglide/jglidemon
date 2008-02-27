@@ -102,14 +102,8 @@ public final class ServerManager implements Comparable<ServerManager> {
 		}
 	}
 	
-	public static void saveConfig() {		
-		for (Object key : cfg.p.keySet().toArray()) {
-			String s = key.toString();
-			
-			if (s.startsWith("servers.")) {
-				cfg.p.remove(key);
-			}
-		}
+	public static void saveConfig() {	
+		cfg.clearKeys("servers.");
 		
 		synchronized (managers) {
 			int i = 0;

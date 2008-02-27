@@ -23,6 +23,11 @@ import javax.sound.sampled.SourceDataLine;
 public class Sound extends Thread {
 	static Logger log = Logger.getLogger(Sound.class.getName());
 	
+	public static void reload() {
+		for (File f : File.values())
+			f.reload();
+	}
+	
 	public enum File {
 		WHISPER        ("Whisper.wav"),
 		GM_WHISPER     ("GMWhisper.wav"),
@@ -31,13 +36,18 @@ public class Sound extends Thread {
 		STOP           ("GlideStop.wav");
 		
 		private URI uri;
-		
+		private String name;
 		/**
 		 * Construct a sound file.
 		 * @param name The filename of the sound file
 		 * @param len The duration of the sound in ms
 		 */
 		private File(String name) {
+			this.name = name;
+			reload();
+		}
+		
+		public void reload() {
 			java.io.File f = new java.io.File("sounds/" + name);
 			
 			try {

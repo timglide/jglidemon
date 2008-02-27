@@ -28,6 +28,7 @@ import javax.swing.event.*;
 
 import jgm.ServerManager;
 import jgm.gui.GUI;
+import jgm.gui.components.SortedListModel;
 
 public class Config extends Dialog implements ActionListener, ChangeListener {
 	static Logger log = Logger.getLogger(Config.class.getName());
@@ -86,6 +87,7 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JCheckBox soundPVP;
 	JCheckBox soundStuck;
 	JCheckBox soundStatus;
+	JButton reloadSounds;
 	
 	JCheckBox enableTTS;
 	JCheckBox ttsWhisper;
@@ -104,6 +106,17 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 	JCheckBox alertOnStatus;
 	JCheckBox alertOnLoot;
 	JCheckBox alertOnOther;
+	
+	
+	JPanel loot;
+	JComboBox phatLootLevel;
+	SortedListModel ahLootListData;
+	JList ahLootList;
+	JTextField ahLootAddField;
+	JButton ahLootAddBtn;
+	JButton ahLootRemoveBtn;
+	JButton ahLootRestoreBtn;
+	
 	
 	JPanel stuck;
 	JCheckBox enableStuck;
@@ -490,7 +503,24 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		sound.add(new JLabel(), c);
 		
 		tmp.add(sound);
-		sound = tmp;
+		
+		sound = new JPanel(new GridBagLayout());
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 1;
+		c.weighty = 0.0; c.weightx = 1.0;
+		sound.add(tmp, c);
+		
+		reloadSounds = new JButton("Reload Custom Sounds");
+		reloadSounds.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					public void run() {
+						jgm.util.Sound.reload();
+					}
+				}, "SoundReloader").start();
+			}
+		});
+		c.gridy++;
+		sound.add(makeNiceButtons(reloadSounds), c);
 		
 		addTab("Sound/TTS", sound);
 		//p.add(sound);
@@ -580,6 +610,110 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		addTab("Alerts", alerts);
 		
+		
+		loot = new JPanel(new GridBagLayout());
+		
+		c.gridx = 0; c.gridy = 0; c.weightx = 0.0; c.weighty = 0.0;
+		c.gridwidth = 1; c.insets.bottom = GUI.PADDING;
+		loot.add(new JLabel("Minimum \"Phat Loot\" Quality: "), c);
+		
+		phatLootLevel = new JComboBox(jgm.wow.Quality.values());
+		c.gridx++; c.weightx = 1.0;
+		loot.add(phatLootLevel, c);
+		
+		c.insets.bottom = 0;
+		c.gridx = 0; c.gridy++; c.gridwidth = 2;
+		loot.add(new JLabel("<html>The following items will retrieve the median AH price instead of the<br>vendor price. \".*\" is a wildcard, names are case-insensitive."), c);
+		
+		final ActionListener ahLootAddListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String s = ahLootAddField.getText().trim();
+				ahLootAddField.requestFocusInWindow();
+				
+				if ("".equals(s)) return;
+				
+				try {
+					java.util.regex.Pattern.compile(s, java.util.regex.Pattern.CASE_INSENSITIVE);
+				} catch (java.util.regex.PatternSyntaxException x) {
+					JOptionPane.showMessageDialog(Config.this,
+						"The pattern you have entered is invalid.\n\n" +
+						x.getMessage(),
+						"Invalid Pattern",
+						JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				ahLootAddField.setText("");
+				ahLootListData.add(s);
+			}
+		};
+		
+		final ActionListener ahLootRemoveListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Object[] values = ahLootList.getSelectedValues();
+				
+				for (Object o : values)
+					ahLootListData.removeElement(o);
+			}
+		};
+		
+		ahLootListData = new SortedListModel();
+		ahLootList = new JList(ahLootListData);
+		ahLootList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		ahLootList.setVisibleRowCount(-1);
+		ahLootList.setLayoutOrientation(JList.VERTICAL);
+		ahLootList.setAutoscrolls(true);
+		ahLootList.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+					ahLootRemoveListener.actionPerformed(null);
+				}
+			}
+		});
+		
+		c.gridy++; c.weighty = 1.0;
+		c.fill = GridBagConstraints.BOTH;
+		loot.add(new JScrollPane(ahLootList), c);
+		
+		ahLootAddField = new JTextField();
+		c.gridy++; c.weighty = 0.0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		loot.add(ahLootAddField, c);
+		
+		ahLootAddField.addActionListener(ahLootAddListener);
+		
+		ahLootAddBtn = new JButton("Add");
+		ahLootAddBtn.addActionListener(ahLootAddListener);
+		
+		ahLootRemoveBtn = new JButton("Remove Selected");
+		ahLootRemoveBtn.addActionListener(ahLootRemoveListener);
+		
+		ahLootRestoreBtn = new JButton("Restore Defaults");
+		ahLootRestoreBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ahLootListData.clear();
+				
+				String cur = null;
+				for (int i = 0; ; i++) {
+					try {
+						cur = jgm.Config.DEFAULTS.get("loot.ahlist." + i);
+					} catch (NullPointerException x) {
+						break;
+					}
+					
+					ahLootListData.add(cur);
+				}
+			}
+		});
+		
+		c.gridy++;
+		loot.add(makeNiceButtons(ahLootAddBtn, ahLootRemoveBtn, ahLootRestoreBtn), c);
+		
+//		c.gridy++; c.weighty = 0.75;
+//		loot.add(new JLabel(), c);
+		
+		
+		addTab("Loot", loot);
 		
 		
 		// stuck options
@@ -909,6 +1043,8 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		cfg.set("alerts.loot", alertOnLoot.isSelected());
 		cfg.set("alerts.other", alertOnOther.isSelected());
 		
+		cfg.set("loot.phatlevel", phatLootLevel.getSelectedIndex());
+		cfg.setArray("loot.ahlist", ahLootListData.toArray());
 		
 		cfg.set("stuck.enabled", enableStuck.isSelected());
 		cfg.set("stuck.limit", ((Integer) stuckLimit.getValue()).intValue());
@@ -1129,6 +1265,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		alertOnLoot.setSelected(cfg.getBool("alerts.loot"));
 		alertOnOther.setSelected(cfg.getBool("alerts.other"));
 		
+		try {
+			phatLootLevel.setSelectedIndex(cfg.getInt("loot.phatquality"));
+		} catch (IllegalArgumentException e) {}
+		
+		ahLootListData.clear();
+		for (String cur : cfg.getArray("loot.ahlist")) {			
+			ahLootListData.add(cur);
+		}
 		
 		enableStuck.setSelected(cfg.getBool("stuck.enabled"));
 		stuckLimit.setValue(cfg.getInt("stuck.limit"));

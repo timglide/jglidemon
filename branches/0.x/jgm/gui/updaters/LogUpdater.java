@@ -413,7 +413,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 //				System.out.println("Adding item: " + e2.getItem().toString());
 				lootsTab.add(e2.getItemSet());
 				
-				if (!fromLog && e2.getItemSet().getItem().quality >= jgm.wow.Item.RARE &&
+				if (!fromLog && e2.getItemSet().getItem().quality >= Config.c.getInt("loot.phatquality") &&
 					null != sm.gui && Config.c.getBool("alerts.loot"))
 					sm.gui.tray
 						.informIfInactive("Phat Loot", "[" + e2.getItemSet().getItem().name + "]");

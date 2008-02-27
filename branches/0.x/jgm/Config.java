@@ -22,6 +22,7 @@ package jgm;
 
 import jgm.util.Properties;
 
+import java.util.*;
 import java.util.logging.*;
 import java.io.*;
 
@@ -34,7 +35,7 @@ import java.io.*;
 public class Config {
 	static Logger log = Logger.getLogger(Config.class.getName());
 	
-	static Properties DEFAULTS = new Properties();
+	public static Properties DEFAULTS = new Properties();
 	
 	static {
 		try {
@@ -165,6 +166,69 @@ public class Config {
 
 	public void set(String propertyName, Object value) {
 		p.set(propertyName, value);
+	}
+	
+	/**
+	 * Returns an array of elements for config values
+	 * stored like, loot.ahlist.0, loot.ahlist.1, etc.
+	 * @param propertyName
+	 * @return
+	 */
+	public String[] getArray(String propertyName) {
+		if (!propertyName.endsWith("."))
+			propertyName += ".";
+		
+		ArrayList<String> out = new ArrayList<String>();
+		
+		for (int i = 0; ; i++) {
+			try {
+				out.add(get(propertyName + i));
+			} catch (NullPointerException e) {
+				break;
+			}
+		}
+		
+		return out.toArray(new String[] {});
+	}
+	
+	/**
+	 * Sets values such that propertyName.0 = values[0],
+	 * propertyName.1 = values[1], etc.
+	 * @param propertyName
+	 * @param values
+	 */
+	public void setArray(String propertyName, String[] values) {
+		if (!propertyName.endsWith("."))
+			propertyName += ".";
+		
+		clearKeys(propertyName);
+		
+		for (int i = 0; i < values.length; i++) {
+			set(propertyName + i, values[i]);
+		}
+	}
+	
+	/**
+	 * Removes all properties whose key starts
+	 * with any of the supplied keys.
+	 * @param removeKeys
+	 */
+	public void clearKeys(String ... removeKeys) {
+		String[] keys = p.keySet().toArray(new String[] {});
+		for (String key : keys) {
+			for (String removeKey : removeKeys)
+				if (key.startsWith(removeKey))
+					p.remove(key);
+		}
+	}
+	
+	public void restoreDefaults(String ... restoreKeys) {
+		String[] keys = DEFAULTS.keySet().toArray(new String[] {});
+		for (String key : keys) {
+			for (String restoreKey : restoreKeys)
+				if (key.startsWith(restoreKey))
+					p.set(key, DEFAULTS.get(key));
+		}
 	}
 	
 	public void validate() {

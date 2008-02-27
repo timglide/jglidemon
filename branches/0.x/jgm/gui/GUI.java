@@ -102,6 +102,8 @@ public class GUI
 		JMenuBar  bar;
 		
 		JMenu     file;
+		JMenuItem clearItems;
+		JMenuItem clearIcons;
 		JMenuItem saveIcons;
 		JMenuItem loadIcons;
 		JMenuItem config;
@@ -309,14 +311,19 @@ public class GUI
 		menu.file.setMnemonic(KeyEvent.VK_F);
 		menu.bar.add(menu.file);
 
+		menu.config = doMenuItem("Configuration", KeyEvent.VK_C, menu.file, this);		
+		menu.file.addSeparator();
+		
+		menu.clearItems = doMenuItem("Clear Item Cache", menu.file, this);
+		menu.clearIcons = doMenuItem("Clear Icon Cache", menu.file, this);
+		
 		if (jgm.JGlideMon.debug) {
 			menu.saveIcons = doMenuItem("Save Cache", menu.file, this);
 			menu.loadIcons = doMenuItem("Load Cache", menu.file, this);
-			menu.file.addSeparator();
 		}
 		
-		menu.config = doMenuItem("Configuration", KeyEvent.VK_C, menu.file, this);		
 		menu.file.addSeparator();
+		
 		menu.exit = doMenuItem("Exit", KeyEvent.VK_X, menu.file, this);
 		
 		// screenshot
@@ -633,6 +640,10 @@ public class GUI
 						JOptionPane.ERROR_MESSAGE
 					);
 			}
+		} else if (source == menu.clearItems) {
+			jgm.wow.Item.Cache.clearItems();
+		} else if (source == menu.clearIcons) {
+			jgm.wow.Item.Cache.clearIcons();
 		} else if (source == menu.saveIcons) {
 			jgm.wow.Item.Cache.saveIcons();
 			jgm.wow.Item.Cache.saveItems();
