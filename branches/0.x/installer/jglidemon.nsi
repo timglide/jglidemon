@@ -125,6 +125,8 @@ Section "${AppName} Core" SecAppFiles
   Call DetectJRE
 
   SetOutPath $INSTDIR
+
+  CreateDirectory "$INSTDIR\sounds"
   
   ; Put file there
   File "..\bin\JGlideMon.jar"
