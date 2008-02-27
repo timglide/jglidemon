@@ -1,8 +1,27 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.wow;
 
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.ImageIcon;
 import java.util.*;
 import java.util.logging.*;
@@ -15,7 +34,7 @@ import java.io.*;
  */
 public class Item implements Comparable<Item>, Serializable {
 	static Logger log = Logger.getLogger(Item.class.getName());
-
+	
 	public static final Font TITLE_FONT = new Font(null, Font.BOLD, 20);
 	
 	private transient static Map<Integer, Item> itemCache = new HashMap<Integer, Item>();
@@ -28,18 +47,6 @@ public class Item implements Comparable<Item>, Serializable {
 	public static final int EPIC = 4;
 	public static final int LEGENDARY = 5;
 	public static final int RELIC = 6;
-
-	public static final Color[] DARK_COLORS = {
-		Color.DARK_GRAY, Color.BLACK, Color.GREEN,
-		Color.BLUE, new Color(128, 0, 128),
-		Color.ORANGE, Color.RED
-	};
-	
-	public static final Color[] LIGHT_COLORS = {
-		Color.GRAY, Color.WHITE, new Color(0x1EFF00),
-		new Color(0x0070DD), new Color(0xA434EE),
-		new Color(0xD17C22), new Color(0xFF0000)
-	};
 	
 	public static final Color GOLD = new Color(0xffd200);
 	
@@ -162,7 +169,7 @@ public class Item implements Comparable<Item>, Serializable {
 	
 	public int id = 0;
 	public int quality = POOR;
-	
+	public Quality quality_ = Quality.POOR;
 	public String name;
 	
 	public String description = null;
@@ -284,24 +291,11 @@ public class Item implements Comparable<Item>, Serializable {
 	}
 	
 	public Color getDarkColor() {
-		return getColor(false);
+		return quality_.darkColor;
 	}
 	
 	public Color getLightColor() {
-		return getColor(true);
-	}
-	
-	public Color getColor(boolean light) {
-		return getColor(quality, light);
-	}
-
-	public static Color getColor(int i, boolean light) {
-		i = (i > RELIC)
-			  ? RELIC
-			  : (i < POOR)
-			    ? POOR
-				: i;
-		return light ? LIGHT_COLORS[i] : DARK_COLORS[i];
+		return quality_.lightColor;
 	}
 
 	public ImageIcon getIcon() {
@@ -314,10 +308,10 @@ public class Item implements Comparable<Item>, Serializable {
 			try {
 				icon = new javax.swing.ImageIcon(
 					   new java.net.URL(ICON_BASE + iconPath));
-				icon = jgm.Util.resizeIcon(icon, 32, 32);
+				icon = jgm.util.Util.resizeIcon(icon, 32, 32);
 				iconCache.put(iconPath, icon);
 			} catch (java.net.MalformedURLException e) {
-				// shouldn't get here...
+				// shouldn't get in here...
 				System.err.println("Unable to make icon in Item: " + e.getMessage());
 				icon = null;
 			}
@@ -354,17 +348,26 @@ public class Item implements Comparable<Item>, Serializable {
 	 * @return An item representing the supplied parameters
 	 */
 	public static Item factory(int id, String name) {
-		if (itemCache.containsKey(id)) return itemCache.get(id);
-		
-		Item item = new Item(id, name);
+		Item ret = null;
 
-		if (!ItemFactory.factory(id, item)) return null;
+		if (itemCache.containsKey(id)) {
+			ret = itemCache.get(id);
+			
+			if (ret.retrievedInfo)
+				return ret;
 
-		Effect.factory(item);
+			itemCache.remove(id);
+		}
 		
-		itemCache.put(id, item);
+		ret = new Item(id, name);
+
+		if (!ItemFactory.factory(id, ret)) return null;
+
+		Effect.factory(ret);
 		
-		return item;
+		itemCache.put(id, ret);
+		
+		return ret;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -410,6 +413,11 @@ public class Item implements Comparable<Item>, Serializable {
 			} catch (IOException e) {
 				log.log(Level.WARNING, "Error loading icon cache", e);
 			}
+		}
+		
+		public static void clearIcons() {
+			iconCache.clear();
+			iconFile.delete();
 		}
 		
 		public static void saveItems() {
@@ -460,6 +468,11 @@ public class Item implements Comparable<Item>, Serializable {
 			} catch (IOException e) {
 				log.log(Level.WARNING, "Error loading item cache", e);
 			}
+		}
+		
+		public static void clearItems() {
+			itemCache.clear();
+			itemFile.delete();
 		}
 	}
 }

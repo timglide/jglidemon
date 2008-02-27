@@ -1,10 +1,30 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm;
 
-import jgm.util.*;
+import jgm.util.Properties;
 
-import java.lang.reflect.*;
+import java.util.*;
 import java.util.logging.*;
-import java.io.File;
+import java.io.*;
 
 /**
  * Contains all global configuration values and handles
@@ -12,286 +32,247 @@ import java.io.File;
  * @author Tim
  * @since 0.1
  */
-public class Config extends QuickIni {
+public class Config {
 	static Logger log = Logger.getLogger(Config.class.getName());
-
-	public static Config instance;
-	private static final File iniFile = new File("JGlideMon.ini");
-	//private static QuickIni ini = new QuickIni(iniFile.getName());
 	
-	public static boolean iniFileExists() {
-		return iniFile.exists();
+	public static Properties DEFAULTS = new Properties();
+	
+	static {
+		try {
+			DEFAULTS.load(
+				jgm.JGlideMon.class.getResourceAsStream("properties/JGlideMon.defaults.properties"));
+		} catch (Throwable e) {
+			log.log(Level.WARNING, "Unable to load default config properties", e);
+			System.exit(-1);
+		}
+	}
+	
+	public static Config instance;
+	public static Config c;
+	
+	Properties p = new Properties(DEFAULTS);
+	
+	static final File propsFile = new File("JGlideMon.properties");
+	
+	static final File iniFile = new File("JGlideMon.ini");
+	
+	public static boolean fileExists() {
+		return propsFile.exists();
 	}
 	
 	public static Config getInstance() {
 		return instance;
 	}
 	
+	public static Properties getProps() {
+		return instance.p;
+	}
+	
+	public static Properties getDefaults() {
+		return DEFAULTS;
+	}
+	
 	public Config() {
-		super(iniFile.getName());
+		if (instance != null)
+			throw new IllegalStateException("Can only have one instance of Config");
+		
 		instance = this;
+		c = this;
 		
-		if (iniFileExists()) {
-			validate();
-		}
-	}
-	
-	private static final String DEF = defaults.class.getName() + "$";
-	
-	private String getClass(String section) {
-		return DEF + section.replace('.', '$');
-	}
-	
-	public int getInt(final String sectionName,
-					  String propertyName) {
-		Class c; Field f; int defaultValue = 0;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			c = Class.forName(getClass(sectionName));
-			f = c.getField(propertyName);
-			defaultValue = f.getInt(null);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		return super.getIntegerProperty(sectionName, propertyName, defaultValue);
-	}
-	
-	public boolean getBool(final String sectionName,
-						   String propertyName) {
-		Class c; Field f; boolean defaultValue = false;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			c = Class.forName(getClass(sectionName));
-			f = c.getField(propertyName);
-			defaultValue = f.getBoolean(null);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(1);
+		// convert to new format
+		if (iniFile.exists() && !propsFile.exists()) {
+			log.info("Converting JGlideMon.ini to new format");
+			
+			jgm.util.QuickIni qi = new jgm.util.QuickIni(iniFile.getName());
+			
+			java.util.Iterator<String> i = qi.getAllSectionNames();
+				
+			while (i.hasNext()) {
+				String cur = i.next();
+				
+				for (String s : qi.getAllPropertyNames(cur)) {
+					String newKey = cur + "." + s;
+					String value = qi.getStringProperty(cur, s);
+					
+					log.info(String.format("  %s=%s", newKey, value));
+					p.setProperty(newKey, value);
+				}
+			}
+			
+			write();
+			iniFile.delete();
 		}
 		
-		return super.getBooleanProperty(sectionName, propertyName, defaultValue);
-	}
-	
-	public long getLong(final String sectionName,
-						String propertyName) {
-		Class c; Field f; long defaultValue = 0;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			c = Class.forName(getClass(sectionName));
-			f = c.getField(propertyName);
-			defaultValue = f.getLong(null);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(1);
+		if (propsFile.exists()) {
+			try {
+				FileInputStream fs = new FileInputStream(propsFile);
+				p.load(fs);
+			} catch (Throwable e) {
+				log.log(Level.WARNING, "Unable to load config properties", e);
+				System.exit(-1);
+			}
 		}
 		
-		return super.getLongProperty(sectionName, propertyName, defaultValue);
-	}
-	
-	public double getDouble(final String sectionName,
-							String propertyName) {
-		Class c; Field f; double defaultValue = 0.0;
-		propertyName = propertyName.toLowerCase();
+		// all the old keys that need to be converted to
+		// servers.0.xxx
+		final String[] OLD_KEYS = {
+			"net.host", "net.port", "net.password",
+			"window.", "general.lasttab",
+			"screenshot.scale", "screenshot.buffer",
+			"web.enabled", "web.port"
+		};
 		
-		try {
-			c = Class.forName(getClass(sectionName));
-			f = c.getField(propertyName);
-			defaultValue = f.getDouble(null);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return super.getDoubleProperty(sectionName, propertyName, defaultValue);
-	}
-	
-	public String getString(final String sectionName,
-							String propertyName) {
-		Class c; Field f; String defaultValue = null;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			c = Class.forName(getClass(sectionName));
-			f = c.getField(propertyName);
-			defaultValue = (String) f.get(null);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(1);
+		String[] keys = p.keySet().toArray(new String[] {});
+		for (String key : keys) {
+			for (String oldKey : OLD_KEYS) {
+				if (key.startsWith(oldKey)) {
+					log.info("Moving " + key + " to servers.0." + key);
+					set("servers.0." + key, get(key));
+					p.remove(key);
+				}
+			}
 		}
 		
-		return super.getStringProperty(sectionName, propertyName, defaultValue);
+		validate();
 	}
 	
-	public String get(final String sectionName,
-					  String propertyName) {
-		Class c; Field f; Object defaultValue = null;
-		propertyName = propertyName.toLowerCase();
-		
-		try {
-			c = Class.forName(getClass(sectionName));
-			f = c.getField(propertyName);
-			defaultValue = f.get(null);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		return super.getStringProperty(sectionName, propertyName, defaultValue.toString());
+	public boolean has(String propertyName) {
+		return p.getProperty(propertyName) != null;
+	}
+	
+	public int getInt(String propertyName) {
+		return p.getInt(propertyName);
+	}
+	
+	public boolean getBool(String propertyName) {
+		return p.getBool(propertyName);
+	}
+	
+	public long getLong(String propertyName) {
+		return p.getLong(propertyName);
+	}
+	
+	public double getDouble(String propertyName) {
+		return p.getDouble(propertyName);
+	}
+	
+	public String getString(String propertyName) {
+		return get(propertyName);
+	}
+	
+	public String get(String propertyName) {
+		return p.get(propertyName);
 	}
 
-	public boolean setBool(final String sectionName,
-						   String propertyName,
-						   final boolean value) {
-		propertyName = propertyName.toLowerCase();
-		return super.setBooleanProperty(sectionName, propertyName, value);
+	public void set(String propertyName, Object value) {
+		p.set(propertyName, value);
 	}
 	
-	public boolean setInt(final String sectionName,
-						  String propertyName,
-						  final int value) {
-		propertyName = propertyName.toLowerCase();
-		return super.setIntegerProperty(sectionName, propertyName, value);
-	}
-	
-	public boolean setLong(final String sectionName,
-						   String propertyName,
-						   final long value) {
-		propertyName = propertyName.toLowerCase();
-		return super.setLongProperty(sectionName, propertyName, value);
-	}
-	
-	public boolean setDouble(final String sectionName,
-							 String propertyName,
-							 final double value) {
-		propertyName = propertyName.toLowerCase();
-		return super.setDoubleProperty(sectionName, propertyName, value);
-	}
-	
-	public boolean setString(final String sectionName,
-							 String propertyName,
-							 final String value) {
-		propertyName = propertyName.toLowerCase();
-		return super.setStringProperty(sectionName, propertyName, value);
-	}
-	
-	public boolean set(final String sectionName,
-					   final String propertyName,
-					   final Object value) {
-		/*Class c; Field f; String defaultValue = null;
+	/**
+	 * Returns an array of elements for config values
+	 * stored like, loot.ahlist.0, loot.ahlist.1, etc.
+	 * @param propertyName
+	 * @return
+	 */
+	public String[] getArray(String propertyName) {
+		if (!propertyName.endsWith("."))
+			propertyName += ".";
 		
-		try {
-			c = Class.forName(DEF + sectionName);
-			f = c.getField(propertyName);
-			defaultValue = (String) f.get(null);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(1);
+		ArrayList<String> out = new ArrayList<String>();
+		
+		for (int i = 0; ; i++) {
+			try {
+				out.add(get(propertyName + i));
+			} catch (NullPointerException e) {
+				break;
+			}
 		}
 		
-		Class c = f.getType();
-		c.getCanonicalName()*/
-						   
-		if (value instanceof Integer) {
-			return setInt(sectionName, propertyName, (Integer) value);
-		} else if (value instanceof Double) {
-			return setDouble(sectionName, propertyName, (Double) value);
-		} else if (value instanceof Boolean) {
-			return setBool(sectionName, propertyName, (Boolean) value);
-		} else if (value instanceof String) {
-			return setString(sectionName, propertyName, (String) value);
-		}
+		return out.toArray(new String[] {});
+	}
+	
+	/**
+	 * Sets values such that propertyName.0 = values[0],
+	 * propertyName.1 = values[1], etc.
+	 * @param propertyName
+	 * @param values
+	 */
+	public void setArray(String propertyName, String[] values) {
+		if (!propertyName.endsWith("."))
+			propertyName += ".";
 		
-		return false;
+		clearKeys(propertyName);
+		
+		for (int i = 0; i < values.length; i++) {
+			set(propertyName + i, values[i]);
+		}
+	}
+	
+	/**
+	 * Removes all properties whose key starts
+	 * with any of the supplied keys.
+	 * @param removeKeys
+	 */
+	public void clearKeys(String ... removeKeys) {
+		String[] keys = p.keySet().toArray(new String[] {});
+		for (String key : keys) {
+			for (String removeKey : removeKeys)
+				if (key.startsWith(removeKey))
+					p.remove(key);
+		}
+	}
+	
+	public void restoreDefaults(String ... restoreKeys) {
+		String[] keys = DEFAULTS.keySet().toArray(new String[] {});
+		for (String key : keys) {
+			for (String restoreKey : restoreKeys)
+				if (key.startsWith(restoreKey))
+					p.set(key, DEFAULTS.get(key));
+		}
 	}
 	
 	public void validate() {
-		if (getInt("log", "maxEntries") < 1) {
-			setInt("log", "maxEntries", defaults.log.maxentries);
+		if (getInt("log.maxentries") < 1) {
+			set("log.maxentries", DEFAULTS.getProperty("log.maxentries"));
 		}
 
-		int i = getInt("screenshot", "scale");
-		if (i > 100) setInt("screenshot", "scale", 100); else
-		if (i < 10)  setInt("screenshot", "scale", 10);
+		int i = 0;
 		
-		i = getInt("screenshot", "quality");
-		if (i > 100) setInt("screenshot", "quality", 100); else
-		if (i < 10)  setInt("screenshot", "quality", 10);
-
-		if (getDouble("screenshot", "buffer") < 1.0)
-			setDouble("screenshot", "buffer", 1.0);
-
-		if (getInt("screenshot", "timeout") < 5)
-			setInt("screenshot", "timeout", 5);
-	}
-	
-	public static void writeIni() {
-		log.fine("Saving configuration to " + iniFile.getName());
-		instance.updateFile();
-	}
-	
-	public static class defaults {
-		public static class general {
-			public static final boolean debug = false;
-			public static final boolean showtray = true;
-			public static final boolean mintotray = true;
-		}
-		
-		public static class log {
-			public static final int maxentries = 500;
-		}
-		
-		public static class net {
-			public static final String host = "localhost";
-			public static final int    port = 3200;
-			public static final String password = "";
-			public static final boolean autoreconnect = true;
-			public static final int     autoreconnectdelay = 5;
-			public static final int     autoreconnecttries = 10;
-		}
-		
-		public static class status {
-			public static final int updateinterval = 500;
-		}
-		
-		public static class screenshot {
-			public static final boolean autoupdate = true;
-			public static final int updateinterval = 5000;
-
-			// seems to be some weird issue if scale/quality is 100
-			public static final int scale = 99;
-			public static final int quality = 99;
-			public static final double buffer = 1.5;
-			public static final int timeout = 10;
-		}
-		
-		public static class window {
-			public static final int x = 50;
-			public static final int y = 50;
-			public static final boolean maximized = true;
-			public static final int width = 900;
-			public static final int height = 650;
-		}
-		
-		public static class sound {
-			public static final boolean enabled = true;
-			public static final boolean whisper = true;
-			public static final boolean say = true;
-			public static final boolean gm = true;
-			public static final boolean follow = true;
-			public static final boolean pvp = true;
-			public static final boolean stuck = true;
-			
-			public static class tts {
-				public static final boolean enabled = true;
-				public static final boolean whisper = true;
-				public static final boolean say = false;
-				public static final boolean gm = true;
-				public static final boolean status = true;
+		synchronized (ServerManager.managers) {
+			for (ServerManager sm : ServerManager.managers) {
+				i = sm.getInt("screenshot.scale");
+				if (i > 99) sm.set("screenshot.scale", 99); else
+				if (i < 10)  sm.set("screenshot.scale", 10);
 			}
+		}
+		
+		i = getInt("screenshot.quality");
+		if (i > 99) set("screenshot.quality", 99); else
+		if (i < 10)  set("screenshot.quality", 10);
+		
+//		if (getDouble("screenshot.buffer") < 1.0)
+//			set("screenshot.buffer", 1.0);
+		
+		if (getInt("screenshot.timeout") < 5)
+			set("screenshot.timeout", 5);
+		
+		if (getInt("stuck.limit") < 0)
+			set("stuck.limit", 0);
+		
+		if (getInt("stuck.timeout") < 5)
+			set("stuck.timeout", 5);
+	}
+	
+	public static void write() {
+		log.fine("Saving configuration to " + propsFile.getName());
+		
+		c.validate();
+
+		try {
+			FileOutputStream fs = new FileOutputStream(propsFile);
+			instance.p.store(fs, "JGlideMon Settings");
+		} catch (Throwable t) {
+			log.log(Level.WARNING, "Error saving config properties", t);
 		}
 	}
 }

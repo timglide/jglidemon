@@ -1,9 +1,30 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.panes;
-
-import jgm.gui.updaters.StatusUpdater;
 
 import java.awt.*;
 import javax.swing.*;
+
+import jgm.glider.Status;
+import jgm.gui.GUI;
 
 /**
  * Abstract class representing one of the panels 
@@ -12,13 +33,15 @@ import javax.swing.*;
  * @since 0.1
  */
 public abstract class Pane extends JPanel {
+	protected final GUI gui;
 	protected GridBagConstraints c = null;
 
 	/**
 	 * Create a new Pane with the specified LayoutManager.
 	 * @param lm The LayoutManager to use
 	 */
-	public Pane(LayoutManager lm) {
+	public Pane(GUI gui, LayoutManager lm) {
+		this.gui = gui;
 		setLayout(lm);
 
 		c = new GridBagConstraints();
@@ -29,8 +52,8 @@ public abstract class Pane extends JPanel {
 	/**
 	 * Create a new Pane with a GridBagLayout.
 	 */
-	public Pane() {
-		this(new GridBagLayout());
+	public Pane(GUI gui) {
+		this(gui, new GridBagLayout());
 	}
 
 	/**
@@ -38,5 +61,5 @@ public abstract class Pane extends JPanel {
 	 * has been updated.
 	 * @param s The StatusUpdater with updated information
 	 */
-	public void update(StatusUpdater s) {}
+	public void update(Status s) {}
 }

@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.updaters;
 
 import jgm.Config;
@@ -12,41 +32,24 @@ import java.util.logging.*;
 public class StatusUpdater extends Observable
 	implements Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(StatusUpdater.class.getName());
-
-	public String version        = "";
-	public boolean attached      = false;
-	public String mode           = "Auto";
-	public String profile        = "";
-	public String logMode        = "None";
-	public double health         = 0.0;
-	public double mana           = 0.0;
-	public String name           = "";
-	public jgm.wow.Class  clazz  = jgm.wow.Class.UNKNOWN; // class
-	public int    level          = 0;
-	public int    experience     = 0;
-	public int    nextExperience = 0;
-	public int    xpPerHour      = 0;
-	public String location       = "";
-	public double heading        = -1.0;
-	public int    kills          = 0;
-	public int    loots          = 0;
-	public int    deaths         = 0;
-	public String targetName     = "";
-	public int    targetLevel    = 0;
-	public double targetHealth   = 0.0;
+	
+	public Status last = new Status();
+	public Status s = new Status();
 
 	private Conn conn;
 	private Thread thread;
 	private volatile boolean stop = false;
 
-	private Config cfg;
+	Config cfg;
+	jgm.ServerManager sm;
 	
-	public StatusUpdater() {
-		conn = new Conn();
+	public StatusUpdater(jgm.ServerManager sm) {
+		this.sm = sm;
+		conn = new Conn(sm, "StatusUpdater");
 		cfg = jgm.Config.getInstance();
 	}
-
-	public void close() {
+	
+	public void onDestroy() {
 		stop = true;
 		if (thread != null) thread.interrupt();
 		if (conn != null) conn.close();
@@ -56,21 +59,23 @@ public class StatusUpdater extends Observable
 		return conn;
 	}
 	
-	public void connecting() {}
+	public void onConnecting() {}
 	
-	public void connectionEstablished() {
+	public void onConnect() {
 		stop = false;
-		thread = new Thread(this, "StatusUpdater");
+		thread = new Thread(this, sm.name + ":StatusUpdater");
+		thread.setDaemon(true);
 		thread.start();
 	}
 	
-	public void disconnecting() {}
+	public void onDisconnecting() {}
 	
-	public void connectionDied() {
-		attached = false;
+	public void onDisconnect() {
+		s.resetData();
+		s.attached = false;
 		setChanged();
 		stop = true;
-		notifyObservers(this);
+		notifyObservers(s);
 	}
 	
 	public void run() {
@@ -79,15 +84,15 @@ public class StatusUpdater extends Observable
 			
 			try {
 				update();
-				Thread.sleep(cfg.getLong("status", "updateInterval"));
+				Thread.sleep(cfg.getLong("status.updateInterval"));
 			} catch (Exception e) {
 				log.fine("Stopping StatusUpdater, Ex: " + e.getMessage());
-				Connector.disconnect();
+				sm.connector.someoneDisconnected();
 				return;
 			}
 		}
 	}
-
+	
 	private void update()
 		throws NullPointerException, InterruptedException, IOException {
 		
@@ -97,7 +102,7 @@ public class StatusUpdater extends Observable
 		try {
 		BufferedReader r = conn.getIn();
 
-		conn.send("/status");
+		Command.getStatusCommand().send(conn);
 
 		while ((line = r.readLine()) != null) {
 			if (line.equals("---")) break;
@@ -113,145 +118,167 @@ public class StatusUpdater extends Observable
 
 //		System.out.println("--><--");
 
-		version    = m.containsKey("Version")     ? m.get("Version")     : "";
-		attached   = m.containsKey("Attached")
+		last = s.clone();
+		
+		s.version    = m.containsKey("Version")     ? m.get("Version")     : "";
+		s.attached   = m.containsKey("Attached")
 					 && m.get("Attached").equals("True")
 					 							  ? true                 : false;
-		mode       = m.containsKey("Mode")        ? m.get("Mode")        : "Auto";
-		profile    = m.containsKey("Profile")     ? m.get("Profile")     : "";
-		logMode    = m.containsKey("Log")         ? m.get("Log")         : "None";
-		name       = m.containsKey("Name")        ? m.get("Name")        : "";
-		clazz      = m.containsKey("Class")       ? jgm.wow.Class.strToClass(m.get("Class")) : jgm.wow.Class.UNKNOWN;
-		location   = m.containsKey("Location")    ? m.get("Location")    : "";
-		targetName = m.containsKey("Target-Name") ? m.get("Target-Name") : "";
+		s.mode       = m.containsKey("Mode")        ? m.get("Mode")        : "Auto";
+		s.profile    = m.containsKey("Profile")     ? m.get("Profile")     : "";
+		s.logMode    = m.containsKey("Log")         ? m.get("Log")         : "None";
+		s.name       = m.containsKey("Name")        ? m.get("Name")        : "";
+		s.clazz      = m.containsKey("Class")       ? jgm.wow.Class.strToClass(m.get("Class")) : jgm.wow.Class.UNKNOWN;
+		s.location   = m.containsKey("Location")    ? m.get("Location")    : "";
+		s.targetName = m.containsKey("Target-Name") ? m.get("Target-Name") : "";
 		
-		int i = profile.toLowerCase().indexOf("profiles\\");
+		int i = s.profile.toLowerCase().indexOf("profiles\\");
 
 		if (i >= 0) {
-			profile = profile.substring(i + 9);
+			s.profile = s.profile.substring(i + 9);
 		} else {
-			i = profile.toLowerCase().indexOf("groups\\");
+			i = s.profile.toLowerCase().indexOf("groups\\");
 
 			if (i >= 0) {
-				profile = profile.substring(i + 7);
+				s.profile = s.profile.substring(i + 7);
 			}
 		}
 
 		try {
-			health = m.containsKey("Health")
+			s.health = m.containsKey("Health")
 					 ? Double.parseDouble(m.get("Health"))
 					 : 0.0;
 		} catch (NumberFormatException e) {
-			health = 0.0;
+			s.health = 0.0;
 		}
 
-		health *= 100; // health was a percent
+		s.health *= 100; // health was a percent
 
 		try {
 			if (!m.containsKey("Mana")) {
-				mana = 0.0;
+				s.mana = 0.0;
+				s.manaName = "Mana";
 			} else {
 				// "Mana: 123 (42%)"
 				// "Mana: 100 (CP = 0)"
-				Pattern p = clazz.mana.getRegex();
+				Pattern p = s.clazz.mana.getRegex();
 				Matcher x = p.matcher(m.get("Mana"));
 
-				//System.out.println("Matching: " + m.get("Mana"));
+//				System.out.println("Matching: " + m.get("Mana"));
 				
 				if (!x.matches()) throw new NumberFormatException("No Match");
 
-				//System.out.print("Matched:");
-				//for (int n = 0; n <= x.groupCount(); n++) {
-				//	System.out.print(" " + n + ": " + x.group(n));
-				//}
-				//System.out.println();
+//				System.out.print("Matched:");
+//				for (int n = 0; n <= x.groupCount(); n++) {
+//					System.out.print(" " + n + ": " + x.group(n));
+//				}
+//				System.out.println();
 				
-				//System.out.println("  Found: " + x.group(1));
-				mana = Double.parseDouble(x.group(1));
+				int group = 1;
+				
+				// only check if the groups are null if there's more than 1
+				// don't check the last one because we must assume that the
+				// last one won't be null if all the others are
+				for (int j = 1; j < s.clazz.mana.numRegexGroups(); j++) {
+					if (x.group(group) == null) group++;
+					else break;
+				}
+				
+				s.mana = Double.parseDouble(x.group(group));
+				s.manaName = s.clazz.mana.toString(group);
+				
+//				System.out.println("  Found: " + x.group(group) + "; group: " + group);
 			}	
 		} catch (Exception e) {
 			//e.printStackTrace();
-			//System.err.println("Did not match mana");
-			mana = 0.0;
+//			System.err.println("Did not match mana");
+			s.mana = 0.0;
+			s.manaName = "Mana";
 		}
 
 		try {
-			level = m.containsKey("Level")
+			s.level = m.containsKey("Level")
 					? Integer.parseInt(m.get("Level"))
 					: 0;
 		} catch (NumberFormatException e) {
-			level = 0;
+			s.level = 0;
 		}
 
 		try {
-			experience = m.containsKey("Experience")
+			s.experience = m.containsKey("Experience")
 						 ? Integer.parseInt(m.get("Experience"))
 						 : 0;
 		} catch (NumberFormatException e) {
-			experience = 0;
+			s.experience = 0;
 		}
 
 		try {
-			nextExperience = m.containsKey("Next-Experience")
+			s.nextExperience = m.containsKey("Next-Experience")
 							 ? Integer.parseInt(m.get("Next-Experience"))
 							 : 0;
 		} catch (NumberFormatException e) {
-			nextExperience = 0;
+			s.nextExperience = 0;
 		}
 
 		try {
-			xpPerHour = m.containsKey("XP/Hour")
+			s.xpPerHour = m.containsKey("XP/Hour")
 						? Integer.parseInt(m.get("XP/Hour"))
 						: 0;
 		} catch (NumberFormatException e) {
-			xpPerHour = 0;
+			s.xpPerHour = 0;
 		}
 
+		if (s.nextExperience > 0) {
+			s.xpPercent = (int) (100 * ((float) s.experience / (float) s.nextExperience));
+		} else {
+			s.xpPercent = 0;
+		}
+		
 		try {
 			if (!m.containsKey("Heading")) {
-				heading = -1.0;
+				s.heading = -1.0;
 			} else {
-				heading = Double.parseDouble(m.get("Heading"));
+				s.heading = Double.parseDouble(m.get("Heading"));
 			}
 		} catch (NumberFormatException e) {
-			heading = -1.0;
+			s.heading = -1.0;
 		}
 
 		try {
 			if (!m.containsKey("KLD")) {
-				kills = loots = deaths = 0;
+				s.kills = s.loots = s.deaths = 0;
 			} else {
 				String[] parts = m.get("KLD").split("/");
 
 				if (parts.length != 3) throw new NumberFormatException();
 
-				kills  = Integer.parseInt(parts[0]);
-				loots  = Integer.parseInt(parts[1]);
-				deaths = Integer.parseInt(parts[2]);
+				s.kills  = Integer.parseInt(parts[0]);
+				s.loots  = Integer.parseInt(parts[1]);
+				s.deaths = Integer.parseInt(parts[2]);
 			}
 		} catch (NumberFormatException e) {
-			kills = loots = deaths = 0;
+			s.kills = s.loots = s.deaths = 0;
 		}
 
 		try {
-			targetLevel = m.containsKey("Target-Level")
+			s.targetLevel = m.containsKey("Target-Level")
 						  ? Integer.parseInt(m.get("Target-Level"))
 						  : 0;
 		} catch (NumberFormatException e) {
-			targetLevel = 0;
+			s.targetLevel = 0;
 		}
 
 		try {
-			targetHealth = m.containsKey("Target-Health")
+			s.targetHealth = m.containsKey("Target-Health")
 						   ? Double.parseDouble(m.get("Target-Health"))
 						   : 0.0;
 		} catch (NumberFormatException e) {
-			targetHealth = 0.0;
+			s.targetHealth = 0.0;
 		}
 
-		targetHealth *= 100; // health was a percent
+		s.targetHealth *= 100; // health was a percent
 
 		setChanged();
-		notifyObservers(this);
+		notifyObservers(s);
 	}
 }

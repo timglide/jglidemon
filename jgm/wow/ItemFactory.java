@@ -1,6 +1,28 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.wow;
 
+import java.util.*;
 import java.util.logging.*;
+import java.util.regex.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,7 +35,11 @@ import org.w3c.dom.NodeList;
 
 public class ItemFactory {
 	static Logger log = Logger.getLogger(Item.class.getName());
-
+	
+	static Map<String, Pattern> PATTERN_CACHE = new HashMap<String, Pattern>();
+	
+	// for future i18n reference see, for example,
+	// http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=16898&locale=frFR
 	private static final String SITE_URL
 		= "http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=";
 
@@ -55,6 +81,7 @@ public class ItemFactory {
 		item.id       = foundId;
 		item.name     = getTextValue(doc,"name1");
 		item.quality  = getIntValue(doc, "quality");
+		item.quality_ = Quality.intToQuality(item.quality);
 		item.iconPath = getTextValue(doc, "icon");
 		
 		item.armor = getIntValue(doc, "armor");
@@ -72,6 +99,40 @@ public class ItemFactory {
 		item.stackSize = getIntValue(doc, "stacksize");
 		item.unique = getIntValue(doc, "unique");
 		item.merchentBuyPrice = getIntValue(doc, "buyprice");
+		
+		// replace merchentBuyPrice with ah price if appropriate
+		String[] patterns = jgm.Config.c.getArray("loot.ahlist.");
+		
+		// use the ah price if it's phat loot or if
+		// it matches one of the patterns
+		boolean useAHPriceInstead = item.quality >= jgm.Config.c.getInt("loot.phatquality");
+		
+		if (!useAHPriceInstead) {
+			for (String str : patterns) {
+				if (!PATTERN_CACHE.containsKey(str)) {
+					try {
+						PATTERN_CACHE.put(str, Pattern.compile(str, Pattern.CASE_INSENSITIVE));
+					} catch (PatternSyntaxException e) {
+						PATTERN_CACHE.put(str, null);
+					}
+				}
+				
+				Pattern p = PATTERN_CACHE.get(str);
+				
+				if (p == null) continue;
+				
+				if (p.matcher(item.name).matches()) {
+					useAHPriceInstead = true;
+					break;
+				}
+			}
+		}
+		
+		if (useAHPriceInstead) {
+			item.merchentBuyPrice = getIntValue(doc, "median_auc_price");
+			log.finest("Setting AH price for " + item.name + ": " + item.merchentBuyPrice);
+		}
+		
 		item.slot = getIntValue(doc, "slot");
 		
 		for (int i = 0; i < item.stats.length; i++) {

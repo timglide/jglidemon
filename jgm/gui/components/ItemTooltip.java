@@ -1,3 +1,23 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.components;
 
 import jgm.wow.*;
@@ -125,7 +145,7 @@ public class ItemTooltip extends JPanel {
 		
 		for (int i = 0; i < 3; i++) {
 			effectLabels[i] = new JLabel("Effect: some effect " + i);
-			effectLabels[i].setForeground(Item.getColor(Item.UNCOMMON, true));
+			effectLabels[i].setForeground(Quality.UNCOMMON.lightColor);
 			c.gridy++;
 			p.add(effectLabels[i], c);
 		}
@@ -259,15 +279,15 @@ public class ItemTooltip extends JPanel {
 	 */
 	public static final String lineify(String s) {
 		String[] words = s.split(" ");
-		StringBuffer out = new StringBuffer();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder out = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 		
 		for (int i = 0; i < words.length; i++) {
 			if (sb.length() >= CHARS_PER_LINE) {
 				out.append(sb);
 				out.append("<br>\n");
 				
-				sb = new StringBuffer();
+				sb = new StringBuilder();
 			}
 			
 			sb.append(words[i] + " ");

@@ -1,5 +1,26 @@
+/*
+ * -----LICENSE START-----
+ * JGlideMon - A Java based remote monitor for MMO Glider
+ * Copyright (C) 2007 Tim
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * -----LICENSE END-----
+ */
 package jgm.gui.tabs;
 
+import jgm.glider.Status;
 import jgm.gui.components.*;
 import jgm.wow.*;
 
@@ -9,12 +30,12 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class LootsTab extends Tab implements ActionListener {
+public class LootsTab extends Tab implements ActionListener, Clearable {
 	private GoldPanel        goldLooted = new GoldPanel("Gold Looted: ");
 	private GoldPanel        lootWorth  = new GoldPanel("Loot Worth: ");
 	private GoldPanel        goldPerHour = new GoldPanel("Gold/Hour: ");
 	
-	private JButton          resetBtn   = new JButton("Reset Loot");
+	public  JButton          resetBtn   = new JButton("Reset Loot");
 	
 	private long initialGoldTime = System.currentTimeMillis();
 	
@@ -31,8 +52,8 @@ public class LootsTab extends Tab implements ActionListener {
 		"Poor", "Common", "Uncommon", "Rare", "Epic"
 	};
 
-	public LootsTab() {
-		super(new BorderLayout(20, 20), "Loot");
+	public LootsTab(jgm.gui.GUI gui) {
+		super(gui, new BorderLayout(20, 20), "Loot");
 		
 		JPanel goldPanel = new JPanel(new GridLayout(1, 0));
 		goldPanel.add(goldLooted);
@@ -60,6 +81,7 @@ public class LootsTab extends Tab implements ActionListener {
 				jp.add(panes[i]);
 			}
 			
+			// to add items for testing
 //			if (i == 3)
 //				for (int j = 0; j < 10; j++)
 //					items[i].add(ItemSet.factory(7713 + j, "Illusionary Rod", 1)); // for testing
@@ -96,7 +118,8 @@ public class LootsTab extends Tab implements ActionListener {
 	
 		//System.out.println("Adding [" + item.name + "]x" + i.getQuantity() + " to loot tab");
 		items[quality].add(i);
-		tables[quality].changeSelection(0, 1, false, false);
+		tables[quality].changeSelection(0, 0, false, false);
+		tables[quality].clearSelection();
 		doGoldPerHour();
 	}
 
@@ -126,7 +149,7 @@ public class LootsTab extends Tab implements ActionListener {
 		if (totalGold <= 0) {
 			resetGPH();
 		} else {
-			int[] timeParts = jgm.Util.msToHMS(d);
+			int[] timeParts = jgm.util.Util.msToHMS(d);
 			goldPerHour.setMoney((int) (totalGold / diff));
 			goldPerHour.setToolTipText(
 				String.format("Earned %dg %ds %dc in %dhr %dmin %dsec",
@@ -141,7 +164,7 @@ public class LootsTab extends Tab implements ActionListener {
 		initialGoldTime = System.currentTimeMillis();
 	}
 	
-	public void update(jgm.gui.updaters.StatusUpdater s) {
+	public void update(Status s) {
 		//if (isCurrentTab())
 		//	doGoldPerHour();
 	}
@@ -158,6 +181,10 @@ public class LootsTab extends Tab implements ActionListener {
 		}
 	}
 	
+	public void clear(boolean clearingAll) {
+		resetBtn.doClick();
+	}
+	
 	private class LootsPane extends JPanel {
 		JLabel header = null;
 		JScrollPane scrollPane = null;
@@ -172,7 +199,7 @@ public class LootsTab extends Tab implements ActionListener {
 			
 			javax.swing.border.TitledBorder ttlBorder =
 				BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), s);
-			ttlBorder.setTitleColor(Item.getColor(quality, false));
+			ttlBorder.setTitleColor(Quality.intToQuality(quality).darkColor);
 			ttlBorder.setTitleFont(Item.TITLE_FONT);
 			ttlBorder.setTitleJustification(javax.swing.border.TitledBorder.CENTER);
 			setBorder(ttlBorder);
@@ -191,6 +218,7 @@ public class LootsTab extends Tab implements ActionListener {
 		}
 	}
 
+	
 	private class ItemTable extends JTable
 		implements MouseMotionListener,
 				   MouseListener {
@@ -227,15 +255,36 @@ public class LootsTab extends Tab implements ActionListener {
             itemTooltip.setItemSet(getItemSet(row));
 			itemTooltip.setVisible(true);
 			itemTooltip.revalidate();
+			
+			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 		
 		public void mouseExited(MouseEvent e) {
 			//System.out.println("Exited: " + e);
 			itemTooltip.setVisible(false);
 			itemTooltip.revalidate();
+			
+			setCursor(Cursor.getDefaultCursor());
 		}
 		
-		public void mouseClicked(MouseEvent e) {}
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() != 1) return;
+			
+			Point pt = e.getPoint();
+			int row = this.rowAtPoint(pt);
+	
+			ItemTableModel tm = (ItemTableModel) this.dataModel;
+			ItemSet is = tm.getItem(row);
+			
+			int itemId = is.getItem().id;
+			
+			jgm.util.Util.openURL(
+				String.format(
+					jgm.Config.getInstance().get("general.wowdb"),
+					itemId
+			));
+		}
+		
 		public void mousePressed(MouseEvent e) {}
 		public void mouseReleased(MouseEvent e) {}
 		
