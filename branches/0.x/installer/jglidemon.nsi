@@ -150,6 +150,7 @@ Section "${AppName} Core" SecAppFiles
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\${AppName}.lnk" "$INSTDIR\${AppName}.jar"
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Profiler.lnk" "$INSTDIR\Profiler.jar"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
