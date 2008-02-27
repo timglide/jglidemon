@@ -1,0 +1,53 @@
+<section id="chapters.config.alerts">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>config</primary><secondary>alerts</secondary></indexterm>
+  <title>Alerts</title>
+  
+  <para>
+		  This tab controls certain aspects of what JGlideMon considers an alert as well
+		  as popup alerts.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Alert Settings</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/config/alerts.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <para>
+		  JGlideMon will ignore things that it would usually consider an alert if
+		  your character is below "Minimum Character Level". You won't hear sounds or TTS
+		  on your mule character, for example.
+  </para>
+
+  <para>
+		  If you do not wish for JGlideMon to automatically select the "Urgent Chat"
+		  tab when an urgent log entry is received, you can uncheck 
+		  "Automatically switch to Urgent Chat tab".
+  </para>
+
+  <para>
+		  By default, popup alerts (on Windows, a baloon popup by the clock) will
+		  be displayed when certain events occur. This can be disabled by unchecking
+		  the option. The popups are only displayed if JGlideMon is not the foreground
+		  window.
+		  Most options are self-explanatory. Options of special note include:
+		  <itemizedlist>
+				  <listitem>On Phat Loot - A popup will appear when you receive loot of a certain quality. This setting is controlled on the <link linkend="chapters.config.loot">loot tab</link>.</listitem>
+				  <listitem>On Other - "Other" refers to any Glider log entry that begins with a "!" or "*" that is not otherwise categorized.</listitem>
+		  </itemizedlist>
+  </para>
+
+  <note>
+		  <para>
+				  The popup alerts can only be displayed if the tray icon is
+				  enabled and supported (that is, you have Java 1.6+). You do
+				  <emphasis>not</emphasis> necessarily have to enable minimizing
+				  to the tray.
+		  </para>
+  </note>
+</section>

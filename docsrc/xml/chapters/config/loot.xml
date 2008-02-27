@@ -1,0 +1,55 @@
+<section id="chapters.config.loot">
+  <sectioninfo>
+    <date>$Date$</date>
+  </sectioninfo>
+
+  <indexterm><primary>config</primary><secondary>loot</secondary></indexterm>
+  <title>Loot</title>
+  
+  <para>
+		  The Loot tab controls "Phat Loot" quality and which items will use
+		  the mediam AH price instead of the vendor price when calculating
+		  loot worth and gold earned/hour.
+  </para>
+
+  <screenshot>
+		  <screeninfo>Loot Settings</screeninfo>
+		  <imageobject>
+				  <imagedata fileref="images/chapters/config/loot.jpg" format="JPG" />
+		  </imageobject>
+  </screenshot>
+
+  <para>
+		  Items whose quality is greater than or equal to the "Minimum
+		  Phat Loot Quality" will be considered "Phat Loot" by JGlideMon.
+		  You can recieve <link linkend="chapters.config.alerts">popup alerts</link>
+		  when you receive "Phat Loot". Additionally, JGlideMon will automatically
+		  use the median AH price for "Phat Loot"; you do not need to add it
+		  to the list of items to use the AH price yourself.
+  </para>
+
+  <para>
+		  Items in the list box will use the median AH price instead of the
+		  vendor price when loot worth and gold earned per hour are calculated
+		  on the main Loot tab. Each list entry is actually a pattern, very much
+		  like BottomlessBag. Some common values are set by default.
+  </para>
+  <para>
+		  Each list entry is treated as a regular expression as governed by
+		  Java's support for them. While you may use the full power of
+		  regular expressions if you wish, for simplicity, you only need
+		  to know a few things:
+		  <itemizedlist>
+				  <listitem>".*" acts as a wildcard. Thus, ".*cloth" will match all cloth types.</listitem>
+				  <listitem>The match is case-insensitive, so you don't have to worry about matching the case of the item name.</listitem>
+				  <listitem>"(this|that|the other)" will match "this", "that", or "the other". This is useful because you can put multiple related items on the same line for ease of reading what's in the list. Theoretically you could put everything you wanted to match on the same line using this feature, but that is not recommended.</listitem>
+		  </itemizedlist>
+  </para>
+
+  <note>
+		  <para>
+				  If you make chanes this list, you will likely need to clear the item cache
+				  (File->Clear Item Cache) as well as clear the main Loot tab.
+		  </para>
+  </note>
+</section>

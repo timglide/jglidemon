@@ -13,6 +13,13 @@
 		  <ulink url="http://www.java.com">Java's web site</ulink>.
   </para>
 
+  <tip>
+		  <para>
+				  If you're using the installer on Windows, it will prompt you to download
+				  and install Java if it is not already present.
+		  </para>
+  </tip>
+
   <para>
 		  JGlideMon also requires that you enable the remote server in
 		  Glider's configuration. In order to do this,

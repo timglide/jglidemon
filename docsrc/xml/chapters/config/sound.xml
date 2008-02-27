@@ -47,4 +47,30 @@
 		  </tbody>
 	  </tgroup>
   </table>
+
+  <section id="chapters.config.sound.custom">
+		  <indexterm><primary>sound</primary><secondary>custom</secondary></indexterm>
+		  <title>Custom Sounds</title>
+
+		  <para>
+				  It is possible to replace the default sounds that are bundled with JGlideMon,
+				  if desired. To do so, create a folder named "sounds" as a sub-folder in the
+				  folder where JGlideMon.jar is located (if it does not already exist). Copy
+				  a wav file into this folder and rename it appropriately for the sound you
+				  wish to replace. The file names you can replace are:
+				  <itemizedlist>
+						  <listitem>Whisper.wav</listitem>
+						  <listitem>GMWhisper.wav</listitem>
+						  <listitem>PlayerAttack.wav</listitem>
+						  <listitem>PlayerNear.wav</listitem>
+						  <listitem>GlideStop.wav</listitem>
+				  </itemizedlist>
+		  </para>
+
+		  <para>
+				  If you add or change the sounds while JGlideMon is running, you can reload them
+				  by clicking the "Reload Custom Sounds" button. Otherwise, the changes will take
+				  effect the next time JGlideMon is restarted.
+		  </para>
+  </section>
 </section>

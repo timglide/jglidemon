@@ -28,6 +28,14 @@
 		  same folder that JGlideMon has been installed to. It is safe to overrite any
 		  files or folders if you are prompted to do so.
   </para>
+
+  <para>
+		  JGlideMon is also distributed as an installer file for Windows. Simply launch the installer
+		  and follow the wizard. If a version of JGlideMon is installed (that was previously installed
+		  with an installer) it will be upgraded to the new version. If Java is not installed, you will be
+		  prompted to download and install it.
+  </para>
+
   <para>
 		  In order to launch JGlideMon, simply double-click on <filename>JGlideMon.jar</filename>. For conveinance on Windows,
 		  you can right-click on <filename>JGlideMon.jar</filename> and click "Send To->Desktop (create shortcut)". If you prefer

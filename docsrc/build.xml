@@ -19,11 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 -->
 
-<project basedir="." default="all" name="JGlideMon Documentation">
+<project default="all" name="JGlideMon Documentation">
 	<property name="src_dir"		value="${basedir}"/>
 	<property name="xml_dir"        value="${src_dir}/xml"/>
 	<property name="xsl_dir"        value="${src_dir}/xsl"/>
-	<property name="out_dir"        value="output"/>
+	<property name="out_dir"        value="${src_dir}/output"/>
 	<property name="html_dir"       value="${out_dir}/html"/>
 	<property name="chunk_dir"      value="${out_dir}/chunk"/>
 	<property name="htmlhelp_dir"   value="${out_dir}/htmlhelp"/>
@@ -31,8 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<target name="all" depends="html,chunk,htmlhelp">
 		<echo message="Build complete."/>
 	</target>
-
-
 
 	<target name="clean" depends="clean_html,clean_chunk,clean_htmlhelp">
 			<delete dir="${out_dir}"/>

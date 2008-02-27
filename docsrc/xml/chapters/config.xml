@@ -21,6 +21,8 @@
   &chapters.config.server;
   &chapters.config.screenshot;
   &chapters.config.sound;
+  &chapters.config.alerts;
+  &chapters.config.loot;
   &chapters.config.restarter;
   &chapters.config.web;
 

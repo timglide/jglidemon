@@ -19,6 +19,34 @@
 						  </para>
 				  </listitem>
 		  </varlistentry>
+		  <varlistentry>
+				  <term>
+						  <menuchoice>
+								  <guimenu>File</guimenu>
+								  <guimenuitem>Clear Item Cache</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						  <para>
+								  <action>Clears the internal cache of item data downloaded from Allakhazam. This is useful when you make changes to the <link linkend="chapters.config.loot">AH list</link>.</action>
+						  </para>
+				  </listitem>
+		  </varlistentry>
+
+		  <varlistentry>
+				  <term>
+						  <menuchoice>
+								  <guimenu>File</guimenu>
+								  <guimenuitem>Clear Icon Cache</guimenuitem>
+				  		</menuchoice>
+				  </term>
+				  <listitem>
+						  <para>
+								  <action>Clears the internal cache of icons downloaded from Allakhazam.</action>
+						  </para>
+				  </listitem>
+		  </varlistentry>
+
 
 		  <varlistentry>
 				  <term>
