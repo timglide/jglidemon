@@ -314,7 +314,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</copy>
 	</target>
 
-	<target name="full_installer" depends="helpfile,svn_revision">
+	<target name="full_installer" depends="zips,helpfile,svn_revision">
 		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
 			<arg value="/V3"/>
 			<arg value="/DAppVersion=${version}"/>
@@ -323,7 +323,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</exec>
 	</target>
 
-	<target name="core_installer" depends="helpfile,svn_revision">
+	<target name="core_installer" depends="zips,helpfile,svn_revision">
 		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
 			<arg value="/V3"/>
 			<arg value="/DAppVersion=${version}"/>

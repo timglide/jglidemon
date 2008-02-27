@@ -401,6 +401,7 @@ public class GUI
 		menu.help.addSeparator();
 		
 		menu.helpContents = new JMenuItem("Help Contents...", KeyEvent.VK_H);
+		menu.helpContents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		final java.io.File helpFile = new java.io.File("JGlideMon.chm");
 		if (helpFile.exists() && System.getProperty("os.name").startsWith("Windows")) {
 			menu.help.add(menu.helpContents);
