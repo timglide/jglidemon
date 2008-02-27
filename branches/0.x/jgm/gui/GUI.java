@@ -136,6 +136,7 @@ public class GUI
 		JMenu     serversSub;
 		
 		JMenu     help;
+		JMenuItem helpContents;
 		JMenuItem debug;
 		JMenuItem about;
 	}
@@ -398,6 +399,23 @@ public class GUI
 		
 		menu.debug = doMenuItem("Generate Debug Info", KeyEvent.VK_D, menu.help, this);
 		menu.help.addSeparator();
+		
+		menu.helpContents = new JMenuItem("Help Contents...", KeyEvent.VK_H);
+		final java.io.File helpFile = new java.io.File("JGlideMon.chm");
+		if (helpFile.exists() && System.getProperty("os.name").startsWith("Windows")) {
+			menu.help.add(menu.helpContents);
+			menu.helpContents.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (helpFile.exists())
+						try {
+							Runtime.getRuntime().exec("cmd /c \"" + helpFile.getCanonicalPath() + "\"");
+						} catch (Throwable x) {
+							log.log(Level.WARNING, "Error opening help file", x);
+						}
+				}
+			});
+		}
+		
 		menu.about = doMenuItem("About", KeyEvent.VK_A, menu.help, this);
 
 		

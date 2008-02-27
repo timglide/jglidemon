@@ -1,5 +1,15 @@
 JGlideMon ChangeLog
 
+Version 0.16
+------------
+- Added a bunch of options to control alerts. See the Alerts
+  configuration tab.
+- Added ability to retrieve item's mediam AH price instead of
+  vendor price based on its name or quality. See the Loot
+  configuration tab.
+- A spiffy help file is now distributed with JGlideMon.
+- A spiffy installer is now available for Windows.
+
 Version 0.15
 ------------
 - Multiple Glider support is finally available. You no longer need

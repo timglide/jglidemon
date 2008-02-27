@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 <!-- * For more information:  http://ant.apache.org/          * -->
 <!-- *                                                        * -->
 <!-- ********************************************************** -->
-<project basedir="." default="all" name="JGlideMon">
+<project default="all" name="JGlideMon">
 
     <!-- ********************************************************** -->
     <!-- *                                                        * -->
@@ -40,13 +40,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="_version"		value="0.15"/>
+	<property name="_version"		value="0.16"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/freetts.jar"/>
 	</path>
 
-    <property name="src_dir"		value="."/>
+    <property name="src_dir"		value="${basedir}"/>
     <property name="build_dir"		value="bld"/>
     <property name="lib_dir"        value="lib"/>
 	<property name="bin_dir"        value="bin"/>
@@ -83,7 +83,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 	<target name="dist"
-			depends="svn_revision,all,jars,zips">
+			depends="svn_revision,all,jars,zips,helpfile,installer">
 		<echo message="Built JGlideMon v${version} distribution"/>
 	</target>
 
@@ -256,11 +256,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 
-	<target name="core_zip" depends="jars,libs,docs,svn_revision"
+	<target name="core_zip" depends="jars,libs,docs,svn_revision,helpfile"
 			description="Create ${core_zip}">
 		<property name="core_zip" value="${bin_dir}/${title}_v${version}_core.zip"/>
 		<zip destfile="${core_zip}">
-			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,Profiler.jar,Profiler.jar.MD5,sounds"/>
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,JGlideMon.chm,Profiler.jar,Profiler.jar.MD5,sounds"/>
 		</zip>
 	</target>
 
@@ -297,6 +297,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			<fileset dir="php" includes="phpglidemon.php,phpglidemon.php.MD5"/>
 			<fileset dir="${bin_dir}" includes="License.txt"/>
 		</zip>
+	</target>
+
+
+	<target name="helpfile">
+		<ant antfile="${src_dir}/../docsrc/build.xml" inheritAll="false" target="htmlhelp"/>
+		<copy todir="${bin_dir}">
+			<fileset dir="${src_dir}/../docsrc" includes="JGlideMon.chm"/>
+		</copy>
+	</target>
+
+
+	<target name="installer" depends="full_installer,core_installer">
+		<copy todir="${bin_dir}">
+			<fileset dir="${src_dir}/installer" includes="*_setup.exe"/>
+		</copy>
+	</target>
+
+	<target name="full_installer" depends="helpfile,svn_revision">
+		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows">
+			<arg value="/V3"/>
+			<arg value="/DAppVersion=${version}"/>
+			<arg value="/DInstallerType=full"/>
+			<arg value="${src_dir}/installer/jglidemon.nsi"/>
+		</exec>
+	</target>
+
+	<target name="core_installer" depends="helpfile,svn_revision">
+		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows">
+			<arg value="/V3"/>
+			<arg value="/DAppVersion=${version}"/>
+			<arg value="/DInstallerType=core"/>
+			<arg value="${src_dir}/installer/jglidemon.nsi"/>
+		</exec>
 	</target>
 
 
