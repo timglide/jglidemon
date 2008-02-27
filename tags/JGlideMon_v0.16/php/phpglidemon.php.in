@@ -1,0 +1,589 @@
+<?php
+// PHPGlideMon - A PHP based remote monitor for MMO Glider - Part of JGlideMon
+// Copyright (C) 2007 - 2008 Tim, with contributions by fethers
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation, Inc.,
+// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
+//                               SETTINGS
+
+// Either the ip address or hostname to connect to
+//
+// If you're running this php script on a lan, then this will be the ip/hostname of the 
+// computer that is running glider, usually something like 192.168.x.x
+//
+// If you're running this script on an external web server, then this will be the public
+// ip/hostname of the network of the computer that glider is running on. this will require
+// configuring your router to forward $port to the internal ip address of the computer 
+// that is actually running glider. use google to find out how to do that. you will also
+// need to make sure windows firewall (or other firewall software) is not blocking 
+// glider as well.
+$host = "localhost";
+
+// Port you have set the remote control to run on in glider options
+// Glider's default port is 3200
+$port = 3200;
+	
+// Password you have set in glider options
+$glider_pass = "1234";
+	
+// Password person needs to enter to see this page
+$http_pass   = $glider_pass;	
+
+// Cause a password dialog box to pop up in the browser if this is set to true.
+// Leave the username blank and enter the password in $pass to view the page.
+// It would be wise to keep it set to true unless you're only using this on
+// a private network and not over the internet.
+$http_auth = true;
+
+// Desired screenshot width in pixels, false to disable resizing
+// Note if GD is not installed the screenshot will still appear, just not resized 
+$ss_width = false;
+
+// Even if GD is not installed, you can still tell glider to resize the screenshot
+// before sending it. $ss_scale is a percentage between 10 and 100.
+// Setting this appropriately and $ss_width to false can help reduce bandwidth
+// taken by sending the screenshot and delay due to resizing the image within PHP.
+$ss_scale = 75;
+
+// You can also set the JPEG quality, percentage between 10 and 100.
+// Bigger = larger file size but clearer image.
+$ss_quality = 100;
+
+// Time in milliseconds to refresh the page, must be > 0, but keep 
+// in mind a very small number will probably have poor results.
+// 5000 = 5 seconds
+$refresh = 5000;
+
+// If true, /stopglide will be sent before sending chat keys and /startglide
+// will be sent after chat keys (if Glider was already running). This should
+// help with /queuekeys not always sending things.
+$pause_glide = true;
+
+// If true, error reporting will be turned on. You shouldn't need to enable this
+$debug   = false;
+
+
+
+/*********************************************************\
+ * Dont edit below here unless you know what youre doing. *
+ * This file is automatically built from the latest       *
+ * JGlideMon files.                                       *
+\*********************************************************/
+
+ini_set('display_errors', $debug);
+error_reporting(E_ALL);
+
+$app     = 'PHPGlideMon';
+$version = '@@version@@';
+
+// send the auth header if necessary
+if ($http_auth && (!isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_PW'] != $http_pass) ) {
+	header('WWW-Authenticate: Basic realm="' . "$app $version" . '"');
+	header('HTTP/1.0 401 Unauthorized');
+	die('Access Denied.');
+}
+
+
+// ensure config values are ok
+if ($refresh < 0) $refresh = 1000;
+
+
+// handle the request
+if (empty($_GET['url'])) {
+	handleFile('index.html');
+} else {
+	$parts = explode('/', trim($_GET['url'], '/'), 2);
+
+	switch ($parts[0]) {
+		case 'static':
+			handleFile($parts[1]);
+			break;
+
+		case 'ajax':
+			handleAjax(@$parts[1]);
+			break;
+
+		case 'screenshot':
+			handleScreenshot();
+			break;
+
+		default:
+			send404();
+	}
+}
+
+
+// return the specified file which has been encoded and appended to this file
+function handleFile($url) {
+	// associative array of embedded files
+	// $files['file/name.ext'] = array(offset, length, mime);
+
+//----FILE_LIST_START----
+//----FILE_LIST_END----
+	
+	if (!isset($files[$url])) send404();
+
+	$fp = fopen(__FILE__, 'rb');
+
+	if (!$fp) {
+		send500('Couldn\'t open __FILE__');
+	}
+
+	if (!defined('__COMPILER_HALT_OFFSET__')) {
+		define('__COMPILER_HALT_OFFSET__',
+			// -2 because of +2 on next line
+			filesize(__FILE__) - 1 - $dataLength - 2);
+	}
+
+	// +2 for the // before the data for php 4 compat
+	fseek($fp, __COMPILER_HALT_OFFSET__ + 2 + $files[$url][0]);
+	$data = gzinflate(base64_decode(fread($fp, $files[$url][1])));
+
+	fclose($fp);
+
+	$data = str_replace('$PHP_SELF', $_SERVER['PHP_SELF'], $data);
+
+	header('Content-type: ' . $files[$url][2]);
+	die($data);
+}
+
+
+function handleScreenshot() {
+	global $ss_width, $ss_resize;
+
+	sendNoCache();
+
+	$fp = getSocket();
+
+	if (!is_resource($fp)) {
+		die($fp);
+	}
+
+	$raw_image = '';
+	capture($fp, $raw_image);
+
+	if ($ss_width !== false && $ss_width >= 100) {
+		if (!function_exists('imagecreatefromstring')) {
+			header('Content-type: image/jpeg');
+			die($raw_image);
+		}
+
+		$img = imagecreatefromstring($raw_image);
+		$imgx = imagesx($img);
+		$imgy = imagesy($img);
+		$thumb_ratio = $ss_width / $imgx;
+		$thumb_height = round($imgy * $thumb_ratio);
+
+		// Don't make it bigger dummy
+		if ($thumb_ratio >= 1) {
+			header('Content-type: image/jpeg');
+			die($raw_image);
+		}
+
+		$thumb = imagecreatetruecolor($ss_width, $thumb_height);
+
+		imagecopyresampled($thumb, $img, 0, 0, 0, 0, $ss_width, $thumb_height, $imgx, $imgy);
+
+		header('Content-type: image/jpeg');
+		die(imagejpeg($thumb, null, 100));
+	} else {
+		header('Content-type: image/jpeg');
+		die($raw_image);
+	}
+}
+
+
+function handleAjax($url) {
+	global $app, $version, $refresh, $pause_glide;
+
+	sendNoCache();
+
+	$status = 'success';
+	$message = '';
+	$xml = '';
+
+	switch ($url) {
+		case 'command':
+			$fp = getSocket();
+
+			if (!is_resource($fp)) {
+				$status = 'error';
+				$message = $fp;
+			} else {
+				if (empty($_GET['command'])) $_GET['command'] = '';
+
+				switch ($_GET['command']) {
+					case 'start':
+					case 'stop':
+						sendCommand($fp, $_GET['command'] . 'glide');
+						$message = getResult($fp); // result
+						break;
+
+					case 'chat':
+						if (empty($_GET['keys'])) $_GET['keys'] = '';
+						$_GET['keys'] = trim($_GET['keys']);
+
+						if ($_GET['keys'] == '') {
+							$status = 'error';
+							$message = 'No keys provided for sending';
+						} else {
+							$test = null;
+
+							if ($pause_glide) {
+								sendCommand($fp, 'stopglide');
+								$test = getResult($fp);
+							}
+
+							// if it's a slash command, try to send the keys
+							// one at a time with a delay to try to account
+							// for glider's bug with not always sending
+							// the keys properly
+							if (strpos($_GET['keys'], '#13#/') === 0) {
+								$_GET['keys'] = substr($_GET['keys'], 5);
+								$parts = preg_split('!\s+!', $_GET['keys'], 2);
+
+								if (count($parts) == 2) {
+									$_GET['keys'] = $parts[1];
+								} else {
+									$_GET['keys'] = null;
+								}
+
+								usleep(250000);
+								sendCommand($fp, 'queuekeys #13#');
+								getResult($fp);
+
+								usleep(250000);
+								sendCommand($fp, 'queuekeys /');
+								getResult($fp);
+
+								usleep(250000);
+								sendCommand($fp, 'queuekeys ' . $parts[0] . ' ');
+								$message = getResult($fp);
+
+								usleep(250000);
+							}
+
+							if ($_GET['keys'] !== null) {
+								sendCommand($fp, 'queuekeys ' . $_GET['keys']);
+								$message = getResult($fp); // result
+							}
+
+							if ($pause_glide && $test != 'Already stopped') {
+								sendCommand($fp, 'startglide');
+								getResult($fp);
+							}
+						}
+
+						break;
+
+					default:
+						$status = 'error';
+						$message = 'Invalid command: ' . $_GET['command'];
+				}
+
+				closeSocket($fp);
+			}
+
+			break;
+
+		case 'status':
+			$fp = getSocket();
+
+			$connected = 'false';
+
+			if (!is_resource($fp)) {
+				$status = 'success';
+				$message = $fp;
+			} else {
+				$connected = 'true';
+				sendCommand($fp, 'status');
+				$lines = getResult($fp, true);
+				closeSocket($fp);
+
+				$info = array();
+
+				// Create an associative array of status items and
+				// their values. Expects line to be in the format:
+				// "Key: Value"
+				foreach ($lines as $v) {
+					$parts = explode(':', $v, 2);
+					$info[strtolower($parts[0])] = trim(@$parts[1]);
+				}
+
+				// make necessary conversions/additions
+
+				if (isset($info['attached'])) {
+					$info['attached'] = strtolower($info['attached']);
+				}
+
+				if (isset($info['attached']) && $info['attached'] == 'true') {
+					if (isset($info['profile'])) {
+						$info['full-profile'] = $info['profile'];
+						// on *nix, basename only works with /, not \
+//						$info['profile'] = basename($info['full-profile']);
+						$parts = explode('\\', $info['profile']);
+						$info['profile'] = $parts[count($parts) - 1];
+					}
+
+					if (isset($info['class'])) {
+						$info['lcclass'] = strtolower($info['class']);
+					}
+
+					if (isset($info['health'])) {
+						$info['health'] = round($info['health'] * 100);
+					}
+
+					// define the mana name
+					switch ($info['class']) {
+						case 'Warrior':
+							$info['mana-name'] = 'rage';
+							break;
+						case 'Rogue':
+							$info['mana-name'] = 'energy';
+							break;
+						default:
+							$info['mana-name'] = 'mana';
+							break;
+					}
+
+					// parse the mana
+					// these regexes are from JGlideMon
+					switch ($info['class']) {
+						case 'Warrior':
+						case 'Rogue':
+							// find the first number
+							// ##
+							preg_match("!.*?(\\d+).*!", $info['mana'], $reg);
+							$info['mana'] = $reg[1];
+							break;
+
+						case 'Druid': // cuz they're so special...., also have to set mana-name here
+							preg_match("!(?:.*?R = (\\d+).*|.*?E=(\\d+).*|.*\\((\\d+)%\\).*)!", $info['mana'], $reg);
+
+							$i = 0; $name = 'mana';
+							if (!empty($reg[1])) {
+								$i = 1;
+								$name = 'rage';
+							} else if (!empty($reg[2])) {
+								$i = 2;
+								$name = 'energy';
+							} else if (!empty($reg[3])) {
+								$i = 3;
+							}
+
+							$info['mana'] = $reg[$i];
+							$info['mana-name'] = $name;
+							break;
+
+						default:
+							// find number in parantheses with a %
+							// (##%)
+							preg_match("!.*\\((\\d+)%\\).*!", $info['mana'], $reg);
+							$info['mana'] = $reg[1];
+							break;
+					}
+
+					if (isset($info['experience'])) {
+						foreach (array('experience' => 'xp', 'next-experience' => 'next-xp', 'xp/hour' => 'xp-per-hour') as $k => $v) {
+							$info[$v] = $info[$k];
+							unset($info[$k]);
+						}
+						
+						$info['xp-percent'] = round($info['xp'] / $info['next-xp'] * 100);
+
+						// If we're so close to 100% that it would get rounded up,
+						// set it to 99 just so it doesn't say 100% when we really
+						// aren't quite there.
+						if ($info['xp-percent'] == 100 && $info['xp'] < $info['next-xp']) {
+							$info['xp-percent'] = 99;
+						}
+
+						if ($info['xp-per-hour'] > 0) {
+							$seconds = 0; $minutes = 0; $hours = 0;
+							$xpDiff = $info['next-xp'] - $info['xp'];
+							$d = $xpDiff / $info['xp-per-hour'];
+							$hours = (int) $d;
+							$d = 60 * ($d - $hours);
+							$minutes = (int) $d;
+							$d = 60 * ($d - $minutes);
+							$seconds = (int) $d;
+
+							$info['ttl'] = sprintf("%d:%02d:%02d", $hours, $minutes, $seconds);
+						} else {
+							$info['ttl'] = 'Unknown';
+						}
+					} // end xp stuff
+
+					if (isset($info['kld'])) {
+						list($info['kills'], $info['loots'], $info['deaths']) = explode('/', $info['kld']);
+						unset($info['kld']);
+					}
+
+				} // end attached == True
+
+				$xml .= <<<XML
+	<app>
+		<name>$app</name>
+		<version>$version</version>
+		<connected>$connected</connected>
+		<update-interval>$refresh</update-interval>
+	</app>
+
+XML;
+
+				// finally create the xml
+				$xml .= "\t<glider>\n";
+
+				foreach ($info as $k => $v) {
+					$xml .= "\t\t<$k>$v</$k>\n";
+				}
+
+				$xml .= "\t</glider>\n";
+
+
+			} // end is_resource($fp)
+
+			break;
+
+		default:
+			$status = 'error';
+			$message = 'Invalid url: ' . $url;
+	}
+
+	// create the xml, this format is the same used in JGlideMon.
+	// the <jgm> tag is there to minimize the required alteration of 
+	// jgm's webserver's docs, which will be embedded within this file
+	header('Content-type: application/xml');
+	echo <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+	<status>$status</status>
+	<message>$message</message>
+$xml
+</response>
+
+XML;
+
+	die();
+}
+
+
+
+// functions
+
+
+// socket stuff
+ 
+function getSocket() {
+	global $host, $port, $glider_pass;
+
+	$fp = @fsockopen($host, $port, $errno, $errstr, 10);
+
+	if (!$fp) {
+		return "Unable to connect to $host:$port. $errstr (Error: $errno)";
+	}
+
+	stream_set_timeout($fp, 5);
+
+	fwrite($fp, $glider_pass . "\r\n");
+
+	// Get rid of "Auth: " and "Authenticated OK" lines
+	fgets($fp);
+
+	if (feof($fp)) { // Bad password?
+		return "Invalid password";
+	}
+
+	return $fp;
+}
+
+function closeSocket($fp) {
+	sendCommand($fp, 'exit');
+	$info = stream_get_meta_data($fp);
+	fclose($fp);
+	return $info;
+}
+
+function sendCommand($fp, $command) {
+//	echo "Sending: /$command<br />\n";
+	fwrite($fp, "/$command\r\n");
+	fflush($fp);
+}
+
+function getResult($fp, $returnArray = false) {
+	$out = array();
+
+	while (!feof($fp) && $str = trim(fgets($fp))) {
+		if ($str == '---') break;
+		$out[] = $str;
+	}
+
+	if ($returnArray) return $out;
+
+	return implode(', ', $out);
+}
+
+
+// screenshot stuff
+
+function capture($fp, &$raw_image) {
+	global $ss_scale, $ss_quality;
+	sendCommand($fp, 'capturescale '   . min(100, max(10, $ss_scale)));
+	fgets($fp); // scale set
+	fgets($fp); // ---
+
+	// having issues when sending /capturequality that don't make sense
+	// so it's disabled for now...
+//	sendCommand($fp, 'capturequality ' . min(100, max(10, $ss_quality)));
+//	fgets($fp); // quality set
+//	fgets($fp); // ---
+	sendCommand($fp, 'capture');
+	$raw_image = '';
+
+	fgets($fp); // skip first info line
+
+	while (!feof($fp) && $str = fgets($fp)) {
+		$raw_image .= $str;
+		if (false !== strpos($str, '---')) {
+			break;
+		}
+	}
+	closeSocket($fp);
+
+	// Remove 4-byte length and trailing "---[CR/LF]"
+	$raw_image = substr($raw_image, 4);
+	$raw_image = rtrim($raw_image, "-\r\n");
+}
+
+
+// header stuff
+
+function sendNoCache() {
+	header("Cache-Control: no-cache, must-revalidate");
+	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+}
+
+function send404($die = true) {
+	header("HTTP/1.0 404 Not Found");
+	if ($die) die("404 Not Found");
+}
+
+function send500($msg = 'Internal server error', $die = true) {
+	header("HTTP/1.1 500 Internal Server Error");
+	if ($die) die("500 $msg");
+}
+
+__halt_compiler();//
