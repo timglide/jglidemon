@@ -133,7 +133,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		parseFile(new File(filename), logFile);
 	}
 	
-	public void parseFile(File f, LogFile logFile) throws IOException {
+	public void parseFile(File f, LogFile logFile) throws IOException {		
 		BufferedReader in = new BufferedReader(new FileReader(f));
 		
 		String line = null;

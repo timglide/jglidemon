@@ -30,6 +30,9 @@ import java.util.logging.*;
 import jgm.glider.log.LogFile;
 
 public class ParseLogFile extends Dialog implements ActionListener {
+	JPanel panel;
+	CardLayout layout;
+	
 	JPanel mainPanel;
 	JPanel waitPanel;
 	
@@ -38,6 +41,8 @@ public class ParseLogFile extends Dialog implements ActionListener {
 	JButton browse;
 	JButton parse;
 	JButton close;
+	
+	JProgressBar progress;
 	
 	java.io.File selectedFile = null;
 	
@@ -99,13 +104,35 @@ public class ParseLogFile extends Dialog implements ActionListener {
 		lbl.setVerticalAlignment(JLabel.CENTER);
 		waitPanel.add(lbl, BorderLayout.CENTER);
 		
+		progress = new JProgressBar();
 		
+		layout = new CardLayout();
+		panel = new JPanel(layout);
+		panel.add(mainPanel, "main");
+		panel.add(waitPanel, "wait");
+		
+		setLayout(new BorderLayout());
+		add(panel, BorderLayout.CENTER);
+		
+		
+		// set up the file chooser
+		fc.setMultiSelectionEnabled(false);
+		fc.setAcceptAllFileFilterUsed(true);
+		fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
+			public String getDescription() {
+				return "Log File";
+			}
+			
+			public boolean accept(File f) {
+				return f.isDirectory() || f.getName().toLowerCase().endsWith(".log");
+			}
+		});
 		
 		makeVisible();
 	}
 	
 	protected void onShow() {
-		getContentPane().add(mainPanel, BorderLayout.CENTER);
+		layout.show(panel, "main");
 		makeVisible();
 	}
 	
@@ -123,18 +150,6 @@ public class ParseLogFile extends Dialog implements ActionListener {
 				}
 			}
 			// else the fc should stay in the last visited directory
-			
-			fc.setMultiSelectionEnabled(false);
-			fc.setAcceptAllFileFilterUsed(true);
-			fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
-				public String getDescription() {
-					return "Log File";
-				}
-				
-				public boolean accept(File f) {
-					return f.isDirectory() || f.getName().toLowerCase().endsWith(".log");
-				}
-			});
 			
 			int ret = fc.showOpenDialog(this);
 			
@@ -175,7 +190,7 @@ public class ParseLogFile extends Dialog implements ActionListener {
 			
 			new Thread(new Runnable() {
 				public void run() {
-					ParseLogFile.this.getContentPane().add(waitPanel, BorderLayout.CENTER);
+					ParseLogFile.this.layout.show(ParseLogFile.this.panel, "wait");
 					ParseLogFile.this.validate();
 					
 					try {
