@@ -29,6 +29,9 @@ import jgm.gui.tabs.*;
 import java.util.regex.*;
 import java.util.logging.*;
 import java.io.*;
+import javax.swing.ProgressMonitor;
+import javax.swing.ProgressMonitorInputStream;
+import javax.swing.SwingWorker;
 
 public class LogUpdater implements Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(LogUpdater.class.getName());
@@ -129,29 +132,34 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		}
 	}
 	
-	public void parseFile(String filename, LogFile logFile) throws IOException {
-		parseFile(new File(filename), logFile);
-	}
-	
-	public void parseFile(File f, LogFile logFile) throws IOException {		
-		BufferedReader in = new BufferedReader(new FileReader(f));
+	public void parseFile(final java.awt.Component comp, final File f, final LogFile logFile) throws IOException {
+		final FileInputStream fis = new FileInputStream(f);
+		final ProgressMonitorInputStream pmis = 
+			new ProgressMonitorInputStream(
+				comp, "Parsing " + f.getName(), fis);
+		final BufferedReader in = new BufferedReader(new InputStreamReader(pmis));
+		final ProgressMonitor pm = pmis.getProgressMonitor();
+
+		SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+			public Void doInBackground() {
+				String line = null;
+				
+				try {
+					while (!pm.isCanceled() && null != (line = in.readLine())) {
+						handleLine(line, logFile);
+					}
+				} catch (IOException e) {
+				} finally {
+					try {
+						in.close();
+					} catch (IOException e) {}
+				}
+				
+				return null;
+			}
+		};
 		
-		String line = null;
-		
-		while (null != (line = in.readLine())) {
-			handleLine(line, logFile);
-			
-/// !!! No longer necessary since we manually create non-raw
-///     entries in order to have color 
-			// since the chat log file is tecnically
-			// raw, we have to create a non-raw line
-			// to get whispers and stuff
-//			if (logFile.equals(LogFile.Chat)) {
-//				line = RawChatLogEntry.removeFormatting(line);
-//				line = RawChatLogEntry.removeLinks(line);
-//				handleLine(line, LogFile._NormalChat);
-//			}
-		}
+		sw.execute();
 	}
 	
 	private Pattern ESCPAE_PATTERN =

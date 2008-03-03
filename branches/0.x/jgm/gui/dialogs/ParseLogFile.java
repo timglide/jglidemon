@@ -188,28 +188,25 @@ public class ParseLogFile extends Dialog implements ActionListener {
 				return;
 			}
 			
-			new Thread(new Runnable() {
-				public void run() {
-					ParseLogFile.this.layout.show(ParseLogFile.this.panel, "wait");
-					ParseLogFile.this.validate();
+//			ParseLogFile.this.layout.show(ParseLogFile.this.panel, "wait");
+//			ParseLogFile.this.validate();
+			
+			try {
+				gui.sm.logUpdater.parseFile(
+					ParseLogFile.this.getOwner(),
+					selectedFile,
+					(jgm.glider.log.LogFile) type.getSelectedItem());
+			} catch (Throwable t) {
+				Logger.getLogger(getClass().getName())
+					.log(Level.WARNING, "Error parsing log file", t);
+				
+				JOptionPane.showMessageDialog(ParseLogFile.this,
+					"There was an error parsing the log file.\n\n" +
+					t.getClass().getName() + ": " + t.getMessage(),
+					"Error", JOptionPane.ERROR_MESSAGE);
+			}
 					
-					try {
-						gui.sm.logUpdater.parseFile(
-							selectedFile,
-							(jgm.glider.log.LogFile) type.getSelectedItem());
-					} catch (Throwable t) {
-						Logger.getLogger(getClass().getName())
-							.log(Level.WARNING, "Error parsing log file", t);
-						
-						JOptionPane.showMessageDialog(ParseLogFile.this,
-							"There was an error parsing the log file.\n\n" +
-							t.getClass().getName() + ": " + t.getMessage(),
-							"Error", JOptionPane.ERROR_MESSAGE);
-					}
-					
-					ParseLogFile.this.setVisible(false);
-				}
-			}).start();
+			setVisible(false);
 		}
 	}
 }
