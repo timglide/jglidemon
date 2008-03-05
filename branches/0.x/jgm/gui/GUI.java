@@ -551,6 +551,7 @@ public class GUI
 		sm.ssUpdater.redoScale = true;
 		
 		frame.validate();
+		frame.repaint();
 	}
 	
 	
