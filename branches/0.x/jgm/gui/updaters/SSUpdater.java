@@ -247,8 +247,17 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 //			int pwidth = tab.jsp.getWidth() - 20;
 //			int pheight = tab.jsp.getHeight() - 20;
 
-			int pwidth = tab.getWidth() - 20;
-			int pheight = tab.getHeight() - 20;
+			int pwidth, pheight;
+			
+			if (tab.isShowing()) {
+				pwidth = tab.getWidth() - 20;
+				pheight = tab.getHeight() - 20;
+			} else {
+				// fullscreen
+				java.awt.Container cp = sm.gui.ssPanel;
+				pwidth = cp.getWidth() - 20;
+				pheight = cp.getHeight() - 20;
+			}
 			
 			int dx = realIWidth - pwidth;
 			int dy = realIHeight - pheight;

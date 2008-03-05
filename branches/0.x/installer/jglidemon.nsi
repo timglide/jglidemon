@@ -111,6 +111,7 @@ Function LaunchLink
 ;                   SMPROGRAMS: $SMPROGRAMS  $\r$\n \
 ;                   Start Menu Folder: $STARTMENU_FOLDER $\r$\n \
 ;                   InstallDirectory: $INSTDIR "
+  SetOutPath $INSTDIR
   ExecShell "" "$INSTDIR\${AppName}.jar"
 FunctionEnd
 

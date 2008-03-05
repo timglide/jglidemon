@@ -40,6 +40,8 @@ public class ScreenshotTab extends Tab
 	private Conn conn = null;
 	private SSUpdater updater = null;
 
+	public JPanel content;
+	
 	public JScrollPane jsp;
 	public JLabel ssLabel;
 	public ImageIcon ssIcon;
@@ -56,11 +58,22 @@ public class ScreenshotTab extends Tab
 		p.add(ssLabel);
 		
 		jsp = new JScrollPane(p);
-		// jsp.setBorder(null);
-		// jsp.setBorder(BorderFactory.createLineBorder(Color.red, 10));
-		add(jsp, BorderLayout.CENTER);
+
+		content = new JPanel(new BorderLayout());
+		content.add(jsp, BorderLayout.CENTER);
+		
+		add(content, BorderLayout.CENTER);
 		
 		checkNulls();
+	}
+	
+	public JPanel removeContent() {
+		this.remove(content);
+		return content;
+	}
+	
+	public void restoreContent() {
+		this.add(content, BorderLayout.CENTER);
 	}
 	
 	private void checkNulls() {

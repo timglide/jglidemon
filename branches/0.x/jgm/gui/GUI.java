@@ -93,6 +93,11 @@ public class GUI
 	jgm.gui.dialogs.ParseLogFile parseLogDialog;
 	
 	
+	// for fullscreen screenshot
+	public JPanel ssPanel = null;
+	public JPanel mainPanel;
+	
+	
 	// menu stuff
 	public final Menu menu = new Menu();
 	
@@ -110,6 +115,7 @@ public class GUI
 		JMenuItem exit;
 		
 		JMenu     screenshot;
+		public JCheckBoxMenuItem fullSS;
 		public JCheckBoxMenuItem sendKeys;
 		public JMenuItem refreshSS;
 		
@@ -264,7 +270,7 @@ public class GUI
 				
 		////////////////
 		// set up panels
-		JPanel mainPanel = new JPanel(new GridBagLayout());
+		mainPanel = new JPanel(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
@@ -332,6 +338,13 @@ public class GUI
 		menu.screenshot.setMnemonic(KeyEvent.VK_S);
 		menu.bar.add(menu.screenshot);
 		
+		menu.fullSS = new JCheckBoxMenuItem("Fullscreen");
+		menu.fullSS.setMnemonic('F');
+		menu.fullSS.setAccelerator(
+			KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
+		
+		menu.fullSS.addActionListener(this);
+		menu.screenshot.add(menu.fullSS);
 		menu.sendKeys = new JCheckBoxMenuItem("Enable Sending Keystrokes");
 		menu.sendKeys.setMnemonic(KeyEvent.VK_E);
 		// alt+k
@@ -522,10 +535,31 @@ public class GUI
 		tray.destroy();
 	}
 	
+	
+	private void doFullscreenSS(boolean state) {
+		if (state) {
+			tabsPane.screenshotTab.select();
+			ssPanel = tabsPane.screenshotTab.removeContent();
+			frame.remove(mainPanel);
+			frame.add(ssPanel, BorderLayout.CENTER);
+		} else {
+			frame.remove(ssPanel);
+			frame.add(mainPanel, BorderLayout.CENTER);
+			tabsPane.screenshotTab.restoreContent();
+		}
+		
+		sm.ssUpdater.redoScale = true;
+		
+		frame.validate();
+	}
+	
+	
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		
-		if (source == menu.ssRestoreActivate) {
+		if (source == menu.fullSS) {
+			doFullscreenSS(menu.fullSS.isSelected());
+		} else if (source == menu.ssRestoreActivate) {
 			sm.cmd.add(Command.getSetGameWSCommand("normal"));
 			sm.cmd.add(Command.getSelectGameCommand());
 			sm.ssUpdater.redoScale = true;

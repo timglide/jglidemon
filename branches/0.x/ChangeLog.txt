@@ -1,5 +1,11 @@
 JGlideMon ChangeLog
 
+Version 0.17
+------------
+- Fixed Parse Log File dialog box and added a progress bar
+  if the log file is very large.
+- Added fullscreen option to the Screenshot menu.
+
 Version 0.16
 ------------
 - Added a bunch of options to control alerts. See the Alerts

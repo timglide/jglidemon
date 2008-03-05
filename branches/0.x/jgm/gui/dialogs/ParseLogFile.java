@@ -29,6 +29,8 @@ import java.util.logging.*;
 
 import jgm.glider.log.LogFile;
 
+// TODO remove CardLayout stuff since it's not needed anymore
+
 public class ParseLogFile extends Dialog implements ActionListener {
 	JPanel panel;
 	CardLayout layout;
