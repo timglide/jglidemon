@@ -197,7 +197,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<mkdir dir="${bin_dir}"/>
 		<jar destfile="${JGlideMon_jar}" 
 				compress="true">
-			<fileset dir="${bin_dir}" includes="jgm/**" excludes="jgm/Profiler*.class"/>
+				<fileset dir="${bin_dir}" includes="jgm/**" excludes="jgm/Profiler*.class,jgm/Licenser*.class,jgm/test/*"/>
 
 			<manifest>
 				<attribute name="Main-Class" value="jgm.JGlideMon"/>
