@@ -83,8 +83,9 @@ public class PlayerChart extends JPanel {
 		chart.setBorder(null);
 		chartSP = new JScrollPane(chart, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		chartSP.getHorizontalScrollBar().setUnitIncrement(X_TICK_SPACING);
-		chartSP.setBorder(null);
-		chartSP.setViewportBorder(null);
+		chartSP.setBorder(BorderFactory.createEmptyBorder());
+		chartSP.getViewport().setBorder(null);
+		chartSP.setViewportBorder(BorderFactory.createEmptyBorder());
 
 		add(yaxis, BorderLayout.WEST);
 		add(chartSP, BorderLayout.CENTER);
