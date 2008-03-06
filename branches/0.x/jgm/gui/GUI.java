@@ -74,6 +74,10 @@ public class GUI
 	static Config cfg = Config.c;
 	public static final String BASE_TITLE = "JGlideMon " + JGlideMon.version;
 	
+	public static enum ScreenshotState {
+		NORMAL, MAXIMIZED, FULLSCREEN
+	}
+	
 	public final ServerManager sm;
 	
 	public JFrame frame;
@@ -96,6 +100,8 @@ public class GUI
 	// for fullscreen screenshot
 	public JPanel ssPanel = null;
 	public JPanel mainPanel;
+	public ScreenshotState ssState = ScreenshotState.NORMAL;
+	public FullscreenSSWindow fullscreenSS = new FullscreenSSWindow(this);
 	
 	
 	// menu stuff
@@ -115,7 +121,11 @@ public class GUI
 		JMenuItem exit;
 		
 		JMenu     screenshot;
-		public JCheckBoxMenuItem fullSS;
+		JMenu     ssMode;
+		public JRadioButtonMenuItem normalSS;
+		public JRadioButtonMenuItem maxSS;
+		public JRadioButtonMenuItem fullSS;
+		
 		public JCheckBoxMenuItem sendKeys;
 		public JMenuItem refreshSS;
 		
@@ -338,13 +348,105 @@ public class GUI
 		menu.screenshot.setMnemonic(KeyEvent.VK_S);
 		menu.bar.add(menu.screenshot);
 		
-		menu.fullSS = new JCheckBoxMenuItem("Fullscreen");
+		menu.ssMode = new JMenu("Display Mode");
+		menu.ssMode.setMnemonic('M');
+		// added lower down
+		
+		menu.normalSS = new JRadioButtonMenuItem("Normal");
+		menu.normalSS.setMnemonic('N');
+		menu.maxSS = new JRadioButtonMenuItem("Maximized");
+		menu.maxSS.setMnemonic('M');
+		menu.fullSS = new JRadioButtonMenuItem("Fullscreen");
 		menu.fullSS.setMnemonic('F');
 		menu.fullSS.setAccelerator(
 			KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
 		
-		menu.fullSS.addActionListener(this);
-		menu.screenshot.add(menu.fullSS);
+		ButtonGroup grp = new ButtonGroup();
+		grp.add(menu.normalSS);
+		grp.add(menu.maxSS);
+		grp.add(menu.fullSS);
+		
+		menu.normalSS.setSelected(true);
+		
+		ActionListener ssModeAl = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {	
+				if (e.getSource() == menu.fullSS && ssState == ScreenshotState.FULLSCREEN) {
+					// if you press F11 while in full screen
+					// it will still be selected so we need to 
+					// treat it specially
+					
+					menu.normalSS.doClick();
+					return;
+				}
+				
+				ScreenshotState newState =
+					menu.maxSS.isSelected()
+					? ScreenshotState.MAXIMIZED
+					: menu.fullSS.isSelected()
+					  ? ScreenshotState.FULLSCREEN
+					  : ScreenshotState.NORMAL;
+
+				// i wouldn't expect this to happen
+				if (newState == ssState) {
+					log.warning("Old and new ss state are the same: " + newState);
+					return;
+				}
+				
+				switch (ssState) {
+				case NORMAL:
+					switch (newState) {
+					case MAXIMIZED:
+						doMaximizedSS(true);
+						break;
+						
+					case FULLSCREEN:
+						fullscreenSS.doFullscreenSS(true);
+						break;
+					}
+					
+					break;
+					
+				case MAXIMIZED:
+					switch (newState) {
+					case NORMAL:
+						doMaximizedSS(false);
+						break;
+						
+					case FULLSCREEN:
+						doMaximizedSS(false);
+						fullscreenSS.doFullscreenSS(true);
+						break;
+					}
+					
+					break;
+					
+				case FULLSCREEN:
+					switch (newState) {
+					case NORMAL:
+						fullscreenSS.doFullscreenSS(false);
+						break;
+						
+					case MAXIMIZED:
+						fullscreenSS.doFullscreenSS(false);
+						doMaximizedSS(true);	
+					}
+					
+					break;
+				}
+				
+				ssState = newState;
+				sm.ssUpdater.redoScale = true;
+			}
+		};
+		
+		menu.normalSS.addActionListener(ssModeAl);
+		menu.maxSS.addActionListener(ssModeAl);
+		menu.fullSS.addActionListener(ssModeAl);
+		
+		menu.ssMode.add(menu.normalSS);
+		menu.ssMode.add(menu.maxSS);
+		menu.ssMode.add(menu.fullSS);
+		
 		menu.sendKeys = new JCheckBoxMenuItem("Enable Sending Keystrokes");
 		menu.sendKeys.setMnemonic(KeyEvent.VK_E);
 		// alt+k
@@ -364,7 +466,11 @@ public class GUI
 			KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		menu.refreshSS.setEnabled(false);
 		
+		// added here instead
+		menu.screenshot.add(menu.ssMode);
+		
 		menu.ssSize = new JMenu("Shrink/Restore");
+		menu.ssSize.setMnemonic('S');
 		menu.ssRestoreActivate = doMenuItem("Restore and Activate Window", menu.ssSize, this);
 		menu.ssShrinkOthers = doMenuItem("Restore and Shrink Others", menu.ssSize, this);
 		menu.ssHideOthers = doMenuItem("Restore and Hide Others", menu.ssSize, this);
@@ -536,7 +642,7 @@ public class GUI
 	}
 	
 	
-	private void doFullscreenSS(boolean state) {
+	private void doMaximizedSS(boolean state) {
 		if (state) {
 			tabsPane.screenshotTab.select();
 			ssPanel = tabsPane.screenshotTab.removeContent();
@@ -558,9 +664,7 @@ public class GUI
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		
-		if (source == menu.fullSS) {
-			doFullscreenSS(menu.fullSS.isSelected());
-		} else if (source == menu.ssRestoreActivate) {
+		if (source == menu.ssRestoreActivate) {
 			sm.cmd.add(Command.getSetGameWSCommand("normal"));
 			sm.cmd.add(Command.getSelectGameCommand());
 			sm.ssUpdater.redoScale = true;

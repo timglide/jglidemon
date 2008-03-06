@@ -50,16 +50,25 @@ public class ScreenshotTab extends Tab
 		super(gui, new BorderLayout(), "Screenshot");
 		
 		ssLabel = new JLabel();
+		ssLabel.setOpaque(false);
 		ssLabel.setHorizontalAlignment(JLabel.CENTER);
 		ssLabel.addMouseListener(this);
 		ssLabel.setBorder(BorderFactory.createEtchedBorder());
 		
 		JPanel p = new JPanel();
+		p.setOpaque(false);
 		p.add(ssLabel);
 		
 		jsp = new JScrollPane(p);
-
+		jsp.setOpaque(false);
+		jsp.setBorder(BorderFactory.createEmptyBorder());
+		jsp.getViewport().setOpaque(false);
+		jsp.setViewportBorder(BorderFactory.createEmptyBorder());
+		jsp.getHorizontalScrollBar().setUnitIncrement(100);
+		jsp.getVerticalScrollBar().setUnitIncrement(100);
+		
 		content = new JPanel(new BorderLayout());
+		content.setOpaque(false);
 		content.add(jsp, BorderLayout.CENTER);
 		
 		add(content, BorderLayout.CENTER);

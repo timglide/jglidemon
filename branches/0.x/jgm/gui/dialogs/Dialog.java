@@ -74,8 +74,10 @@ public abstract class Dialog extends JDialog {
 	 */
 	public static final JPanel makeNiceButtons(JButton ... buttons) {
 	    JPanel p  = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+	    p.setOpaque(false);
 	    p.setBorder(BorderFactory.createEmptyBorder(PADDING, 0, 0, 0));
 	    JPanel p1 = new JPanel(new GridLayout(1, 0, 10, 0));
+	    p1.setOpaque(false);
 	    
 	    for (JButton b : buttons) {
 	    	p1.add(b);

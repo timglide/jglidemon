@@ -28,6 +28,7 @@ import jgm.gui.tabs.*;
 import java.util.Observer;
 import java.util.logging.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
  
@@ -219,12 +220,21 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		//System.out.println("Read " + written + " for image");
 
 		//System.out.println("Making ss...");
-		BufferedImage img =
+		final BufferedImage img =
 			javax.imageio.ImageIO.read(
 				new ByteArrayInputStream(buff, 0, size)
 			);
-		ImageIcon icon = new ImageIcon(img);
-		tab.ssLabel.setIcon(icon);
+		final ImageIcon icon = new ImageIcon(img);
+		
+		try {
+			javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					tab.ssLabel.setIcon(icon);	
+				}
+			});
+		} catch (InvocationTargetException e) {
+			log.log(Level.WARNING, "Error updating SS", e);
+		}
 		
 		if (!sentSettings) {
 			tab.ssLabel.setSize(icon.getIconWidth(), icon.getIconHeight());
@@ -248,16 +258,23 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 //			int pheight = tab.jsp.getHeight() - 20;
 
 			int pwidth, pheight;
+			java.awt.Container cont;
 			
-			if (tab.isShowing()) {
-				pwidth = tab.getWidth() - 20;
-				pheight = tab.getHeight() - 20;
-			} else {
-				// fullscreen
-				java.awt.Container cp = sm.gui.ssPanel;
-				pwidth = cp.getWidth() - 20;
-				pheight = cp.getHeight() - 20;
+			switch (sm.gui.ssState) {
+			case MAXIMIZED:
+				cont = sm.gui.ssPanel;
+				break;
+				
+			case FULLSCREEN:
+				cont = sm.gui.fullscreenSS.ssPanel;
+				break;
+				
+			default:
+				cont = tab;
 			}
+			
+			pwidth = cont.getWidth() - 20;
+			pheight = cont.getHeight() - 20;
 			
 			int dx = realIWidth - pwidth;
 			int dy = realIHeight - pheight;

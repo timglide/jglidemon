@@ -4,7 +4,9 @@ Version 0.17
 ------------
 - Fixed Parse Log File dialog box and added a progress bar
   if the log file is very large.
-- Added fullscreen option to the Screenshot menu.
+- Added maximized/fullscreen option to the Screenshot menu.
+- Fixed extraneous 1 pixel border around the health/mana chart
+  that really pissed me off....
 
 Version 0.16
 ------------
