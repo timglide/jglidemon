@@ -3,7 +3,7 @@ package jgm.gui;
 import java.awt.*;
 import javax.swing.*;
 
-public class FullscreenWindow extends JWindow {
+public class FullscreenWindow extends JFrame {
 	final GraphicsEnvironment env;
 	final GraphicsDevice device;
 	
@@ -15,7 +15,10 @@ public class FullscreenWindow extends JWindow {
 		env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		device = env.getDefaultScreenDevice();
 		
-		setAlwaysOnTop(true);
+		setUndecorated(true);
+		// can still alt-tab without this
+//		setAlwaysOnTop(true);
+		setResizable(false);
 		setFocusable(true);
 		
 		if (bg != null) {
@@ -32,26 +35,29 @@ public class FullscreenWindow extends JWindow {
 			throw new IllegalStateException("Cannot go fullscreen without window showing");
 		
 //		GraphicsConfiguration conf = device.getDefaultConfiguration();
-		Rectangle bounds = env.getMaximumWindowBounds();
+//		Rectangle bounds = env.getMaximumWindowBounds();
 //		Rectangle bounds = conf.getBounds();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
-		if (false && device.isFullScreenSupported()) {
-			System.out.println("Trying to go fullscreen");
-			try {
-				DisplayMode mode = device.getDisplayMode();
-				device.setFullScreenWindow(this);
-				setSize(mode.getWidth(), mode.getHeight());
-				setLocation(0, 0);
-			} catch (Exception e) {
-				e.printStackTrace();
-				device.setFullScreenWindow(null);
-			}
-		} else {
-			System.out.println("True fullscreen not supported");
+		// don't realy want exclusive mode, this does it
+		// similarly to how firefox's fullscreen works
+//		if (false && device.isFullScreenSupported()) {
+//			System.out.println("Trying to go fullscreen");
+//			try {
+//				DisplayMode mode = device.getDisplayMode();
+//				device.setFullScreenWindow(this);
+//				setSize(mode.getWidth(), mode.getHeight());
+//				setLocation(0, 0);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				device.setFullScreenWindow(null);
+//			}
+//		} else {
+//			System.out.println("True fullscreen not supported");
 			
-			setLocation(bounds.getLocation());
-			setSize(bounds.getSize());
-		}
+			setLocation(0, 0);
+			setSize(screenSize);
+//		}
 	}
 	
 	public void goNormal() {
