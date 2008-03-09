@@ -295,7 +295,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<property name="phpglidemon_zip" value="${bin_dir}/PHPGlideMon_v${version}.zip"/>
 		<zip destfile="${phpglidemon_zip}">
 			<fileset dir="php" includes="phpglidemon.php,phpglidemon.php.MD5"/>
-			<fileset dir="${bin_dir}" includes="License.txt"/>
+			<fileset dir="${src_dir}" includes="License.txt"/>
+		</zip>
+		<zip destfile="${bin_dir}/PHPGlideMon_v${version}_noembed.zip">
+			<fileset dir="php" includes="phpglidemon_noembed.php,phpglidemon_noembed.php.MD5,files/**/*"/>
+			<fileset dir="${src_dir}" includes="License.txt"/>
 		</zip>
 	</target>
 
@@ -377,7 +381,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<delete dir="${build_dir}"/>
 		<delete dir="${javadoc_dir}"/>
 		<delete>
-			<fileset dir="${src_dir}/php" includes="phpglidemon.php"/>
+			<fileset dir="${src_dir}/php" includes="phpglidemon*.php,files,*.MD5"/>
 		</delete>
 		<delete>
 			<fileset dir="${src_dir}/installer" includes="*_setup.exe"/>
