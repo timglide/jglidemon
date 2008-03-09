@@ -136,23 +136,27 @@ function handleFile($url) {
 	
 	if (!isset($files[$url])) send404();
 
-	$fp = fopen(__FILE__, 'rb');
+	if (defined('DATA_NOT_EMBEDDED')) {
+		$data = file_get_contents('files/' . $url);
+	} else {
+		$fp = fopen(__FILE__, 'rb');
 
-	if (!$fp) {
-		send500('Couldn\'t open __FILE__');
+		if (!$fp) {
+			send500('Couldn\'t open __FILE__');
+		}
+
+		if (!defined('__COMPILER_HALT_OFFSET__')) {
+			define('__COMPILER_HALT_OFFSET__',
+				// -2 because of +2 on next line
+				filesize(__FILE__) - 1 - $dataLength - 2);
+		}
+
+		// +2 for the // before the data for php 4 compat
+		fseek($fp, __COMPILER_HALT_OFFSET__ + 2 + $files[$url][0]);
+		$data = gzinflate(base64_decode(fread($fp, $files[$url][1])));
+
+		fclose($fp);
 	}
-
-	if (!defined('__COMPILER_HALT_OFFSET__')) {
-		define('__COMPILER_HALT_OFFSET__',
-			// -2 because of +2 on next line
-			filesize(__FILE__) - 1 - $dataLength - 2);
-	}
-
-	// +2 for the // before the data for php 4 compat
-	fseek($fp, __COMPILER_HALT_OFFSET__ + 2 + $files[$url][0]);
-	$data = gzinflate(base64_decode(fread($fp, $files[$url][1])));
-
-	fclose($fp);
 
 	$data = str_replace('$PHP_SELF', $_SERVER['PHP_SELF'], $data);
 

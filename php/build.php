@@ -33,13 +33,18 @@ $version = $_SERVER['argc'] > 1 ? $_SERVER['argv'][1] : '0.0';
 
 $here = dirname(__FILE__);
 $fname = 'phpglidemon.php';
+$fname2 = 'phpglidemon_noembed.php';
 $binDir = $here . '/../bin/';
 $resourcePath = 'jgm/resources/httpd/static/';
 $resourcesDir = $binDir . $resourcePath;
+$resourceOutDir = $here . '/files';
 $outFile = $here . '/' . $fname;
+$outFile2 = $here . '/' . $fname2;
 $tmpFile = $outFile . '.tmp';
 $inFile = $outFile . '.in';
 $md5File = $outFile . '.MD5';
+$md5File2 = $outFile2 . '.MD5';
+
 
 if (!file_exists($inFile)) {
 	echo "Unable to find $inFile\n";
@@ -76,7 +81,12 @@ $replaceThese = array(
 	'index.html', 'main.css', 'js/ajaxsettings.js'
 );
 
-echo "  Compressing Files... ";
+echo "  Compressing Files...\n";
+
+if (!file_exists($resourceOutDir)) {
+	echo "  Creating " . $resourceOutDir . "\n";
+	mkdir($resourceOutDir);
+}
 
 // compress/encode each file and append it to the temp file
 foreach (array_keys($files) as $key) {
@@ -85,7 +95,14 @@ foreach (array_keys($files) as $key) {
 	// replace urls if necessary
 	if (in_array($key, $replaceThese))
 		$data = replaceUrls($data);
-	
+
+	$newDir = $resourceOutDir . '/' . dirname($key);
+	if (!file_exists($newDir)) {
+		echo "  Creating " . $newDir . "\n";
+		mkdir($newDir, 0777, true);
+	}
+	file_put_contents($resourceOutDir . '/' . $key, $data);
+
 	$data = base64_encode(gzdeflate($data));
 	$files[$key][0] = $totalLength;
 	$files[$key][1] = strlen($data);
@@ -96,7 +113,7 @@ foreach (array_keys($files) as $key) {
 
 fclose($fp);
 
-echo "Done\n";
+echo "  Done\n";
 
 @unlink($outFile);
 copy($inFile, $outFile);
@@ -109,9 +126,15 @@ if (!$fp) {
 }
 
 $fpout = fopen($outFile, 'wb');
+$fpout2 = fopen($outFile2, 'wb');
 
-if (!$fp) {
-	echo "Unable to opne $outFile\n";
+if (!$fpout) {
+	echo "Unable to open $outFile\n";
+	exit (1);
+}
+
+if (!$fpout2) {
+	echo "Unable to open $outFile2\n";
 	exit (1);
 }
 
@@ -119,20 +142,28 @@ if (!$fp) {
 echo "  Inserting Files Array...\n";
 
 while (!feof($fp) && false !== ($line = rtrim(fgets($fp)))) {
-	if (false !== strpos($line, '@@version@@'))
+	if (false !== strpos($line, '@@version@@')) {
 		$line = str_replace('@@version@@', $version, $line);
+		fwrite($fpout2, "define('DATA_NOT_EMBEDDED', true);\n");
+	}
 
-	if ($line != '')
+	if ($line != '') {
 		fwrite($fpout, $line);
+		fwrite($fpout2, $line);
+	}
 
 	if (false !== strpos($line, '__halt_compiler();'))
 		break; // don't add extra newlines or anything 
 			
 	fwrite($fpout, "\n");
+	fwrite($fpout2, "\n");
 
 	if (false !== strpos($line, '//----FILE_LIST_START----')) {
 		fwrite($fpout, "\t" . '$dataLength = ' . $totalLength . ";\n");
+		fwrite($fpout2, "\t" . '$dataLength = ' . $totalLength . ";\n");
+
 		fwrite($fpout, "\t" . '$files = ' . var_export($files, true) . ';' . "\n");
+		fwrite($fpout2, "\t" . '$files = ' . var_export($files, true) . ';' . "\n");
 	}
 }
 
@@ -156,11 +187,13 @@ while (!feof($fp) && false !== ($buff = fread($fp, 8192))) {
 
 fclose($fp);
 fclose($fpout);
+fclose($fpout2);
 
 @unlink($tmpFile);
 
 echo "  Generating MD5 Checksum...\n";
 file_put_contents($md5File, md5_file($outFile) . "\r\n");
+file_put_contents($md5File2, md5_file($outFile2) . "\r\n");
 
 echo "\n---- Done Building PHPGlideMon ---- \n";
 
