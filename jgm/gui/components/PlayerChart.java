@@ -23,6 +23,7 @@ package jgm.gui.components;
 import jgm.util.RingBuffer;
 
 import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.*;
 import javax.swing.*;
 import java.util.*;
@@ -64,7 +65,16 @@ public class PlayerChart extends JPanel {
 	YAxis yaxis;
 	MainChart chart;
 	JScrollPane chartSP;
-		
+	
+	JPopupMenu menu;
+	JCheckBoxMenuItem showMana;
+	
+	ActionListener repaintAL = new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			PlayerChart.this.chart.repaint();
+		}
+	};
+	
 	public PlayerChart() {
 		this(DEFAULT_MAX_POINTS);
 	}
@@ -89,6 +99,14 @@ public class PlayerChart extends JPanel {
 
 		add(yaxis, BorderLayout.WEST);
 		add(chartSP, BorderLayout.CENTER);
+		
+		menu = new JPopupMenu("Options");
+		showMana = new JCheckBoxMenuItem("Display Mana", true);
+		showMana.addActionListener(repaintAL);
+		menu.add(showMana);
+		
+		chart.addMouseListener(
+			new MousePopupListener(menu, chart));
 	}
 	
 	java.util.Timer dummyDataTimer = null;
@@ -515,7 +533,8 @@ public class PlayerChart extends JPanel {
 					
 					g2.setColor(Color.blue);
 					curPMY = yCoordToPixel(playerMana.get(i).value);
-					g2.drawLine((int) xx, lastPMY, (int) (xx + dxx), curPMY);
+					if (showMana.isSelected())
+						g2.drawLine((int) xx, lastPMY, (int) (xx + dxx), curPMY);
 					lastPMY = curPMY;
 					
 					g2.setColor(Color.green);
@@ -536,4 +555,24 @@ public class PlayerChart extends JPanel {
 			}*/
 		}
 	}
+	
+    class MousePopupListener extends MouseAdapter {
+    	JPopupMenu menu;
+    	JComponent comp;
+    	
+    	public MousePopupListener(JPopupMenu menu, JComponent comp) {
+    		this.menu = menu;
+    		this.comp = comp;
+    	}
+    	
+        public void mousePressed(MouseEvent e) { checkPopup(e); }
+        public void mouseClicked(MouseEvent e) { checkPopup(e); }
+        public void mouseReleased(MouseEvent e) { checkPopup(e); }
+
+        private void checkPopup(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                menu.show(comp, e.getX(), e.getY());
+            }
+        }
+    }
 }
