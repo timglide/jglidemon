@@ -32,7 +32,7 @@ public class GliderLogEntry extends LogEntry {
 		NORMAL, BEING_ATTACKED, BEING_FOLLOWED,
 		LOGGING_OUT, STUCK, DIED, EXCEPTION,
 		INVENTORY_NOT_GOING_UP, FLIGHT_ERROR,
-		NEW_FRIEND, REMOVING_FRIEND
+		NEW_FRIEND, REMOVING_FRIEND, WOW_EXIT
 	}
 	
 	public  Type    type    = Type.NORMAL;
@@ -109,6 +109,8 @@ public class GliderLogEntry extends LogEntry {
 			type = Type.INVENTORY_NOT_GOING_UP;
 		} else if (s.contains("Couldn't activate flight, stopping")) {
 			type = Type.FLIGHT_ERROR;
+		} else if (s.contains("Did WoW exit")) {
+			type = Type.WOW_EXIT;
 		}
 	}
 	
