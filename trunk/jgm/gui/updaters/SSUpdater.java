@@ -261,12 +261,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			java.awt.Container cont;
 			
 			switch (sm.gui.ssState) {
+			case FULLSCREEN:
 			case MAXIMIZED:
 				cont = sm.gui.ssPanel;
-				break;
-				
-			case FULLSCREEN:
-				cont = sm.gui.fullscreenSS.ssPanel;
 				break;
 				
 			default:

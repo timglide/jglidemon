@@ -36,6 +36,7 @@ import java.util.logging.*;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 
@@ -101,8 +102,8 @@ public class GUI
 	public JPanel ssPanel = null;
 	public JPanel mainPanel;
 	public ScreenshotState ssState = ScreenshotState.NORMAL;
-	public FullscreenSSWindow fullscreenSS = new FullscreenSSWindow(this);
-	
+	Rectangle lastWindowBounds = null;
+	int lastWindowState = 0;
 	
 	// menu stuff
 	public final Menu menu = new Menu();
@@ -395,12 +396,9 @@ public class GUI
 				switch (ssState) {
 				case NORMAL:
 					switch (newState) {
-					case MAXIMIZED:
-						doMaximizedSS(true);
-						break;
-						
+					case MAXIMIZED:						
 					case FULLSCREEN:
-						fullscreenSS.doFullscreenSS(true);
+						doMaximizedSS(newState);
 						break;
 					}
 					
@@ -409,12 +407,8 @@ public class GUI
 				case MAXIMIZED:
 					switch (newState) {
 					case NORMAL:
-						doMaximizedSS(false);
-						break;
-						
 					case FULLSCREEN:
-						doMaximizedSS(false);
-						fullscreenSS.doFullscreenSS(true);
+						doMaximizedSS(newState);
 						break;
 					}
 					
@@ -423,12 +417,9 @@ public class GUI
 				case FULLSCREEN:
 					switch (newState) {
 					case NORMAL:
-						fullscreenSS.doFullscreenSS(false);
-						break;
-						
 					case MAXIMIZED:
-						fullscreenSS.doFullscreenSS(false);
-						doMaximizedSS(true);	
+						doMaximizedSS(newState);
+						break;
 					}
 					
 					break;
@@ -642,16 +633,86 @@ public class GUI
 	}
 	
 	
-	private void doMaximizedSS(boolean state) {
-		if (state) {
+	private void doMaximizedSS(ScreenshotState state) {
+		switch (state) {
+		case MAXIMIZED:
+		case FULLSCREEN:
 			tabsPane.screenshotTab.select();
 			ssPanel = tabsPane.screenshotTab.removeContent();
 			frame.remove(mainPanel);
 			frame.add(ssPanel, BorderLayout.CENTER);
-		} else {
+			
+			if (state == ScreenshotState.FULLSCREEN) {
+				frame.dispose();
+				frame.setUndecorated(true);
+				frame.setJMenuBar(null);
+				frame.remove(statusBar);
+				lastWindowState = frame.getExtendedState();
+				lastWindowBounds = frame.getBounds();
+				frame.setExtendedState(0);
+				frame.setLocation(0, 0);
+				frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+				ssPanel.setBackground(Color.BLACK);
+				ssPanel.setOpaque(true);
+				
+				// F11, Alt-K
+				frame.getRootPane()
+					.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+					.put(menu.fullSS.getAccelerator(), "closeWindow");
+				frame.getRootPane()
+					.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+					.put(menu.sendKeys.getAccelerator(), "sendKeys");
+				frame.getRootPane()
+					.getActionMap()
+					.put("closeWindow", new AbstractAction() {
+						public void actionPerformed(ActionEvent e) {
+							menu.normalSS.doClick();
+						}
+					});
+				frame.getRootPane()
+					.getActionMap()
+					.put("sendKeys", new AbstractAction() {
+						public void actionPerformed(ActionEvent e) {
+							menu.sendKeys.doClick();
+						}
+					});
+				
+				
+				frame.setVisible(true);
+			}
+			break;
+			
+		default:
 			frame.remove(ssPanel);
 			frame.add(mainPanel, BorderLayout.CENTER);
 			tabsPane.screenshotTab.restoreContent();
+			
+			if (ssState == ScreenshotState.FULLSCREEN) {
+				frame.dispose();
+				
+				// remove F11, Alt-K
+				frame.getRootPane()
+					.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+					.remove(menu.fullSS.getAccelerator());
+				frame.getRootPane()
+					.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+					.remove(menu.sendKeys.getAccelerator());
+				frame.getRootPane()
+					.getActionMap()
+					.remove("closeWindow");
+				frame.getRootPane()
+					.getActionMap()
+					.remove("sendKeys");
+			
+				frame.setUndecorated(false);
+				frame.setJMenuBar(menu.bar);
+				frame.add(statusBar, BorderLayout.SOUTH);
+				frame.setBounds(lastWindowBounds);
+				frame.setExtendedState(lastWindowState);
+				ssPanel.setOpaque(false);				
+				
+				frame.setVisible(true);
+			}
 		}
 		
 		sm.ssUpdater.redoScale = true;

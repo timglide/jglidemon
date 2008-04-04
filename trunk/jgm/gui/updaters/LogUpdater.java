@@ -33,6 +33,11 @@ import javax.swing.ProgressMonitor;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingWorker;
 
+
+// TODO Auction stuff
+// A buyer has been found for your auction of (.+)\.
+
+
 public class LogUpdater implements Runnable, ConnectionListener {
 	static Logger log = Logger.getLogger(LogUpdater.class.getName());
 	

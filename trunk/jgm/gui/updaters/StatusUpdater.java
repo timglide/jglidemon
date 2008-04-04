@@ -41,9 +41,9 @@ public class StatusUpdater extends Observable
 	private volatile boolean stop = false;
 
 	Config cfg;
-	jgm.ServerManager sm;
+	final jgm.ServerManager sm;
 	
-	public StatusUpdater(jgm.ServerManager sm) {
+	public StatusUpdater(final jgm.ServerManager sm) {
 		this.sm = sm;
 		conn = new Conn(sm, "StatusUpdater");
 		cfg = jgm.Config.getInstance();
@@ -280,5 +280,32 @@ public class StatusUpdater extends Observable
 
 		setChanged();
 		notifyObservers(s);
+		
+		if (s.attached && !last.attached)
+			fireOnAttach();
+		else if (!s.attached && last.attached)
+			fireOnDetach();
+	}
+	
+	List<GliderListener> gliderListeners = new Vector<GliderListener>();
+	
+	public void addGliderListener(GliderListener l) {
+		gliderListeners.add(l);
+	}
+	
+	public void removeGliderListener(GliderListener l) {
+		gliderListeners.remove(l);
+	}
+	
+	private void fireOnAttach() {
+		for (GliderListener l : gliderListeners) {
+			l.onAttach();
+		}
+	}
+	
+	private void fireOnDetach() {
+		for (GliderListener l : gliderListeners) {
+			l.onDetach();
+		}
 	}
 }
