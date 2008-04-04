@@ -22,20 +22,9 @@ package jgm.glider.log;
 
 import jgm.wow.*;
 
-import java.util.*;
 import java.util.regex.*;
 
-public class RawChatLogEntry extends LogEntry {
-	static Map<String, String> COLOR_MAP = new HashMap<String, String>();
-	
-	static {
-		COLOR_MAP.put("loot", "#00AA00");
-		COLOR_MAP.put("rep",  "#5555FF");
-		COLOR_MAP.put("skill", COLOR_MAP.get("rep"));
-	}
-	
-	private String rawText;
-	private String text;
+public class RawChatLogEntry extends LogEntry {	
 	private ItemSet itemSet = null;
 	private int    money = 0;
 
@@ -47,9 +36,6 @@ public class RawChatLogEntry extends LogEntry {
 	
 	public RawChatLogEntry(String s) {
 		super("RawChat", s);
-
-		rawText = s;
-		text = s;
 
 		removeFormatting();
 		parseMoney();
@@ -86,8 +72,6 @@ public class RawChatLogEntry extends LogEntry {
 	
 	@Override
 	public String getHtmlText() {
-		Matcher m = FORMATTING_REGEX.matcher(removeLinks(rawText));
-		
 		String preColor =
 			this.hasItemSet()
 			? COLOR_MAP.get("loot")
@@ -97,11 +81,7 @@ public class RawChatLogEntry extends LogEntry {
 			    ? COLOR_MAP.get("skill")
 			    : null;
 			    
-		return
-		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
-		m.replaceAll("<font color=\"$2\">")
-			.replace("|r", "</font>") +
-		(preColor != null ? "</font>" : "");
+		return super.getHtmlText(preColor);
 	}
 	
 	public boolean hasItemSet() {
@@ -255,27 +235,5 @@ public class RawChatLogEntry extends LogEntry {
 		try {
 			skillLevel = Integer.parseInt(m.group(2));
 		} catch (NumberFormatException e) {}
-	}
-	
-	private static final Pattern LINK_REGEX =
-		Pattern.compile("\\|H[^|]+(?=|h)");
-	
-	public static String removeLinks(String str) {
-		Matcher m = LINK_REGEX.matcher(str);
-		return m.replaceAll("").replace("|h", "");
-	}
-	
-	// group 1 = transparancy, 2 = color (both in hex)
-	private static final Pattern FORMATTING_REGEX =
-		Pattern.compile("\\|(?:[Cc]([0-9A-Fa-f]{2})([0-9A-Fa-f]{6}))");
-
-	public static String removeFormatting(String str) {
-		Matcher m = FORMATTING_REGEX.matcher(str);
-		return m.replaceAll("").replace("|r", "");
-	}
-	
-	private void removeFormatting() {
-		 // |cFFFFFFFFWhite
-		text = removeFormatting(text);
 	}
 }
