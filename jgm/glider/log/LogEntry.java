@@ -96,7 +96,7 @@ public class LogEntry implements Comparable<LogEntry> {
 			throw new UnsupportedOperationException("HTML not available");
 		
 		
-		Matcher m = FORMATTING_REGEX.matcher(removeLinks(text));
+		Matcher m = FORMATTING_REGEX.matcher(removeLinks(rawText));
 			    
 		htmlText = 
 		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
