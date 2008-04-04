@@ -5,8 +5,12 @@ Version 0.17
 - Fixed Parse Log File dialog box and added a progress bar
   if the log file is very large.
 - Added maximized/fullscreen option to the Screenshot menu.
+  F11 toggles in and out of fullscreen mode.
 - Fixed extraneous 1 pixel border around the health/mana chart
   that really pissed me off....
+- Fixed combat log after 2.4 changes.
+- Right clicking anywhere on the health/mana chart will display
+  a popup menu where you can disable drawing the mana line.
 
 Version 0.16
 ------------

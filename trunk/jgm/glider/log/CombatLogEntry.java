@@ -29,6 +29,12 @@ public class CombatLogEntry extends LogEntry {
 	
 	private CombatLogEntry(String s) {
 		super("Combat", s);
+		removeFormatting();
+	}
+	
+	@Override
+	public boolean supportsHtmlText() {
+		return true;
 	}
 	
 	public boolean hasMob() {

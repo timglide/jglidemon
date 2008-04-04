@@ -36,10 +36,20 @@ import java.text.SimpleDateFormat;
 public class LogEntry implements Comparable<LogEntry> {
 	protected static Logger log = Logger.getLogger(LogEntry.class.getName());
 	
+	static Map<String, String> COLOR_MAP = new HashMap<String, String>();
+	
+	static {
+		COLOR_MAP.put("loot", "#00AA00");
+		COLOR_MAP.put("rep",  "#5555FF");
+		COLOR_MAP.put("skill", COLOR_MAP.get("rep"));
+	}
+	
 	public    Date timestamp = new Date();
 	protected String type = "Unknown";
 	
 	protected String rawText = null;
+	protected String text = null;
+	private String htmlText = null;
 
 	/**
 	 * Create a new LogEntry.
@@ -49,6 +59,7 @@ public class LogEntry implements Comparable<LogEntry> {
 	public LogEntry(String type, String rawText) {
 		this.type = type;
 		this.rawText = rawText;
+		this.text = rawText;
 	}
 	
 	public final String getType() {
@@ -75,11 +86,29 @@ public class LogEntry implements Comparable<LogEntry> {
 	}
 	
 	public String getHtmlText() {
-		return rawText;
+		return getHtmlText(null);
+	}
+	
+	public String getHtmlText(String preColor) {
+		if (null != htmlText) return htmlText;
+		
+		if (!supportsHtmlText())
+			throw new UnsupportedOperationException("HTML not available");
+		
+		
+		Matcher m = FORMATTING_REGEX.matcher(removeLinks(text));
+			    
+		htmlText = 
+		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
+		m.replaceAll("<font color=\"$2\">")
+			.replace("|r", "</font>") +
+		(preColor != null ? "</font>" : "");
+		
+		return htmlText;
 	}
 	
 	public String getText() {
-		return rawText;
+		return null != text ? text : rawText;
 	}
 
 	/**
@@ -245,5 +274,39 @@ public class LogEntry implements Comparable<LogEntry> {
 		}
 
 		return ret;
+	}
+	
+	
+	
+	// removing formatting, links
+	protected static final Pattern LINK_REGEX =
+		Pattern.compile("\\|H[^|]+(?=|h)");
+	
+	public static String removeLinks(String str) {
+		Matcher m = LINK_REGEX.matcher(str);
+		return m.replaceAll("").replace("|h", "");
+	}
+	
+	protected void removeLinks() {
+		text = removeLinks(text);
+	}
+	
+	// group 1 = transparancy, 2 = color (both in hex)
+	protected static final Pattern FORMATTING_REGEX =
+		Pattern.compile("\\|(?:[Cc]([0-9A-Fa-f]{2})([0-9A-Fa-f]{6}))");
+
+	public static String removeFormatting(String str) {
+		Matcher m = FORMATTING_REGEX.matcher(str);
+		return m.replaceAll("").replace("|r", "");
+	}
+	
+	protected void removeFormatting() {
+		 // |cFFFFFFFFWhite
+		text = removeFormatting(text);
+	}
+	
+	protected void removeLinksAndFormatting() {
+		removeLinks();
+		removeFormatting();
 	}
 }
