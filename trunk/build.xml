@@ -246,7 +246,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 
-	<target name="zips" depends="core_zip,profiler_zip,tts_zip,src_zip,phpglidemon_zip"
+	<!--target name="zips" depends="core_zip,profiler_zip,tts_zip,src_zip,phpglidemon_zip" -->
+	<target name="zips" depends="core_zip,profiler_zip,tts_zip,phpglidemon_zip"
 			description="Build all zip files and creates MD5 hashes">
 		<checksum todir="${bin_dir}" forceOverwrite="yes">
 			<fileset dir="${bin_dir}">
