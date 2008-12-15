@@ -111,7 +111,7 @@ public class CharInfoPane extends Pane {
 		if (!clazz.getText().equals(s.clazz.toString())) {
 			try {
 				clazz.setText(s.clazz.toString());
-				java.net.URL iconURL = jgm.JGlideMon.class.getResource("resources/images/classes/" + s.clazz.toString().toLowerCase() + ".png");
+				java.net.URL iconURL = jgm.JGlideMon.class.getResource("resources/images/classes/" + s.clazz.toString().toLowerCase().replace(' ', '_') + ".png");
 				iconLabel.setIcon(new ImageIcon(iconURL));
 			} catch (NullPointerException e) {
 				System.err.println("Null when setting class icon");

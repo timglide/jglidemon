@@ -32,7 +32,8 @@ public enum ManaType {
 	MANA   ("Mana"), 
 	RAGE   ("Rage"),
 	ENERGY ("Energy"),
-	DRUID  ("Mixed");
+	DRUID  ("Mixed"),
+	RUNE   ("Rune");
 
 	private static final Pattern caster = 
 		// find number in parantheses with a %
