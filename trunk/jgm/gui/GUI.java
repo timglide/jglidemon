@@ -56,7 +56,7 @@ public class GUI
 //		"Warlock", "Warrior"
 //	};
 	
-	public static final ImageIcon[] ICONS = new ImageIcon[10];
+	public static final ImageIcon[] ICONS = new ImageIcon[11];
 	
 	static {
 		ICONS[0] = new ImageIcon(JGlideMon.class.getResource("resources/images/stitch/icon.png"));
@@ -69,6 +69,7 @@ public class GUI
 		ICONS[7] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/shaman.png"));
 		ICONS[8] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/warlock.png"));
 		ICONS[9] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/warrior.png"));
+		ICONS[10] = new ImageIcon(JGlideMon.class.getResource("resources/images/classes/death_knight.png"));
 	}
 	
 	public static final int PADDING = 10;

@@ -111,7 +111,7 @@ public class StatusUpdater extends Observable
 
 			if (parts.length != 2) continue;
 
-			m.put(parts[0], parts[1].trim());
+			m.put(parts[0], parts[1].replace(',', '.').trim());
 //			System.out.println(parts[0] + ": " + parts[1].trim());
 		}
 		} catch (Exception e) {}

@@ -1,5 +1,11 @@
 JGlideMon ChangeLog
 
+Version 0.18
+------------
+- Added Death Knight support.
+- Fixed health/mana display for users where a comma is used 
+  instead of a period for a decimal point.
+
 Version 0.17
 ------------
 - Fixed Parse Log File dialog box and added a progress bar

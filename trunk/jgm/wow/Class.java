@@ -39,7 +39,8 @@ public enum Class {
 	PRIEST  ("Priest"),
 	PALADIN ("Paladin"),
 	SHAMAN  ("Shaman"),
-	DRUID   ("Druid",   ManaType.DRUID);
+	DRUID   ("Druid",   ManaType.DRUID),
+	DEATHKNIGHT ("Death Knight", ManaType.RUNE);
 	
 	private String name;
 	public final ManaType mana;
@@ -70,15 +71,16 @@ public enum Class {
 	private static Map<String, Class> strMap = new HashMap<String, Class>();
 	
 	static {
-		strMap.put("warrior", WARRIOR);
-		strMap.put("rogue",   ROGUE);
-		strMap.put("hunter",  HUNTER);
-		strMap.put("mage",    MAGE);
-		strMap.put("warlock", WARLOCK); 
-		strMap.put("priest",  PRIEST);
-		strMap.put("paladin", PALADIN);
-		strMap.put("shaman",  SHAMAN);  
-		strMap.put("druid",   DRUID);
+		strMap.put("warrior", 		WARRIOR);
+		strMap.put("rogue",   		ROGUE);
+		strMap.put("hunter",  		HUNTER);
+		strMap.put("mage",    		MAGE);
+		strMap.put("warlock", 		WARLOCK); 
+		strMap.put("priest",  		PRIEST);
+		strMap.put("paladin", 		PALADIN);
+		strMap.put("shaman",  		SHAMAN);  
+		strMap.put("druid",   		DRUID);
+		strMap.put("deathknight", 	DEATHKNIGHT);
 	}
 	
 	public static Class strToClass(String s) {	
