@@ -180,7 +180,7 @@ public class AjaxHandler extends Handler {
 					_(xml, glider, "attached", Boolean.toString(s.attached));
 					
 					if (s.attached) {
-						_(xml, glider, "lcclass", s.clazz.toString().toLowerCase());
+						_(xml, glider, "lcclass", s.clazz.toString().toLowerCase().replace(' ', '_'));
 						_(xml, glider, "class", s.clazz.toString());
 						_(xml, glider, "name", s.name);
 						_(xml, glider, "level", s.level);
