@@ -5,6 +5,7 @@ Version 0.18
 - Added Death Knight support.
 - Fixed health/mana display for users where a comma is used 
   instead of a period for a decimal point.
+- Updated Allakhazam item XML URL so item info is retrieved again.
 
 Version 0.17
 ------------
