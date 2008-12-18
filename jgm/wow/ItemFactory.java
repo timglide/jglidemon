@@ -41,7 +41,7 @@ public class ItemFactory {
 	// for future i18n reference see, for example,
 	// http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=16898&locale=frFR
 	private static final String SITE_URL
-		= "http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=";
+		= "http://wow.allakhazam.com/cluster/item-xml.pl?witem=";
 
 	private ItemFactory() {}
 
