@@ -20,6 +20,7 @@
  */
 package jgm;
 
+import java.io.File;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -59,6 +60,8 @@ public class JGlideMon {
 	public static JGlideMon instance;
 	public static Config        cfg;
 	
+	public static final File dataDir = new File("data");
+	
 	public JGlideMon() {
 		instance = this;
 		init();
@@ -66,6 +69,9 @@ public class JGlideMon {
 	
 	private void init() {
 		splash.setStatus("Loading Settings...");
+		
+		if (!dataDir.exists())
+			dataDir.mkdir();
 		
 		// initialize logger
 		Log.reloadConfig();

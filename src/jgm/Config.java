@@ -52,7 +52,8 @@ public class Config {
 	
 	Properties p = new Properties(DEFAULTS);
 	
-	static final File propsFile = new File("JGlideMon.properties");
+	static final String propsFileName = "JGlideMon.properties";
+	static final File propsFile = new File(JGlideMon.dataDir, propsFileName);
 	
 	static final File iniFile = new File("JGlideMon.ini");
 	
@@ -78,6 +79,11 @@ public class Config {
 		
 		instance = this;
 		c = this;
+		
+		File oldPropsFile = new File(propsFileName);
+		
+		if (oldPropsFile.exists())
+			oldPropsFile.renameTo(propsFile);
 		
 		// convert to new format
 		if (iniFile.exists() && !propsFile.exists()) {
