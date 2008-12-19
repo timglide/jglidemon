@@ -191,9 +191,9 @@ fclose($fpout2);
 
 @unlink($tmpFile);
 
-echo "  Generating MD5 Checksum...\n";
-file_put_contents($md5File, md5_file($outFile) . "\r\n");
-file_put_contents($md5File2, md5_file($outFile2) . "\r\n");
+//echo "  Generating MD5 Checksum...\n";
+//file_put_contents($md5File, md5_file($outFile) . "\r\n");
+//file_put_contents($md5File2, md5_file($outFile2) . "\r\n");
 
 echo "\n---- Done Building PHPGlideMon ---- \n";
 
