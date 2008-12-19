@@ -46,29 +46,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<fileset dir="lib" includes="**/freetts.jar"/>
 	</path>
 
-    <property name="src_dir"		value="${basedir}"/>
+    <property name="src_dir"		value="src"/>
+	<property name="internal_dir"	value="internal"/>
     <property name="build_dir"		value="bld"/>
     <property name="lib_dir"        value="lib"/>
+	<property name="internal_lib_dir" value="internal_lib"/>
+	
+	<property name="php_dir"		value="php"/>
+	<property name="installer_dir"	value="installer"/>
+	
 	<property name="bin_dir"        value="bin"/>
 	<property name="javadoc_dir"    value="${bin_dir}/javadoc"/>
-
+	
 	<property environment="env"/>
-
-    <patternset id="java_files" 
-			includes="jgm/**/*.java"/>
-
-	<!-- set current svn revision, requires SvnAnt to be set up correctly -->
-	<!-- you will need to comment the following lines and remove ${svn.revision}
-	     from the version property below if you downloaded the source zip since
-		 you didn't get the source from my svn repository -->
-	<!--taskdef resource="svntask.properties"/-->
-	<target name="svn_revision">
-		<!--svn>
-			<status path="${src_dir}" revisionProperty="svn.revision" />
-		</svn-->
-		<property name="version" value="${_version}.xxx" />
-	</target>
-
 
     <!-- ********************************************************** -->
     <!-- *                                                        * -->
@@ -76,14 +66,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <!-- *                                                        * -->
     <!-- ********************************************************** -->
 	<target name="all"
-			depends="compile,libs,phpglidemon"
+			depends="clean,dist"
 			description="Build everything">
 		<echo message="Build complete."/>
 	</target>
 
 
 	<target name="dist"
-			depends="svn_revision,all,jars,zips,helpfile,installer">
+			depends="jgminfo,libs,phpglidemon,jars,zips,helpfile,installer">
 		<echo message="Built JGlideMon v${version} distribution"/>
 	</target>
 
@@ -100,13 +90,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<javac debug="true"
 				target="1.5"
 				deprecation="true"
-				srcdir="${src_dir}"
 				destdir="${bin_dir}">
-			<patternset refid="java_files"/>
+			<src path="${src_dir}"/>
+			<src path="${internal_dir}"/>
+			<include name="**"/>
 			<classpath refid="classpath"/>
 		</javac>
     </target>
 
+	<target name="jgminfo" depends="compile">
+		<taskdef 
+			name="jgminfo" 
+			classname="jgm.internal.tasks.JgmInfo" 
+			classpath="${bin_dir}"/>
+		<jgminfo/>
+		<property name="version" value="${jgm.version}.${jgm.revision}"/>
+	</target>
+	
 	<target name="all_resources" depends="resources, compress_httpd_resources, properties" />
 
 	<target name="resources" 
@@ -154,12 +154,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		description="Copy libraries">
 		<mkdir dir="${bin_dir}"/>
 		<copy todir="${bin_dir}/lib">
-			<fileset dir="${src_dir}/lib" includes="**/*"/>
+			<fileset dir="${lib_dir}" includes="**/*"/>
 		</copy>
 	</target>
 
 	<!-- this would need to be changed in order to build on *nix -->
-	<target name="phpglidemon" description="Compile PHPGlideMon files" depends="svn_revision,compress_httpd_resources">
+	<target name="phpglidemon" description="Compile PHPGlideMon files" depends="jgminfo,compress_httpd_resources">
 		<!-- doesn't work on windows... -->
 		<!-- exec executable="php" searchpath="true" -->
 		<exec executable="cmd" osfamily="Windows">
@@ -192,7 +192,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	<property name="JGlideMon_jar" value="${bin_dir}/${title}.jar"/>
 
     <target name="JGlideMon_jar" 
-			depends="compile_src,svn_revision"
+			depends="compile_src,jgminfo"
 			description="Create ${JGlideMon_jar}">
 		<mkdir dir="${bin_dir}"/>
 		<jar destfile="${JGlideMon_jar}" 
@@ -257,7 +257,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 
-	<target name="core_zip" depends="jars,libs,docs,svn_revision,helpfile"
+	<target name="core_zip" depends="jars,libs,docs,jgminfo,helpfile"
 			description="Create ${core_zip}">
 		<property name="core_zip" value="${bin_dir}/${title}_v${version}_core.zip"/>
 		<zip destfile="${core_zip}">
@@ -265,7 +265,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</zip>
 	</target>
 
-	<target name="src_zip" description="Create ${src_zip}" depends="svn_revision">
+	<target name="src_zip" description="Create ${src_zip}" depends="jgminfo">
 		<property name="src_zip" value="${bin_dir}/${title}_v${version}_src.zip"/>
 		<zip destfile="${src_zip}">
 			<fileset dir="${src_dir}" includes="**" 
@@ -273,7 +273,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</zip>
 	</target>
 
-	<target name="profiler_zip" depends="Profiler_jar,svn_revision"
+	<target name="profiler_zip" depends="Profiler_jar,jgminfo"
 			description="Create ${profiler_zip}">
 		<property name="profiler_zip" value="${bin_dir}/${title}_v${version}_Profiler.zip"/>
 		<zip destfile="${profiler_zip}">
@@ -282,7 +282,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 
-	<target name="tts_zip" depends="libs,svn_revision"
+	<target name="tts_zip" depends="libs,jgminfo"
 			description="Create ${tts_zip}">
 		<property name="tts_zip" value="${bin_dir}/${title}_v${version}_tts.zip"/>
 		<zip destfile="${tts_zip}">
@@ -291,7 +291,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 
-	<target name="phpglidemon_zip" depends="phpglidemon,svn_revision"
+	<target name="phpglidemon_zip" depends="phpglidemon,jgminfo"
 			description="Create ${phpglidemon_zip}">
 		<property name="phpglidemon_zip" value="${bin_dir}/PHPGlideMon_v${version}.zip"/>
 		<zip destfile="${phpglidemon_zip}">
@@ -306,9 +306,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 	<target name="helpfile">
-		<ant antfile="${src_dir}/../docsrc/build.xml" inheritAll="false" target="htmlhelp"/>
+		<ant antfile="${basedir}/../docsrc/build.xml" inheritAll="false" target="htmlhelp"/>
 		<copy todir="${bin_dir}" overwrite="true" verbose="true">
-			<fileset dir="${src_dir}/../docsrc/output/htmlhelp" includes="JGlideMon.chm"/>
+			<fileset dir="${basedir}/../docsrc/output/htmlhelp" includes="JGlideMon.chm"/>
 		</copy>
 	</target>
 
@@ -319,7 +319,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</copy>
 	</target>
 
-	<target name="full_installer" depends="zips,helpfile,svn_revision">
+	<target name="full_installer" depends="zips,helpfile,jgminfo">
 		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
 			<arg value="/V3"/>
 			<arg value="/DAppVersion=${version}"/>
@@ -328,7 +328,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		</exec>
 	</target>
 
-	<target name="core_installer" depends="zips,helpfile,svn_revision">
+	<target name="core_installer" depends="zips,helpfile,jgminfo">
 		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
 			<arg value="/V3"/>
 			<arg value="/DAppVersion=${version}"/>
@@ -353,7 +353,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 				   jgm.util,
 				   jgm.wow"/>
 
-   <target name="javadoc" description="Generate javadoc" depends="svn_revision">
+   <target name="javadoc" description="Generate javadoc" depends="jgminfo">
 		<property name="javadoc_desc"	value="JGlideMon v${version}"/>
 		<mkdir dir="${javadoc_dir}"/>
 		<javadoc sourcepath="${src_dir}"
@@ -382,10 +382,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<delete dir="${build_dir}"/>
 		<delete dir="${javadoc_dir}"/>
 		<delete>
-			<fileset dir="${src_dir}/php" includes="phpglidemon*.php,files,*.MD5"/>
+			<fileset dir="${php_dir}" includes="phpglidemon*.php,files,*.MD5"/>
 		</delete>
 		<delete>
-			<fileset dir="${src_dir}/installer" includes="*_setup.exe"/>
+			<fileset dir="${installer_dir}" includes="*_setup.exe"/>
 		</delete>
     </target>
 </project>
