@@ -55,7 +55,7 @@ public class JGlideMon {
 	public static final String _date = "$Date$";
 	public static final String date = _date.substring(1, _date.length() - 1);
 	
-	public static boolean debug = true;
+	public static boolean debug = false;
 	
 	public static JGlideMon instance;
 	public static Config        cfg;
