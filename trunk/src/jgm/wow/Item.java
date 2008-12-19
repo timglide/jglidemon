@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.logging.*;
 import java.io.*;
 
+import jgm.JGlideMon;
+
 /**
  * Represents an in-game item.
  * @author Tim
@@ -375,8 +377,12 @@ public class Item implements Comparable<Item>, Serializable {
 	// generic object
 	
 	public static class Cache {
-		public static final File iconFile = new File("icons.cache");
-		public static final File itemFile = new File("items.cache");
+		public static final String
+			iconFileName = "icons.cache",
+			itemFileName = "items.cache";
+		public static final File
+			iconFile = new File(JGlideMon.dataDir, iconFileName),
+			itemFile = new File(JGlideMon.dataDir, itemFileName);
 		
 		public static void saveIcons() {
 			try {
@@ -395,6 +401,11 @@ public class Item implements Comparable<Item>, Serializable {
 		
 		public static void loadIcons() {
 			try {
+				File f = new File(iconFileName);
+				
+				if (f.exists())
+					f.renameTo(iconFile);
+				
 				ObjectInputStream is = new ObjectInputStream(
 					new FileInputStream(iconFile)
 				);
@@ -450,6 +461,11 @@ public class Item implements Comparable<Item>, Serializable {
 		
 		public static void loadItems() {
 			try {
+				File f = new File(itemFileName);
+				
+				if (f.exists())
+					f.renameTo(itemFile);
+				
 				ObjectInputStream is = new ObjectInputStream(
 					new FileInputStream(itemFile)
 				);
