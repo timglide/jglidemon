@@ -324,7 +324,7 @@ function handleAjax($url) {
 				// "Key: Value"
 				foreach ($lines as $v) {
 					$parts = explode(':', $v, 2);
-					$info[strtolower($parts[0])] = trim(@$parts[1]);
+					$info[strtolower($parts[0])] = str_replace(',', '.', trim(@$parts[1]));
 				}
 
 				// make necessary conversions/additions
@@ -344,6 +344,9 @@ function handleAjax($url) {
 
 					if (isset($info['class'])) {
 						$info['lcclass'] = strtolower($info['class']);
+
+						if ($info['lcclass'] == 'deathknight')
+							$info['lcclass'] = 'death_knight';
 					}
 
 					if (isset($info['health'])) {
@@ -354,6 +357,9 @@ function handleAjax($url) {
 					switch ($info['class']) {
 						case 'Warrior':
 							$info['mana-name'] = 'rage';
+							break;
+						case 'Deathknight':
+							$info['mana-name'] = 'rune';
 							break;
 						case 'Rogue':
 							$info['mana-name'] = 'energy';
@@ -368,6 +374,7 @@ function handleAjax($url) {
 					switch ($info['class']) {
 						case 'Warrior':
 						case 'Rogue':
+						case 'Deathknight':
 							// find the first number
 							// ##
 							preg_match("!.*?(\\d+).*!", $info['mana'], $reg);
