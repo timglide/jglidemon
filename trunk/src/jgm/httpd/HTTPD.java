@@ -550,7 +550,7 @@ public class HTTPD implements Runnable
 
 				if ( header != null )
 				{
-					Enumeration e = header.keys();
+					Enumeration<Object> e = header.keys();
 					while ( e.hasMoreElements())
 					{
 						String key = (String)e.nextElement();

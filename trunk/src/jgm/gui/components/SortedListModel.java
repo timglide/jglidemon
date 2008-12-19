@@ -82,7 +82,7 @@ public class SortedListModel extends AbstractListModel {
 	    return model.toArray(new String[] {});
   }
   
-  public Iterator iterator() {
+  public Iterator<String> iterator() {
     return model.iterator();
   }
 

@@ -95,13 +95,13 @@ public class QuickIni
   private HashMap<String, HashMap<String, String>> contents = null;
   
   
-  /**
-   * Default constructor.
-   */
-  private QuickIni()
-  {
-    super();
-  }
+//  /**
+//   * Default constructor.
+//   */
+//  private QuickIni()
+//  {
+//    super();
+//  }
   
   
   /**
