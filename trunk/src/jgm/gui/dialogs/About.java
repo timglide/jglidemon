@@ -56,7 +56,9 @@ public class About extends Dialog implements ActionListener {
 			"<html>JGlideMon " + JGlideMon.version + "<br>" +
 			JGlideMon.revision + "<br>" +
 			JGlideMon.date + "<br>" +
-			"By Tim<br><br>Released under the GNU GPL"
+			"By Tim<br>" + 
+			"With contributions by hero<br><br>" +
+			"Released under the GNU GPL"
 		);
 		textPanel.add(text);
 		
