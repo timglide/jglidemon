@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+JGlideMon - A Java based remote monitor for MMO Glider
+Copyright (C) 2007 - 2008 Tim
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+-->
+
+<!-- ********************************************************** -->
+<!-- *                                                        * -->
+<!-- * Apache Ant build file used to build JGlideMon. To      * -->
+<!-- * build everything, just type the following:             * -->
+<!-- *                                                        * -->
+<!-- *     ant                                                * -->
+<!-- *                                                        * -->
+<!-- * Also, to use run.bat, you can type:                    * -->
+<!-- *     ant clean jars                                     * -->
+<!-- *                                                        * -->
+<!-- * For more information:  http://ant.apache.org/          * -->
+<!-- *                                                        * -->
+<!-- ********************************************************** -->
+<project default="all" name="JGlideMon">
+
+    <!-- ********************************************************** -->
+    <!-- *                                                        * -->
+    <!-- * Where to find things...                                * -->
+    <!-- *                                                        * -->
+	<!-- ********************************************************** -->
+	<property name="title"          value="JGlideMon"/>
+	<property name="_version"		value="0.18"/>
+
+    <path id="classpath">
+		<fileset dir="lib" includes="**/freetts.jar"/>
+	</path>
+
+    <property name="src_dir"		value="src"/>
+	<property name="internal_dir"	value="internal"/>
+    <property name="build_dir"		value="bld"/>
+    <property name="lib_dir"        value="lib"/>
+	<property name="internal_lib_dir" value="internal_lib"/>
+	
+	<property name="php_dir"		value="php"/>
+	<property name="installer_dir"	value="installer"/>
+	
+	<property name="bin_dir"        value="bin"/>
+	<property name="javadoc_dir"    value="${bin_dir}/javadoc"/>
+	
+	<property environment="env"/>
+
+    <!-- ********************************************************** -->
+    <!-- *                                                        * -->
+	<!-- * Builds srcs, copy libs/resources                       * -->
+    <!-- *                                                        * -->
+    <!-- ********************************************************** -->
+	<target name="all"
+			depends="clean,dist"
+			description="Build everything">
+		<echo message="Build complete."/>
+	</target>
+
+
+	<target name="dist"
+			depends="jgminfo,libs,phpglidemon,jars,zips,helpfile,installer">
+		<echo message="Built JGlideMon v${version} distribution"/>
+	</target>
+
+    <!-- compile everything -->
+	<target name="compile"
+			depends="compile_src"
+			description="Build srcs"/>
+
+
+    <target name="compile_src"
+			description="Build just the srcs"
+			depends="all_resources,libs">
+		<mkdir dir="${bin_dir}"/>
+		<javac debug="true"
+				target="1.5"
+				deprecation="true"
+				destdir="${bin_dir}">
+			<src path="${src_dir}"/>
+			<src path="${internal_dir}"/>
+			<include name="**"/>
+			<classpath refid="classpath"/>
+		</javac>
+    </target>
+
+	<target name="jgminfo" depends="compile">
+		<taskdef 
+			name="jgminfo" 
+			classname="jgm.internal.tasks.JgmInfo" 
+			classpath="${bin_dir}"/>
+		<jgminfo/>
+		<property name="version" value="${jgm.version}.${jgm.revision}"/>
+	</target>
+	
+	<target name="all_resources" depends="resources, compress_httpd_resources, properties" />
+
+	<target name="resources" 
+			description="Copy sound/image/httpd resources">
+		<mkdir dir="${bin_dir}"/>
+		<copy todir="${bin_dir}">
+			<fileset dir="${basedir}"
+				includes="ChangeLog.txt,License.txt,Readme.txt"/>
+		</copy>
+		<copy todir="${bin_dir}/jgm/resources">
+			<fileset dir="${src_dir}/jgm/resources"
+				includes="httpd/**/*,images/**/*,sounds/Whisper.wav,sounds/GMWhisper.wav,sounds/PlayerAttack.wav,sounds/PlayerNear.wav,sounds/GlideStop.wav"
+				excludes="**/fonts/,**/*.psd,**/psd/,**/gif/"/>
+		</copy>
+		<mkdir dir="${bin_dir}/sounds"/>
+	</target>
+
+	<target name="compress_httpd_resources"
+			description="Compress js files to be smaller"
+			depends="resources">
+		<!-- TODO Figure out how to do this more automatically -->
+		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/prototype.js"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/prototype.js"/>
+		</java>
+		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/wz_tooltip.js"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/wz_tooltip.js"/>
+		</java>
+		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/xmldom.js"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/xmldom.js"/>
+		</java>
+	</target>
+
+	<target name="properties" 
+			description="Copy property files">
+		<copy todir="${bin_dir}/jgm/properties">
+			<fileset dir="${src_dir}/jgm/properties"
+				includes="**/*"/>
+		</copy>
+	</target>
+
+
+	<target name="libs"
+		description="Copy libraries">
+		<mkdir dir="${bin_dir}"/>
+		<copy todir="${bin_dir}/lib">
+			<fileset dir="${lib_dir}" includes="**/*"/>
+		</copy>
+	</target>
+
+	<!-- this would need to be changed in order to build on *nix -->
+	<target name="phpglidemon" description="Compile PHPGlideMon files" depends="jgminfo,compress_httpd_resources">
+		<!-- doesn't work on windows... -->
+		<!-- exec executable="php" searchpath="true" -->
+		<exec executable="cmd" osfamily="Windows">
+			<arg value="/c"/>
+			<arg value="php"/>
+			<arg value="php/build.php"/>
+			<arg value="${version}"/>
+		</exec>
+	</target>
+
+	<target name="docs"
+		description="Documentation">
+		<mkdir dir="${bin_dir}"/>
+		<copy todir="${bin_dir}">
+			<fileset dir="${src_dir}" includes="ChangeLog.txt,License.txt"/>
+		</copy>
+	</target>
+
+    <target name="jars"
+	    depends="JGlideMon_jar,Profiler_jar,ConnTest_jar"
+	    description="Builds all the jar files">
+		<!--checksum todir="${bin_dir}" forceOverwrite="yes">
+			<fileset dir="${bin_dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</checksum-->
+	</target>
+
+
+	<property name="JGlideMon_jar" value="${bin_dir}/${title}.jar"/>
+
+    <target name="JGlideMon_jar" 
+			depends="compile_src,jgminfo"
+			description="Create ${JGlideMon_jar}">
+		<mkdir dir="${bin_dir}"/>
+		<jar destfile="${JGlideMon_jar}" 
+				compress="true">
+				<fileset dir="${bin_dir}" includes="jgm/**" excludes="jgm/Profiler*.class,jgm/Licenser*.class,jgm/test/*"/>
+
+			<manifest>
+				<attribute name="Main-Class" value="jgm.JGlideMon"/>
+				<attribute name="Class-Path" value="lib/speech/freetts.jar"/>
+				<attribute name="SplashScreen-Image" value="jgm/resources/images/splash.png"/>
+
+				<section name="jgm">
+					<attribute name="Specification-Title" value="${title}"/>
+					<attribute name="Specification-Version" value="${version}"/>
+				</section>
+			</manifest>
+        </jar>
+    </target>
+
+    <property name="Profiler_jar" value="${bin_dir}/Profiler.jar"/>
+
+    <target name="Profiler_jar" 
+			depends="compile_src"
+			description="Create ${Profiler_jar}">
+		<mkdir dir="${bin_dir}"/>
+		<jar destfile="${Profiler_jar}"
+				compress="true">
+			<fileset dir="${bin_dir}" includes="jgm/Profiler*.class,jgm/glider/Profile*.class"/>
+
+			<manifest>
+				<attribute name="Main-Class" value="jgm.Profiler"/>
+			</manifest>
+        </jar>
+    </target>
+
+    <property name="ConnTest_jar" value="${bin_dir}/ConnTest.jar"/>
+
+    <target name="ConnTest_jar" 
+			depends="compile_src"
+			description="Create ${ConnTest_jar}">
+		<mkdir dir="${bin_dir}"/>
+		<jar destfile="${ConnTest_jar}"
+				compress="true">
+			<fileset dir="${bin_dir}" includes="jgm/test/ConnTest.*"/>
+			<fileset dir="${src_dir}" includes="jgm/test/ConnTest.*"/>
+
+			<manifest>
+				<attribute name="Main-Class" value="jgm.test.ConnTest"/>
+			</manifest>
+        </jar>
+	</target>
+
+
+	<!--target name="zips" depends="core_zip,profiler_zip,tts_zip,src_zip,phpglidemon_zip" -->
+	<target name="zips" depends="core_zip,profiler_zip,tts_zip,phpglidemon_zip"
+			description="Build all zip files and creates MD5 hashes">
+		<!--checksum todir="${bin_dir}" forceOverwrite="yes">
+			<fileset dir="${bin_dir}">
+				<include name="*.zip"/>
+			</fileset>
+		</checksum-->
+	</target>
+
+
+	<target name="core_zip" depends="jars,libs,docs,jgminfo,helpfile"
+			description="Create ${core_zip}">
+		<property name="core_zip" value="${bin_dir}/${title}_v${version}_core.zip"/>
+		<zip destfile="${core_zip}">
+			<fileset dir="${bin_dir}" includes="ChangeLog.txt,License.txt,JGlideMon.jar,JGlideMon.jar.MD5,JGlideMon.chm,Profiler.jar,Profiler.jar.MD5,sounds"/>
+		</zip>
+	</target>
+
+	<target name="src_zip" description="Create ${src_zip}" depends="jgminfo">
+		<property name="src_zip" value="${bin_dir}/${title}_v${version}_src.zip"/>
+		<zip destfile="${src_zip}">
+			<fileset dir="${src_dir}" includes="**" 
+				excludes="_TODO.txt,**/*.class,lib/**,bin/**,**/*.MD5,**/.*,**/*.cache,**/*.dat,**/*.ini,**/*.properties,php/phpglidemon.php,sounds/*,installer/*.exe,DebugInfo.txt,Log.txt*"/>
+		</zip>
+	</target>
+
+	<target name="profiler_zip" depends="Profiler_jar,jgminfo"
+			description="Create ${profiler_zip}">
+		<property name="profiler_zip" value="${bin_dir}/${title}_v${version}_Profiler.zip"/>
+		<zip destfile="${profiler_zip}">
+			<fileset dir="${bin_dir}" includes="Profiler.jar,Profiler.jar.MD5,License.txt"/>
+		</zip>
+	</target>
+
+
+	<target name="tts_zip" depends="libs,jgminfo"
+			description="Create ${tts_zip}">
+		<property name="tts_zip" value="${bin_dir}/${title}_v${version}_tts.zip"/>
+		<zip destfile="${tts_zip}">
+			<fileset dir="${bin_dir}" includes="lib/speech/**/*"/>
+		</zip>
+	</target>
+
+
+	<target name="phpglidemon_zip" depends="phpglidemon,jgminfo"
+			description="Create ${phpglidemon_zip}">
+		<property name="phpglidemon_zip" value="${bin_dir}/PHPGlideMon_v${version}.zip"/>
+		<zip destfile="${phpglidemon_zip}">
+			<fileset dir="php" includes="phpglidemon.php,phpglidemon.php.MD5"/>
+			<fileset dir="${src_dir}" includes="License.txt"/>
+		</zip>
+		<zip destfile="${bin_dir}/PHPGlideMon_v${version}_noembed.zip">
+			<fileset dir="php" includes="phpglidemon_noembed.php,phpglidemon_noembed.php.MD5,files/**/*"/>
+			<fileset dir="${src_dir}" includes="License.txt"/>
+		</zip>
+	</target>
+
+
+	<target name="helpfile">
+		<ant antfile="${basedir}/../docsrc/build.xml" inheritAll="false" target="htmlhelp"/>
+		<copy todir="${bin_dir}" overwrite="true" verbose="true">
+			<fileset dir="${basedir}/../docsrc/output/htmlhelp" includes="JGlideMon.chm"/>
+		</copy>
+	</target>
+
+
+	<target name="installer" depends="full_installer,core_installer">
+		<copy todir="${bin_dir}">
+			<fileset dir="${installer_dir}" includes="*_setup.exe"/>
+		</copy>
+	</target>
+
+	<target name="full_installer" depends="zips,helpfile,jgminfo">
+		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
+			<arg value="/V3"/>
+			<arg value="/DAppVersion=${version}"/>
+			<arg value="/DInstallerType=full"/>
+			<arg value="${installer_dir}/jglidemon.nsi"/>
+		</exec>
+	</target>
+
+	<target name="core_installer" depends="zips,helpfile,jgminfo">
+		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
+			<arg value="/V3"/>
+			<arg value="/DAppVersion=${version}"/>
+			<arg value="/DInstallerType=core"/>
+			<arg value="${installer_dir}/jglidemon.nsi"/>
+		</exec>
+	</target>
+
+
+    <property name="javadoc_pkgs"	
+			value="jgm,
+			       jgm.glider,
+				   jgm.glider.log,
+				   jgm.gui,
+				   jgm.gui.components,
+				   jgm.gui.panes,
+				   jgm.gui.tabs,
+				   jgm.gui.updaters,
+				   jgm.logging,
+				   jgm.sound,
+				   jgm.test,
+				   jgm.util,
+				   jgm.wow"/>
+
+   <target name="javadoc" description="Generate javadoc" depends="jgminfo">
+		<property name="javadoc_desc"	value="JGlideMon v${version}"/>
+		<mkdir dir="${javadoc_dir}"/>
+		<javadoc sourcepath="${src_dir}"
+				source="1.5"
+				additionalparam="-breakiterator"
+				destdir="${javadoc_dir}" 
+				packagenames="${javadoc_pkgs}"
+				windowtitle="${javadoc_desc}"
+				doctitle="${javadoc_desc}"
+				access="protected">
+			<classpath refid="libs"/>
+		</javadoc>
+	</target>
+		 <!-- overview="${src_dir}/overview.html" -->
+
+    <!-- ********************************************************** --> 
+    <!-- *                                                        * -->
+    <!-- * Deletes all build output                               * -->
+    <!-- *                                                        * -->
+    <!-- ********************************************************** --> 
+    <target name="clean" description="Delete all build output">
+		<!--delete quiet="true" includeEmptyDirs="true">
+	    	<fileset defaultexcludes="no" dir="." includes="**/*~"/>
+		</delete-->
+		<delete dir="${bin_dir}"/>
+		<delete dir="${build_dir}"/>
+		<delete dir="${javadoc_dir}"/>
+		<delete>
+			<fileset dir="${php_dir}" includes="phpglidemon*.php,files,*.MD5"/>
+		</delete>
+		<delete>
+			<fileset dir="${installer_dir}" includes="*_setup.exe"/>
+		</delete>
+    </target>
+</project>

@@ -1,0 +1,311 @@
+JGlideMon ChangeLog
+
+Version 0.18
+------------
+- Added Death Knight support.
+- Fixed health/mana display for users where a comma is used 
+  instead of a period for a decimal point.
+- Updated Allakhazam item XML URL so item info is retrieved again.
+
+Version 0.17
+------------
+- Fixed Parse Log File dialog box and added a progress bar
+  if the log file is very large.
+- Added maximized/fullscreen option to the Screenshot menu.
+  F11 toggles in and out of fullscreen mode.
+- Fixed extraneous 1 pixel border around the health/mana chart
+  that really pissed me off....
+- Fixed combat log after 2.4 changes.
+- Right clicking anywhere on the health/mana chart will display
+  a popup menu where you can disable drawing the mana line.
+
+Version 0.16
+------------
+- Added a bunch of options to control alerts. See the Alerts
+  configuration tab.
+- Added ability to retrieve item's mediam AH price instead of
+  vendor price based on its name or quality. See the Loot
+  configuration tab.
+- A spiffy help file is now distributed with JGlideMon.
+- A spiffy installer is now available for Windows.
+
+Version 0.15
+------------
+- Multiple Glider support is finally available. You no longer need
+  to run separate copies of JGlideMon to monitor multiple Gliders.
+  This functionality is accessible via the Servers menu.
+- You can now change JGlideMon's icon that appears in the tray
+  and the taskbar.
+- The configuration settings have been converted to Java's
+  built in Properties type. Your JGlideMon.ini will automatically
+  be converted to JGlideMon.properties.
+- The Stuck configuration tab has been renamed Restarter.
+  Additionally, options have been added to restart Glider
+  when an exception log entry is received shortly before
+  a status entry indicating Glider stopped, when
+  "Inventory does not appear to be going up" is received,
+  (I have this problem when BottomlessBag autosells it lags,
+  this affects profiles that have vendor waypoints),
+  and when "Couldn't activate flight" is received when running
+  profile groups. There is a built in delay before sending the
+  /startglide command again for all options.
+- Renamed Urgent Log tab to Urgent and added sub-tabs for
+  Logs and a new Followers tab that tracks "New friend",
+  "Removing friend", and "Being followed by" Glider log entries.
+- Added a sub-menu to the Screenshots menu for restoring,
+  shrinking, and hiding the WoW windows (assuming you're
+  dual gliding/running background mode). Note that if a
+  window is hidden, it must be restored first before you
+  can shrink it again. This is a limitation of Glider.
+- There is now a setting in the Restarter configuration tab
+  to shrink/hide/do nothing to the WoW window after JGM
+  has restarted Glider. This also affects when you send
+  chat.
+- Added support for custom sounds. If you want to replace a sound,
+  create a directory called "sounds" and drop in an aptly named
+  WAV file. The files you can replace are: "Whisper.wav",
+  "GMWhisper.wav", "PlayerAttack.wav", "PlayerNear.wav",
+  "GlideStop.wav".
+
+Version 0.14
+------------
+- Sending chat is now at the bottom of the Chat tab and
+  the Keys tab has been removed.
+- Now when keys are sent, /stopglide is sent first, followed
+  by the keys, followed by /startglide (if Glider was already
+  running). Also, separate /queuekeys commands are sent for an
+  initial enter (#13#), the slash, and the slash command with
+  a slight delay in between each to help account for the 
+  problems with /queuekeys not always sending the keys.
+  This is also reflected in PHPGlideMon. 
+  It may not be perfect but I'm pretty sure the real problem
+  is with Glider.
+- Added Reply and Guild options for sending chat.
+- Added the use of the "/escapehi on" command. Special characters
+  should now be seen in the logs. Note that you won't be able
+  to send the special characters, but you can at least see them.
+  This means you cannot whisper people with special characters
+  in their name directly. This is a limitation of Glider's remote
+  interface as far as I can tell. You can send a reply message 
+  instead of a regular whisper if they were the last person to
+  whisper you.
+- Changed it so that logging.properties and logging.debug.properties
+  are now embedded within JGlideMon.jar and not in the base folder.
+  You may delete these files if you are upgrading. Not deleting them
+  will not cause any harm, but they will just sit there.
+- The Experience pane (time to level, xp progress bar, etc.) will now
+  be hidden if you are at the level cap. I have programmed it such
+  that it will reappear if your xp percentage is greater than 1%,
+  which would imply that the cap has been raised due to a new expansion.
+  The idea of this is to declutter the GUI as well as provide some extra
+  screen real estate for the screenshots.
+- Some functionality has been rearranged to be utilized by menus. Namely,
+  the "Enable Sending Keystrokes" checkbox and the "Refresh Screenshot
+  Immediately" button have been moved to a Screenshot menu. Again, this is
+  to declutter the GUI/provide real estate for screenshots. Also, a Logs
+  menu has been added with associated functions.
+- Added a popup message when an urgent log entry is received. This requires
+  Java 1.6+ as well as the system tray option to be enabled. JGlideMon
+  should still function with Java 1.5, but you will not receive the
+  messages.
+- A Glider log entry containing "Died while gliding" is now considered
+  an urgent log entry. It is considered a Status sound, in case you
+  don't want to hear a sound when you die.
+- Mobs that you kill will now appear in the Mobs tab even if you are at
+  the level cap.
+- Log entry types are now color coded. Additionally, chat logs are now
+  colored, similarly to how they are in-game.
+
+Version 0.12
+------------
+- Added Public Chat tab to the Chat tab that contains only
+  chat from the public channels (i.e. General/Trade).
+- Added ability to parse Glider chat and combat log files.
+  Accessed via File->Parse Log File. After you select a file
+  from the file chooser, it will automatically select Chat or
+  Combat as the log type if the file name contains the word 
+  Chat or Combat. If the log file is named something else,
+  you will need to manually select the correct type. Note 
+  that the timestamps are only accurate to the minute, since
+  this is how they are stored when Glider makes the log files.
+  Also, the estimated gold/hour on the loot tab wil not be
+  accurate since that is calculated in realtime.
+- Moved the Load Profiles section into its own tab.
+- Made the Configuration dialog more consistent.
+- Completely revamped the web server. Added an update
+  interval option on the Web tab in the Confiuration dialog.
+  Additionally, I have merged my PHP based monitor (now PHPGlideMon)
+  with this project.
+
+Version 0.11
+------------
+- Added an embedded webserver. It is disabled by default. See
+  the Web tab in the configuration dialog to enable it. The
+  default port is 3201; visit http://localhost:3201 to view it.
+  You will need to forward this port if you are behind a router
+  in order to view it from a remote location. Note that this is
+  still in a very early stage and is not the highest priority
+  feature. For now it's read-only and shows your status. It is
+  based on my original PHP-based monitor, which others have
+  improved upon.
+- Clicking on an item on the Loot tab will open a browser window
+  to the Allakhazam page for that item. You can change the site that
+  is opened in the General tab of the configuration dialog. Wowhead,
+  Thottbot, and Allakhazam are already in the combo box. If you want
+  to add a different url, %s will be replaced with the item id.
+- Added an auto-scale feature for the screenshot that should adjust
+  the scale whenever you resize the window. This takes effect the next
+  time the screenshot is updated. This is enabled by default and can be
+  disabled via the screenshot options tab.
+- Added a tab that graphs your health, mana, and target's health over
+  time.
+- Status information should now be cleared when you are disconnected
+  from Glider.
+
+Version 0.10
+------------
+- Added Mobs/Rep/Skills tab. Note: I have no way of testing if rep
+  is detected properly when you get rep for killing a mob (I no longer
+  have a high level character to kill mobs that would give rep). It
+  works when you turn in a quest; if you get the same message in the
+  chatlog when you kill a mob as when you turn in a quest it should
+  work.
+- The tab that was selected when you close the program will now
+  be selected when you start it the next time
+- Fixed error when you run the program for the first time and the
+  config dialog doesn't close when you press the save button
+- Added Stuck tab to configuration dialog. Now when "Stuck too many times"
+  is received it will send the /startglide command. Note that this
+  option is disabled by default. If Glider gets stuck 'Stuck Limit' 
+  number of times within 'Limit Timeout' seconds it will give up.
+  After 'Limit Timeout' seconds without receiving the stuck message, 
+  the counter will be reset to 0. Note: this feature has not been
+  thouroughly tested! (Ideally you're profiles won't let you get stuck)
+- Added better detection for druid "mana". It should now display
+  the percentage of rage, energy, or mana, whichever is appropriate.
+  Note: this has only had limited testing.
+- Added cardinal directions and degrees tooltip for when you mouse over
+  the direction indicator as well as tooltips for health/mana/xp bars
+- Added color coding of target level
+- Removed Attach button since Glider automatically attaches
+
+Version 0.9.1
+-------------
+- Added scrollbars to screenshot when image is too large to fit
+- JGlideMon now released under the GNU GPL, see License.txt for
+  more information
+
+Version 0.9
+-------------
+- Added some extra debugging features, namely Help->Generate Debug Info,
+  and File->Configuration->General->Log Debugging Info. Logs are also
+  saved to Log.txt
+- Added config options for the screenshot updater's buffer
+  size and the timeout for updating a screenshot. The config window
+  will tell you the size of your last screenshot and calculate the
+  maximum size that it could be. This size represents an uncompressed
+  image size. Keep in mind that the image is in fact compressed as
+  a jpeg. Setting the buffer to the calculated size should ensure
+  you won't have a problem but it is a significant over-estimate.
+- Added checkbox to disable sending of keystrokes when screenshot
+  tab is the current tab (note it is disabled when the program is first
+  launched). Also, the screenshot tab no longer requires keyboard
+  focus to send keys.
+
+Version 0.8
+-----------
+- Added support for a tray icon and minimizing to the tray
+  if Java 1.6+ is installed (JGlideMon will still function
+  with Java 1.5+, there just won't be a tray icon)
+- Removed the need for a textfield to have focus to send keys
+  in the screenshot tab. Now keys are sent as long as the
+  screenshot tab is the current tab. Note that you are not able
+  to send the 4 arrow keys as this would cause you to change
+  the selected tab. Use WASD instead. Note that the Screenshot
+  tab must still have focus, that is on most systems a dotted border
+  appears around the word Screenshot on the actual tab.
+- Added some code to try to help cope with when the screenshot
+  fails to update. This is still a work in progress.
+- Removed dependency on lib/componentset.jar, you may delete this
+  file manually if you wish, though it won't harm anything if it
+  remains. This library was 500kb and I was only using 2 features
+  that I was able to replicate myself.
+
+Version 0.7
+-----------
+- Fixed connection issues with non-Windows operating systems
+
+Version 0.6
+-----------
+- Added support for loading profiles. Run Profiler.jar on the
+  computer where Glider is running to create a "profiles.dat"
+  file and copy that file to the same directory as JGlideMon.jar
+  on the remote computer you will run JGlideMon on. JGlideMon will
+  detect profiles.dat and read it into a list of profiles that
+  can be loaded. (The whole point of this is so you don't have
+  to remember the exact paths of all your profiles or type them
+  in manually, but that option is available if you wish)
+- Added the removal of timestamps from in-game chat timestamp mods
+  (CTMod style at least [hh:mm:ss] or [h:mm] for example)
+- Internal changes to improve the storage of configuration data have
+  required that you delete your current JGlideMon.ini file. While
+  it won't hurt anything to not delete it, you will have to re-enter
+  your network settings anyway and it will clutter your ini file.
+  If you really don't want to delete it, change the "[network]" line
+  to "[net]" and change all keys to be lowercase, i.e. "updateInterval=..."
+  would become "updateinterval=...".
+- Values in the configuration dialog should now be correctly refreshed
+  when you cancel changes and reopen the dialog
+- Implemented auto-reconnection to Glider. Settings for delay between
+  attemps and number of attemps can be found in the Network config
+  section.
+
+Version 0.5
+-----------
+- Added item/icon caching. *.cache files will be created that
+  will reduce the number of connections made to wow.allakhazam.com.
+  These files can be deleted without causing any problems
+- Fixed error in parsing items from the chatlog that was causing
+  some items to not be recognized
+- Each log tab now has an upper limit on the number of entries that
+  will be displayed. By defualt this is 500 and can be changed in
+  the [log] section of JGlideMon.ini. I have not had time to create
+  a section in the configuration dialog for this.
+- Fixed error that was not terminating updater threads upon disconnect
+  from Glider, which was causing sporadic behavior when you reconnected
+- Added sounds on being followed, being attacked, stuck too many times
+- Log entries starting with a ! will be added to the urgent log tab
+  and that tab will be selected
+
+Version 0.4
+-----------
+- Fixed detection of mana/rage/energy for all classes
+  (druids not yet tested)
+- Moved configuration from a tab to a dialog (accessible via
+  File -> Configuration)
+- Reduced item icon size to 32x32 on the loot tab
+- Added sell price per stack (and stack quantity) of an item
+  on the item tooltip
+- Added Gold/Hour estimate to loot tab
+- Various internal improvements to use less memory (hopefully)
+- Improved use of the window title
+
+Version 0.3
+-----------
+- Added text-to-speech support
+- Improved use of the status bar
+- Connect/Disconnect buttons now work
+- Improved detection of being disconencted from Glider/
+  not being able to connect
+
+Version 0.2
+-----------
+- Added sounds when whispered/someone said something nearby
+- Added sending keys to Glider/replying to people who whisper you
+- Added sending mouse clicks when you click on the screenshot
+- Added forcing keys from the screenshot tab (i.e. press C to
+  make your character frame show)
+
+Version 0.1
+-----------
+- Initial Release

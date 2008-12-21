@@ -1,0 +1,176 @@
+hr { width: 80%; }
+h1, h2, h3 { text-align: center; }
+
+body {
+	padding: 20px;
+	background: #707883;
+	color: #222;
+/*	text-align: center;*/
+	font: 85% "Trebuchet MS", "Arial", sans-serif;
+}
+
+h1, h2, p {
+	margin: 0;
+	padding: 0 10px;
+	font-weight: normal;
+}
+
+p { padding: 0 10px 15px }
+
+h1 {
+	font-size: 250%;
+	color: #FFF;
+}
+
+h2 {
+	font-size: 200%;
+	color: #002455;
+}
+
+h3 {
+	font-size: 85%;
+	color: #fff;
+}
+
+img {
+	border: 0;
+}
+
+.container {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	background: #fff;
+}
+
+.header {
+	position: relative;
+	border: 10px solid white;
+	border-top: none;
+	background: #000;
+	color: #fff;
+}
+
+.header img {
+	/*vertical-align: middle;*/
+}
+
+#content {
+	position: relative;
+	border: 10px solid white;
+	border-top: none;
+	margin: 0;
+	background: #a0a0a0;
+
+	margin-right: 19em;
+/*	width: 40em;*/
+}
+
+#nav {
+	position: relative;
+	border: 10px solid white;
+	border-top: none;
+	float: right;
+	width: 18.5em;
+	background: #000;
+	color: #fff;
+}
+
+#navpad {
+	text-align: center;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#nav h2 {
+	font-size: 120%;
+	color: #9E4A24
+}
+
+.footer {
+	clear: both;
+/*	width: 800px;*/
+	background: #fff;
+	text-align: right;
+	border: 0;
+}
+
+.footer img {
+	margin-right: 10px;
+}
+
+.info_bar {
+	position: relative;
+	width: 100%;
+	border: 1px solid #FFFFFF;
+	border-collapse: collapse;
+	text-align: center;
+	font-weight: bold;
+	background-color: transparent;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 2px;
+}
+
+.info_text {
+	z-index: 10;
+	position: relative;
+	width: 100%;
+	color: #FFF;
+}
+
+.info_percent {
+	z-index: 1;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+}
+
+.rage { background-color: #BB0000; }
+.rune { background-color: #0000BB; }
+.energy { background-color: #BBBB00;  }
+.mana { background-color: #0000BB; }
+
+#health_percent {
+	width: 84%;
+	background-color: #00BB00;
+}
+
+#secondary_percent {
+	width: 64%;
+}
+
+#xp_percent {
+	width: 78%;
+	background-color: #800080;
+}
+
+.roundtop {
+	background: url(/static/img/corners/tr.png) no-repeat top right; 
+}
+
+.roundbottom {
+	background: url(/static/img/corners/br.png) no-repeat top right; 
+}
+
+.roundtopw {
+	background: url(/static/img/corners/trw.png) no-repeat top right; 
+}
+
+.roundbottomw {
+	background: url(/static/img/corners/brw.png) no-repeat top right; 
+}
+
+img.corner {
+	display: block;
+}
+
+#ssdiv {
+	text-align: center;
+}
+
+#screenshot {
+	margin-left: auto;
+	margin-right: auto;
+}
