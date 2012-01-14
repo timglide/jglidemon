@@ -53,21 +53,12 @@ public class Util {
 		if (buf.length != 4) 
 			throw new IllegalArgumentException("Need array of length 4");
 		
-		int i   = 0;
-		int pos = 0;
-/*		System.out.printf("Bytes: 0x%X 0x%X 0x%X 0x%X\n",
-			unsignedByteToInt(buf[pos++]),
-			unsignedByteToInt(buf[pos++]),
-			unsignedByteToInt(buf[pos++]),
-			unsignedByteToInt(buf[pos++]));
-		pos = 0;
-*/		i += unsignedByteToInt(buf[pos++]) << 0;
-		i += unsignedByteToInt(buf[pos++]) << 8;
-		i += unsignedByteToInt(buf[pos++]) << 16;
-		i += unsignedByteToInt(buf[pos++]) << 24;
+		int value = 0;
+		for (int i = 0; i < buf.length; i++) {
+			value |= (buf[i] & 0xFF) << (8 * i);
+		}
 
-		return i;
-		//return (int) ((Long.MAX_VALUE & ~((long) Integer.MAX_VALUE)) ^ ((long) i));
+		return value;
 	}
 
 	/**

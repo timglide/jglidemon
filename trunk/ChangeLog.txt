@@ -1,5 +1,12 @@
 JGlideMon ChangeLog
 
+Version 0.19
+------------
+- Minimal development resumes to coincide with the GliderRemoteCompat
+  plugin for HonorBuddy.
+- Fixed systemic error in the way data was read that often caused
+  the screenshot to fail to update. It nearly always works now.
+
 Version 0.18
 ------------
 - Added Death Knight support.

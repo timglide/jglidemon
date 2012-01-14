@@ -100,11 +100,9 @@ public class StatusUpdater extends Observable
 		Map<String, String> m = new HashMap<String, String>();
 		
 		try {
-		BufferedReader r = conn.getIn();
-
 		Command.getStatusCommand().send(conn);
 
-		while ((line = r.readLine()) != null) {
+		while ((line = conn.readLine()) != null) {
 			if (line.equals("---")) break;
 
 			String[] parts = line.split(":", 2);

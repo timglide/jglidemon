@@ -101,6 +101,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			buff = new byte[buffSize];
 		}
 		
+		// 2012-01-13
+		// This is all because I used to incorrectly use BufferedReader on
+		// a BufferedInputStream so the size was almost always wrong
 		/* This timer will interrupt the screenshot updater
 		 * in X seconds if it fails to update the screenshot.
 		 */
@@ -154,16 +157,14 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		//System.out.println("Info: " + line); 
 
 		byte[] b = new byte[4];
-		conn.read(b);
-		//System.out.println("Read " + conn.read(b) + " for size");
-
+		int bytesRead = conn.read(b);
 		int size = jgm.util.Util.byteArrayToInt(b);
-		//System.out.println("\nJPG Size: " + size);
-		//size &= 0x1FFFFF; // restrict to ~2 megs 
+//		log.fine(String.format("Read %s bytes, got %s (0x%02X%02X%02X%02X) for size", bytesRead, size, b[0], b[1], b[2], b[3]));
 		int written = 0;
 
-		//System.out.println(", after: " + size);
-
+		// 2012-01-13
+		// This is all because I used to incorrectly use BufferedReader on
+		// a BufferedInputStream so the size was almost always wrong
 		if (size < 1 || size > buff.length) { // size invalid? wtf O.o
 			timer.cancel();
 			
@@ -172,19 +173,14 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			log.fine("Invalid size: " + size + ", clearing stream");
 
 			while (null != (s = conn.readLine())) {
-//				if (z % 100 == 0)
-//					System.out.println(s);
 				z++;
 
 				int l = s.length();
 				if (l >= 3 && s.lastIndexOf("---") == l - 3) {
-//					System.out.println("Found ---");
 					break;
 				}
 			} // clear the stream
 	
-//			System.out.println(s); // print last line
-
 			log.fine("Clear Stream done");	
 
 			sm.gui.revertStatusBarText();
@@ -194,7 +190,6 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			return false;
 		}
 
-		//System.out.println("Reading...");
 		while (written < size) {
 			int read = conn.read(buff, written, size - written);
 			
@@ -202,24 +197,14 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 
 			written += read;
 			
-			//for (int i = 0; i < 8; i++)
-			//	System.out.print('\b');
-			//System.out.print(written);
-			
 			int percent = (int) (((float) written / (float) size) * 100);
 			sm.gui.setStatusBarProgress(percent);
 		}
-		
-		//System.out.println();
 
 		conn.readLine(); // ---
-		//System.out.println(conn.readLine()); // ---
 
 		timer.cancel();
 		
-		//System.out.println("Read " + written + " for image");
-
-		//System.out.println("Making ss...");
 		final BufferedImage img =
 			javax.imageio.ImageIO.read(
 				new ByteArrayInputStream(buff, 0, size)
