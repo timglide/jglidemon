@@ -22,6 +22,7 @@ package jgm.glider;
 
 import jgm.*;
 
+import java.util.Arrays;
 import java.util.logging.*;
 import java.io.*;
 import java.net.*;
@@ -44,8 +45,7 @@ public class Conn {
 	
 	private Socket         s;
 	private PrintWriter    out;
-	private InputStream    inStream;
-	private BufferedReader in;
+	private BufferedInputStream inStream;
 	
 	public Conn(ServerManager sm, String name) {
 		log.finest(String.format("new Conn(%s, %s);", sm.name, name));
@@ -57,16 +57,14 @@ public class Conn {
 	
 	public synchronized void connect()
 		throws UnknownHostException, IOException {
-		s = null; out = null; inStream = null; in = null;
+		s = null; out = null; inStream = null;;
 
 		log.info("Connecting to " + sm.host + "...");
 		s   = new Socket(sm.host, sm.port);
 		out = new PrintWriter(s.getOutputStream(), false);
 		inStream = new BufferedInputStream(s.getInputStream());
-		in  = new BufferedReader(
-		          new InputStreamReader(inStream, "UTF-8"));
 		send(sm.password);
-		in.readLine(); // ignore Authenticated OK line
+		readLine(); // ignore Authenticated OK line
 		
 		notifyAll();
 	}
@@ -77,12 +75,8 @@ public class Conn {
 //		}
 	}
 
-	public InputStream getInStream() {
+	public BufferedInputStream getInStream() {
 		return inStream;
-	}
-
-	public BufferedReader getIn() {
-		return in;
 	}
 
 //	public PrintWriter getOut() {
@@ -103,7 +97,7 @@ public class Conn {
 		String line = null;
 		StringBuilder sb = new StringBuilder();
 		
-		while (/*in.ready() &&*/ null != (line = in.readLine())) {
+		while (/*in.ready() &&*/ null != (line = readLine())) {
 			log.finest("  Line: " + line);
 			if (line.equals("---"))
 				break;
@@ -159,9 +153,56 @@ public class Conn {
 	}
 
 	public String readLine() throws IOException {
-//		synchronized (in) {
-			return in.readLine();
-//		}
+		byte[] buf = new byte[128];
+		int ch, pos = 0;
+		boolean hadCR = false, hadLF = false;
+		
+		while (true) {
+			ch = inStream.read();
+			
+			if (ch < 0) break;
+			
+			if ('\r' == ch) {
+				if (hadCR) {
+					// two CRs in a row, reset so we'll get "" next time
+					inStream.reset();
+					break;
+				}
+				
+				hadCR = true;
+				inStream.mark(2);
+				continue;
+			} else if ('\n' == ch) {
+				if (hadCR) {
+					// CRLF
+					break;
+				}
+				
+				if (hadLF) {
+					// two LFs in a row, reset so we'll get "" next time
+					inStream.reset();
+					break;
+				}
+				
+				hadLF = true;
+				inStream.mark(2);
+				continue;
+			} else {
+				if (hadCR || hadLF) {
+					// CR or LF followed by normal character
+					// that should be returned next time
+					inStream.reset();
+					break;
+				}
+				
+				hadCR = hadLF = false;
+			}
+
+			buf[pos++] = (byte) ch;
+			if (pos == buf.length) buf = Arrays.copyOf(buf, pos + 128);
+		}
+		
+		return new String(buf, 0, pos, "UTF-8");
 	}
 
 	public void close() {
@@ -172,7 +213,7 @@ public class Conn {
 				try {
 //					synchronized (s) {
 						send("/exit");
-						log.finest("  Result: " + in.readLine());
+						log.finest("  Result: " + readLine());
 //						in.readLine(); // Bye!
 //						Thread.sleep(500);
 //					}
@@ -181,15 +222,13 @@ public class Conn {
 		} catch (Throwable e) {
 			log.log(Level.SEVERE, "Exception during close", e);
 		} finally {
-			if (in != null) 
-				try { in.close(); } catch (Exception e) {}
 			if (out != null)
 				try { out.close(); } catch (Exception e) {}
 			if (s != null)
 				try { s.close(); } catch (Exception e) {}
 		}
 		
-		in = null; out = null; s = null;
+		out = null; s = null;
 	}
 	
 	protected void finalize() {
