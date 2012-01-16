@@ -243,7 +243,7 @@ public class ItemTooltip extends JPanel {
 		s = item.itemLevel > 0 ? "Item Level " + item.itemLevel : null;
 		updateLbl(itemLvlLabel, s);
 		
-		s = item.description != null
+		s = item.description != null && !"".equals(item.description)
 			? "<html>" + lineify('"' + item.description + '"') + "</html>" : null;
 		updateLbl(descriptionLabel, s);
 		
