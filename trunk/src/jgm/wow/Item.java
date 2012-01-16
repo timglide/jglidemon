@@ -62,11 +62,12 @@ public class Item implements Comparable<Item>, Serializable {
 		null, "Quest Item"
 	};
 	
-	public static final int STAT_AGILITY = 3;
-	public static final int STAT_STRENGTH = 4;
-	public static final int STAT_INTELLECT = 5;
-	public static final int STAT_SPIRIT = 6;
-	public static final int STAT_STAMINA = 7;
+	public static final int
+		STAT_AGILITY = 3,
+		STAT_STRENGTH = 4,
+		STAT_INTELLECT = 5,
+		STAT_SPIRIT = 6,
+		STAT_STAMINA = 7;
 	
 	public static final String[] STATS = {
 		null, null, "", "Agility", "Strength", 
@@ -161,8 +162,9 @@ public class Item implements Comparable<Item>, Serializable {
 		{null, null, "Arrow", "Bullet"}
 	};
 	
-	public static final String ICON_BASE
-		= "http://wow.allakhazam.com";
+	public static final String
+		ICON_BASE = "http://wow.zamimg.com/images/wow/icons/large/%s.jpg",
+		DEFAULT_ICON = "inv_misc_questionmark";
 
 	/* whether we were able to connect to allakhazam
 	 * to retrieve the item info
@@ -185,9 +187,15 @@ public class Item implements Comparable<Item>, Serializable {
 	public int requiredLevel;
 	public int dmgHigh;
 	public int dmgLow;
-	public int speed; // in ms
+	/**
+	 * In milliseconds 
+	 */
+	public int speed;
 	public int merchentBuyPrice;
 	public int slot;
+	
+	public BonusStat[] bonusStats;
+	public int[] bonusStatValues;
 	
 	public static final int MAX_STATS = 5;
 	
@@ -198,7 +206,7 @@ public class Item implements Comparable<Item>, Serializable {
 	
 	public Effect[] effects = new Effect[MAX_EFFECTS];
 	
-	public String iconPath = "/images/icons/INV_Misc_QuestionMark.png";
+	public String iconPath = DEFAULT_ICON;
 	private transient ImageIcon icon = null;
 
 	private Item(int i, String s) {
@@ -272,24 +280,54 @@ public class Item implements Comparable<Item>, Serializable {
 		}
 	}
 	
-	public String getStatText(int n) {
+	public String getStatText(final int n) {
 		try {
-			if (stats[n] > 0) {
-				return String.format("%+d %s", stat_values[n], STATS[stats[n]]);
+			int statCount = 0;
+			
+			for (int i = 0; i < bonusStats.length; i++) {
+				if (bonusStats[i].isNormalStat()) {
+					if (n == statCount) {
+						return bonusStats[i].format(bonusStatValues[i]);
+					}
+					
+					statCount++;
+				}
 			}
-		} catch (Exception e) {
-			return "Unkown (" + stats[n] + "," + stat_values[n] + ")";
-		}
+		} catch (Exception e) {}
 		
 		return null;
+//		try {
+//			if (stats[n] > 0) {
+//				return String.format("%+d %s", stat_values[n], STATS[stats[n]]);
+//			}
+//		} catch (Exception e) {
+//			return "Unkown (" + stats[n] + "," + stat_values[n] + ")";
+//		}
+//		
+//		return null;
 	}
 	
 	public String getEffectText(int n) {
 		try {
-			return effects[n].toString();
-		} catch (Exception e) {
-			return null;
-		}
+			int effectCount = 0;
+			
+			for (int i = 0; i < bonusStats.length; i++) {
+				if (bonusStats[i].isEffectStat()) {
+					if (n == effectCount) {
+						return bonusStats[i].format(bonusStatValues[i]);
+					}
+					
+					effectCount++;
+				}
+			}
+		} catch (Exception e) {}
+		
+		return null;
+//		try {
+//			return effects[n].toString();
+//		} catch (Exception e) {
+//			return null;
+//		}
 	}
 	
 	public Color getDarkColor() {
@@ -309,7 +347,7 @@ public class Item implements Comparable<Item>, Serializable {
 			
 			try {
 				icon = new javax.swing.ImageIcon(
-					   new java.net.URL(ICON_BASE + iconPath));
+					   new java.net.URL(String.format(ICON_BASE, iconPath)));
 				icon = jgm.util.Util.resizeIcon(icon, 32, 32);
 				iconCache.put(iconPath, icon);
 			} catch (java.net.MalformedURLException e) {
@@ -365,7 +403,7 @@ public class Item implements Comparable<Item>, Serializable {
 
 		if (!ItemFactory.factory(id, ret)) return null;
 
-		Effect.factory(ret);
+//		Effect.factory(ret);
 		
 		itemCache.put(id, ret);
 		

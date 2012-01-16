@@ -6,6 +6,8 @@ Version 0.19
   plugin for HonorBuddy.
 - Fixed systemic error in the way data was read that often caused
   the screenshot to fail to update. It nearly always works now.
+- Item information is retrieved directly from Blizzard's web API since
+  Allakhazam is no longer in service. This means no AH prices however.
 
 Version 0.18
 ------------
