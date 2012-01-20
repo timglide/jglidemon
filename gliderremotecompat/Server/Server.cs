@@ -8,6 +8,7 @@ using System.Net;
 
 namespace GliderRemoteCompat {
 	class Server : IDisposable {
+		internal ServerSettings settings;
 		private TcpListener tcpListener;
 		private Thread listenThread;
 		private volatile bool running = false;
@@ -20,7 +21,10 @@ namespace GliderRemoteCompat {
 		private List<Client> clients = new List<Client>();
 
 		public Server() {
-			tcpListener = new TcpListener(IPAddress.Any, 3200);
+			settings = ServerSettings.Instance;
+			tcpListener = new TcpListener(IPAddress.Any, settings.Port);
+			tcpListener.Start();
+
 			listenThread = new Thread(Listen);
 			listenThread.Name = "GRC Server";
 			running = true;
@@ -62,8 +66,6 @@ namespace GliderRemoteCompat {
 		}
 
 		private void Listen() {
-			tcpListener.Start();
-
 			while (running) {
 				try {
 					//blocks until a client has connected

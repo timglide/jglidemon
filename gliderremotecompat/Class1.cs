@@ -14,6 +14,9 @@ using Styx.Logic.Questing;
 using Styx.Plugins.PluginClass;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
+using System.Net.Sockets;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace GliderRemoteCompat {
 	public class Class1 : HBPlugin {
@@ -50,6 +53,17 @@ namespace GliderRemoteCompat {
 			get { return version; }
 		}
 
+		public override bool WantButton {
+			get {
+				return true;
+			}
+		}
+
+		public override string ButtonText {
+			get {
+				return "Settings";
+			}
+		}
 
 		private bool initialized = false;
 
@@ -57,9 +71,9 @@ namespace GliderRemoteCompat {
 			if (initialized) return;
 			base.Initialize();
 
-			Logging.Write("{0} v{1} loaded, starting server 8", Name, Version);
+			Logging.Write("{0} v{1} loaded", Name, Version);
 			logQueue.Clear();
-			server = new Server();
+			RefreshSettings();
 
 			initialized = true;
 		}
@@ -69,11 +83,56 @@ namespace GliderRemoteCompat {
 
 			if (null != server) {
 				server.Dispose();
+				server = null;
+			}
+
+			if (null != settingsForm) {
+				settingsForm.Dispose();
+				settingsForm = null;
 			}
 			
 			base.Dispose();
 			initialized = false;
 			Logging.Write("{0} unloaded", Name);
+		}
+
+		public void RefreshSettings() {
+			if (null != server) {
+				server.Dispose();
+			}
+
+			try {
+				server = new Server();
+			} catch (SocketException e) {
+				Logging.Write(Color.Red, "Error starting GliderRemoteCompat server");
+				Logging.WriteException(Color.Red, e);
+				MessageBox.Show(
+					"The port is already in use. You must change it in the settings.",
+					"GliderRemoteCompat", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			} catch (Exception e) {
+				Logging.Write(Color.Red, "Error starting GliderRemoteCompat server");
+				Logging.WriteException(Color.Red, e);
+				MessageBox.Show(
+					"Error starting server:\n\n" + e,
+					"GliderRemoteCompat", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+
+		private SettingsForm settingsForm;
+
+		private SettingsForm SettingsForm {
+			get {
+				if (null == settingsForm) {
+					settingsForm = new SettingsForm();
+				}
+
+				return settingsForm;
+			}
+		}
+
+		public override void OnButtonPress() {
+			SettingsForm.ShowDialog();
 		}
 
 		public void Log(string format, params string[] args) {

@@ -10,8 +10,6 @@ using System.Text.RegularExpressions;
 
 namespace GliderRemoteCompat {
 	class Client : IDisposable {
-		private const string pass = "1234";
-
 		private static readonly Encoding encoder = Encoding.UTF8;
 		private static readonly byte[] emptyBytes = new byte[0];
 		private static readonly byte[] dashesBytes = encoder.GetBytes("---\r\n");
@@ -119,7 +117,7 @@ namespace GliderRemoteCompat {
 			// check the password before entering main loop
 			line = reader.ReadLine();
 
-			if (pass != line) {
+			if (server.settings.Password != line) {
 				Debug("Incorrect password, disposing");
 				Dispose();
 				return;
