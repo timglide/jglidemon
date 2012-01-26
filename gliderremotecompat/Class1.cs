@@ -35,13 +35,19 @@ namespace GliderRemoteCompat {
 
 		private const string _revision = "$Revision$";
 		private static readonly int revision;
+		private static readonly Version version;
 
 		static Class1() {
+			string str = string.Empty;
+
 			try {
-				revision = int.Parse(new Regex("\\d+").Match(_revision).Value);
+				str = _revision.Substring(11, _revision.Length - 2 - 11);
+				revision = int.Parse(str);
 			} catch {
 				revision = 0;
 			}
+
+			version = new Version(0, 1, 0, revision);
 		}
 
 		private Server server;
@@ -58,8 +64,6 @@ namespace GliderRemoteCompat {
 		public override string Name {
 			get { return "GliderRemoteCompat"; }
 		}
-
-		private static readonly Version version = new Version(0, 1, 0, revision);
 
 		public override Version Version {
 			get { return version; }
@@ -147,7 +151,7 @@ namespace GliderRemoteCompat {
 			SettingsForm.ShowDialog();
 		}
 
-		public void Log(string format, params string[] args) {
+		public void Log(string format, params object[] args) {
 			Log(string.Format(format, args));
 		}
 
