@@ -518,6 +518,7 @@ public class PlayerChart extends JPanel {
 			
 			// can't draw one point
 			if (endIndex - startIndex > 1 && playerHealth.size() > 1) {
+				boolean lastTHValid = targetHealth.get(startIndex).value >= 0;
 				int lastTHY = yCoordToPixel(targetHealth.get(startIndex).value);
 				int curTHY = 0;
 				int lastPMY = yCoordToPixel(playerMana.get(startIndex).value);
@@ -528,13 +529,23 @@ public class PlayerChart extends JPanel {
 				for (int i = startIndex + 1; i < endIndex && i < playerHealth.size(); i++) {
 					g2.setColor(Color.yellow);
 					curTHY = yCoordToPixel(targetHealth.get(i).value);
-					g2.drawLine((int) xx, lastTHY, (int) (xx + dxx), curTHY);
+					if (targetHealth.get(i).value >= 0.0) { // -1 when no target
+						// don't draw a line from -1 to current hp
+						if (lastTHValid) {
+							g2.drawLine((int) xx, lastTHY, (int) (xx + dxx), curTHY);
+						}
+						
+						lastTHValid = true;
+					} else {
+						lastTHValid = false;
+					}
 					lastTHY = curTHY;
 					
 					g2.setColor(Color.blue);
 					curPMY = yCoordToPixel(playerMana.get(i).value);
-					if (showMana.isSelected())
+					if (showMana.isSelected()) {
 						g2.drawLine((int) xx, lastPMY, (int) (xx + dxx), curPMY);
+					}
 					lastPMY = curPMY;
 					
 					g2.setColor(Color.green);

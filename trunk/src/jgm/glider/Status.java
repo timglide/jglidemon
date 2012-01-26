@@ -77,7 +77,7 @@ public class Status {
 	
 	/**
 	 * Determines if the character is at the level cap.
-	 * AssumeS the level cap will be 70, 80, 90, etc.
+	 * Assumes the level cap will be 60, 70, 80, 85, 90, 95, ...
 	 * Even if at the supposed level cap, it will become
 	 * visible again if xpPercent >= 2 because it can only
 	 * get past 1% if you're actually leveling (i.e. when
@@ -85,7 +85,10 @@ public class Status {
 	 * @return
 	 */
 	public boolean atLevelCap() {
-		return level >= 70 && level % 10 == 0 && xpPercent < 2;
+		return
+		((level >= 85 && level % 5 == 0) ||
+		 (level >= 60 && level % 10 == 0)) &&
+		xpPercent < 2;
 	}
 	
 	public boolean isAlertLevel() {

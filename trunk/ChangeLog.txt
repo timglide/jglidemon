@@ -7,7 +7,11 @@ Version 0.19
 - Fixed systemic error in the way data was read that often caused
   the screenshot to fail to update. It nearly always works now.
 - Item information is retrieved directly from Blizzard's web API since
-  Allakhazam is no longer in service. This means no AH prices however.
+- AH prices are no longer retrieved for loot since Allakhazam is no
+  longer in service and Wowhead's prices seem useless usually.
+- The Health/Mana Chart tab no longer displays the yellow target
+  health line at 0% when there is no target.
+- Corrected level cap to 85, it should work at 90, 95, etc.
 
 Version 0.18
 ------------

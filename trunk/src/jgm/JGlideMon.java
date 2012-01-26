@@ -29,10 +29,10 @@ import javax.swing.UIManager;
 import jgm.logging.Log;
 import jgm.gui.Splash;
 
-// this line edited so the svn revision gets updated
+// this line edited so the svn revision gets updated 
 
 /**
- * The main program. 
+ * The main program.
  * @author Tim
  * @since 0.1
  */

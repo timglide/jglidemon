@@ -45,7 +45,8 @@ public class RingBuffer<T> implements List<T> {
 	int totalInserts = 0;
 	
 	public RingBuffer(int capacity) {
-		if (capacity < 1) throw new IllegalArgumentException("Capacity must be >= 1");
+		if (capacity < 1)
+			throw new IllegalArgumentException("Capacity must be >= 1");
 		
 		data = (T[]) new Object[capacity]; // stupid fucking java
 	}
@@ -58,8 +59,11 @@ public class RingBuffer<T> implements List<T> {
 		return data.length;
 	}
 	
-	// returns how many times add() has been called over
-	// the lifetime of this object
+	/**
+	 * @return how many times {@link #add(T)} has been called over
+	 * the lifetime of this object
+	 */
+	// 
 	public int totalInserts() {
 		return totalInserts;
 	}
@@ -177,10 +181,10 @@ public class RingBuffer<T> implements List<T> {
 	
 	public boolean containsAll(Collection<?> c) {
 		for (Object o : c) {
-			if (contains(o)) return true;
+			if (!contains(o)) return false;
 		}
 		
-		return false;
+		return true;
 	}
 	
 	public int indexOf(Object o) {	
@@ -199,7 +203,7 @@ public class RingBuffer<T> implements List<T> {
 	
 	public int lastIndexOf(Object o) {
 		int ret = -1;
-		
+
 		int i = 0;
 		for (T t : this) {
 			if (t.equals(o)) {
