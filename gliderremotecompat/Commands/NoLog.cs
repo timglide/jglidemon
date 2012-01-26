@@ -5,6 +5,8 @@ using System.Text;
 
 namespace GliderRemoteCompat.Commands {
 	class NoLog : Command {
+		public static readonly Command Instance = new NoLog();
+
 		public override void Execute(Server server, Client client, string args) {
 			try {
 				if ("" != args) {

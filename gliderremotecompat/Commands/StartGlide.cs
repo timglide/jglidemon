@@ -7,6 +7,8 @@ using Styx.Logic.BehaviorTree;
 
 namespace GliderRemoteCompat.Commands {
 	class StartGlide : Command {
+		public static readonly Command Instance = new StartGlide();
+
 		public override void Execute(Server server, Client client, string args) {
 			if (TreeRoot.IsRunning) {
 				client.Send("Already started");

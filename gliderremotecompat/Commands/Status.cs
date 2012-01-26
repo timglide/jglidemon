@@ -11,6 +11,8 @@ using Styx.Logic.Profiles;
 
 namespace GliderRemoteCompat.Commands {
 	class Status : Command {
+		public static readonly Command Instance = new Status();
+
 		public override void Execute(Server server, Client client, string args) {
 			List<string> l = new List<string>();
 			bool attached = StyxWoW.IsInGame;

@@ -5,6 +5,8 @@ using System.Text;
 
 namespace GliderRemoteCompat.Commands {
 	class Log : Command {
+		public static readonly Command Instance = new Log();
+
 		public override void Execute(Server server, Client client, string args) {
 			try {
 				if ("" != args) {

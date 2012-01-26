@@ -5,6 +5,8 @@ using System.Text;
 
 namespace GliderRemoteCompat.Commands {
 	class CaptureScale : Command {
+		public static readonly Command Instance = new CaptureScale();
+
 		public override void Execute(Server server, Client client, string args) {
 			try {
 				if ("" != args) {

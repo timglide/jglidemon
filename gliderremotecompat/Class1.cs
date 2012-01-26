@@ -17,6 +17,7 @@ using Styx.WoWInternals.WoWObjects;
 using System.Net.Sockets;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace GliderRemoteCompat {
 	public class Class1 : HBPlugin {
@@ -29,6 +30,17 @@ namespace GliderRemoteCompat {
 				}
 
 				return instance;
+			}
+		}
+
+		private const string _revision = "$Revision$";
+		private static readonly int revision;
+
+		static Class1() {
+			try {
+				revision = int.Parse(new Regex("\\d+").Match(_revision).Value);
+			} catch {
+				revision = 0;
 			}
 		}
 
@@ -47,7 +59,7 @@ namespace GliderRemoteCompat {
 			get { return "GliderRemoteCompat"; }
 		}
 
-		private static readonly Version version = new Version(0, 1);
+		private static readonly Version version = new Version(0, 1, 0, revision);
 
 		public override Version Version {
 			get { return version; }

@@ -16,6 +16,10 @@ namespace GliderRemoteCompat.Commands {
 		private EncoderParameters encoderParams;
 		private float lastQuality = 1f;
 
+		public override bool ShouldDispose {
+			get { return true; }
+		}
+
 		public override void Execute(Server server, Client client, string args) {
 			if (IntPtr.Zero == WindowHandle) {
 				client.Send("Error: couldn't get window handle");
@@ -120,9 +124,9 @@ namespace GliderRemoteCompat.Commands {
 
 				srcBitmap.Save(s, JpegCodec, encoderParams);
 
-				using (FileStream f = new FileStream("test.jpg", FileMode.Create)) {
-					s.WriteTo(f);
-				}
+				//using (FileStream f = new FileStream("test.jpg", FileMode.Create)) {
+				//	s.WriteTo(f);
+				//}
 
 				//client.Send(string.Format("DBG: Length is {0} (0x{0:X})", s.Length));
 				client.Send(false, "Success! 4-byte length and JPEG stream follow (length={0})", s.Length);

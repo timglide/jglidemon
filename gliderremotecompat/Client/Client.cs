@@ -50,18 +50,39 @@ namespace GliderRemoteCompat {
 		}
 
 		private void InitCommands() {
-			commands = new Dictionary<string, Command>();
-			commands["help"]           = new Commands.Help();
-			commands["exit"]           = new Commands.Exit();
-			commands["status"]         = new Commands.Status();
-			commands["escapehi"]       = new Commands.EscapeHi();
-			commands["log"]            = new Commands.Log();
-			commands["nolog"]          = new Commands.NoLog();
-			commands["capturescale"]   = new Commands.CaptureScale();
-			commands["capturequality"] = new Commands.CaptureQuality();
-			commands["capture"]        = new Commands.Capture();
-			commands["startglide"]     = new Commands.StartGlide();
-			commands["stopglide"]      = new Commands.StopGlide();
+			commands = new Dictionary<string, Command>() {
+				{"help",           Commands.Help.Instance},
+				{"exit",           Commands.Exit.Instance},
+				{"exitglider",     Commands.NotImplemented.Instance},
+				{"status",         Commands.Status.Instance},
+				{"version",        Commands.NotImplemented.Instance},
+				{"log",            Commands.Log.Instance},
+				{"nolog",          Commands.NoLog.Instance},
+				{"say",            Commands.NotImplemented.Instance},
+				{"queuekeys",      Commands.NotImplemented.Instance},
+				{"clearsay",       Commands.NotImplemented.Instance},
+				{"forcekeys",      Commands.NotImplemented.Instance},
+				{"holdkey",        Commands.NotImplemented.Instance},
+				{"releasekey",     Commands.NotImplemented.Instance},
+				{"grabmouse",      Commands.NotImplemented.Instance},
+				{"setmouse",       Commands.NotImplemented.Instance},
+				{"getmouse",       Commands.NotImplemented.Instance},
+				{"clickmouse",     Commands.NotImplemented.Instance},
+				{"attach",         Commands.NotImplemented.Instance},
+				{"startglide",     Commands.StartGlide.Instance},
+				{"stopglide",      Commands.StopGlide.Instance},
+				{"loadprofile",    Commands.NotImplemented.Instance},
+				{"capture",        new Commands.Capture()},
+				{"capturecache",   Commands.NotImplemented.Instance},
+				{"capturescale",   Commands.CaptureScale.Instance},
+				{"capturequality", Commands.CaptureQuality.Instance},
+				{"queryconfig",    Commands.NotImplemented.Instance},
+				{"config",         Commands.NotImplemented.Instance},
+				{"selectgame",     Commands.NotImplemented.Instance},
+				{"getgamews",      Commands.NotImplemented.Instance},
+				{"setgamews",      Commands.NotImplemented.Instance},
+				{"escapehi",       Commands.NotImplemented.Instance},
+			};
 		}
 
 		internal void Debug(string str) {
@@ -71,7 +92,7 @@ namespace GliderRemoteCompat {
 		internal void Debug(string str, params object[] args) {
 //			Class1.Instance.Log("[{0}] {1}", thread.Name, string.Format(str, args));
 //			Console.WriteLine("[{0}] {1}", thread.Name, string.Format(str, args));
-			Logging.WriteDebug("[{0}] {1}", thread.Name, string.Format(str, args));
+//			Logging.WriteDebug("[{0}] {1}", thread.Name, string.Format(str, args));
 		}
 
 		public void Dispose() {
@@ -83,7 +104,7 @@ namespace GliderRemoteCompat {
 			client.Close();
 			server.RemoveClient(this);
 
-			foreach (Command c in commands.Values) {
+			foreach (Command c in commands.Values.Where(c => c.ShouldDispose)) {
 				c.Dispose();
 			}
 		}
@@ -176,7 +197,7 @@ namespace GliderRemoteCompat {
 			}
 		}
 
-		private static Regex
+		private static readonly Regex
 			ChatColorRegex = new Regex("\\|c[A-Za-z0-9]{6,8}"),
 			ChatLinkRegex = new Regex("\\|H.*?\\|h");
 

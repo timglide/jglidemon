@@ -82,7 +82,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="Commands\CaptureQuality.cs" />
     <Compile Include="Commands\CaptureScale.cs" />
-    <Compile Include="Commands\EscapeHi.cs" />
+    <Compile Include="Commands\NotImplemented.cs" />
     <Compile Include="Commands\Log.cs" />
     <Compile Include="Commands\NoLog.cs" />
     <Compile Include="Commands\StartGlide.cs" />

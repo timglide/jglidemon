@@ -50,7 +50,10 @@ namespace GliderRemoteCompat {
 
 			running = false;
 			listenThread.Interrupt();
-			tcpListener.Stop();
+
+			try {
+				tcpListener.Stop();
+			} catch (SocketException) { }
 
 			for (int i = clients.Count - 1; i >= 0; i--) {
 				clients[i].Dispose();
