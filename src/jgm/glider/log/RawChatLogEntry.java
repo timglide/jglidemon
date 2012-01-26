@@ -173,7 +173,7 @@ public class RawChatLogEntry extends LogEntry {
 	 */
 	private static Pattern ITEM_PATTERN =
 		Pattern.compile(
-			".*You\\s+(?:receive\\s+(?:loot|item)|create):\\s+\\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h(?:x(\\d+))?\\.*"
+			".*(?:(?:You\\s+receive|Received)\\s+(?:loot|item)|You\\s+create):\\s+\\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h(?:x(\\d+))?\\.*"
 	);
 
 		/* group 1: item id

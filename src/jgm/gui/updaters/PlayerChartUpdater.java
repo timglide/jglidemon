@@ -47,7 +47,11 @@ public class PlayerChartUpdater {
 					// don't add points when we're dced or not attached
 					if (!sm.connector.isConnected() || !status.attached) return;
 					
-					chart.addData(status.health, status.mana, status.targetHealth);
+					chart.addData(
+						status.health,
+						status.mana,
+						status.targetName.isEmpty()
+						? -1 : status.targetHealth);
 				}
 			}, 0, UPDATE_INTERVAL
 		);
