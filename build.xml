@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="_version"		value="0.18"/>
+	<property name="_version"		value="0.19beta"/>
 
     <path id="classpath">
 		<fileset dir="lib" includes="**/freetts.jar"/>
@@ -94,6 +94,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			<src path="${src_dir}"/>
 			<src path="${internal_dir}"/>
 			<include name="**"/>
+			<exclude name="**/org/json/Test.java"/>
 			<classpath refid="classpath"/>
 		</javac>
     </target>
@@ -310,7 +311,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 	<target name="helpfile">
-		<ant antfile="${basedir}/../docsrc/build.xml" inheritAll="false" target="htmlhelp"/>
+		<!--ant antfile="${basedir}/../docsrc/build.xml" inheritAll="false" target="htmlhelp"/-->
 		<copy todir="${bin_dir}" overwrite="true" verbose="true">
 			<fileset dir="${basedir}/../docsrc/output/htmlhelp" includes="JGlideMon.chm"/>
 		</copy>
@@ -324,7 +325,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 	<target name="full_installer" depends="zips,helpfile,jgminfo">
-		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
+		<exec executable="C:\Program Files (x86)\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
 			<arg value="/V3"/>
 			<arg value="/DAppVersion=${version}"/>
 			<arg value="/DInstallerType=full"/>
@@ -333,7 +334,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	</target>
 
 	<target name="core_installer" depends="zips,helpfile,jgminfo">
-		<exec executable="C:\Program Files\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
+		<exec executable="C:\Program Files (x86)\NSIS\makensis.exe" osfamily="Windows" failonerror="true">
 			<arg value="/V3"/>
 			<arg value="/DAppVersion=${version}"/>
 			<arg value="/DInstallerType=core"/>
