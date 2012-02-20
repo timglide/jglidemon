@@ -72,6 +72,10 @@ public class CommandManager implements Runnable {
 			thread.interrupt();
 	}
 	
+	/**
+	 * @deprecated No longer need to stop/start since we're targetting HonorBuddy now
+	 * @param keys
+	 */
 	private void sendKeys(String keys) {
 		if (null == keys)
 			throw new NullPointerException("keys cannot be null in sendKeys()");
@@ -180,11 +184,11 @@ public class CommandManager implements Runnable {
     		// send each item in the queue removing it
     		// if successful
     		while (!stop && null != (c = commands.peek())) {
-    			if (c.slash.equals("queuekeys")) {
-    				sendKeys(c.args);
-    				commands.poll();
-    				continue;
-    			}
+//    			if (c.slash.equals("queuekeys")) {
+//    				sendKeys(c.args);
+//    				commands.poll();
+//    				continue;
+//    			}
     			
     			sendCommand(c);
     			commands.poll();

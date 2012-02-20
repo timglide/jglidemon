@@ -37,81 +37,81 @@ var vars = {
 var updater = {
 	init: function() {
 		els = {
-			chattype:				$('chattype'),
-			chattospan:				$('chattospan'),
-			chatto:					$('chatto'),
-			chattext:				$('chattext'),
+			chattype:				$('#chattype'),
+			chattospan:				$('#chattospan'),
+			chatto:					$('#chatto'),
+			chattext:				$('#chattext'),
 
-			headerdiv:				$('headerdiv'),
-			hiddenheaders:			$('hiddenheaders'),
+			headerdiv:				$('#headerdiv'),
+			hiddenheaders:			$('#hiddenheaders'),
 
-			loadingheader:			$('loadingheader'),
-			discheader:				$('discheader'),
-			notattached:			$('notattached'),
-			mainheader:				$('mainheader'),
+			loadingheader:			$('#loadingheader'),
+			discheader:				$('#discheader'),
+			notattached:			$('#notattached'),
+			mainheader:				$('#mainheader'),
 
-			connected:				$('connected'),
+			connected:				$('#connected'),
 
-			classimage: 			$('classimage'),
-			name_text: 				$('name_text'),
-			level_text: 			$('level_text'),
-			class_text: 			$('class_text'),
-			health_text: 			$('health_text'),
-			health_percent: 		$('health_percent'),
-			secondary_text:			$('secondary_text'),
-			secondary_percent: 		$('secondary_percent'),
-			xp_bar:					$('xp_bar'),
-			xp_text: 				$('xp_text'),
-			xp_percent: 			$('xp_percent'),
-			xp_per_hour_text: 		$('xp_per_hour_text'),
-			ttl_text: 				$('ttl_text'),
-			mode_text: 				$('mode_text'),
-			profilediv:				$('profilediv'),
-			profile_text: 			$('profile_text'),
-			kills_text:				$('kills_text'),
-			loots_text: 			$('loots_text'),
-			deaths_text: 			$('deaths_text'),
+			classimage: 			$('#classimage'),
+			name_text: 				$('#name_text'),
+			level_text: 			$('#level_text'),
+			class_text: 			$('#class_text'),
+			health_text: 			$('#health_text'),
+			health_percent: 		$('#health_percent'),
+			secondary_text:			$('#secondary_text'),
+			secondary_percent: 		$('#secondary_percent'),
+			xp_bar:					$('#xp_bar'),
+			xp_text: 				$('#xp_text'),
+			xp_percent: 			$('#xp_percent'),
+			xp_per_hour_text: 		$('#xp_per_hour_text'),
+			ttl_text: 				$('#ttl_text'),
+			mode_text: 				$('#mode_text'),
+			profilediv:				$('#profilediv'),
+			profile_text: 			$('#profile_text'),
+			kills_text:				$('#kills_text'),
+			loots_text: 			$('#loots_text'),
+			deaths_text: 			$('#deaths_text'),
 
-			screenshot:				$('screenshot')
+			screenshot:				$('#screenshot')
 		};
 	},
 
 	url: urls.ajax + "status",
 
 	update: function() {
-		new Ajax.Request(updater.url, {
-			method: 'get',
-			asynchronous: true,
-			onSuccess: updater.handle,
-			onFailure: updater.fail
+		$.ajax(updater.url, {
+			cache: false,
+			dataType: 'json',
+			success: updater.handle,
+			//error: updater.fail
 		});
 	},
 
 
-	fail: function(t) {
-		alert('AJAX Error: ' + t.status + "\n" + t.statusText);
+	fail: function(jqXHR, textStatus, errorThrown) {
+		alert('AJAX Error: ' + errorThrown + "\n" + textStatus);
 	},
 
-	checkStatus: function(xml) {
-		var status = SNT(xml, '/status');
+	checkStatus: function(json) {
+		var status = json['status'];
 		if (status != 'success') {
-			var message = SNT(xml, '/message');
-			alert(status + ((message != '') ? "\n" + message : ""));
+//			var message = json['message'];
+//			alert(status + (message ? "\n" + message : ""));
 			return false;
 		}
 
 		return true;
 	},
 
-	handle: function(t) {
-		var xml = (new XMLDoc(t.responseText)).docNode;
-		if (!updater.checkStatus(xml)) return;
+	handle: function(json, textStatus, jqXHR) {
+		if (!updater.checkStatus(json)) return;
 
+		var app = json['app'];
 		var mainTitle = '';
-		var appTitle = SNT(xml, '/app/name') + ' ' + SNT(xml, '/app/version');
-		vars.connected = SNT(xml, '/app/connected') == 'true';
+		var appTitle = app['name'] + ' ' + app['version'];
+		vars.connected = app['connected'] == 'true';
 
-		settings.updateInterval = SNT(xml, '/app/update-interval');
+		settings.updateInterval = app['update-interval'];
 
 		if (!vars.connected) {
 			vars.attached = false;
@@ -119,64 +119,64 @@ var updater = {
 			setHeader(els.discheader);
 			els.connected.hide();
 		} else {
-			vars.attached = SNT(xml, '/glider/attached') == 'true';
+			var glider = json['glider'];
+			
+			vars.attached = glider['attached'] == 'true';
 
 			if (!vars.attached) {
 				mainTitle = 'Connected, Detached';
 				setHeader(els.notattached);
 				els.connected.hide();
 			} else {
-				vars.name = SNT(xml, '/glider/name');
-				vars.level = SNT(xml, '/glider/level');
-				vars.clazz = SNT(xml, '/glider/class');
-				vars.lcclazz = SNT(xml, '/glider/lcclass');
-				vars.health = SNT(xml, '/glider/health') + '%';
-				vars.mana = SNT(xml, '/glider/mana') + '%';
-				vars.manaName = SNT(xml, '/glider/mana-name');
-				vars.xp = SNT(xml, '/glider/xp');
-				vars.nextXp = SNT(xml, '/glider/next-xp');
-				vars.xpPercent = SNT(xml, '/glider/xp-percent') + '%';	
-				vars.xpPerHour = SNT(xml, '/glider/xp-per-hour');
-				vars.ttl = SNT(xml, '/glider/ttl');
-				vars.mode = SNT(xml, '/glider/mode');
-				vars.profile = SNT(xml, '/glider/profile');
-				vars.fullProfile = SNT(xml, '/glider/full-profile');
-				vars.kills = SNT(xml, '/glider/kills');
-				vars.loots = SNT(xml, '/glider/loots');
-				vars.deaths = SNT(xml, '/glider/deaths');
+				vars.name        = glider['name'];
+				vars.level       = glider['level'];
+				vars.clazz       = glider['class'];
+				vars.lcclazz     = glider['lcclass'];
+				vars.health      = glider['health'] + '%';
+				vars.mana        = glider['mana'] + '%';
+				vars.manaName    = glider['mana-name'];
+				vars.xp          = glider['xp'];
+				vars.nextXp      = glider['next-xp'];
+				vars.xpPercent   = glider['xp-percent'] + '%';	
+				vars.xpPerHour   = glider['xp-per-hour'];
+				vars.ttl         = glider['ttl'];
+				vars.mode        = glider['mode'];
+				vars.profile     = glider['profile'];
+				vars.fullProfile = glider['full-profile'];
+				vars.kills       = glider['kills'];
+				vars.loots       = glider['loots'];
+				vars.deaths      = glider['deaths'];
 
-				vars.targetName = SNT(xml, '/glider/target-name');
-				vars.targetLevel = SNT(xml, '/glider/target-level');
-				vars.targetHealth = SNT(xml, '/glider/target-health' + '%');
+				vars.targetName   = glider['target-name'];
+				vars.targetLevel  = glider['target-level'];
+				vars.targetHealth = glider['target-health'] + '%';
 
 				mainTitle = vars.name + ': Level ' + vars.level + ' ' + vars.clazz;
 				
-				els.classimage.setAttribute('alt', vars.clazz);
-				els.classimage.setAttribute('title', vars.clazz);
-				els.classimage.src = urls.image + 'classes/' + vars.lcclazz + '.png';
+				els.classimage.attr('alt',				vars.clazz);
+				els.classimage.attr('title',			vars.clazz);
+				els.classimage.attr('src',				urls.image + 'classes/' + vars.lcclazz + '.png');
 				IH(els.name_text,						vars.name);
 				IH(els.level_text, 						vars.level);
 				IH(els.class_text, 						vars.clazz);
 				IH(els.health_text, 					vars.health);
-				els.health_percent.style.width = 		vars.health;
+				els.health_percent.css('width', 		vars.health);
 				IH(els.secondary_text, 					vars.mana);
-				els.secondary_percent.style.width = 	vars.mana;
-				els.secondary_percent.style.className =	vars.manaName;
+				els.secondary_percent.css('width',		vars.mana);
+				els.secondary_percent.attr('class',		'info_percent ' + vars.manaName);
 				IH(els.xp_text, 						vars.xp + ' / ' + vars.nextXp + ' (' + vars.xpPercent + ')');
-				els.xp_percent.style.width = 			vars.xpPercent;
+				els.xp_percent.css('width', 			vars.xpPercent);
 				IH(els.xp_per_hour_text, 				vars.xpPerHour);
 				IH(els.ttl_text, 						vars.ttl);
 				IH(els.mode_text, 						vars.mode);
-				els.profilediv.onmouseover = function() {
-					Tip(vars.fullProfile);
-				};
+				els.profilediv.attr('title', vars.fullProfile);
 				IH(els.profile_text, 					vars.profile);
 				IH(els.kills_text, 						vars.kills);
 				IH(els.loots_text, 						vars.loots);
 				IH(els.deaths_text, 					vars.deaths);
 
 
-				els.screenshot.src =					urls.screenshot + 'rand=' + (new Date()).getTime();
+				els.screenshot.attr('src',				urls.screenshot + 'rand=' + (new Date()).getTime());
 
 				setHeader(els.mainheader);
 				els.connected.show();
@@ -187,17 +187,13 @@ var updater = {
 
 		document.title = mainTitle + appTitle;
 
-		setTimeout("updater.update();", settings.updateInterval);
+		setTimeout(updater.update, settings.updateInterval);
 	}
 };
 
-// shortcuts
-function SNT(xml, path) {
-	return xml.selectNodeText(path);
-}
-
 function IH(element, content) {
-	element.innerHTML = content;
+	// element.innterHTML = content;
+	element.html(content);
 }
 
 
@@ -208,17 +204,15 @@ var commands = {
 	url: urls.command + "command=",
 
 	typeChange: function() {
-		if (els.chattype.getValue() == 'w') {
+		if (els.chattype.val() == 'w') {
 			els.chattospan.show();
 		} else {
 			els.chattospan.hide();
 		}
 	},
 
-	handle: function(t) {
-		var xml = (new XMLDoc(t.responseText)).docNode;
-
-		if (!updater.checkStatus(xml)) return;
+	handle: function(json, textStatus, jqXHR) {
+		if (!updater.checkStatus(json)) return;
 
 		window.status = "Command sent successfully";
 
@@ -228,22 +222,20 @@ var commands = {
 	start: function() {
 		if (!(vars.connected && vars.attached)) return;
 
-		new Ajax.Request(commands.url + "start", {
-			method: 'get',
-			asynchronous: true,
-			onSuccess: commands.handle,
-			onFailure: updater.fail
+		$.ajax(commands.url + "start", {
+			dataType: 'json',
+			success: commands.handle,
+			//error: updater.fail
 		});
 	},
 
 	stop: function() {
 		if (!(vars.connected && vars.attached)) return;
 
-		new Ajax.Request(commands.url + "stop", {
-			method: 'get',
-			asynchronous: true,
-			onSuccess: commands.handle,
-			onFailure: updater.fail
+		$.ajax(commands.url + "stop", {
+			dataType: 'json',
+			success: commands.handle,
+			//error: updater.fail
 		});
 	},
 
@@ -251,9 +243,9 @@ var commands = {
 		if (!(vars.connected && vars.attached)) return;
 
 		var out = '';
-		var type = els.chattype.getValue();
-		var to   = trim(els.chatto.getValue());
-		var text = trim(els.chattext.getValue());
+		var type = els.chattype.val();
+		var to   = trim(els.chatto.val());
+		var text = trim(els.chattext.val());
 
 		if (type != 'Raw') {
 			out += '#13#/' + type + ' ';
@@ -280,15 +272,13 @@ var commands = {
 		}
 
 		if (out != '') {
-			new Ajax.Request(commands.url + "chat&keys=" + escape(out), {
-				method: 'get',
-				asynchronous: true,
-				onSuccess: commands.handle,
-				onFailure: updater.fail
+			$.ajax(commands.url + "chat&keys=" + escape(out), {
+				dataType: 'json',
+				success: commands.handle,
+				error: updater.fail
 			});
 
-			els.chatto.clear();
-			els.chattext.clear();
+			els.chattext.val('');
 		}
 	}
 };
@@ -298,13 +288,9 @@ var commands = {
 // helper/util stuff
 
 function setHeader(newHeader) {
-	// remove current header and place it in the hidden headers div
-	els.hiddenheaders.appendChild(
-		els.headerdiv.childElements()[0].remove());
-	// remove newHeader from the hidden headers div and place it in headerdiv
-	// thus making it the current header
-	els.headerdiv.appendChild(
-		newHeader.remove());
+	var oldHeader = els.headerdiv.children(":first").remove();
+	els.hiddenheaders.append(oldHeader);
+	els.headerdiv.append(newHeader);
 }
 
 function trim(str) {

@@ -23,6 +23,7 @@ package jgm.httpd;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * HTTP response.
@@ -55,11 +56,16 @@ public class Response
 	 * Convenience method that makes an InputStream out of
 	 * given text.
 	 */
-	public Response( String status, String mimeType, String txt )
+	public Response( String status, String mimeType, String txt)
 	{
 		this.status = status;
 		this.mimeType = mimeType;
-		this.data = new ByteArrayInputStream( txt.getBytes());
+		try {
+			this.data = new ByteArrayInputStream(txt.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// all javas should support utf8
+			this.data = new ByteArrayInputStream(new byte[0]);
+		}
 	}
 
 	/**

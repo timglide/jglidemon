@@ -110,9 +110,10 @@ public class HTTPD implements Runnable
 //		for (int i = 0; i < parts.length; i++)
 //			System.out.println("\t" + parts[i]);
 		
-		if (handlers.containsKey(parts[0])) {
+		if (null != handlers.get(parts[0])) {
 			ret = handlers.get(parts[0]).handle(parts.length > 1 ? parts[1] : "", method, headers, params);
 		} else {
+			log.fine("Url not found: [" + uri + "], parts: " + Arrays.toString(parts));
 			ret = Response.NOT_FOUND;
 		}
 		
@@ -180,11 +181,25 @@ public class HTTPD implements Runnable
 			if (jf.exists()) {
 				log.finest("Reading static files from JAR: " + jf.getCanonicalPath());
 				handlers.put("static", new JarFilesHandler(this, jf));
-			} else if (f.exists()) {
-				log.finest("Reading static files from folder: " + f.getCanonicalPath());
-				handlers.put("static", new FilesHandler(this, f));
 			} else {
-				log.warning("Unable to locate static files to serve");
+				if (!f.exists()) {
+					f = new File("bin/jgm/resources/httpd/static");
+				}
+				
+				if (!f.exists()) {
+					f = new File("src/jgm/resources/httpd/static");
+				}
+				
+				if (!f.exists()) {
+					f = null;
+				}
+					
+				if (null != f) {
+					log.finest("Reading static files from folder: " + f.getCanonicalPath());
+					handlers.put("static", new FilesHandler(this, f));
+				} else {
+					log.warning("Unable to locate static files to serve");
+				}
 			}
 		} catch (Throwable e) {
 			log.log(java.util.logging.Level.WARNING, "Exception initiating HTTPD", e);
