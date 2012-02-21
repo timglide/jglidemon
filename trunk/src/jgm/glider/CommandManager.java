@@ -150,7 +150,7 @@ public class CommandManager implements Runnable {
 		}
 	}
 	
-	private void sendCommand(Command c) {
+	private String sendCommand(Command c) {
 		if (!sm.connector.isConnected()) {
 			commands.clear();
 		}
@@ -158,10 +158,12 @@ public class CommandManager implements Runnable {
 		if (conn == null) conn = sm.keysConn;
 		
 		try {
-			c.getResult(conn);
+			return c.getResult(conn);
 		} catch (java.io.IOException e) {
 			log.log(Level.WARNING, "Error sending command", e);
 		}
+		
+		return null;
 	}
 	
 	public void run() {

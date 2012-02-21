@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>JGlideMon</title>
+
+<style type="text/css">
+.center {
+	text-align: center;
+}
+	
+#jqt ul li .right {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: none repeat scroll 0 0 #2F3031;
+    border-radius: 3px 3px 3px 3px;
+    color: #949698;
+    display: block;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 #0A0A0A;
+    width: auto;
+    z-index: 10;
+    float: right;
+    overflow: hidden;
+    padding: 2px 8px 4px;
+    position: relative;
+    text-align: right;
+    white-space: nowrap;
+}
+</style>
+
+<style type="text/css" media="screen">@import "/static/css/jqtouch.css";</style>
+<!--script src="/static/js/zepto.min.js" type="text/javascript" charset="utf-8"></script-->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="/static/js/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/jqtouch-jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/ajaxsettings.js"></script>
+<script type="text/javascript" src="/static/js/ajax.js"></script>
+<script src="/static/js/mobile.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+$(function() {
+	$('#theform').submit(function() {
+		commands.chat();
+		return false;
+	});
+
+	$('#sendchat').click(function() {
+		commands.chat();
+		return false;
+	});
+	
+	updater.init();
+	commands.typeChange(); // to ensure it's correct if the page is refreshed
+	updater.update();
+});
+</script>
+
+</head>
+
+<body>
+<div id="jqt">
+	<div id="loadingheader" class="current">
+		<div class="toolbar">
+			<h1>JGlideMon</h1>
+		</div>
+		<h1>Loading...</h1>
+	</div>
+	
+	<div id="discheader">
+		<div class="toolbar">
+			<h1>JGlideMon</h1>
+		</div>
+		<h1>Disconnected from Glider</h1>
+	</div>
+	
+	<div id="notattached">
+		<div class="toolbar">
+			<h1>JGlideMon</h1>
+		</div>
+		<h1>Connected to Glider, Detached</h1>
+	</div>
+	
+	<div id="home">
+		<div class="toolbar">
+			<h1>JGlideMon</h1>
+		</div>
+		<div class="scroll">
+			<ul class="rounded">
+				<li class="forward"><a href="#status">Status</a></li>
+				<li class="forward"><a href="#screenshot">Screenshot</a></li>
+				<li class="forward"><a href="#chat">Chat</a></li>
+				<li class="forward"><a href="#commands">Commands</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="status">
+		<div class="toolbar">
+			<h1>Status</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<ul class="edgetoedge">
+				<li class="center"><span id="name_text">Charname</span> (<span id="level_text">86</span> <span id="class_text">Warrior</span>)</li>
+				<li>Health <span id="health_text" class="right">86%</span></li>
+				<li><span id="secondary_name">Mana</span> <span id="secondary_text" class="right">59%</span></li>
+				<li>XP <span id="xp_text" class="right">123 / 456 (45%)</span></li>
+				<li>XP/Hr <span id="xp_per_hour_text" class="right">123456</span></li>
+				<li>Level up <span id="ttl_text" class="right">0:12:34</span></li>
+				<li>
+					KLD
+					<span class="right">
+						<span id="kills_text">12</span> / 
+						<span id="loots_text">34</span> / 
+						<span id="deaths_text">6</span>
+					</span>
+				</li>
+				<li>Mode <span id="mode_text" class="right">Questing</span></li>
+				<li class="sep">Profile</li>
+				<li id="profile_text">Some profile</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="screenshot">
+		<div class="toolbar">
+			<h1>Screenshot</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<div class="ssHolder" style="overflow: auto; width: 100%; height: 100%;">
+				<img src="/screenshot" alt="" />
+			</div>
+		</div>
+	</div>
+	
+	<div id="chat">
+		<div class="toolbar">
+			<h1>Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<form class="scroll" id="theform">
+			<ul class="edit rounded">
+				<li class="arrow">
+					<select id="chattype" onchange="commands.typeChange();">
+						<option value="w">Whisper</option>
+						<option value="r">Reply</option>
+						<option value="s">Say</option>
+						<option value="g">Guild</option>
+						<option>Raw</option>
+					</select>
+				</li>
+				<li id="chattospan"><input type="text" id="chatto" placeholder="Whisper to" /></li>
+				<li><input type="text" id="chattext" placeholder="Chat text" /></li>
+			</ul>
+			<div style="margin-top: 10px;">
+				<a href="#" id="sendchat" class="grayButton">Send</a>
+			</div>
+		</form>
+		<div class="info">
+			Only add slash command for Raw chat type.
+		</div>
+	</div>
+	
+	<div id="commands">
+		<div class="toolbar">
+			<h1>Commands</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll" style="margin-top: 10px;">
+			<a href="javascript:commands.start();" class="greenButton">Start Bot</a>
+			<br>
+			<a href="javascript:commands.stop();" class="redButton">Stop Bot</a>
+		</div>
+		<div class="info" style="display: none;">
+			Result of command goes here.
+		</div>
+	</div>
+</div>
+</body>
+</html>

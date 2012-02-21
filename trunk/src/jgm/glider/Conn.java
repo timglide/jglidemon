@@ -61,7 +61,9 @@ public class Conn {
 
 		log.info("Connecting to " + sm.host + "...");
 		s   = new Socket(sm.host, sm.port);
-		out = new PrintWriter(s.getOutputStream(), false);
+		out = new PrintWriter(
+			new BufferedWriter(
+				new OutputStreamWriter(s.getOutputStream(), "UTF-8")), true);
 		inStream = new BufferedInputStream(s.getInputStream());
 		send(sm.password);
 		readLine(); // ignore Authenticated OK line
