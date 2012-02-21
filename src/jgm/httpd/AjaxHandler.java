@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import java.util.Properties;
 
 import jgm.JGlideMon;
+import jgm.glider.Command;
 
 public class AjaxHandler extends Handler {
 	public static final String DEF_ERROR_JSON =
@@ -67,34 +68,15 @@ public class AjaxHandler extends Handler {
 				final String cmd = params.getProperty("command");
 				
 				if (cmd != null) {
-					Thread t = null;
-					
-					if (cmd.equals("start") || cmd.equals("stop")) {
-						t = new Thread() {
-							public void run() {
-								javax.swing.JButton btn = 
-									cmd.equals("start")
-									? sm.gui.ctrlPane.start
-									: sm.gui.ctrlPane.stop;
-								btn.doClick();
-							}
-						};
+					if (cmd.equals("start")) {
+						sm.cmd.add(Command.getStartCommand());
+					} else if (cmd.equals("stop")) {
+						sm.cmd.add(Command.getStopCommand());
 					} else if (cmd.equals("chat")) {
-						final String keys = params.getProperty("keys");
+						String keys = params.getProperty("keys");
 						
-						if (keys != null && !keys.trim().equals("")) {
-							t = new Thread() {
-								public void run() {
-									jgm.gui.tabs.ChatTab tab = 
-										sm.gui.tabsPane.chatLog;
-									Object last = tab.type.getSelectedItem();
-									tab.type.setSelectedItem(jgm.glider.ChatType.RAW);
-									tab.keys.setText(keys);
-									tab.send.doClick();
-									tab.reset.doClick();
-									tab.type.setSelectedItem(last);
-								}
-							};
+						if (keys != null && !"".equals(keys = keys.trim())) {
+							sm.cmd.add(Command.getChatCommand(keys));
 						} else {
 							root.put("status", "error");
 							root.put("message", "No keys provided for sending");
@@ -102,10 +84,6 @@ public class AjaxHandler extends Handler {
 					} else {
 						root.put("status", "error");
 						root.put("message", "Invalid command: " + cmd);
-					}
-					
-					if (t != null) {
-						t.start();
 					}
 				} else {
 					root.put("status", "error");
