@@ -71,7 +71,7 @@ namespace GliderRemoteCompat {
 
 		public override bool WantButton {
 			get {
-				return true;
+				return initialized;
 			}
 		}
 
@@ -148,6 +148,7 @@ namespace GliderRemoteCompat {
 		}
 
 		public override void OnButtonPress() {
+			if (!initialized) return;
 			SettingsForm.ShowDialog();
 		}
 

@@ -59,7 +59,7 @@ namespace GliderRemoteCompat {
 				{"log",            Commands.Log.Instance},
 				{"nolog",          Commands.NoLog.Instance},
 				{"say",            Commands.NotImplemented.Instance},
-				{"queuekeys",      Commands.NotImplemented.Instance},
+				{"queuekeys",      Commands.QueueKeys.Instance},
 				{"clearsay",       Commands.NotImplemented.Instance},
 				{"forcekeys",      Commands.NotImplemented.Instance},
 				{"holdkey",        Commands.NotImplemented.Instance},
@@ -97,10 +97,13 @@ namespace GliderRemoteCompat {
 
 		public void Dispose() {
 			running = false;
+
 			if (null != thread) {
 				thread.Interrupt();
 			}
+
 			logHandler.Dispose();
+			reader.Close();
 			client.Close();
 			server.RemoveClient(this);
 
@@ -130,6 +133,7 @@ namespace GliderRemoteCompat {
 			logHandler.ChatEnabled =
 				settings.LogChannels[ClientLogType.Chat] ||
 				settings.LogChannels[ClientLogType.ChatRaw];
+			logHandler.CombatEnabled    = settings.LogChannels[ClientLogType.Combat];
 		}
 
 		private void Run() {

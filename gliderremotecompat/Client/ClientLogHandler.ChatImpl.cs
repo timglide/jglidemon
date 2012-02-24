@@ -53,6 +53,14 @@ namespace GliderRemoteCompat {
 			client.SendLog(ClientLogType.ChatRaw, s);
 		}
 
+		private void AddCombatMessage(string s) {
+			client.SendLog(ClientLogType.Combat, Client.RemoveChatFormatting(s));
+		}
+
+		private void AddCombatMessage(string s, float r, float g, float b, int id, params object[] rest) {
+			client.SendLog(ClientLogType.Combat, Client.RemoveChatFormatting(s));
+		}
+
 		private void Lua_ChatMsg(object sender, LuaEventArgs args) {
 			try {
 				Lua_ChatMsg_Impl(sender, args);
@@ -112,38 +120,107 @@ namespace GliderRemoteCompat {
 				}
 			}
 
-			if (type == "SYSTEM" || type == "SKILL" || type == "LOOT" || type == "MONEY" ||				type == "OPENING" || type == "TRADESKILLS" || type == "PET_INFO" || type == "TARGETICONS") {
+			if (type == "SYSTEM" || type == "SKILL" || type == "LOOT" || type == "MONEY" ||
+				type == "OPENING" || type == "TRADESKILLS" || type == "PET_INFO" || type == "TARGETICONS") {
 				AddMessage(arg1, info.r, info.g, info.b, info.id);
 			} else if (type.StartsWith("COMBAT_")) {
-				AddMessage(arg1, info.r, info.g, info.b, info.id);			} else if (type.StartsWith("SPELL_")) {
-				AddMessage(arg1, info.r, info.g, info.b, info.id);			} else if (type.StartsWith("BG_SYSTEM_")) {
-				AddMessage(arg1, info.r, info.g, info.b, info.id);			} else if (type.StartsWith("ACHIEVEMENT")) {				AddMessage(Tools.sprintf(arg1, "|Hplayer:" + arg2 + "|h" + "[" + coloredName + "]" + "|h"), info.r, info.g, info.b, info.id);			} else if (type.StartsWith("GUILD_ACHIEVEMENT")) {
-				AddMessage(Tools.sprintf(arg1, "|Hplayer:" + arg2 + "|h" + "[" + coloredName + "]" + "|h"), info.r, info.g, info.b, info.id);			} else if (type == "IGNORED") {
-				AddMessage(Tools.sprintf(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);			} else if (type == "FILTERED") {
+				switch (type) {
+					case "COMBAT_XP_GAIN":
+					case "COMBAT_HONOR_GAIN":
+						AddCombatMessage(arg1, info.r, info.g, info.b, info.id);
+						break;
+
+					default:
+						AddMessage(arg1, info.r, info.g, info.b, info.id);
+						break;
+				}
+			} else if (type.StartsWith("SPELL_")) {
+				AddMessage(arg1, info.r, info.g, info.b, info.id);
+			} else if (type.StartsWith("BG_SYSTEM_")) {
+				AddMessage(arg1, info.r, info.g, info.b, info.id);
+			} else if (type.StartsWith("ACHIEVEMENT")) {
+				AddMessage(Tools.sprintf(arg1, "|Hplayer:" + arg2 + "|h" + "[" + coloredName + "]" + "|h"), info.r, info.g, info.b, info.id);
+			} else if (type.StartsWith("GUILD_ACHIEVEMENT")) {
+				AddMessage(Tools.sprintf(arg1, "|Hplayer:" + arg2 + "|h" + "[" + coloredName + "]" + "|h"), info.r, info.g, info.b, info.id);
+			} else if (type == "IGNORED") {
+				AddMessage(Tools.sprintf(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
+			} else if (type == "FILTERED") {
 				AddMessage(Tools.sprintf(CHAT_FILTERED, arg2), info.r, info.g, info.b, info.id);
 			} else if (type == "RESTRICTED") {
 				AddMessage(CHAT_RESTRICTED, info.r, info.g, info.b, info.id);
 			} else if (type == "CHANNEL_LIST") {
 				if (channelLength > 0) {
-					AddMessage(Tools.sprintf(_G["CHAT_" + type + "_GET"] + arg1, int.Parse(arg8), arg4), info.r, info.g, info.b, info.id);				} else {					AddMessage(arg1, info.r, info.g, info.b, info.id);				}			} else if (type == "CHANNEL_NOTICE_USER") {
-				string globalstring = _G["CHAT_" + arg1 + "_NOTICE_BN"];
+					AddMessage(Tools.sprintf(_G["CHAT_" + type + "_GET"] + arg1, int.Parse(arg8), arg4), info.r, info.g, info.b, info.id);
+				} else {
+					AddMessage(arg1, info.r, info.g, info.b, info.id);
+				}
+			} else if (type == "CHANNEL_NOTICE_USER") {
+				string globalstring = _G["CHAT_" + arg1 + "_NOTICE_BN"];
+
 				if ("" == globalstring) {
-					globalstring = _G["CHAT_" + arg1 + "_NOTICE"];				}
+					globalstring = _G["CHAT_" + arg1 + "_NOTICE"];
+				}
+
 				if (arg5.Length > 0) {
-					// TWO users in this notice (E.G. x kicked y)					AddMessage(Tools.sprintf(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
-				} else if (arg1 == "INVITE" ) {					AddMessage(Tools.sprintf(globalstring, arg4, arg2), info.r, info.g, info.b, info.id);				} else {					AddMessage(Tools.sprintf(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);				}			} else if (type == "CHANNEL_NOTICE") {				string globalstring = _G["CHAT_" + arg1 + "_NOTICE_BN"];
+					// TWO users in this notice (E.G. x kicked y)
+					AddMessage(Tools.sprintf(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
+				} else if (arg1 == "INVITE" ) {
+					AddMessage(Tools.sprintf(globalstring, arg4, arg2), info.r, info.g, info.b, info.id);
+				} else {
+					AddMessage(Tools.sprintf(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
+				}
+			} else if (type == "CHANNEL_NOTICE") {
+				string globalstring = _G["CHAT_" + arg1 + "_NOTICE_BN"];
+
 				if ("" == globalstring) {
-					globalstring = _G["CHAT_" + arg1 + "_NOTICE"];				}
+					globalstring = _G["CHAT_" + arg1 + "_NOTICE"];
+				}
+
 				if (int.Parse(arg10) > 0 ) {
-					arg4 = arg4 + " " + arg10;				}
+					arg4 = arg4 + " " + arg10;
+				}
 
 				int accessID = 0; //ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 				int typeID = 0; //ChatHistory_GetAccessID(infoType, arg8);
-				AddMessage(Tools.sprintf(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, false, accessID, typeID);			} else if (type == "BN_CONVERSATION_NOTICE") {				string channelLink = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);				string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), arg8, arg2);				string message = Tools.sprintf(_G["CHAT_CONVERSATION_" + arg1 + "_NOTICE"], channelLink, playerLink);				int accessID = 0; //ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);				int typeID = 0; //ChatHistory_GetAccessID(infoType, arg8);				AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);			} else if (type == "BN_CONVERSATION_LIST") {				string channelLink = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);				string message = Tools.sprintf(CHAT_BN_CONVERSATION_LIST, channelLink, arg1);				AddMessage(message, info.r, info.g, info.b, info.id, false/*, accessID, typeID*/);			} else if (type == "BN_INLINE_TOAST_ALERT") {				string globalstring = _G["BN_INLINE_TOAST_" + arg1];				string message;
+				AddMessage(Tools.sprintf(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, false, accessID, typeID);
+			} else if (type == "BN_CONVERSATION_NOTICE") {
+				string channelLink = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
+				string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), arg8, arg2);
+				string message = Tools.sprintf(_G["CHAT_CONVERSATION_" + arg1 + "_NOTICE"], channelLink, playerLink);
+				int accessID = 0; //ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
+				int typeID = 0; //ChatHistory_GetAccessID(infoType, arg8);
+				AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);
+			} else if (type == "BN_CONVERSATION_LIST") {
+				string channelLink = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
+				string message = Tools.sprintf(CHAT_BN_CONVERSATION_LIST, channelLink, arg1);
+				AddMessage(message, info.r, info.g, info.b, info.id, false/*, accessID, typeID*/);
+			} else if (type == "BN_INLINE_TOAST_ALERT") {
+				string globalstring = _G["BN_INLINE_TOAST_" + arg1];
+				string message;
+
 				if (arg1 == "FRIEND_REQUEST") {
-					message = globalstring;				} else if (arg1 == "FRIEND_PENDING") {					message = Tools.sprintf(BN_INLINE_TOAST_FRIEND_PENDING, 0 /*BNGetNumFriendInvites()*/);				} else if (arg1 == "FRIEND_REMOVED") {					message = Tools.sprintf(globalstring, arg2);				} else {					string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);					message = Tools.sprintf(globalstring, playerLink);				}
-				AddMessage(message, info.r, info.g, info.b, info.id);			} else if (type == "BN_INLINE_TOAST_BROADCAST") {				if (arg1 != "") {
-					arg1 = RemoveExtraSpaces(arg1);					string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);					AddMessage(Tools.sprintf(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);				}			} else if (type == "BN_INLINE_TOAST_BROADCAST_INFORM") {				if (arg1 != "") {					arg1 = RemoveExtraSpaces(arg1);					AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);				}
+					message = globalstring;
+				} else if (arg1 == "FRIEND_PENDING") {
+					message = Tools.sprintf(BN_INLINE_TOAST_FRIEND_PENDING, 0 /*BNGetNumFriendInvites()*/);
+				} else if (arg1 == "FRIEND_REMOVED") {
+					message = Tools.sprintf(globalstring, arg2);
+				} else {
+					string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
+					message = Tools.sprintf(globalstring, playerLink);
+				}
+
+				AddMessage(message, info.r, info.g, info.b, info.id);
+			} else if (type == "BN_INLINE_TOAST_BROADCAST") {
+				if (arg1 != "") {
+					arg1 = RemoveExtraSpaces(arg1);
+					string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
+					AddMessage(Tools.sprintf(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
+				}
+			} else if (type == "BN_INLINE_TOAST_BROADCAST_INFORM") {
+				if (arg1 != "") {
+					arg1 = RemoveExtraSpaces(arg1);
+					AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
+				}
 			} else if (type == "BN_INLINE_TOAST_CONVERSATION") {
 				AddMessage(Tools.sprintf(BN_INLINE_TOAST_CONVERSATION, arg1), info.r, info.g, info.b, info.id);
 			} else {
@@ -238,10 +315,23 @@ namespace GliderRemoteCompat {
 					}
 				}
 
-				// Add Channel				//arg4 = gsub(arg4, "%s%-%s.*", "");				if (chatGroup  == "BN_CONVERSATION") {					body = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8) + body;				} else if (channelLength > 0) {					body = "|Hchannel:channel:" + arg8 + "|h[" + arg4 + "]|h " + body;				}							// Add Timestamps				//if (CHAT_TIMESTAMP_FORMAT) {				//    body = BetterDate(CHAT_TIMESTAMP_FORMAT, time()) + body;				//}
+				// Add Channel
+				//arg4 = gsub(arg4, "%s%-%s.*", "");
+				if (chatGroup  == "BN_CONVERSATION") {
+					body = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8) + body;
+				} else if (channelLength > 0) {
+					body = "|Hchannel:channel:" + arg8 + "|h[" + arg4 + "]|h " + body;
+				}
+			
+				// Add Timestamps
+				//if (CHAT_TIMESTAMP_FORMAT) {
+				//    body = BetterDate(CHAT_TIMESTAMP_FORMAT, time()) + body;
+				//}
 
 				int accessID = 0; // ChatHistory_GetAccessID(chatGroup, chatTarget);
-				int typeID = 0; // ChatHistory_GetAccessID(infoType, chatTarget);				AddMessage(body, info.r, info.g, info.b, info.id, false, accessID, typeID);
-			}		}
+				int typeID = 0; // ChatHistory_GetAccessID(infoType, chatTarget);
+				AddMessage(body, info.r, info.g, info.b, info.id, false, accessID, typeID);
+			}
+		}
 	}
 }

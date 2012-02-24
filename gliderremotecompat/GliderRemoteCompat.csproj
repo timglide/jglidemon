@@ -76,8 +76,10 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Client\Client.cs" />
     <Compile Include="Client\ClientLogHandler.ChatTypeInfo.cs" />
+    <Compile Include="Client\ClientLogHandler.CombatImpl.cs" />
     <Compile Include="Client\ClientLogHandler.Constants.cs" />
-    <Compile Include="Client\ClientLogHandler.Impl.cs" />
+    <Compile Include="Client\ClientLogHandler.ChatImpl.cs" />
+    <Compile Include="Client\ClientLogHandler.GliderImpl.cs" />
     <Compile Include="Client\ClientLogType.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Commands\CaptureQuality.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="Commands\NotImplemented.cs" />
     <Compile Include="Commands\Log.cs" />
     <Compile Include="Commands\NoLog.cs" />
+    <Compile Include="Commands\QueueKeys.cs" />
     <Compile Include="Commands\StartGlide.cs" />
     <Compile Include="Commands\StatusDummy.cs" />
     <Compile Include="Commands\Exit.cs" />

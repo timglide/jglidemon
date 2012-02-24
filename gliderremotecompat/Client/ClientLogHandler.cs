@@ -5,6 +5,7 @@ using System.Text;
 using Styx.WoWInternals;
 using Styx.Helpers;
 using System.Drawing;
+using Styx;
 
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler : IDisposable {
@@ -53,14 +54,12 @@ namespace GliderRemoteCompat {
 
 				if (value) {
 					Logging.OnDebug += Logging_OnDebug;
+					BotEvents.Player.OnPlayerDied += Player_OnPlayerDied;
 				} else {
 					Logging.OnDebug -= Logging_OnDebug;
+					BotEvents.Player.OnPlayerDied -= Player_OnPlayerDied;
 				}
 			}
-		}
-
-		private void Logging_OnDebug(string msg, Color color) {
-			client.SendLog(ClientLogType.GliderLog, msg);
 		}
 
 
@@ -85,6 +84,24 @@ namespace GliderRemoteCompat {
 					foreach (string e in ChatEvents) {
 						Lua.Events.DetachEvent(e, Lua_ChatMsg);
 					}
+				}
+			}
+		}
+
+
+		private bool combatEnabled = false;
+
+		public bool CombatEnabled {
+			get { return combatEnabled; }
+			set {
+				if (value == combatEnabled) return;
+
+				combatEnabled = value;
+
+				if (value) {
+					BotEvents.Player.OnMobKilled += Player_OnMobKilled;
+				} else {
+					BotEvents.Player.OnMobKilled -= Player_OnMobKilled;
 				}
 			}
 		}
