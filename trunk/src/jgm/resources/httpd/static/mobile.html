@@ -26,10 +26,13 @@
     text-align: right;
     white-space: nowrap;
 }
+
+div.chat-text {
+	color: white;
+}
 </style>
 
 <style type="text/css" media="screen">@import "/static/css/jqtouch.css";</style>
-<!--script src="/static/js/zepto.min.js" type="text/javascript" charset="utf-8"></script-->
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="/static/js/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/jqtouch-jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -59,7 +62,7 @@ $(function() {
 
 <body>
 <div id="jqt">
-	<div id="loadingheader" class="current">
+	<div id="loadingheader">
 		<div class="toolbar">
 			<h1>JGlideMon</h1>
 		</div>
@@ -80,7 +83,7 @@ $(function() {
 		<h1>Connected to Glider, Detached</h1>
 	</div>
 	
-	<div id="home">
+	<div id="home" class="current">
 		<div class="toolbar">
 			<h1>JGlideMon</h1>
 		</div>
@@ -88,7 +91,8 @@ $(function() {
 			<ul class="rounded">
 				<li class="forward"><a href="#status">Status</a></li>
 				<li class="forward"><a href="#screenshot">Screenshot</a></li>
-				<li class="forward"><a href="#chat">Chat</a></li>
+				<li class="forward"><a href="#view-chat">View Chat / Logs</a></li>
+				<li class="forward"><a href="#send-chat">Send Chat</a></li>
 				<li class="forward"><a href="#commands">Commands</a></li>
 			</ul>
 		</div>
@@ -128,15 +132,106 @@ $(function() {
 			<a href="#" class="back">Back</a>
 		</div>
 		<div class="scroll">
-			<div class="ssHolder" style="overflow: auto; width: 100%; height: 100%;">
-				<img src="/screenshot" alt="" />
+			<div class="screenshotHolder" style="overflow: auto; width: 100%; height: 100%;">
+				<img id="screenshotImage" src="/static/img/classes/unknown.png" alt="" />
 			</div>
 		</div>
 	</div>
 	
-	<div id="chat">
+	<div id="view-chat">
 		<div class="toolbar">
-			<h1>Chat</h1>
+			<h1>View Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<ul class="rounded">
+				<li class="forward"><a href="#view-chat-all">All Chat</a></li>
+				<li class="forward"><a href="#view-chat-public">Public Chat</a></li>
+				<li class="forward"><a href="#view-chat-whisper">Whisper / Say / Yell</a></li>
+				<li class="forward"><a href="#view-chat-guild">Guild Chat</a></li>
+				<li class="forward"><a href="#view-chat-urgent">Urgent Log</a></li>
+				<li class="forward"><a href="#view-chat-combat">Combat Log</a></li>
+				<li class="forward"><a href="#view-chat-glider">Bot Log</a></li>
+				<li class="forward"><a href="#view-chat-status">Status Log</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="view-chat-all">
+		<div class="toolbar">
+			<h1>All Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-all-container" data-type="all">
+		</div>
+	</div>
+	
+	<div id="view-chat-public">
+		<div class="toolbar">
+			<h1>Public Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-public-container" data-type="public">
+		</div>
+	</div>
+	
+	<div id="view-chat-whisper">
+		<div class="toolbar">
+			<h1>Whisper/Say/Yell</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-whisper-container" data-type="whisper">
+		</div>
+	</div>
+	
+	<div id="view-chat-guild">
+		<div class="toolbar">
+			<h1>Guild Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-guild-container" data-type="guild">
+		</div>
+	</div>
+	
+	<div id="view-chat-urgent">
+		<div class="toolbar">
+			<h1>Urgent Log</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-urgent-container" data-type="urgent">
+		</div>
+	</div>
+	
+	<div id="view-chat-combat">
+		<div class="toolbar">
+			<h1>Combat Log</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-combat-container" data-type="combat">
+		</div>
+	</div>
+	
+	<div id="view-chat-glider">
+		<div class="toolbar">
+			<h1>Bot Log</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-glider-container" data-type="glider">
+		</div>
+	</div>
+	
+	<div id="view-chat-status">
+		<div class="toolbar">
+			<h1>Status Log</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-status-container" data-type="status">
+		</div>
+	</div>
+	
+	<div id="send-chat">
+		<div class="toolbar">
+			<h1>Send Chat</h1>
 			<a href="#" class="back">Back</a>
 		</div>
 		<form class="scroll" id="theform">

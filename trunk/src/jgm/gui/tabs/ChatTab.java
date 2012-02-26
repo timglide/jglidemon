@@ -38,11 +38,11 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 	public LogTab whisper;
 	public LogTab guild;
 	
-	public  JComboBox type;
-	public  JTextField to;
-	public  JTextField keys;
-	public  JButton send;
-	public  JButton reset;
+	public JComboBox type;
+	public JTextField to;
+	public JTextField keys;
+	public JButton send;
+	public JButton reset;
 	
 	public ChatTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(), "Chat");

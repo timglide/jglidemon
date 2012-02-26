@@ -60,6 +60,12 @@ public class Response
 	{
 		this.status = status;
 		this.mimeType = mimeType;
+		
+		if (null == txt || txt.isEmpty()) {
+			this.data = null;
+			return;
+		}
+		
 		try {
 			this.data = new ByteArrayInputStream(txt.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {

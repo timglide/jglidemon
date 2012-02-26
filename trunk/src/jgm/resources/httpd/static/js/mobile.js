@@ -4,16 +4,19 @@ var jQT = new $.jQTouch({
     preloadImages: []
 });
 
-updater._initOrig = updater.init;
-updater.init = function() {
-	updater._initOrig();
-	
-	els.screenshot = $('#screenshot div.ssHolder img');
-	els.mainheader = $('#home');
-	els.lastheader = null;
-};
+(function() {
+	var updater_initOrig = updater.init;
+	updater.init = function() {
+		updater_initOrig();
+		
+		els.mainheader = $('#home');
+		els.lastheader = null;
+	};
+})();
 
 setHeader = function(newHeader) {
+	return;
+	
 	if (els.lastheader == newHeader) {
 		return;
 	}

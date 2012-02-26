@@ -21,7 +21,9 @@
 package jgm.httpd;
 
 import java.io.*;
+import java.text.ParseException;
 import java.util.jar.*;
+import java.util.Date;
 import java.util.Properties;
 
 
@@ -34,11 +36,13 @@ import java.util.Properties;
 public class JarFilesHandler extends Handler {
 	static final String BASE_FOLDER = "jgm/resources/httpd/static/";
 	JarFile jar;
+	Date lastModified;
 	
 	public JarFilesHandler(HTTPD httpd, File f) throws IOException {
 		super(httpd);
 		
 		jar = new JarFile(f);
+		lastModified = new Date(f.lastModified());
 		
 /*		java.util.Enumeration<JarEntry> e = jar.entries();
 
@@ -78,6 +82,22 @@ public class JarFilesHandler extends Handler {
 			}
 		}
 		
+		// not fully working yet :/
+//		String ifModSince = headers.getProperty("if-modified-since");
+//		
+//		if (null != ifModSince) {
+//			try {
+//				Date lastMod = HTTPD.gmtFrmt.parse(ifModSince);
+//				
+//				if (lastModified.getTime() <= lastMod.getTime()) {
+//					// the file isn't newer than the time specified in the header
+//					return new Response(HTTPD.HTTP_NOTMODIFIED, null, (InputStream)null);
+//				}
+//			} catch (ParseException e) {
+//				// return the file normally below
+//			}
+//		}
+		
 		// Get MIME type from file name extension, if possible
 		String mime = null;
 		int dot = uri.lastIndexOf( '.' );
@@ -90,6 +110,7 @@ public class JarFilesHandler extends Handler {
 		
 		try {
 			ret = new Response(HTTPD.HTTP_OK, mime, jar.getInputStream(je));
+			ret.addHeader("Last-Modified", HTTPD.gmtFrmt.format(lastModified));
 		} catch (IOException e) {
 			ret = new Response( HTTPD.HTTP_INTERNALERROR, HTTPD.MIME_PLAINTEXT,
 				"INTERNAL ERRROR: " + e.getClass().getName() + ": " + e.getMessage() );

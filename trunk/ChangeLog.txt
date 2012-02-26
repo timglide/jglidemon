@@ -12,7 +12,7 @@ Version 0.19
 - The Health/Mana Chart tab no longer displays the yellow target
   health line at 0% when there is no target.
 - Corrected level cap to 85, it should work at 90, 95, etc.
-- Made many improvements to the built-in webserver including a mobile
+- Made *many* improvements to the built-in webserver including a mobile
   device friendly version.
 
 Version 0.18
