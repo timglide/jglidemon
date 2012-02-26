@@ -2,24 +2,117 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using Styx.Plugins.PluginClass;
-using Styx.WoWInternals.WoWObjects;
-using Styx;
-using Styx.WoWInternals;
-using Styx.Logic.Pathing;
 using System.Diagnostics;
 using System.Threading;
+using System.IO;
+using System.Xml.Serialization;
+using System.Drawing;
+
+using Styx;
 using Styx.Helpers;
+using Styx.WoWInternals;
+using Styx.Logic.Pathing;
+using Styx.Plugins.PluginClass;
+using Styx.WoWInternals.WoWObjects;
+
 
 namespace BattleStandardDropper {
+	[Serializable]
+	public class Settings {
+		static Settings() {
+			string path = Process.GetCurrentProcess().MainModule.FileName;
+			path = Path.GetDirectoryName(path);
+			path = Path.Combine(path, "Tripper.tools.dll");
+			Assembly.LoadFrom(path);
+			Type t = typeof(Tripper.Tools.Math.Vector3);
+		}
+
+		private static Settings instance;
+
+		public static Settings Instance {
+			get {
+				if (null == instance) {
+					instance = Load();
+				}
+				
+				return instance;
+			}
+		}
+
+		#region Settings Serialization
+
+		public static string ConfigFileFormat = "BattleStandardDropper_{0}.config";
+
+		public static string ConfigFile {
+			get { return string.Format(ConfigFileFormat, StyxWoW.Me.Name); }
+		}
+
+		public static string SavePath {
+			get {
+				string path = Process.GetCurrentProcess().MainModule.FileName;
+				path = Path.GetDirectoryName(path);
+				path = Path.Combine(path, @"Plugins\BattleStandardDropper\settings");
+				return path;
+			}
+		}
+
+		private static XmlSerializer serializer;
+
+		private static XmlSerializer Serializer {
+			get {
+				if (null == serializer) {
+					serializer = new XmlSerializer(typeof(Settings));
+				}
+
+				return serializer;
+			}
+		}
+
+		public static Settings Load() {
+			string path = SavePath;
+			string file = Path.Combine(path, ConfigFile);
+
+			try {
+				using (FileStream fStream = new FileStream(file, FileMode.Open, FileAccess.Read)) {
+					return (Settings)Serializer.Deserialize(fStream);
+				}
+			} catch {
+				return new Settings();
+			}
+		}
+
+		public void Save() {
+			string path = SavePath;
+			string file = Path.Combine(path, ConfigFile);
+
+			if (!Directory.Exists(path)) {
+				Directory.CreateDirectory(path);
+			}
+
+			try {
+				using (FileStream fStream = new FileStream(file, FileMode.Create, FileAccess.Write)) {
+					Serializer.Serialize(fStream, this);
+				}
+			} catch (Exception e) {
+				Logging.Write(Color.Red, "Error saving BattleStandardDropper settings");
+				Logging.WriteException(Color.Red, e);
+			}
+		}
+
+		#endregion
+
+		public uint DropZone = 0;
+		public uint DropLocationRange = 30;
+		public float DropX = 0;
+		public float DropY = 0;
+		public float DropZ = 0;
+	}
+
 	public class BattleStandardDropper : HBPlugin {
 		private const string _revision = "$Revision$";
 		private static readonly int revision;
 		private static readonly Version version;
 
-		private const uint DropLocationRange = 30;
-		private const uint DropLocationRangeSqr = DropLocationRange * DropLocationRange;
 		private const uint StandardCooldownMS = (uint)(10.1 * 60 * 1000);
 
 		private static readonly uint[] BattleStandards = {
@@ -42,8 +135,43 @@ namespace BattleStandardDropper {
 
 		private const uint GuildFaction = 1168;
 
-		private uint dropZone = 0;
-		private WoWPoint dropLocation = WoWPoint.Empty;
+
+		private static uint DropZone {
+			get { return Settings.Instance.DropZone; }
+			set { Settings.Instance.DropZone = value; }
+		}
+
+		// workaround
+		private static WoWPoint dropLocation = WoWPoint.Empty;
+
+		private static WoWPoint DropLocation {
+			get {
+				if (WoWPoint.Empty == dropLocation) {
+					dropLocation = new WoWPoint(
+						Settings.Instance.DropX,
+						Settings.Instance.DropY,
+						Settings.Instance.DropZ);
+				}
+
+				return dropLocation;
+			}
+
+			set {
+				Settings.Instance.DropX = value.X;
+				Settings.Instance.DropY = value.Y;
+				Settings.Instance.DropZ = value.Z;
+				dropLocation = value;
+			}
+		}
+
+		private static uint DropLocationRange {
+			get { return Settings.Instance.DropLocationRange; }
+			set { Settings.Instance.DropLocationRange = value; }
+		}
+
+		private static uint DropLocationRangeSqr {
+			get { return Settings.Instance.DropLocationRange * Settings.Instance.DropLocationRange; }
+		}
 
 		static BattleStandardDropper() {
 			string str = string.Empty;
@@ -98,9 +226,14 @@ namespace BattleStandardDropper {
 		}
 
 		public override void OnButtonPress() {
-			dropZone = Me.ZoneId;
-			dropLocation = Me.Location;
-			Logging.Write("Will drop battle standard around {0}", dropLocation);
+			if (!initialized) {
+				return;
+			}
+
+			DropZone = Me.ZoneId;
+			DropLocation = Me.Location;
+			Logging.Write("Will drop battle standard around {0}", DropLocation);
+			Settings.Instance.Save();
 		}
 
 		private void FindBattleStandard() {
@@ -128,18 +261,24 @@ namespace BattleStandardDropper {
 		private uint battleStandardBuffId = 0;
 
 		public override void Initialize() {
+			dropLocation = WoWPoint.Empty;
 			FindBattleStandard();
-			initialized = true;
 			useStandardSW.Reset();
+			initialized = true;
 			
 			if (0 != battleStandardId) {
 				Logging.Write("BattleStandardDropper initialized with standard = {0}", battleStandardId);
+
+				if (WoWPoint.Empty != DropLocation) {
+					Logging.Write("Will drop battle standard around {0}", DropLocation);
+				}
 			} else {
 				Logging.Write("BattleStandardDropper initialized but no standard found or you're not friendly with guild!");
 			}
 		}
 
 		public override void Dispose() {
+			Settings.Instance.Save();
 			initialized = false;
 			useStandardSW.Reset();
 		}
@@ -149,7 +288,7 @@ namespace BattleStandardDropper {
 				return;
 			}
 
-			if (WoWPoint.Empty == dropLocation) {
+			if (WoWPoint.Empty == DropLocation) {
 				return;
 			}
 
@@ -157,7 +296,7 @@ namespace BattleStandardDropper {
 				return;
 			}
 
-			if (dropZone != Me.ZoneId) {
+			if (DropZone != Me.ZoneId) {
 				return;
 			}
 
@@ -165,7 +304,7 @@ namespace BattleStandardDropper {
 				return;
 			}
 
-			if (dropLocation.DistanceSqr(Me.Location) > DropLocationRangeSqr) {
+			if (DropLocation.DistanceSqr(Me.Location) > DropLocationRangeSqr) {
 				return;
 			}
 
