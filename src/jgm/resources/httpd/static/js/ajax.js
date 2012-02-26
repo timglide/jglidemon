@@ -35,8 +35,12 @@ var vars = {
 
 // this is responsible for the bulk of the updating
 var updater = {
+	chatTimeouts: {},
+	
 	init: function() {
 		els = {
+			theform:				$('#theform'),
+			
 			chattype:				$('#chattype'),
 			chattospan:				$('#chattospan'),
 			chatto:					$('#chatto'),
@@ -72,24 +76,100 @@ var updater = {
 			loots_text: 			$('#loots_text'),
 			deaths_text: 			$('#deaths_text'),
 
-			screenshot:				$('#screenshot')
+			screenshot:				$('#screenshotImage'),
+			
+			chat: {
+				all:				$('#chat-all-container'),
+				public:				$('#chat-public-container'),
+				whisper:			$('#chat-whisper-container'),
+				guild:				$('#chat-guild-container'),
+				urgent:				$('#chat-urgent-container'),
+				combat:				$('#chat-combat-container'),
+				glider:				$('#chat-glider-container'),
+				status:				$('#chat-status-container'),
+			}
 		};
+		
+		for (var key in els.chat) {
+			updater.bindChatClick(key);
+		}
 	},
 
+	bindChatClick: function(type) {
+		$('a[href="#view-chat-' + type + '"]').click(function() {
+			if (updater.chatTimeouts[type]) {
+				clearTimeout(updater.chatTimeouts[type]);
+			}
+			
+			var element = els.chat[type];
+			
+			if ('auto' != element.css('overflow')) {
+				element = element.parent();
+			}
+			
+			element.animate({
+				scrollTop: element[0].scrollHeight});
+			updater.updateChat(els.chat[type], true);
+		});
+	},
+	
 	url: urls.ajax + "status",
-
+	
 	update: function() {
+		updater.updateStatus();
+		updater.updateAllChat();
+		updater.updateScreenshot();
+	},
+	
+	updateStatus: function() {
 		$.ajax(updater.url, {
 			cache: false,
 			dataType: 'json',
-			success: updater.handle,
-			//error: updater.fail
+			success: updater.handleStatus,
+			error:   updater.failStatus
 		});
 	},
 
-
-	fail: function(jqXHR, textStatus, errorThrown) {
-		alert('AJAX Error: ' + errorThrown + "\n" + textStatus);
+	updateAllChat: function() {
+		for (var key in els.chat) {
+			var $container = els.chat[key];
+			updater.updateChat($container);
+		}
+	},
+	
+	updateChat: function($container, force) {
+		var type = $container.data('type');
+		clearTimeout(updater.chatTimeouts[type]);
+		
+		if (!force && !($container && $container.is(':visible'))) {
+			updater.chatTimeouts[type] = setTimeout(function() {
+				updater.updateChat($container);
+			}, settings.updateInterval);
+			return;
+		}
+		
+		var url = urls.chat + 'type=' + type + '&count=30';
+		
+		if ($container.data('lastUpdate')) {
+			url += '&since=' + $container.data('lastUpdate').getTime();
+		}
+		
+		$.ajax(url, {
+			dataType: 'json',
+			context: $container,
+			success: updater.handleChat,
+			error: function(jqXHR, textStatus, errorThrown) {
+				updater.failChat($container, jqXHR, textStatus, errorThrown);
+			}
+		});
+	},
+	
+	updateScreenshot: function() {
+		if (els.screenshot.is(':visible')) {
+			els.screenshot.attr('src', urls.screenshot + 'rand=' + (new Date()).getTime());
+		}
+		
+		setTimeout(updater.updateScreenshot, settings.updateInterval);
 	},
 
 	checkStatus: function(json) {
@@ -103,8 +183,96 @@ var updater = {
 		return true;
 	},
 
-	handle: function(json, textStatus, jqXHR) {
-		if (!updater.checkStatus(json)) return;
+	formatChatTimestamp: function(date) {
+		var h = date.getHours();
+		var m = date.getMinutes();
+		var s = date.getSeconds();
+		
+		if (h < 10) {
+			h = '0' + h;
+		}
+		
+		if (m < 10) {
+			m = '0' + m;
+		}
+		
+		if (s < 10) {
+			s = '0' + s
+		}
+		
+		return '[' + h + ':' + m + ':' + s + '] ';
+	},
+	
+	failChat: function($container, jqXHR, textStatus, errorThrown) {
+		updater.chatTimeouts[$container.data('type')] = setTimeout(function() {
+			updater.updateChat($container);
+		}, settings.updateInterval);
+	},
+	
+	handleChat: function(json, textStatus, jqXHR) {
+		var newest = null;
+		
+		var lastTimestamp = this.data('lastUpdate');
+		
+		if (json.entries) { // IE7 bug
+			for (var i = 0; i < json.entries.length; i++) {
+				var entry = json.entries[i];
+				var timestamp = new Date();
+				timestamp.setTime(entry.timestamp);
+				
+				if (lastTimestamp &&
+						timestamp <= lastTimestamp) {
+					// this entry is too old
+					continue;
+				}
+				
+				var $element = $('<p/>')
+					.data('timestamp', timestamp)
+					.html(updater.formatChatTimestamp(timestamp) + entry.text);
+				
+				this.append($element);
+				newest = $element;
+			}
+		}
+		
+		while (this.children().length > settings.maxChatEntries) {
+			this.children().eq(0).remove();
+		}
+		
+		this.data('lastUpdate', new Date());
+		
+		if (null != newest) {
+			if (newest.data('timestamp') > this.data('lastUpdate')) {
+				this.data('lastUpdate', newest.data('timestamp'));
+			}
+			
+			// this accomodates both normal and mobile versions
+			var element = this;
+			if ('auto' != element.css('overflow')) {
+				element = element.parent();
+			}
+			
+			element.animate({
+				scrollTop: element[0].scrollHeight});
+		}
+		
+		var self = this;
+		updater.chatTimeouts[this.data('type')] = setTimeout(function() {
+			updater.updateChat(self);
+		}, settings.updateInterval);
+	},
+	
+
+	failStatus: function(jqXHR, textStatus, errorThrown) {
+//		alert('AJAX Error: ' + errorThrown + "\n" + textStatus);
+		setTimeout(updater.updateStatus, settings.updateInterval);
+	},
+	
+	handleStatus: function(json, textStatus, jqXHR) {
+		if (!updater.checkStatus(json)) {
+			setTimeout(updater.updateStatus, settings.updateInterval);
+			return;
+		}
 
 		var app = json['app'];
 		var mainTitle = '';
@@ -175,9 +343,6 @@ var updater = {
 				IH(els.loots_text, 						vars.loots);
 				IH(els.deaths_text, 					vars.deaths);
 
-
-				els.screenshot.attr('src',				urls.screenshot + 'rand=' + (new Date()).getTime());
-
 				setHeader(els.mainheader);
 				els.connected.show();
 			}
@@ -187,7 +352,7 @@ var updater = {
 
 		document.title = mainTitle + appTitle;
 
-		setTimeout(updater.update, settings.updateInterval);
+		setTimeout(updater.updateStatus, settings.updateInterval);
 	}
 };
 
@@ -205,8 +370,10 @@ var commands = {
 
 	typeChange: function() {
 		if (els.chattype.val() == 'w') {
+			els.theform.removeClass('hideTo');
 			els.chattospan.show();
 		} else {
+			els.theform.addClass('hideTo');
 			els.chattospan.hide();
 		}
 	},

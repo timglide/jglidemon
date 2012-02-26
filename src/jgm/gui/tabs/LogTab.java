@@ -25,6 +25,7 @@ import jgm.glider.log.*;
 import jgm.util.RingBuffer;
 
 import java.util.*;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -99,6 +100,10 @@ public class LogTab extends Tab implements Clearable {
 	public void clear(boolean clearingAll) {
 		logEntries.entries.clear();
 		logEntries.fireTableDataChanged();
+	}
+	
+	public List<LogEntry> getEntries(int count, Date since) {
+		return logEntries.getEntries(count, since);
 	}
 	
 	private class ColorLabelRenderer extends DefaultTableCellRenderer {
@@ -209,6 +214,26 @@ public class LogTab extends Tab implements Clearable {
 
 		public LogEntry get(int row) {
 			return entries.get(row);
+		}
+		
+		public List<LogEntry> getEntries(int count, Date since) {
+			List<LogEntry> source = null;
+			List<LogEntry> copy = new ArrayList<LogEntry>();
+			
+			if (count > 0) {
+				source = entries.subList(
+					Math.max(0, entries.size() - count), entries.size());
+			} else {
+				source = entries;
+			}
+			
+			for (LogEntry e : source) {
+				if (null == since || since.compareTo(e.timestamp) <= 0) {
+					copy.add(e);
+				}
+			}
+			
+			return copy;
 		}
 		
 		public int getColumnCount() {

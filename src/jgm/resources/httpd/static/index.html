@@ -6,13 +6,20 @@
 
 <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" type="text/css" href="/static/main.css" />
-
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css" /> 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script> 
 <script type="text/javascript" src="/static/js/ajaxsettings.js"></script>
 <script type="text/javascript" src="/static/js/ajax.js"></script>
 
 <script type="text/javascript">
 $(function() {
+	$('#content').tabs();
+
+	/*setTimeout(function() {
+		$('#content > div').css('top', $('#content > ul').outerHeight(true) + 'px');
+	}, 200);*/
+	
 	$('#theform').submit(function() {
 		commands.chat();
 		return false;
@@ -34,21 +41,9 @@ $(function() {
 <body>
 
 <div id="main" class="container">
-	<div class="roundtopw">
-		<img src="/static/img/corners/tlw.png" alt="" class="corner" />
-	</div>
-
-	<div class="header">
-		<div class="roundtop">
-			<img src="/static/img/corners/tl.png" alt="" class="corner" />
-		</div>
-
+	<div id="header">
 		<div id="headerdiv">
 			<div id="loadingheader"><h1>Loading...</h1></div>
-		</div>
-
-		<div class="roundbottom">
-			<img src="/static/img/corners/bl.png" alt="" class="corner" />
 		</div>
 	</div>
 
@@ -60,10 +55,6 @@ $(function() {
 
 	<div id="connected" style="display: none;">
 		<div id="nav">
-			<div class="roundtop">
-				<img src="/static/img/corners/tl.png" alt="" class="corner" />
-			</div>
-
 			<div id="navpad">
 				<div id="attached_info">
 					<div class="info_bar" id="health_bar">
@@ -78,71 +69,81 @@ $(function() {
 						<div class="info_text" id="xp_text">$xptext</div>
 						<div class="info_percent" id="xp_percent"></div>
 					</div>
-					<div><strong>XP/Hour:</strong> <span id="xp_per_hour_text">$xpperhour</span></div>
-					<div><strong>Time To Level:</strong> <span id="ttl_text">$ttl</span></div>
-					<hr />
-					<div><strong>Mode:</strong> <span id="mode_text">$mode</span></div>
+					<div id="xp_per_hour_div"><strong>XP/Hour:</strong> <span id="xp_per_hour_text">$xpperhour</span></div>
+					<div id="ttl_div"><strong>Time To Level:</strong> <span id="ttl_text">$ttl</span></div>
+					
+					<div id="mode_div"><strong>Mode:</strong> <span id="mode_text">$mode</span></div>
 					<div id="profilediv"><strong>Profile:</strong> <span id="profile_text">$profile</span></div>
-					<div><strong>KLD:</strong> <span id="kills_text">$kills</span>/<span id="loots_text">$loots</span>/<span id="deaths_text">$deaths</span></div>
+					<div id="kills_div"><strong>KLD:</strong> <span id="kills_text">$kills</span>/<span id="loots_text">$loots</span>/<span id="deaths_text">$deaths</span></div>
 				</div>
-
-				<hr />
-
-				<form id="theform">
-					<label for="chattype">Type: </label>
-					<select id="chattype" onchange="commands.typeChange();">
-						<option value="w">Whisper</option>
-						<option value="r">Reply</option>
-						<option value="s">Say</option>
-						<option value="g">Guild</option>
-						<option>Raw</option>
-					</select>
-					<span id="chattospan">
-						<label for="chatto">To: </label>
-						<input id="chatto" type="text" size="10" />
-					</span>
-					<br />
-					<input id="chattext" type="text" size="25" title="The slash command and a carraige return&#13;will be added except for Raw.&#13;You must add everything for Raw.&#13;| = Enter, #VK# = VK" />
-					<a href="#" id="sendchat"><img src="/static/img/buttons/play.png" alt="Send" align="absmiddle" title="Send Chat" /></a>
-				</form>
-
-				<hr />
 
 				<a href="javascript:commands.start();" title="Start Gliding"><img src="/static/img/buttons/play.png" alt="Start Gliding" /></a>
 				<a href="javascript:commands.stop();" title="Stop Gliding"><img src="/static/img/buttons/stop.png" alt="Stop Gliding" /></a>
 				<a href="javascript:window.location.reload(false);" title="Refresh Page Manually"><img src="/static/img/buttons/refresh.png" alt="Refresh Page Manually" /></a>
 				
 			</div>
-
-			<div class="roundbottom">
-				<img src="/static/img/corners/bl.png" alt="" class="corner" />
-			</div>
 		</div>
 
-		<div>
+		<div id="content_wrap">
 			<div id="content">
-				<div class="roundtop">
-					<img src="/static/img/corners/tl.png" alt="" class="corner" />
+		        <ul>
+		            <li><a href="#screenshot">Screenshot</a></li>
+		            <li><a href="#view-chat-all" title="All Chat">All</a></li>
+		            <li><a href="#view-chat-public" title="Public Chat">Public</a></li>
+		            <li><a href="#view-chat-whisper" title="Whisper / Say / Yell">Whisper</a></li>
+		            <li><a href="#view-chat-guild" title="Guild Chat">Guild</a></li>
+					<li><a href="#view-chat-urgent" title="Urgent Log">Urgent</a></li>
+					<li><a href="#view-chat-combat" title="Combat Log">Combat</a></li>
+					<li><a href="#view-chat-glider" title="Bot Log">Bot</a></li>
+					<li><a href="#view-chat-status" title="Status Log">Status</a></li>
+		        </ul>
+		        
+				<div id="screenshot">
+					<img src="/static/img/classes/unknown.png" id="screenshotImage" />
 				</div>
-
-				<div id="ssdiv">
-					<img src="/static/img/classes/unknown.png" id="screenshot" />
+				
+				<div id="view-chat-all">
+					<div class="chat-text" id="chat-all-container" data-type="all"></div>
 				</div>
-
-				<div class="roundbottom">
-					<img src="/static/img/corners/bl.png" alt="" class="corner" />
+				<div id="view-chat-public">
+					<div class="chat-text" id="chat-public-container" data-type="public"></div>
+				</div>
+				<div id="view-chat-whisper">
+					<div class="chat-text" id="chat-whisper-container" data-type="whisper"></div>
+				</div>
+				<div id="view-chat-guild">
+					<div class="chat-text" id="chat-guild-container" data-type="guild"></div>
+				</div>
+				<div id="view-chat-urgent">
+					<div class="chat-text" id="chat-urgent-container" data-type="urgent"></div>
+				</div>
+				<div id="view-chat-combat">
+					<div class="chat-text" id="chat-combat-container" data-type="combat"></div>
+				</div>
+				<div id="view-chat-glider">
+					<div class="chat-text" id="chat-glider-container" data-type="glider"></div>
+				</div>
+				<div id="view-chat-status">
+					<div class="chat-text" id="chat-status-container" data-type="status"></div>
 				</div>
 			</div>
+			<form id="theform">
+				<select id="chattype" onchange="commands.typeChange();">
+					<option value="w">Whisper</option>
+					<option value="r">Reply</option>
+					<option value="s">Say</option>
+					<option value="g">Guild</option>
+					<option>Raw</option>
+				</select>
+				<div id="chattospan">
+					<input id="chatto" type="text" size="10" placeholder="To" title="The person to send a whisper to" />
+				</div>
+				<div id="chattextspan">
+					<input id="chattext" type="text" size="25" placeholder="Chat text" title="For Raw, type a full slash command just like you would in-game, for others the slash command will be added automatically" />
+				</div>
+				<input type="button" id="sendchat" value="Send" />
+			</form>
 		</div>
-
-	</div>
-
-	<div id="footer" class="footer">
-		<!--a href="http://www.mmoglider.com/" target="_new" title="MMOGlider"><img src="/static/img/glogo.gif" alt="MMOGlider" /></a-->
-	</div>
-
-	<div class="roundbottomw">
-		<img src="/static/img/corners/blw.png" alt="" class="corner" />
 	</div>
 </div>
 

@@ -21,7 +21,10 @@
 package jgm.httpd;
 
 import java.io.*;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
 
 public class FilesHandler extends Handler {
 	File baseDir;
@@ -137,6 +140,23 @@ public class FilesHandler extends Handler {
 
 		try
 		{
+			// not fully working yet :/
+//			String ifModSince = headers.getProperty("if-modified-since");
+//			
+//			if (null != ifModSince) {
+//				try {
+//					Date lastMod = HTTPD.gmtFrmt.parse(ifModSince);
+//					
+//					if (f.lastModified() <= lastMod.getTime()) {
+//						// the file isn't newer than the time specified in the header
+//						return new Response(HTTPD.HTTP_NOTMODIFIED, null, (InputStream)null);
+//					}
+//				} catch (ParseException e) {
+//					log.log(Level.FINE, "Couldn't parse if-mod-since date: " + ifModSince, e);
+//					// return the file normally below
+//				}
+//			}
+			
 			// Get MIME type from file name extension, if possible
 			String mime = null;
 			int dot = f.getCanonicalPath().lastIndexOf( '.' );
@@ -147,7 +167,7 @@ public class FilesHandler extends Handler {
 
 			// Support (simple) skipping:
 			long startFrom = 0;
-			String range = headers.getProperty( "Range" );
+			/*String range = headers.getProperty( "Range" );
 			if ( range != null )
 			{
 				if ( range.startsWith( "bytes=" ))
@@ -161,18 +181,16 @@ public class FilesHandler extends Handler {
 					}
 					catch ( NumberFormatException nfe ) {}
 				}
-			}
+			}*/
 
 			FileInputStream fis = new FileInputStream( f );
 			fis.skip( startFrom );
 			Response r = new Response( HTTPD.HTTP_OK, mime, fis );
-			r.addHeader( "Content-length", "" + (f.length() - startFrom));
-			r.addHeader( "Content-range", "" + startFrom + "-" +
-						(f.length()-1) + "/" + f.length());
+			//r.addHeader( "Content-Length", "" + (f.length() - startFrom));
+			//r.addHeader( "Content-range", "" + startFrom + "-" +
+			//			(f.length()-1) + "/" + f.length());
 			
-			// prevent caching for the moment
-			r.addHeader("Cache-Control", "no-cache, must-revalidate"); // HTTP/1.1
-			r.addHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+			r.addHeader("Last-Modified", HTTPD.gmtFrmt.format(f.lastModified()));
 			return r;
 		}
 		catch( IOException ioe )

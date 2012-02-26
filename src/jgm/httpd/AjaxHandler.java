@@ -20,13 +20,19 @@
  */
 package jgm.httpd;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import jgm.JGlideMon;
 import jgm.glider.Command;
+import jgm.glider.log.LogEntry;
+import jgm.gui.panes.TabsPane;
+import jgm.gui.tabs.LogTab;
 
 public class AjaxHandler extends Handler {
 	public static final String DEF_ERROR_JSON =
@@ -43,9 +49,8 @@ public class AjaxHandler extends Handler {
 		
 		Response ret = null;
 		
-		ret = new Response(HTTPD.HTTP_OK, HTTPD.MIME_HTML, out);
-		ret.addHeader("Content-type", "application/json; charset=utf-8");
-		
+		ret = new Response(HTTPD.HTTP_OK, "application/json; charset=utf-8", out);
+
 		// add no-cache headers
 		ret.addHeader("Cache-Control", "no-cache, must-revalidate");
 		ret.addHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
@@ -90,90 +95,182 @@ public class AjaxHandler extends Handler {
 					root.put("message", "No command given");
 				}
 			} else if (uri.equals("status")) {
-				// jgm info
-				JSONObject jgm_ = CE(root, "app");
-				jgm_.put("name", JGlideMon.app);
-				jgm_.put("version", JGlideMon.version);
+				status(root);
+			} else if (uri.equals("chat")) {
+				String type = params.getProperty("type");
+				String count = params.getProperty("count");
+				String since = params.getProperty("since");
 				
-				boolean connected = httpd.sm.connector.isConnected();
-				jgm_.put("connected", Boolean.toString(connected));
-				
-				jgm_.put("update-interval", jgm.Config.getInstance().getInt("web.updateinterval"));
-				
-				
-				
-				// glider info
-				JSONObject glider = CE(root, "glider");
-				
-				if (connected && sm.status != null) {
-					jgm.glider.Status s = sm.status.s;
-					
-					glider.put("version", s.version);
-					glider.put("attached", Boolean.toString(s.attached));
-					
-					if (s.attached) {
-						glider.put("lcclass", s.clazz.toString().toLowerCase().replace(' ', '_'));
-						glider.put("class", s.clazz.toString());
-						glider.put("name", s.name);
-						glider.put("level", s.level);
-						glider.put("health", (int) s.health);
-						glider.put("mana", (int) s.mana);
-						glider.put("mana-name", s.manaName.toLowerCase());
-						glider.put("xp", s.experience);
-						glider.put("next-xp", s.nextExperience);
-						glider.put("xp-percent", (int) (100.0 * ((double) s.experience) / s.nextExperience));
-						glider.put("xp-per-hour", s.xpPerHour);
-						
-						if (s.xpPerHour > 0) {
-							int seconds = 0, minutes = 0, hours = 0;
-							int xpDiff = s.nextExperience - s.experience;
-							double d = (double) xpDiff / (double) s.xpPerHour;
-							hours = (int) d;
-							d = 60 * (d - hours);
-							minutes = (int) d;
-							d = 60 * (d - minutes);
-							seconds = (int) d;
-							
-							glider.put("ttl", String.format("%d:%02d:%02d", hours, minutes, seconds));
-						} else {
-							glider.put("ttl", "Unknown");
-						}
-						
-						glider.put("mode", s.mode);
-						glider.put("full-profile", s.profile);
-						
-						String[] parts = s.profile.split("\\\\");
-						String str = parts.length > 0 ? parts[parts.length - 1] : "";
-						glider.put("profile", str);
-						
-						glider.put("kills", s.kills);
-						glider.put("loots", s.loots);
-						glider.put("deaths", s.deaths);
-						
-						glider.put("location", s.location);
-						glider.put("heading", s.heading);
-						
-						glider.put("target-name", s.targetName);
-						glider.put("target-level", s.targetLevel);
-						glider.put("target-health", (int) s.targetHealth);
-					}
-				}
+				chat(root, type, count, since);
 			} else {
 				root.put("status", "error");
 				root.put("message", "Invalid uri: " + uri);
 			}
 			
 			return root.toString();
-		} catch (Throwable pce) {
-			// this had better not happen
-			
-			// Parser with specified options can't be built
-			pce.printStackTrace();
+		} catch (Throwable t) {
+			try {
+				root.put("status", "error");
+				root.put("message", t.toString());
+				return root.toString();
+			} catch (JSONException je) {
+				// shouldn't happen
+			}
 		}
 		
 		return null;
 	}
+	
+	private void status(JSONObject root) throws JSONException {
+		// jgm info
+		JSONObject jgm_ = CE(root, "app");
+		jgm_.put("name", JGlideMon.app);
+		jgm_.put("version", JGlideMon.version);
 		
+		boolean connected = httpd.sm.connector.isConnected();
+		jgm_.put("connected", Boolean.toString(connected));
+		
+		jgm_.put("update-interval", jgm.Config.getInstance().getInt("web.updateinterval"));
+		
+		
+		
+		// glider info
+		JSONObject glider = CE(root, "glider");
+		
+		if (connected && httpd.sm.status != null) {
+			jgm.glider.Status s = httpd.sm.status.s;
+			
+			glider.put("version", s.version);
+			glider.put("attached", Boolean.toString(s.attached));
+			
+			if (s.attached) {
+				glider.put("lcclass", s.clazz.toString().toLowerCase().replace(' ', '_'));
+				glider.put("class", s.clazz.toString());
+				glider.put("name", s.name);
+				glider.put("level", s.level);
+				glider.put("health", (int) s.health);
+				glider.put("mana", (int) s.mana);
+				glider.put("mana-name", s.manaName.toLowerCase());
+				glider.put("xp", s.experience);
+				glider.put("next-xp", s.nextExperience);
+				glider.put("xp-percent", (int) (100.0 * ((double) s.experience) / s.nextExperience));
+				glider.put("xp-per-hour", s.xpPerHour);
+				
+				if (s.xpPerHour > 0) {
+					int seconds = 0, minutes = 0, hours = 0;
+					int xpDiff = s.nextExperience - s.experience;
+					double d = (double) xpDiff / (double) s.xpPerHour;
+					hours = (int) d;
+					d = 60 * (d - hours);
+					minutes = (int) d;
+					d = 60 * (d - minutes);
+					seconds = (int) d;
+					
+					glider.put("ttl", String.format("%d:%02d:%02d", hours, minutes, seconds));
+				} else {
+					glider.put("ttl", "Unknown");
+				}
+				
+				glider.put("mode", s.mode);
+				glider.put("full-profile", s.profile);
+				
+				String[] parts = s.profile.split("\\\\");
+				String str = parts.length > 0 ? parts[parts.length - 1] : "";
+				glider.put("profile", str);
+				
+				glider.put("kills", s.kills);
+				glider.put("loots", s.loots);
+				glider.put("deaths", s.deaths);
+				
+				glider.put("location", s.location);
+				glider.put("heading", s.heading);
+				
+				glider.put("target-name", s.targetName);
+				glider.put("target-level", s.targetLevel);
+				glider.put("target-health", (int) s.targetHealth);
+			}
+		}
+	}
+	
+	private enum LogType {
+		ALL, PUBLIC, WHISPER, GUILD, URGENT, COMBAT, GLIDER, STATUS;
+		
+		public LogTab getTab(TabsPane tabsPane) {
+			switch (this) {
+				case ALL:
+					return tabsPane.chatLog.all;
+				case PUBLIC:
+					return tabsPane.chatLog.pub;
+				case WHISPER:
+					return tabsPane.chatLog.whisper;
+				case GUILD:
+					return tabsPane.chatLog.guild;
+				case URGENT:
+					return tabsPane.urgent.logs;
+				case COMBAT:
+					return tabsPane.combatLog;
+				case GLIDER:
+					return tabsPane.gliderLog;
+				case STATUS:
+					return tabsPane.statusLog;
+			}
+			
+			return null;
+		}
+	}
+	
+	private void chat(JSONObject root, String type, String count, String since) throws JSONException {
+		if (null == type) {
+			throw new IllegalArgumentException("must specify type");
+		}
+		
+		int iCount = -1;
+		
+		try {
+			iCount = Integer.parseInt(count);
+		} catch (NumberFormatException nfe) {}
+		
+		long iSince = -1L;
+		
+		try {
+			iSince = Long.parseLong(since);
+		} catch (NumberFormatException nfe) {}
+		
+		if (iCount < 1 && iSince == -1L) {
+			throw new IllegalArgumentException("must provide count or since");
+		}
+		
+		Date dateSince = null;
+		
+		if (-1L != iSince) {
+			dateSince = new Date(iSince);
+		}
+		
+		LogTab logTab = null;
+		
+		try {
+			logTab = LogType.valueOf(
+				type.toUpperCase()).getTab(httpd.sm.gui.tabsPane);
+		} catch (IllegalArgumentException e) {}
+		
+		if (null == logTab) {
+			throw new IllegalArgumentException("invalid type: " + type);
+		}
+		
+		List<LogEntry> entries = logTab.getEntries(iCount, dateSince);
+		
+		JSONArray entriesArray = new JSONArray();
+		
+		for (LogEntry e : entries) {
+			JSONObject entryObj = new JSONObject();
+			entryObj.put("timestamp", e.timestamp.getTime());
+			entryObj.put("text", e.supportsHtmlText() ? e.getHtmlText() : e.getText());
+			entriesArray.put(entryObj);
+		}
+		
+		root.put("entries", entriesArray);
+	}
+	
 	/**
 	 * Creates a new json object and appends it to parent with the given
 	 * key.

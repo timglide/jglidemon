@@ -25,8 +25,12 @@ import jgm.ServerManager;
 import jgm.util.Properties;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.net.*;
 
 /**
@@ -77,6 +81,9 @@ import java.net.*;
  */
 public class HTTPD implements Runnable
 {
+	public static SimpleDateFormat RFC822_DATE = 
+    	new SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US);
+	
 	protected static Logger log = Logger.getLogger(HTTPD.class.getName());
 	
 	// ==================================================
@@ -134,6 +141,7 @@ public class HTTPD implements Runnable
 	public static final String
 		HTTP_OK = "200 OK",
 		HTTP_REDIRECT = "301 Moved Permanently",
+		HTTP_NOTMODIFIED = "304 Not Modified",
 		HTTP_UNAUTHORIZED = "401 Unauthorized",
 		HTTP_FORBIDDEN = "403 Forbidden",
 		HTTP_NOTFOUND = "404 Not Found",
@@ -441,6 +449,12 @@ public class HTTPD implements Runnable
 					sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: Serve() returned a null response." );
 					logStr += " - " + HTTP_INTERNALERROR;
 				} else {
+					String acceptEncoding = header.getProperty("accept-encoding");
+					
+					if (null != acceptEncoding && acceptEncoding.contains("gzip")) {
+						r.addHeader("Content-Encoding", "gzip");
+					}
+					
 					sendResponse( r.status, r.mimeType, r.header, r.data );
 					logStr += " - " + r.status;
 				}
@@ -562,6 +576,7 @@ public class HTTPD implements Runnable
 					throw new Error( "sendResponse(): Status can't be null." );
 
 				OutputStream out = mySocket.getOutputStream();
+				
 				PrintWriter pw = new PrintWriter( out );
 				pw.print("HTTP/1.0 " + status + " \r\n");
 
@@ -573,6 +588,7 @@ public class HTTPD implements Runnable
 
 				if ( header != null )
 				{
+					header.remove("Content-Length");
 					Enumeration<Object> e = header.keys();
 					while ( e.hasMoreElements())
 					{
@@ -582,27 +598,45 @@ public class HTTPD implements Runnable
 					}
 				}
 
-				pw.print("\r\n");
-				pw.flush();
-
+				
 				if ( data != null )
 				{
+					ByteArrayOutputStream contentBytes = new ByteArrayOutputStream();
+					OutputStream contentOut = contentBytes;
+					
+					if ("gzip".equals(header.getProperty("Content-Encoding"))) {
+						contentOut = new GZIPOutputStream(contentBytes);
+					}
+					
 					byte[] buff = new byte[2048];
 					while (true)
 					{
-						int read = data.read( buff, 0, 2048 );
+						int read = data.read( buff, 0, buff.length);
 						if (read <= 0)
 							break;
-						out.write( buff, 0, read );
+						contentOut.write( buff, 0, read );
 					}
+					
+					contentOut.flush();
+					contentOut.close();
+
+					pw.print("Content-Length: " + contentBytes.size() + "\r\n");
+					pw.print("\r\n");
+					pw.flush();
+					
+					contentBytes.writeTo(out);
+					
+					data.close();
+				} else {
+					pw.print("\r\n");
 				}
+				
 				out.flush();
 				out.close();
-				if ( data != null )
-					data.close();
 			}
 			catch( IOException ioe )
 			{
+				log.log(Level.SEVERE, "Error sending response", ioe);
 				// Couldn't write? No can do.
 				try { mySocket.close(); } catch( Throwable t ) {}
 			}
@@ -670,7 +704,7 @@ public class HTTPD implements Runnable
 	/**
 	 * GMT date formatter
 	 */
-    private static java.text.SimpleDateFormat gmtFrmt;
+    public static java.text.SimpleDateFormat gmtFrmt;
 	static
 	{
 		gmtFrmt = new java.text.SimpleDateFormat( "E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);

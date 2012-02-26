@@ -1,8 +1,12 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
 hr { width: 80%; }
 h1, h2, h3 { text-align: center; }
 
 body {
-	padding: 20px;
 	background: #707883;
 	color: #222;
 /*	text-align: center;*/
@@ -36,63 +40,129 @@ img {
 	border: 0;
 }
 
-.container {
-	width: 100%;
-	margin-left: auto;
-	margin-right: auto;
+#main {
 	background: #fff;
+	position: absolute;
+	top: 1.5em;
+	left: 1.5em;
+	bottom: 1.5em;
+	right: 1.5em;
+	border-radius: 0.5em;
 }
 
-.header {
-	position: relative;
-	border: 10px solid white;
-	border-top: none;
+#header {
+	position: absolute;
+	top: 0.5em;
+	left: 0.5em;
+	right: 0.5em;
+	height: 5em;
+	border-radius: 0.5em;
 	background: #000;
 	color: #fff;
+	min-height: 45px;
+}
+
+#header div {
+	height: 5em;
+	line-height: 5em;
+	vertical-align: middle;
 }
 
 .header img {
 	/*vertical-align: middle;*/
 }
 
-#content {
-	position: relative;
-	border: 10px solid white;
-	border-top: none;
-	margin: 0;
-	background: #a0a0a0;
+#content_wrap {
+	position: absolute;
+	top: 6em;
+	left: 0.5em;
+	right: 20.5em;
+	bottom: 0.5em;
+}
 
-	margin-right: 19em;
-/*	width: 40em;*/
+#content {
+	position: absolute;
+	top: 0; left: 0; bottom: 2.4em; right: 0;
+}
+
+#content > div {
+	position: absolute;
+	top: 3.15em;
+	left: 0.2em;
+	right: 0.2em;
+	bottom: 0.2em;
+	overflow: auto;
+	padding: 0.5em;
+}
+
+#theform {
+	position: absolute;
+	left: 0; right: 0; bottom: 0;
+	height: 2em;
+}
+
+#theform input[type=text] {
+	height: 100%;
+	width: 100%;
+	padding: 0 0.2em;
+}
+
+#theform select {
+	vertical-align: middle;
+}
+
+#theform #chattype {
+	position: absolute;
+	left: 0; top: 0; bottom: 0;
+	width: 6em;	
+}
+
+#theform #chattospan {
+	display: block;
+	position: absolute;
+	left: 6.4em; top: 0; bottom: 0;
+	width: 9.6em;
+}
+
+#theform.hideTo #chattospan {
+	display: none;
+}
+
+#theform #chattextspan {
+	position: absolute;
+	left: 16.8em; top: 0; bottom: 0; right: 6.6em;
+}
+
+#theform.hideTo #chattextspan {
+	left: 6.4em;
+}
+
+#theform #sendchat {
+	position: absolute;
+	top: 0; bottom: 0; right: 0;
+	width: 6em;
 }
 
 #nav {
-	position: relative;
-	border: 10px solid white;
+	position: absolute;
+	right: 0.5em;
+	top: 6em;
 	border-top: none;
 	float: right;
 	width: 18.5em;
 	background: #000;
 	color: #fff;
+	border-radius: 0.5em;
+	padding: 0.5em;
 }
 
 #navpad {
 	text-align: center;
-	padding-left: 10px;
-	padding-right: 10px;
 }
 
 #nav h2 {
 	font-size: 120%;
 	color: #9E4A24
-}
-
-.footer {
-	clear: both;
-/*	width: 800px;*/
-	background: #fff;
-	text-align: right;
-	border: 0;
 }
 
 .footer img {
@@ -109,7 +179,8 @@ img {
 	background-color: transparent;
 	margin-left: auto;
 	margin-right: auto;
-	margin-bottom: 2px;
+	margin-bottom: 0.1em;
+	border-radius: 0.25em;
 }
 
 .info_text {
@@ -122,9 +193,10 @@ img {
 .info_percent {
 	z-index: 1;
 	position: absolute;
-	top: 0px;
-	left: 0px;
+	top: 0;
+	left: 0;
 	height: 100%;
+	border-radius: 0.25em;
 }
 
 .rage { background-color: #BB0000; }
@@ -166,9 +238,17 @@ img.corner {
 	display: block;
 }
 
-#ssdiv {
+#content div {
+	background-color: black;
+	color: white;
+}
+
+#content div.chat-text p {
+	padding: 0;
+}
+
+#screenshot {
 	text-align: center;
-	overflow: auto;
 }
 
 #screenshot {
