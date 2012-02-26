@@ -19,14 +19,6 @@ using Styx.WoWInternals.WoWObjects;
 namespace BattleStandardDropper {
 	[Serializable]
 	public class Settings {
-		static Settings() {
-			string path = Process.GetCurrentProcess().MainModule.FileName;
-			path = Path.GetDirectoryName(path);
-			path = Path.Combine(path, "Tripper.tools.dll");
-			Assembly.LoadFrom(path);
-			Type t = typeof(Tripper.Tools.Math.Vector3);
-		}
-
 		private static Settings instance;
 
 		public static Settings Instance {
@@ -261,6 +253,10 @@ namespace BattleStandardDropper {
 		private uint battleStandardBuffId = 0;
 
 		public override void Initialize() {
+			if (initialized) {
+				return;
+			}
+
 			dropLocation = WoWPoint.Empty;
 			FindBattleStandard();
 			useStandardSW.Reset();
