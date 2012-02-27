@@ -220,6 +220,10 @@ public class LogTab extends Tab implements Clearable {
 			List<LogEntry> source = null;
 			List<LogEntry> copy = new ArrayList<LogEntry>();
 			
+			if (entries.isEmpty()) {
+				return copy;
+			}
+			
 			if (count > 0) {
 				source = entries.subList(
 					Math.max(0, entries.size() - count), entries.size());

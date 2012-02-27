@@ -101,6 +101,10 @@ img {
 	height: 2em;
 }
 
+#theform .error {
+	background-color: #ffaaaa;
+}
+
 #theform input[type=text] {
 	height: 100%;
 	width: 100%;
@@ -218,22 +222,6 @@ img {
 	background-color: #800080;
 }
 
-.roundtop {
-	background: url(/static/img/corners/tr.png) no-repeat top right; 
-}
-
-.roundbottom {
-	background: url(/static/img/corners/br.png) no-repeat top right; 
-}
-
-.roundtopw {
-	background: url(/static/img/corners/trw.png) no-repeat top right; 
-}
-
-.roundbottomw {
-	background: url(/static/img/corners/brw.png) no-repeat top right; 
-}
-
 img.corner {
 	display: block;
 }
@@ -245,6 +233,11 @@ img.corner {
 
 #content div.chat-text p {
 	padding: 0;
+}
+
+#content a.chat-link {
+	color: inherit !important;
+	text-decoration: none;
 }
 
 #screenshot {

@@ -25,7 +25,7 @@ import jgm.sound.*;
 import java.util.*;
 import java.util.regex.*;
 
-public class ChatLogEntry extends LogEntry {	
+public class ChatLogEntry extends RawChatLogEntry {	
 	static Map<String, String> COLOR_MAP = new HashMap<String, String>();
 	
 	static {
@@ -93,17 +93,14 @@ public class ChatLogEntry extends LogEntry {
 	}
 	
 	@Override
-	public String getHtmlText() {
-		String preColor = COLOR_MAP.get(this.type);
+	public String getHtmlPreColor() {
+		String ret = COLOR_MAP.get(this.type);
 		
-		return
-		(preColor != null ? "<font color=\"" + preColor + "\">" : "") +
-		rawText +
-		(preColor != null ? "</font>" : "");
+		return null == ret ? super.getHtmlPreColor() : ret;
 	}
 	
 	private static Pattern PATTERN1 =
-		Pattern.compile(".*?(<GM>|<AFK>|<DND>|)(\\[?)([^]]+)\\]? (whisper|say|yell)s: (.*)");
+		Pattern.compile(".*?(<GM>|<Away>|<Busy>|)(\\[?)([^]]+)\\]? (whisper|say|yell)s: (.*)");
 		/* group 1: <GM>?
 		 *       2: [, to determine if player or npc
 		 *       3: sender
@@ -112,7 +109,7 @@ public class ChatLogEntry extends LogEntry {
 		 */
 
 	private static Pattern PATTERN2 =
-		Pattern.compile(".*?\\[(\\d+\\s*?|)(Guild|Officer|[^]]+)\\] (<GM>|<AFK>|<DND>|)\\[([^]]+)\\]: (.*)");
+		Pattern.compile(".*?\\[(\\d+\\.?\\s*?|)(Guild|Officer|[^]]+)\\]\\s*(<GM>|<Away>|<Busy>|)\\[([^]]+)\\]: (.*)");
 		/* group 1: number => public chat channel
 		 *       2: channel name (Guild|Office|public channel name)
 		 *       3: <GM>?, doubt it
@@ -126,10 +123,12 @@ public class ChatLogEntry extends LogEntry {
 	
 	private static ChatLogEntry parse(String s) {
 		ChatLogEntry ret = new ChatLogEntry(s);
+		s = ret.getText();
 		Matcher m = PATTERN1.matcher(s);
+//		System.out.println("Matching: " + s);
 		
 		if (m.matches()) {
-			//System.out.println("matched pattern1: " + s);
+//			System.out.println("matched pattern1: " + s);
 			
 			boolean gm     = m.group(1).equals("<GM>");
 			ret.fromPlayer = m.group(2).equals("[");
@@ -155,8 +154,8 @@ public class ChatLogEntry extends LogEntry {
 			m = PATTERN2.matcher(s);
 			
 			if (m.matches()) {
-				//System.out.println("matched pattern2: " + s);
-							
+//				System.out.println("matched pattern2: " + s);
+				
 				ret.channel = m.group(2);
 				ret.sender  = m.group(4);
 				ret.message = m.group(5);
