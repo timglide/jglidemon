@@ -35,13 +35,18 @@ public class RawChatLogEntry extends LogEntry {
 	private int skillLevel = 0;
 	
 	public RawChatLogEntry(String s) {
-		super("RawChat", s);
+		this("RawChat", s);
+	}
+	
+	public RawChatLogEntry(String t, String s) {
+		super(t, s);
 
 		removeFormatting();
 		parseMoney();
 		parseItem();
 		parseRep();
 		parseSkill();
+		removeLinks();
 		
 		/*if (money > 0) {
 			int[] parts = jgm.gui.components.GoldPanel.cToGsc(money);
@@ -71,8 +76,8 @@ public class RawChatLogEntry extends LogEntry {
 	}
 	
 	@Override
-	public String getHtmlText() {
-		String preColor =
+	public String getHtmlPreColor() {
+		return
 			this.hasItemSet()
 			? COLOR_MAP.get("loot")
 			: this.hasRep()
@@ -80,8 +85,6 @@ public class RawChatLogEntry extends LogEntry {
 			  : this.hasSkill()
 			    ? COLOR_MAP.get("skill")
 			    : null;
-			    
-		return super.getHtmlText(preColor);
 	}
 	
 	public boolean hasItemSet() {

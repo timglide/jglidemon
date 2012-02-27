@@ -30,25 +30,75 @@
 div.chat-text {
 	color: white;
 }
+
+div.chat-text a.chat-link {
+	color: inherit !important;
+	text-decoration: none;
+}
+
+#theform .error {
+	background: #aa0000 !important;
+}
 </style>
 
 <style type="text/css" media="screen">@import "/static/css/jqtouch.css";</style>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="/static/js/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/jqtouch-jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script>
 <script type="text/javascript" src="/static/js/ajaxsettings.js"></script>
 <script type="text/javascript" src="/static/js/ajax.js"></script>
 <script src="/static/js/mobile.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
 $(function() {
-	$('#theform').submit(function() {
-		commands.chat();
+	var
+		$jqt = $('#jqt'),
+		liveContext = $jqt[0];
+
+	$('a.chat-link.player', liveContext).live('click', function(event) {
+		var $this = $(this);
+
+		els.chattype.val('w');
+		els.chatto.val($this.data('linkId'));
+		els.chattext.val('');
+		els.chattext.focus();
+		commands.typeChange();
+
+		jQT.goTo('#send-chat', 'slideup');
 		return false;
 	});
 
-	$('#sendchat').click(function() {
+	$('a.chat-link.channel', liveContext).live('click', function(event) {
+		var	$this = $(this);
+		
+		els.chattype.val('Raw');
+		els.chattext.val('/' + $this.data('linkId') + ' ');
+		els.chattext.focus();
+		commands.typeChange();
+		
+		jQT.goTo('#send-chat', 'slideup');
+		return false;
+	});
+	
+	$('#theform').submit(function(event) {
 		commands.chat();
+
+		if (!(els.chatto.hasClass('error') || els.chattext.hasClass('error'))) {
+			jQT.goBack();
+		}
+		
+		event.preventDefault();
+		return false;
+	});
+
+	$('#sendchat').click(function(event) {
+		commands.chat();
+		
+		if (!(els.chatto.hasClass('error') || els.chattext.hasClass('error'))) {
+			jQT.goBack();
+		}
+		
 		return false;
 	});
 	
@@ -234,7 +284,7 @@ $(function() {
 			<h1>Send Chat</h1>
 			<a href="#" class="back">Back</a>
 		</div>
-		<form class="scroll" id="theform">
+		<form class="scroll" id="theform" action="#">
 			<ul class="edit rounded">
 				<li class="arrow">
 					<select id="chattype" onchange="commands.typeChange();">

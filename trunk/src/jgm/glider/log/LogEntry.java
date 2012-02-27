@@ -47,9 +47,10 @@ public class LogEntry implements Comparable<LogEntry> {
 	public    Date timestamp = new Date();
 	protected String type = "Unknown";
 	
-	protected String rawText = null;
+	protected final String rawText;
 	protected String text = null;
 	private String htmlText = null;
+	private String html5Text = null;
 
 	/**
 	 * Create a new LogEntry.
@@ -85,10 +86,47 @@ public class LogEntry implements Comparable<LogEntry> {
 		return false;
 	}
 	
-	public String getHtmlText() {
-		return getHtmlText(null);
+	public String getHtmlPreColor() {
+		return null;
 	}
 	
+	public String getHtml5Text() {
+		return getHtml5Text(getHtmlPreColor());
+	}
+	
+	/**
+	 * Returns a string suitable for displaying within a web page that
+	 * will contain links useful for generating Wowhead tooltips.
+	 * @param preColor
+	 * @return
+	 */
+	public String getHtml5Text(String preColor) {
+		if (null != html5Text) return html5Text;
+		
+		if (!supportsHtmlText())
+			throw new UnsupportedOperationException("HTML not available");
+		
+		Matcher m = FORMATTING_REGEX.matcher(convertLinks(rawText));
+	    
+		html5Text = 
+		(preColor != null ? "<span style=\"color: " + preColor + ";\">" : "") +
+		m.replaceAll("<span style=\"color: $2;\">")
+			.replace("|r", "</span>") +
+		(preColor != null ? "</span>" : "");
+		
+		return html5Text;
+	}
+	
+	public String getHtmlText() {
+		return getHtmlText(getHtmlPreColor());
+	}
+	
+	/**
+	 * Returns a string suitable for placing in a Swing label for display
+	 * within the program.
+	 * @param preColor
+	 * @return
+	 */
 	public String getHtmlText(String preColor) {
 		if (null != htmlText) return htmlText;
 		
@@ -236,8 +274,8 @@ public class LogEntry implements Comparable<LogEntry> {
 			type    = parts[0].substring(1, parts[0].length() - 1);
 			rawText = parts[1];
 		} catch (Throwable t) {
-			log.log(Level.WARNING, "Invalid LogEntry line", t);
-			log.warning("Raw line: " + s);
+//			log.log(Level.WARNING, "Invalid LogEntry line", t);
+//			log.warning("Raw line: " + s);
 			type = "UNKNOWN";
 			rawText = t.getClass().getName() + ": " + t.getMessage();
 		}
@@ -276,7 +314,83 @@ public class LogEntry implements Comparable<LogEntry> {
 		return ret;
 	}
 	
+	protected static final Pattern CONVERT_LINK_REGEX =
+		Pattern.compile("(\\|[Cc][0-9A-Fa-f]{8}|)\\|H([^|]*?)\\|h(.*?)\\|h(\\|r|)");
 	
+	public static String convertLinks(String str) {
+		Matcher m = CONVERT_LINK_REGEX.matcher(str);
+		
+		StringBuilder sb = new StringBuilder();
+		int lastEnd = 0;
+		int matchCount = 0;
+		
+		while (m.find()) {
+			matchCount++;
+			System.out.println("Found: " + m.group(0));
+			sb.append(str.substring(lastEnd, m.start()));
+			lastEnd = m.end();
+			
+			String
+				color = "",
+				linkType = "",
+				id = "",
+				enchant = "",
+				gem1 = "",
+				gem2 = "",
+				gem3 = "",
+				gem4 = "",
+				suffix = "",
+				unique = "",
+				linkLvl = "",
+				name = "";
+						
+			color = m.group(1);
+			
+			if (!color.isEmpty()) {
+				color = color.substring(4);
+			}
+			
+			String[] parts = m.group(2).split(":");
+			name = m.group(3);
+			boolean hasRestoreColor = !m.group(4).isEmpty();
+			
+			try {
+				linkType = parts[0].toUpperCase();
+				id = parts[1];
+				enchant = parts[2];
+				gem1 = parts[3];
+				gem2 = parts[4];
+				gem3 = parts[5];
+				gem4 = parts[6];
+				suffix = parts[7];
+				unique = parts[8];
+				linkLvl = parts[9];
+			} catch (IndexOutOfBoundsException e) {}
+			
+			
+			
+			ChatLinkType type = null;
+			
+			try {
+				type = ChatLinkType.valueOf(linkType);
+				sb.append(type.getHtml5Link(
+					color, hasRestoreColor, id, enchant, gem1, gem2, gem3, gem4,
+					suffix, unique, linkLvl, name));
+			} catch (IllegalArgumentException e) {
+				sb.append(removeLinks(m.group(0)));
+			}
+		}
+		
+		if (0 == lastEnd) {
+			return removeLinks(str);
+		}
+		
+		if (lastEnd < str.length()) {
+			sb.append(str.substring(lastEnd, str.length()));
+		}
+		
+		return sb.toString();
+	}
 	
 	// removing formatting, links
 	protected static final Pattern LINK_REGEX =

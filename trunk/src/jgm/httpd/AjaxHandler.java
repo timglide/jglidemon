@@ -264,7 +264,7 @@ public class AjaxHandler extends Handler {
 		for (LogEntry e : entries) {
 			JSONObject entryObj = new JSONObject();
 			entryObj.put("timestamp", e.timestamp.getTime());
-			entryObj.put("text", e.supportsHtmlText() ? e.getHtmlText() : e.getText());
+			entryObj.put("text", e.supportsHtmlText() ? e.getHtml5Text() : e.getText());
 			entriesArray.put(entryObj);
 		}
 		

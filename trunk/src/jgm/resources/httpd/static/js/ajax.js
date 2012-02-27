@@ -175,8 +175,6 @@ var updater = {
 	checkStatus: function(json) {
 		var status = json['status'];
 		if (status != 'success') {
-//			var message = json['message'];
-//			alert(status + (message ? "\n" + message : ""));
 			return false;
 		}
 
@@ -188,17 +186,9 @@ var updater = {
 		var m = date.getMinutes();
 		var s = date.getSeconds();
 		
-		if (h < 10) {
-			h = '0' + h;
-		}
-		
-		if (m < 10) {
-			m = '0' + m;
-		}
-		
-		if (s < 10) {
-			s = '0' + s
-		}
+		if (h < 10) h = '0' + h;
+		if (m < 10) m = '0' + m;
+		if (s < 10) s = '0' + s;
 		
 		return '[' + h + ':' + m + ':' + s + '] ';
 	},
@@ -214,7 +204,7 @@ var updater = {
 		
 		var lastTimestamp = this.data('lastUpdate');
 		
-		if (json.entries) { // IE7 bug
+		if (json.entries) {
 			for (var i = 0; i < json.entries.length; i++) {
 				var entry = json.entries[i];
 				var timestamp = new Date();
@@ -285,7 +275,6 @@ var updater = {
 			vars.attached = false;
 			mainTitle = 'Disconnected';
 			setHeader(els.discheader);
-			els.connected.hide();
 		} else {
 			var glider = json['glider'];
 			
@@ -294,7 +283,6 @@ var updater = {
 			if (!vars.attached) {
 				mainTitle = 'Connected, Detached';
 				setHeader(els.notattached);
-				els.connected.hide();
 			} else {
 				vars.name        = glider['name'];
 				vars.level       = glider['level'];
@@ -344,7 +332,6 @@ var updater = {
 				IH(els.deaths_text, 					vars.deaths);
 
 				setHeader(els.mainheader);
-				els.connected.show();
 			}
 		}
 
@@ -414,13 +401,16 @@ var commands = {
 		var to   = trim(els.chatto.val());
 		var text = trim(els.chattext.val());
 
+		els.chatto.removeClass('error');
+		els.chattext.removeClass('error');
+		
 		if (type != 'Raw') {
 			out += '#13#/' + type + ' ';
 		}
 
 		if (type == 'w') {
 			if (to == '') {
-				alert('The To field cannot be empty');
+				els.chatto.addClass('error');
 				return;
 			}
 
@@ -434,10 +424,10 @@ var commands = {
 		}
 
 		if (text == '') {
-			alert('You must enter some chat text');
+			els.chattext.addClass('error');
 			return;
 		}
-
+		
 		if (out != '') {
 			$.ajax(commands.url + "chat&keys=" + escape(out), {
 				dataType: 'json',

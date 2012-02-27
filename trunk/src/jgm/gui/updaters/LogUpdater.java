@@ -443,10 +443,10 @@ public class LogUpdater implements Runnable, ConnectionListener {
 			// create the non-raw chat entry
 			if (fromLog) {
 				LogEntry newEntry = 
-					handleLine(e2.getHtmlText(), LogFile._NormalChat);
+					handleLine(e2.getRawText(), LogFile._NormalChat);
 				newEntry.timestamp = e.timestamp;
 			} else {
-				handleLine("[Chat] " + e2.getHtmlText(), LogFile.None);
+				handleLine("[Chat] " + e2.getRawText(), LogFile.None);
 			}
 		} else if (e instanceof CombatLogEntry) {
 			CombatLogEntry e2 = (CombatLogEntry) e;

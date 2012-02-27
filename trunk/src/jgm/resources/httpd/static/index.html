@@ -8,25 +8,47 @@
 <link rel="stylesheet" type="text/css" href="/static/main.css" />
 <link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css" /> 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script> 
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+<script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script> 
 <script type="text/javascript" src="/static/js/ajaxsettings.js"></script>
 <script type="text/javascript" src="/static/js/ajax.js"></script>
 
 <script type="text/javascript">
 $(function() {
-	$('#content').tabs();
+	var
+		$content = $('#content').tabs(),
+		liveContext = $content[0];
 
+	$('a.chat-link.player', liveContext).live('click', function(event) {
+		var $this = $(this);
+
+		els.chattype.val('w');
+		els.chatto.val($this.data('linkId'));
+		els.chattext.val('');
+		els.chattext.focus();
+		commands.typeChange();
+		
+		return false;
+	});
+
+	$('a.chat-link.channel', liveContext).live('click', function(event) {
+		var	$this = $(this);
+		
+		els.chattype.val('Raw');
+		els.chattext.val('/' + $this.data('linkId') + ' ');
+		els.chattext.focus();
+		commands.typeChange();
+		
+		return false;
+	});
+	
 	/*setTimeout(function() {
 		$('#content > div').css('top', $('#content > ul').outerHeight(true) + 'px');
 	}, 200);*/
 	
-	$('#theform').submit(function() {
+	$('#theform').submit(function(event) {
 		commands.chat();
-		return false;
-	});
-
-	$('#sendchat').click(function() {
-		commands.chat();
+		event.preventDefault();
 		return false;
 	});
 	
@@ -50,35 +72,35 @@ $(function() {
 	<div id="hiddenheaders" style="display: none;">
 		<div id="discheader"><h1>Disconnected from Glider</h1></div>
 		<div id="notattached"><h1>Connected to Glider, Detached</h1></div>
-		<div id="mainheader"><h1><img src="/static/img/classes/$lcclass.png" align="absmiddle" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
+		<div id="mainheader"><h1><img src="/static/img/classes/unknown.png" align="absmiddle" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
 	</div>
 
-	<div id="connected" style="display: none;">
+	<div id="connected">
 		<div id="nav">
 			<div id="navpad">
 				<div id="attached_info">
 					<div class="info_bar" id="health_bar">
-						<div class="info_text" id="health_text">$health%</div>
+						<div class="info_text" id="health_text"></div>
 						<div class="info_percent" id="health_percent"></div>
 					</div>
 					<div class="info_bar" id="secondary_bar">
-						<div class="info_text" id="secondary_text">$mana%</div>
+						<div class="info_text" id="secondary_text"></div>
 						<div class="info_percent mana" id="secondary_percent"></div>
 					</div>
 					<div class="info_bar" id="xp_bar">
-						<div class="info_text" id="xp_text">$xptext</div>
+						<div class="info_text" id="xp_text"></div>
 						<div class="info_percent" id="xp_percent"></div>
 					</div>
-					<div id="xp_per_hour_div"><strong>XP/Hour:</strong> <span id="xp_per_hour_text">$xpperhour</span></div>
-					<div id="ttl_div"><strong>Time To Level:</strong> <span id="ttl_text">$ttl</span></div>
+					<div id="xp_per_hour_div"><strong>XP/Hour:</strong> <span id="xp_per_hour_text">0</span></div>
+					<div id="ttl_div"><strong>Time To Level:</strong> <span id="ttl_text">Unknown</span></div>
 					
-					<div id="mode_div"><strong>Mode:</strong> <span id="mode_text">$mode</span></div>
-					<div id="profilediv"><strong>Profile:</strong> <span id="profile_text">$profile</span></div>
-					<div id="kills_div"><strong>KLD:</strong> <span id="kills_text">$kills</span>/<span id="loots_text">$loots</span>/<span id="deaths_text">$deaths</span></div>
+					<div id="mode_div"><strong>Mode:</strong> <span id="mode_text">None</span></div>
+					<div id="profilediv"><strong>Profile:</strong> <span id="profile_text">None</span></div>
+					<div id="kills_div"><strong>KLD:</strong> <span id="kills_text">0</span>/<span id="loots_text">0</span>/<span id="deaths_text">0</span></div>
 				</div>
 
-				<a href="javascript:commands.start();" title="Start Gliding"><img src="/static/img/buttons/play.png" alt="Start Gliding" /></a>
-				<a href="javascript:commands.stop();" title="Stop Gliding"><img src="/static/img/buttons/stop.png" alt="Stop Gliding" /></a>
+				<a href="javascript:commands.start();" title="Start Bot"><img src="/static/img/buttons/play.png" alt="Start Bot" /></a>
+				<a href="javascript:commands.stop();" title="Stop Bot"><img src="/static/img/buttons/stop.png" alt="Stop Bot" /></a>
 				<a href="javascript:window.location.reload(false);" title="Refresh Page Manually"><img src="/static/img/buttons/refresh.png" alt="Refresh Page Manually" /></a>
 				
 			</div>
@@ -127,7 +149,7 @@ $(function() {
 					<div class="chat-text" id="chat-status-container" data-type="status"></div>
 				</div>
 			</div>
-			<form id="theform">
+			<form id="theform" action="#">
 				<select id="chattype" onchange="commands.typeChange();">
 					<option value="w">Whisper</option>
 					<option value="r">Reply</option>
@@ -136,12 +158,12 @@ $(function() {
 					<option>Raw</option>
 				</select>
 				<div id="chattospan">
-					<input id="chatto" type="text" size="10" placeholder="To" title="The person to send a whisper to" />
+					<input id="chatto" type="text" placeholder="To" title="The person to send a whisper to" />
 				</div>
 				<div id="chattextspan">
-					<input id="chattext" type="text" size="25" placeholder="Chat text" title="For Raw, type a full slash command just like you would in-game, for others the slash command will be added automatically" />
+					<input id="chattext" type="text" onfocus="this.value = this.value;" placeholder="Chat text" title="For Raw, type a full slash command just like you would in-game, for others the slash command will be added automatically" />
 				</div>
-				<input type="button" id="sendchat" value="Send" />
+				<input type="submit" id="sendchat" value="Send" />
 			</form>
 		</div>
 	</div>
