@@ -200,14 +200,15 @@ var updater = {
 	},
 	
 	handleChat: function(json, textStatus, jqXHR) {
-		var newest = null;
-		
-		var lastTimestamp = this.data('lastUpdate');
+		var
+			newest = null,
+			lastTimestamp = this.data('lastUpdate');
 		
 		if (json.entries) {
 			for (var i = 0; i < json.entries.length; i++) {
-				var entry = json.entries[i];
-				var timestamp = new Date();
+				var
+					entry = json.entries[i],
+					timestamp = new Date();
 				timestamp.setTime(entry.timestamp);
 				
 				if (lastTimestamp &&
@@ -229,9 +230,13 @@ var updater = {
 			this.children().eq(0).remove();
 		}
 		
-		this.data('lastUpdate', new Date());
 		
 		if (null != newest) {
+			// if there were no new entries we keep the old date
+			// which can help if there is some lag that would cause
+			// us to miss an entry
+			this.data('lastUpdate', new Date());
+			
 			if (newest.data('timestamp') > this.data('lastUpdate')) {
 				this.data('lastUpdate', newest.data('timestamp'));
 			}
