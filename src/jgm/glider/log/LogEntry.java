@@ -106,11 +106,15 @@ public class LogEntry implements Comparable<LogEntry> {
 		if (!supportsHtmlText())
 			throw new UnsupportedOperationException("HTML not available");
 		
+		String rawText = this.rawText
+			.replace("&", "&amp;")
+			.replace("<", "&lt;")
+			.replace(">", "&gt;");
 		Matcher m = FORMATTING_REGEX.matcher(convertLinks(rawText));
 	    
 		html5Text = 
-		(preColor != null ? "<span style=\"color: " + preColor + ";\">" : "") +
-		m.replaceAll("<span style=\"color: $2;\">")
+		(preColor != null ? "<span style=\"color: #" + preColor + ";\">" : "") +
+		m.replaceAll("<span style=\"color: #$2;\">")
 			.replace("|r", "</span>") +
 		(preColor != null ? "</span>" : "");
 		
@@ -133,7 +137,10 @@ public class LogEntry implements Comparable<LogEntry> {
 		if (!supportsHtmlText())
 			throw new UnsupportedOperationException("HTML not available");
 		
-		
+		String rawText = this.rawText
+			.replace("&", "&amp;")
+			.replace("<", "&lt;")
+			.replace(">", "&gt;");
 		Matcher m = FORMATTING_REGEX.matcher(removeLinks(rawText));
 			    
 		htmlText = 
@@ -315,7 +322,7 @@ public class LogEntry implements Comparable<LogEntry> {
 	}
 	
 	protected static final Pattern CONVERT_LINK_REGEX =
-		Pattern.compile("(\\|[Cc][0-9A-Fa-f]{8}|)\\|H([^|]*?)\\|h(.*?)\\|h(\\|r|)");
+		Pattern.compile("\\|H([^|]*?)\\|h(.*?)\\|h");
 	
 	public static String convertLinks(String str) {
 		Matcher m = CONVERT_LINK_REGEX.matcher(str);
@@ -331,7 +338,6 @@ public class LogEntry implements Comparable<LogEntry> {
 			lastEnd = m.end();
 			
 			String
-				color = "",
 				linkType = "",
 				id = "",
 				enchant = "",
@@ -343,16 +349,9 @@ public class LogEntry implements Comparable<LogEntry> {
 				unique = "",
 				linkLvl = "",
 				name = "";
-						
-			color = m.group(1);
 			
-			if (!color.isEmpty()) {
-				color = color.substring(4);
-			}
-			
-			String[] parts = m.group(2).split(":");
-			name = m.group(3);
-			boolean hasRestoreColor = !m.group(4).isEmpty();
+			String[] parts = m.group(1).split(":");
+			name = m.group(2);
 			
 			try {
 				linkType = parts[0].toUpperCase();
@@ -374,7 +373,7 @@ public class LogEntry implements Comparable<LogEntry> {
 			try {
 				type = ChatLinkType.valueOf(linkType);
 				sb.append(type.getHtml5Link(
-					color, hasRestoreColor, id, enchant, gem1, gem2, gem3, gem4,
+					id, enchant, gem1, gem2, gem3, gem4,
 					suffix, unique, linkLvl, name));
 			} catch (IllegalArgumentException e) {
 				sb.append(removeLinks(m.group(0)));

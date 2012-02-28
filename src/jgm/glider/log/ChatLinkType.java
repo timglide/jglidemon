@@ -21,8 +21,6 @@ public enum ChatLinkType {
 	}
 	
 	public String getHtml5Link(
-			String color,
-			boolean hasRestoreColor,
 			String id,
 			String enchant,
 			String gem1,
@@ -95,21 +93,23 @@ public enum ChatLinkType {
 					sb.append("&amp;ench=").append(enchant);
 				}
 				
-				if (!gem1.isEmpty()) {
-					sb.append("&amp;gems=").append(gem1);
-					
-					if (!gem2.isEmpty()) {
-						sb.append(':').append(gem2);
-					}
-					
-					if (!gem3.isEmpty()) {
-						sb.append(':').append(gem3);
-					}
-					
-					if (!gem4.isEmpty()) {
-						sb.append(':').append(gem4);
-					}
-				}
+				// wowhead needs the actual item ids for the gems but
+				// the itemlink has the "enchantid" the gems give instead
+//				if (!gem1.isEmpty()) {
+//					sb.append("&amp;gems=").append(gem1);
+//					
+//					if (!gem2.isEmpty()) {
+//						sb.append(':').append(gem2);
+//					}
+//					
+//					if (!gem3.isEmpty()) {
+//						sb.append(':').append(gem3);
+//					}
+//					
+//					if (!gem4.isEmpty()) {
+//						sb.append(':').append(gem4);
+//					}
+//				}
 				
 				if (!suffix.isEmpty()) {
 					sb.append("&amp;rand=").append(suffix);
@@ -124,15 +124,7 @@ public enum ChatLinkType {
 		
 		sb.append('>');
 		
-		if (!color.isEmpty()) {
-			sb.append("<span style=\"color: #").append(color).append(";\">");
-		}
-		
 		sb.append(name);
-		
-		if (hasRestoreColor) {
-			sb.append("</span>");
-		}
 		
 		sb.append("</a>");
 		
