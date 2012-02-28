@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GliderRemoteCompat</RootNamespace>
-    <AssemblyName>HbPluginTest</AssemblyName>
+    <AssemblyName>GliderRemoteCompat</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

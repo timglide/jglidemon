@@ -50,6 +50,12 @@ namespace GliderRemoteCompat {
 		}
 
 		private void AddMessage(string s, float r, float g, float b, int id, params object[] rest) {
+			if (!(1f == r && 1f == g && 1f == b)) {
+				s = string.Format(
+					"|cff{0:x2}{1:x2}{2:x2}{3}|r",
+					(int)(r * 255), (int)(g * 255), (int)(b * 255), s);
+			}
+
 			client.SendLog(ClientLogType.ChatRaw, s);
 		}
 
@@ -96,7 +102,7 @@ namespace GliderRemoteCompat {
 			var arg15 = Args.Length < 15 ? "" : Args[14].ToString();
 			
 			string type = args.EventName.Substring(9);
-			ChatTypeInfo info = ChatTypeInfo.Instance;
+			ChatTypeInfo info = ChatTypeInfo.Get(type);
 
 			string coloredName = GetColoredName(args.EventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
 
