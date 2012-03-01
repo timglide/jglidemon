@@ -24,6 +24,9 @@ import jgm.glider.Status;
 import jgm.gui.components.*;
 import jgm.wow.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 import java.awt.*;
 import java.awt.event.*;
@@ -37,6 +40,7 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 	
 	public  JButton          resetBtn   = new JButton("Reset Loot");
 	
+	private long lastUpdateTime = System.currentTimeMillis();
 	private long initialGoldTime = System.currentTimeMillis();
 	
 	// array index is the item's quality
@@ -121,12 +125,14 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 		tables[quality].changeSelection(0, 0, false, false);
 		tables[quality].clearSelection();
 		doGoldPerHour();
+		lastUpdateTime = System.currentTimeMillis();
 	}
 
 	public void addMoney(int i) {
 		//System.out.println("Adding " + i + "c to loot tab");
 		goldLooted.addMoney(i);
 		doGoldPerHour();
+		lastUpdateTime = System.currentTimeMillis();
 	}
 	
 	private void doGoldPerHour() {
@@ -169,6 +175,36 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 		//	doGoldPerHour();
 	}
 	
+	public long getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+	
+	public long getRunningTime() {
+		return System.currentTimeMillis() - initialGoldTime;
+	}
+	
+	public int getGoldLooted() {
+		return goldLooted.getMoney();
+	}
+	
+	public int getLootWorth() {
+		return lootWorth.getMoney();
+	}
+	
+	public int getGoldPerHour() {
+		return goldPerHour.getMoney();
+	}
+	
+	public List<ItemSet> getItemSets(int quality) {
+		quality = (quality >= Item.EPIC)
+					  ? Item.EPIC
+					  : (quality <= Item.POOR)
+					    ? Item.POOR
+						: quality;
+		
+		return items[quality].getItems();
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == resetBtn) {
 			goldLooted.setMoney(0);
@@ -178,6 +214,8 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 			for (int i = 0; i < items.length; i++) {
 				items[i].empty();
 			}
+			
+			lastUpdateTime = System.currentTimeMillis();
 		}
 	}
 	
@@ -316,12 +354,12 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 	private static final String[] columnNames = {" ", "Name", "Qty"};
 	
 	private class ItemTableModel extends AbstractTableModel {
-		private Vector<ItemSet> itemSets;
+		private ArrayList<ItemSet> itemSets;
 
 		public ItemTableModel() {
 			super();
 
-			itemSets = new Vector<ItemSet>();
+			itemSets = new ArrayList<ItemSet>();
 		}
 
 		public void empty() {
@@ -353,6 +391,11 @@ public class LootsTab extends Tab implements ActionListener, Clearable {
 		
 		public ItemSet getItem(int r) {
 			return itemSets.get(r);
+		}
+		
+		@SuppressWarnings("unchecked")
+		public List<ItemSet> getItems() {
+			return (List<ItemSet>) itemSets.clone();
 		}
 		
 		public int getColumnCount() {

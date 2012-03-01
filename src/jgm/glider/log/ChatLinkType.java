@@ -36,7 +36,7 @@ public enum ChatLinkType {
 		
 		switch (this) {
 			case CHANNEL: // |Hchannel:channel:4|h[4. test]|h
-				if ("channel".equals(id)) {
+				if ("channel".equalsIgnoreCase(id)) {
 					id = enchant;
 				} else {
 					id = id.toLowerCase();

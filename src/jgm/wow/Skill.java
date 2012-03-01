@@ -20,23 +20,31 @@
  */
 package jgm.wow;
 
+import java.util.Date;
+
+import jgm.glider.log.RawChatLogEntry;
+
 /**
  * 
  * @author Tim
  * @since 0.10
  */
 public class Skill {
+	// for backwards compat/not having to rename everything
+	public Date timestampDate = null;
 	public String timestamp = "";
 	public String name = "";
 	public int level = 0;
 	
-	public Skill(String timestamp, String name, int level) {
-		this.timestamp = timestamp;
+	public Skill(Date timestampDate, String name, int level) {
+		this.timestampDate = timestampDate;
+		this.timestamp = RawChatLogEntry.getFormattedTimestamp(timestampDate);
 		this.name = name;
 		this.level = level;
 	}
 	
 	public void incr(Skill s) {
+		this.timestampDate = s.timestampDate;
 		this.timestamp = s.timestamp;
 		this.level = s.level;
 	}

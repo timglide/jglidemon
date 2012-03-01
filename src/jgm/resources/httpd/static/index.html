@@ -118,6 +118,8 @@ $(function() {
 					<li><a href="#view-chat-combat" title="Combat Log">Combat</a></li>
 					<li><a href="#view-chat-glider" title="Bot Log">Bot</a></li>
 					<li><a href="#view-chat-status" title="Status Log">Status</a></li>
+					<li><a href="#view-mobs" title="Mobs / Rep / Skills">Mobs</a></li>
+					<li><a href="#view-loot" title="Loot / Gold">Loot</a></li>
 		        </ul>
 		        
 				<div id="screenshot">
@@ -147,6 +149,49 @@ $(function() {
 				</div>
 				<div id="view-chat-status">
 					<div class="chat-text" id="chat-status-container" data-type="status"></div>
+				</div>
+				
+				<div id="view-loot">
+					<div id="loot-container-poor">
+						<table id="loot-table-poor">
+							<caption class="poor">Poor</caption>
+							<tr>
+								<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+							</tr>
+						</table>
+					</div>
+					<div id="loot-container-common">
+						<table id="loot-table-common">
+							<caption class="common">Common</caption>
+							<tr>
+								<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+							</tr>
+						</table>
+					</div>
+					<div id="loot-container-uncommon">
+						<table id="loot-table-uncommon">
+							<caption class="uncommon">Uncommon</caption>
+							<tr>
+								<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+							</tr>
+						</table>
+					</div>
+					<div id="loot-container-rare">
+						<table id="loot-table-rare">
+							<caption class="rare">Rare</caption>
+							<tr>
+								<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+							</tr>
+						</table>
+					</div>
+					<div id="loot-container-epic">
+						<table id="loot-table-epic">
+							<caption class="epic">Epic</caption>
+							<tr>
+								<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+							</tr>
+						</table>
+					</div>
 				</div>
 			</div>
 			<form id="theform" action="#">

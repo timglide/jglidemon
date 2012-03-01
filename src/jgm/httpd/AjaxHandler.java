@@ -33,6 +33,14 @@ import jgm.glider.Command;
 import jgm.glider.log.LogEntry;
 import jgm.gui.panes.TabsPane;
 import jgm.gui.tabs.LogTab;
+import jgm.gui.tabs.LootsTab;
+import jgm.gui.tabs.MobsTab;
+import jgm.wow.Item;
+import jgm.wow.ItemSet;
+import jgm.wow.Mob;
+import jgm.wow.Quality;
+import jgm.wow.Rep;
+import jgm.wow.Skill;
 
 public class AjaxHandler extends Handler {
 	public static final String DEF_ERROR_JSON =
@@ -60,48 +68,25 @@ public class AjaxHandler extends Handler {
 
 	private String createXML(String uri, String method, Properties headers, Properties params) {
 		JSONObject root = new JSONObject();
-		final jgm.ServerManager sm = httpd.sm;
+		String since = params.getProperty("since");
 		
 		try {
 			// status
 			root.put("status", "success");
 			
-			// for an error message
-			root.put("message", "");
-			
 			if (uri.equals("command")) {
-				final String cmd = params.getProperty("command");
-				
-				if (cmd != null) {
-					if (cmd.equals("start")) {
-						sm.cmd.add(Command.getStartCommand());
-					} else if (cmd.equals("stop")) {
-						sm.cmd.add(Command.getStopCommand());
-					} else if (cmd.equals("chat")) {
-						String keys = params.getProperty("keys");
-						
-						if (keys != null && !"".equals(keys = keys.trim())) {
-							sm.cmd.add(Command.getChatCommand(keys));
-						} else {
-							root.put("status", "error");
-							root.put("message", "No keys provided for sending");
-						}
-					} else {
-						root.put("status", "error");
-						root.put("message", "Invalid command: " + cmd);
-					}
-				} else {
-					root.put("status", "error");
-					root.put("message", "No command given");
-				}
+				command(root, params);
 			} else if (uri.equals("status")) {
 				status(root);
 			} else if (uri.equals("chat")) {
-				String type = params.getProperty("type");
+				String type  = params.getProperty("type");
 				String count = params.getProperty("count");
-				String since = params.getProperty("since");
 				
 				chat(root, type, count, since);
+			} else if (uri.equals("mobs")) {
+				mobs(root, since);
+			} else if (uri.equals("loot")) {
+				loot(root, since);
 			} else {
 				root.put("status", "error");
 				root.put("message", "Invalid uri: " + uri);
@@ -119,6 +104,34 @@ public class AjaxHandler extends Handler {
 		}
 		
 		return null;
+	}
+	
+	private void command(JSONObject root, Properties params) throws JSONException {
+		final String cmd = params.getProperty("command");
+		final jgm.ServerManager sm = httpd.sm;
+		
+		if (cmd != null) {
+			if (cmd.equals("start")) {
+				sm.cmd.add(Command.getStartCommand());
+			} else if (cmd.equals("stop")) {
+				sm.cmd.add(Command.getStopCommand());
+			} else if (cmd.equals("chat")) {
+				String keys = params.getProperty("keys");
+				
+				if (keys != null && !"".equals(keys = keys.trim())) {
+					sm.cmd.add(Command.getChatCommand(keys));
+				} else {
+					root.put("status", "error");
+					root.put("message", "No keys provided for sending");
+				}
+			} else {
+				root.put("status", "error");
+				root.put("message", "Invalid command: " + cmd);
+			}
+		} else {
+			root.put("status", "error");
+			root.put("message", "No command given");
+		}
 	}
 	
 	private void status(JSONObject root) throws JSONException {
@@ -271,14 +284,120 @@ public class AjaxHandler extends Handler {
 		root.put("entries", entriesArray);
 	}
 	
+	private void mobs(JSONObject root, String since) throws JSONException {
+		MobsTab mobsTab = httpd.sm.gui.tabsPane.mobsTab;
+		
+		if (null != since) {
+			long iSince = 0L;
+			
+			try {
+				iSince = Long.parseLong(since);
+				
+				if (mobsTab.getLastUpdateTime() < iSince) {
+					// the last update was before the specified time
+					// meaning nothing new has been added
+					return;
+				}
+			} catch (NumberFormatException e) {}
+		}
+		
+		JSONArray mobs = CA(root, "mobs");
+		
+		for (Mob m : mobsTab.getMobs()) {
+			AP(mobs)
+				.put("name", m.name)
+				.put("qty", m.number)
+				.put("avgXp", m.xp);
+		}
+		
+		
+		JSONArray reps = CA(root, "rep");
+		
+		for (Rep r : mobsTab.getReps()) {
+			AP(reps)
+				.put("faction", r.faction)
+				.put("time", r.timestampDate.getTime())
+				.put("gained", r.amount);
+		}
+		
+		
+		JSONObject skills = CE(root, "skills");
+		
+		for (Skill s : mobsTab.getSkills()) {
+			CE(skills, s.name)
+				.put("skill", s.name)
+				.put("level", s.level)
+				.put("time", s.timestampDate);
+		}
+	}
+	
+	private void loot(JSONObject root, String since) throws JSONException {
+		LootsTab lootsTab = httpd.sm.gui.tabsPane.lootsTab;
+		
+		if (null != since) {
+			long iSince = 0L;
+			
+			try {
+				iSince = Long.parseLong(since);
+				
+				if (lootsTab.getLastUpdateTime() < iSince) {
+					// the last update was before the specified time
+					// meaning nothing new has been added
+					return;
+				}
+			} catch (NumberFormatException e) {}
+		}
+		
+		root
+			.put("goldLooted", lootsTab.getGoldLooted())
+			.put("lootWorth", lootsTab.getLootWorth())
+			.put("goldPerHour", lootsTab.getGoldPerHour())
+			.put("runtime", lootsTab.getRunningTime());
+		
+		JSONArray loot = CA(root, "loot");
+		
+		for (int quality = Item.POOR; quality <= Item.EPIC; quality++) {
+			List<ItemSet> itemSets = lootsTab.getItemSets(quality);
+			
+			for (ItemSet is : itemSets) {
+				Item item = is.getItem();
+				AP(loot)
+					.put("id", item.id)
+					.put("quality", item.quality)
+					.put("qualityName", item.quality_.name().toLowerCase())
+					.put("name", item.name)
+					.put("icon", item.iconPath)
+					.put("qty", is.getQuantity());
+			}
+		}
+	}
+	
 	/**
 	 * Creates a new json object and appends it to parent with the given
-	 * key.
+	 * key. Originally named as an abbreviation for Create Element when
+	 * this all used to be XML instead of JSON.
 	 * @throws JSONException 
 	 */
 	private JSONObject CE(JSONObject parent, String name) throws JSONException {
 		JSONObject obj = new JSONObject();
 		parent.put(name, obj);
+		return obj;
+	}
+	
+	private JSONArray CA(JSONObject parent, String name) throws JSONException {
+		JSONArray arr = new JSONArray();
+		parent.put(name, arr);
+		return arr;
+	}
+	
+	/**
+	 * Creates a new JSONObject, appends it to parent, and returns the new object
+	 * @param parent
+	 * @return
+	 */
+	private JSONObject AP(JSONArray parent) {
+		JSONObject obj = new JSONObject();
+		parent.put(obj);
 		return obj;
 	}
 }

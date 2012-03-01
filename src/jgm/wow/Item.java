@@ -48,7 +48,8 @@ public class Item implements Comparable<Item>, Serializable {
 	public static final int RARE = 3;
 	public static final int EPIC = 4;
 	public static final int LEGENDARY = 5;
-	public static final int RELIC = 6;
+	public static final int ARTIFACT = 6;
+	public static final int HEIRLOOM = 7;
 	
 	public static final Color GOLD = new Color(0xffd200);
 	

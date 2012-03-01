@@ -193,38 +193,38 @@ public class ItemFactory {
 		item.unique = getIntValue(doc, "unique");
 		item.merchentBuyPrice = getIntValue(doc, "buyprice");
 		
-		// replace merchentBuyPrice with ah price if appropriate
-		String[] patterns = jgm.Config.c.getArray("loot.ahlist.");
+//		// replace merchentBuyPrice with ah price if appropriate
+//		String[] patterns = jgm.Config.c.getArray("loot.ahlist.");
+//		
+//		// use the ah price if it's phat loot or if
+//		// it matches one of the patterns
+//		boolean useAHPriceInstead = item.quality >= jgm.Config.c.getInt("loot.phatquality");
 		
-		// use the ah price if it's phat loot or if
-		// it matches one of the patterns
-		boolean useAHPriceInstead = item.quality >= jgm.Config.c.getInt("loot.phatquality");
+//		if (!useAHPriceInstead) {
+//			for (String str : patterns) {
+//				if (!PATTERN_CACHE.containsKey(str)) {
+//					try {
+//						PATTERN_CACHE.put(str, Pattern.compile(str, Pattern.CASE_INSENSITIVE));
+//					} catch (PatternSyntaxException e) {
+//						PATTERN_CACHE.put(str, null);
+//					}
+//				}
+//				
+//				Pattern p = PATTERN_CACHE.get(str);
+//				
+//				if (p == null) continue;
+//				
+//				if (p.matcher(item.name).matches()) {
+//					useAHPriceInstead = true;
+//					break;
+//				}
+//			}
+//		}
 		
-		if (!useAHPriceInstead) {
-			for (String str : patterns) {
-				if (!PATTERN_CACHE.containsKey(str)) {
-					try {
-						PATTERN_CACHE.put(str, Pattern.compile(str, Pattern.CASE_INSENSITIVE));
-					} catch (PatternSyntaxException e) {
-						PATTERN_CACHE.put(str, null);
-					}
-				}
-				
-				Pattern p = PATTERN_CACHE.get(str);
-				
-				if (p == null) continue;
-				
-				if (p.matcher(item.name).matches()) {
-					useAHPriceInstead = true;
-					break;
-				}
-			}
-		}
-		
-		if (useAHPriceInstead) {
-			item.merchentBuyPrice = getIntValue(doc, "median_auc_price");
-			log.finest("Setting AH price for " + item.name + ": " + item.merchentBuyPrice);
-		}
+//		if (useAHPriceInstead) {
+//			item.merchentBuyPrice = getIntValue(doc, "median_auc_price");
+//			log.finest("Setting AH price for " + item.name + ": " + item.merchentBuyPrice);
+//		}
 		
 		item.slot = getIntValue(doc, "slot");
 		

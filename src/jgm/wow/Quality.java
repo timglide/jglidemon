@@ -23,13 +23,14 @@ package jgm.wow;
 import java.awt.Color;
 
 public enum Quality {
-	POOR     (0, Color.DARK_GRAY,        Color.GRAY),
+	POOR     (0, Color.DARK_GRAY,        new Color(0x9d9d9d)),
 	COMMON   (1, Color.BLACK,            Color.WHITE),
 	UNCOMMON (2, Color.GREEN,            new Color(0x1EFF00)),
 	RARE     (3, Color.BLUE,             new Color(0x0070DD)),
-	EPIC     (4, new Color(128, 0, 128), new Color(0xA434EE)),
-	LEGENDARY(5, Color.ORANGE,           new Color(0xD17C22)),
-	RELIC    (6, Color.RED,              new Color(0xFF0000));
+	EPIC     (4, new Color(128, 0, 128), new Color(0xa335ee)),
+	LEGENDARY(5, Color.ORANGE,           new Color(0xff8000)),
+	ARTIFACT (6, Color.RED,              new Color(0xFF0000)),
+	HEIRLOOM (7, new Color(0xe6cc80),    new Color(0xe6cc80));
 	
 	public final int value;
 	public final Color darkColor;
@@ -48,7 +49,7 @@ public enum Quality {
 	
 	public static Quality intToQuality(int i) {
 		if (i < 0) i = 0;
-		else if (i > 6) i = 6;
+		else if (i > 7) i = 7;
 		
 		return values()[i];
 	}
