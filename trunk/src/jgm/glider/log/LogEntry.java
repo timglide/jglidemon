@@ -333,7 +333,7 @@ public class LogEntry implements Comparable<LogEntry> {
 		
 		while (m.find()) {
 			matchCount++;
-			System.out.println("Found: " + m.group(0));
+//			System.out.println("Found: " + m.group(0));
 			sb.append(str.substring(lastEnd, m.start()));
 			lastEnd = m.end();
 			
@@ -365,7 +365,6 @@ public class LogEntry implements Comparable<LogEntry> {
 				unique = parts[8];
 				linkLvl = parts[9];
 			} catch (IndexOutOfBoundsException e) {}
-			
 			
 			
 			ChatLinkType type = null;

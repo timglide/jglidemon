@@ -248,3 +248,87 @@ img.corner {
 	margin-left: auto;
 	margin-right: auto;
 }
+
+.poor {
+	color: #9d9d9d !important;
+}
+
+.common {
+	color: white !important;
+}
+
+.uncommon {
+	color: #1eff00 !important;
+}
+
+.rare {
+	color: #0070dd !important;
+}
+
+.epic {
+	color: #a335ee !important;
+}
+
+.legendary {
+	color: #ff8000 !important;
+}
+
+.artifact, .heirloom {
+	color: #e6cc80 !important;
+}
+
+#view-loot > div {
+	position: absolute;
+	top: 0; bottom: 0;
+	width: 25%;
+	overflow: auto;
+}
+
+#view-loot #loot-container-poor {
+	left: 0;
+}
+
+#view-loot #loot-container-common {
+	left: 25%;
+}
+
+#view-loot #loot-container-uncommon {
+	left: 50%;
+}
+
+#view-loot #loot-container-rare {
+	left: 75%;
+	bottom: 50%;
+}
+
+#view-loot #loot-container-epic {
+	left: 75%;
+	top: 50%;
+}
+
+#view-loot table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+#view-loot table caption {
+	padding-top: 0.25em;
+}
+
+#view-loot td.icon, #view-loot th.icon {
+	width: 1.25em;
+	padding-left: 0.25em;
+}
+
+#view-loot td.icon img {
+	width: 1.25em;
+	height: 1.25em;
+}
+
+#view-loot td.qty, #view-loot th.qty {
+	width: 3em;
+}
+
+#view-loot td.qty {
+	text-align: right;
+}

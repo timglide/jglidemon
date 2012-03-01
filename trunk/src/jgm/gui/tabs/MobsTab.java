@@ -23,6 +23,8 @@ package jgm.gui.tabs;
 import jgm.glider.log.*;
 import jgm.wow.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.awt.*;
 import java.awt.event.*;
@@ -30,8 +32,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class MobsTab extends Tab implements ActionListener, Clearable {	
+public class MobsTab extends Tab implements ActionListener, Clearable {
 	public  JButton       resetBtn   = new JButton("Reset All");
+	
+	private long lastUpdateTime = System.currentTimeMillis();
 	
 	private MobTable      mobTable;
 	private MobTableModel mobEntries;
@@ -94,13 +98,33 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 			0, 0, false, false
 		);
 		table.clearSelection();
+		
+		lastUpdateTime = System.currentTimeMillis();
 	}
 
+	public long getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+	
+	public List<Mob> getMobs() {
+		return mobEntries.getEntries();
+	}
+	
+	public List<Rep> getReps() {
+		return repEntries.getEntries();
+	}
+	
+	public List<Skill> getSkills() {
+		return skillEntries.getEntries();
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == resetBtn) {
 			mobEntries.empty();
 			repEntries.empty();
 			skillEntries.empty();
+			
+			lastUpdateTime = System.currentTimeMillis();
 		}
 	}
 	
@@ -152,12 +176,12 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		private final java.util.Comparator<Mob> comp = Mob.getQuantityComparator();
 		private final String[] columnNames = {"#", "Avg XP", "Name"};
 		
-		private Vector<Mob> entries;
+		private ArrayList<Mob> entries;
 
 		public MobTableModel() {
 			super();
 
-			entries = new Vector<Mob>();
+			entries = new ArrayList<Mob>();
 		}
 
 		public void add(CombatLogEntry i) {
@@ -182,6 +206,11 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 
 		public Mob get(int row) {
 			return entries.get(row);
+		}
+		
+		@SuppressWarnings("unchecked")
+		public java.util.List<Mob> getEntries() {
+			return (java.util.List<Mob>) entries.clone();
 		}
 		
 		public void empty() {
@@ -258,12 +287,12 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		private final java.util.Comparator<Rep> comp = Rep.getAmountComparator();
 		private final String[] columnNames = {"Time", "Gained", "Faction"};
 		
-		private Vector<Rep> entries;
+		private ArrayList<Rep> entries;
 
 		public RepTableModel() {
 			super();
 
-			entries = new Vector<Rep>();
+			entries = new ArrayList<Rep>();
 		}
 
 		public void add(RawChatLogEntry i) {
@@ -272,7 +301,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 //				fireTableDataChanged();
 //			}
 			
-			Rep r = new Rep(i.getFormattedTimestamp(), i.getRepFaction(), i.getRepAmount());
+			Rep r = new Rep(i.getTimestamp(), i.getRepFaction(), i.getRepAmount());
 			int index = entries.indexOf(r);
 			
 			if (index >= 0) {
@@ -288,6 +317,11 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 
 		public Rep get(int row) {
 			return entries.get(row);
+		}
+		
+		@SuppressWarnings("unchecked")
+		public java.util.List<Rep> getEntries() {
+			return (java.util.List<Rep>) entries.clone();
 		}
 		
 		public void empty() {
@@ -364,12 +398,12 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		private final java.util.Comparator<Skill> comp = Skill.getLevelComparator();
 		private final String[] columnNames = {"Time", "Level", "Skill"};
 		
-		private Vector<Skill> entries;
+		private ArrayList<Skill> entries;
 
 		public SkillTableModel() {
 			super();
 
-			entries = new Vector<Skill>();
+			entries = new ArrayList<Skill>();
 		}
 
 		public void add(RawChatLogEntry i) {
@@ -378,7 +412,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 //				fireTableDataChanged();
 //			}
 			
-			Skill s = new Skill(i.getFormattedTimestamp(), i.getSkillName(), i.getSkillLevel());
+			Skill s = new Skill(i.getTimestamp(), i.getSkillName(), i.getSkillLevel());
 			int index = entries.indexOf(s);
 			
 			if (index >= 0) {
@@ -394,6 +428,11 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 
 		public Skill get(int row) {
 			return entries.get(row);
+		}
+		
+		@SuppressWarnings("unchecked")
+		public List<Skill> getEntries() {
+			return (List<Skill>) entries.clone();
 		}
 		
 		public void empty() {

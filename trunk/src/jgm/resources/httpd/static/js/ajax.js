@@ -36,6 +36,7 @@ var vars = {
 // this is responsible for the bulk of the updating
 var updater = {
 	chatTimeouts: {},
+	lootTimeout: null,
 	
 	init: function() {
 		els = {
@@ -87,12 +88,23 @@ var updater = {
 				combat:				$('#chat-combat-container'),
 				glider:				$('#chat-glider-container'),
 				status:				$('#chat-status-container'),
+			},
+			
+			loot: {
+				tab: $('#view-loot'),
+				poor: $('#loot-table-poor'),
+				common: $('#loot-table-common'),
+				uncommon: $('#loot-table-uncommon'),
+				rare: $('#loot-table-rare'),
+				epic: $('#loot-table-epic')
 			}
 		};
 		
 		for (var key in els.chat) {
 			updater.bindChatClick(key);
 		}
+		
+		updater.bindLootClick();
 	},
 
 	bindChatClick: function(type) {
@@ -113,12 +125,23 @@ var updater = {
 		});
 	},
 	
+	bindLootClick: function() {
+		$('a[href="#view-loot"]').click(function() {
+			if (updater.lootTimeout) {
+				clearTimeout(updater.lootTimeout);
+			}
+			
+			updater.updateLoot(true);
+		});
+	},
+	
 	url: urls.ajax + "status",
 	
 	update: function() {
 		updater.updateStatus();
 		updater.updateAllChat();
 		updater.updateScreenshot();
+		updater.updateLoot();
 	},
 	
 	updateStatus: function() {
@@ -172,6 +195,33 @@ var updater = {
 		setTimeout(updater.updateScreenshot, settings.updateInterval);
 	},
 
+	updateLoot: function(force) {
+		var $container = els.loot.tab;
+		clearTimeout(updater.lootTimeout);
+		
+		if (!force && !($container && $container.is(':visible'))) {
+			updater.lootTimeout = setTimeout(function() {
+				updater.updateLoot();
+			}, settings.updateInterval);
+			return;
+		}
+		
+		var url = urls.loot;
+		
+		if ($container.data('lastUpdate')) {
+			url += 'since=' + $container.data('lastUpdate').getTime();
+		}
+		
+		$.ajax(url, {
+			dataType: 'json',
+			context: $container,
+			success: updater.handleLoot,
+			error: function(jqXHR, textStatus, errorThrown) {
+				updater.failLoot(jqXHR, textStatus, errorThrown);
+			}
+		});
+	},
+	
 	checkStatus: function(json) {
 		var status = json['status'];
 		if (status != 'success') {
@@ -254,6 +304,63 @@ var updater = {
 		var self = this;
 		updater.chatTimeouts[this.data('type')] = setTimeout(function() {
 			updater.updateChat(self);
+		}, settings.updateInterval);
+	},
+	
+	failLoot: function(jqXHR, textStatus, errorThrown) {
+		updater.lootTimeout = setTimeout(function() {
+			updater.updateLoot();
+		}, settings.updateInterval);
+	},
+	
+	handleLoot: function(json, textStatus, jqXHR) {
+		var
+			newest = null,
+			lastTimestamp = this.data('lastUpdate');
+		
+		if (json.loot) {
+			for (var i = 0; i < json.loot.length; i++) {
+				var
+					entry  = json.loot[i],
+					$table = $('#loot-table-' + entry.qualityName),
+					$existing = $('#loot-row-' + entry.id);
+				
+				if ($existing.length) {
+					$existing.children().eq(2).text(entry.qty);
+					newest = $existing;
+					continue;
+				}
+				
+				var
+					$element = $('<tr/>')
+						.attr('id', 'loot-row-' + entry.id)
+						.append($('<td class="icon"><img src="' + settings.iconBase + entry.icon + settings.iconExt + '"/></td>')),
+					$td = $('<td/>'),
+					$a  = $('<a class="' + entry.qualityName + '" target="_blank" href="http://www.wowhead.com/item=' + entry.id + '"/>')
+						.text('[' + entry.name + ']');
+				
+				$td.append($a);
+				$element
+					.append($td)
+					.append('<td class="qty">' + entry.qty + '</td>');
+				$table.append($element);
+				newest = $element;
+			}
+		}		
+		
+		if (null != newest) {
+			// if there were no new entries we keep the old date
+			// which can help if there is some lag that would cause
+			// us to miss an entry
+			this.data('lastUpdate', new Date());
+			
+			if (newest.data('timestamp') > this.data('lastUpdate')) {
+				this.data('lastUpdate', newest.data('timestamp'));
+			}
+		}
+		
+		updater.lootTimeout = setTimeout(function() {
+			updater.updateLoot();
 		}, settings.updateInterval);
 	},
 	

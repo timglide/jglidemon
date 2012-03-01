@@ -20,23 +20,31 @@
  */
 package jgm.wow;
 
+import java.util.Date;
+
+import jgm.glider.log.RawChatLogEntry;
+
 /**
  * 
  * @author Tim
  * @since 0.10
  */
 public class Rep {
+	// for backwards compat/not having to rename everything
+	public Date timestampDate = null;
 	public String timestamp = "";
 	public String faction = "";
 	public int amount = 0;
 	
-	public Rep(String timestamp, String faction, int amount) {
-		this.timestamp = timestamp;
+	public Rep(Date timestampDate, String faction, int amount) {
+		this.timestampDate = timestampDate;
+		this.timestamp = RawChatLogEntry.getFormattedTimestamp(timestampDate);
 		this.faction = faction;
 		this.amount = amount;
 	}
 	
 	public void incr(Rep rep) {
+		this.timestampDate = rep.timestampDate;
 		this.timestamp = rep.timestamp;
 		this.amount += rep.amount;
 	}
