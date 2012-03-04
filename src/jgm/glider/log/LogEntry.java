@@ -371,11 +371,15 @@ public class LogEntry implements Comparable<LogEntry> {
 			
 			try {
 				type = ChatLinkType.valueOf(linkType);
+			} catch (IllegalArgumentException e) {
+				log.fine("Unable to parse chat link, type=" + linkType + ", " + m.group(0));
+				sb.append(removeLinks(m.group(0)));
+			}
+			
+			if (null != type) {
 				sb.append(type.getHtml5Link(
 					id, enchant, gem1, gem2, gem3, gem4,
 					suffix, unique, linkLvl, name));
-			} catch (IllegalArgumentException e) {
-				sb.append(removeLinks(m.group(0)));
 			}
 		}
 		

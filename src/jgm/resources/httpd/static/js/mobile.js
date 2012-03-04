@@ -1,5 +1,6 @@
 var jQT = new $.jQTouch({
-    icon: false,
+    icon: '/static/img/stitch-57.png',
+    icon4: '/static/img/stitch-114.png',
     statusBar: 'black-translucent',
     preloadImages: []
 });

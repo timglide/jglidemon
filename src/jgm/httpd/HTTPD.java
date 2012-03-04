@@ -332,10 +332,11 @@ public class HTTPD implements Runnable
 			{
 				InputStream is = mySocket.getInputStream();
 				if ( is == null) return;
-				BufferedReader in = new BufferedReader( new InputStreamReader( is ));
+				BufferedReader in = new BufferedReader( new InputStreamReader(is, "UTF-8"));
 
 				// Read the request line
-				StringTokenizer st = new StringTokenizer( in.readLine());
+				String line = in.readLine();
+				StringTokenizer st = new StringTokenizer(null != line ? line : "");
 				if ( !st.hasMoreTokens())
 					sendError( HTTP_BADREQUEST, "BAD REQUEST: Syntax error. Usage: GET /example/file.html" );
 
@@ -365,7 +366,7 @@ public class HTTPD implements Runnable
 				Properties header = new Properties();
 				if ( st.hasMoreTokens())
 				{
-					String line = in.readLine();
+					line = in.readLine();
 					while ( line.trim().length() > 0 )
 					{
 						int p = line.indexOf( ':' );
@@ -437,12 +438,15 @@ public class HTTPD implements Runnable
 				Response r = null;
 				
 				// ensure password was provided
-				if (parms.containsKey("HTTP_PASS") &&
-					parms.getProperty("HTTP_PASS").equals(sm.password)) {
+				// note that the apple-touch-icon doesn't work if there
+				// is password protection so disable it for static files
+				if (uri.startsWith("/static") ||
+					(parms.containsKey("HTTP_PASS") &&
+					 parms.getProperty("HTTP_PASS").equals(sm.password))) {
 					r = serve(uri, method, header, parms);
 				} else {
 					r = new Response(HTTPD.HTTP_UNAUTHORIZED, HTTPD.MIME_PLAINTEXT, "Authorization required");
-					r.addHeader("WWW-Authenticate", "Basic realm=\"JGlideMon " + JGlideMon.version + "\"");
+					r.addHeader("WWW-Authenticate", "Basic realm=\"JGlideMon " + JGlideMon.version + " (" + sm.name + ")\"");
 				}
 				
 				if (r == null) {

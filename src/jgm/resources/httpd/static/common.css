@@ -1,0 +1,97 @@
+img {
+	border: 0;
+}
+
+.poor {
+	color: #9d9d9d !important;
+}
+
+.common {
+	color: white !important;
+}
+
+.uncommon {
+	color: #1eff00 !important;
+}
+
+.rare {
+	color: #0070dd !important;
+}
+
+.epic {
+	color: #a335ee !important;
+}
+
+.legendary {
+	color: #ff8000 !important;
+}
+
+.artifact, .heirloom {
+	color: #e6cc80 !important;
+}
+
+div.goldPanel {
+	text-align: center;
+	vertical-align: middle;
+}
+
+div.goldPanel img {
+	vertical-align: middle;
+}
+
+#view-loot a {
+	text-decoration: none;
+}
+
+#view-mobs th, #view-loot th {
+	text-align: left !important;
+}
+
+#view-mobs table, #view-loot table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+#view-mobs table caption, #view-loot table caption {
+	padding-top: 0.25em;
+}
+
+#view-mobs th.time,
+#view-mobs td.time {
+	width: 6em;
+	padding-left: 0.25em;
+}
+
+#view-mobs th.count,
+#view-mobs td.count,
+#view-mobs th.xp,
+#view-mobs td.xp,
+#view-mobs th.gain,
+#view-mobs td.gain,
+#view-mobs th.level,
+#view-mobs td.level {
+	width: 4.25em;
+	text-align: right;
+}
+
+#view-mobs td.xp, #view-mobs td.gain {
+	padding-right: 0.25em;
+}
+
+#view-loot td.icon, #view-loot th.icon {
+	width: 1.25em;
+	padding-left: 0.25em;
+}
+
+#view-loot td.icon img {
+	width: 1.25em;
+	height: 1.25em;
+}
+
+#view-loot td.qty, #view-loot th.qty {
+	width: 3em;
+}
+
+#view-loot td.qty {
+	text-align: right;
+}

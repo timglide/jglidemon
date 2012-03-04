@@ -7,7 +7,9 @@ public enum ChatLinkType {
 	QUEST,
 	PLAYER(false),
 	ACHIEVEMENT,
-	CHANNEL(false)
+	CHANNEL(false)/*,
+	// gives glyph id, not spell id that wowhead needs
+	GLYPH(false) // |Hglyph:701|h[Glyph of Beacon of Light]|h */
 	;
 	
 	public final boolean isWowheadable;
