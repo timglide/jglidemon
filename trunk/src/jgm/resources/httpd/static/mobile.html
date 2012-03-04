@@ -4,56 +4,21 @@
 <meta charset="utf-8" />
 <title>JGlideMon</title>
 
-<style type="text/css">
-.center {
-	text-align: center;
-}
-	
-#jqt ul li .right {
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
-    background: none repeat scroll 0 0 #2F3031;
-    border-radius: 3px 3px 3px 3px;
-    color: #949698;
-    display: block;
-    font-weight: bold;
-    text-shadow: 0 -1px 0 #0A0A0A;
-    width: auto;
-    z-index: 10;
-    float: right;
-    overflow: hidden;
-    padding: 2px 8px 4px;
-    position: relative;
-    text-align: right;
-    white-space: nowrap;
-}
-
-div.chat-text {
-	color: white;
-}
-
-div.chat-text a.chat-link {
-	color: inherit !important;
-	text-decoration: none;
-}
-
-#theform .error {
-	background: #aa0000 !important;
-}
-</style>
-
 <style type="text/css" media="screen">@import "/static/css/jqtouch.css";</style>
+<link rel="stylesheet" type="text/css" href="/static/common.css" />
+<link rel="stylesheet" type="text/css" href="/static/mobile.css" />
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="/static/js/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/jqtouch-jquery.min.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script>
+<script type="text/javascript" src="/static/js/jquery.tinysort.min.js"></script>
+<!--script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script-->
 <script type="text/javascript" src="/static/js/ajaxsettings.js"></script>
 <script type="text/javascript" src="/static/js/ajax.js"></script>
 <script src="/static/js/mobile.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
 $(function() {
-	var
-		$jqt = $('#jqt'),
+	var $jqt = $('#jqt'),
 		liveContext = $jqt[0];
 
 	$('a.chat-link.player', liveContext).live('click', function(event) {
@@ -143,6 +108,8 @@ $(function() {
 				<li class="forward"><a href="#screenshot">Screenshot</a></li>
 				<li class="forward"><a href="#view-chat">View Chat / Logs</a></li>
 				<li class="forward"><a href="#send-chat">Send Chat</a></li>
+				<li class="forward"><a href="#view-mobs">Mobs / Rep / Skills</a></li>
+				<li class="forward"><a href="#view-loot">View Loot</a></li>
 				<li class="forward"><a href="#commands">Commands</a></li>
 			</ul>
 		</div>
@@ -307,6 +274,121 @@ $(function() {
 		</div>
 	</div>
 	
+	<div id="view-mobs">
+		<div class="toolbar">
+			<h1>Mobs/Rep/Skills</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<div id="mobs-container">
+				<table id="mobs-table">
+					<caption>Mobs</caption>
+					<tr>
+						<th class="count">#</th><th class="xp">Avg XP</th><th>Name</th>
+					</tr>
+				</table>
+			</div>
+			<div id="reps-container">
+				<table id="reps-table">
+					<caption>Reputation</caption>
+					<tr>
+						<th class="time">Time</th><th class="gain">Gained</th><th>Faction</th>
+					</tr>
+				</table>
+			</div>
+			<div id="skills-container">
+				<table id="skills-table">
+					<caption>Skills</caption>
+					<tr>
+						<th class="time">Time</th><th class="level">Level</th><th>Skill</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	<div id="view-loot">
+		<div class="toolbar">
+			<h1>Loot</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<div id="loot-goldPanels-container">
+				<div id="gold-looted-container" class="goldPanel">
+					Gold Looted: 
+					<span class="gold-wrap">
+						<span class="gold">0</span>
+						<img src="/static/img/coins/gold.gif" alt="gold" />
+					</span>
+					<span class="silver-wrap">
+						<span class="silver">0</span>
+						<img src="/static/img/coins/silver.gif" alt="silver" />
+					</span>
+					<span class="copper-wrap">
+						<span class="copper">0</span>
+						<img src="/static/img/coins/copper.gif" alt="copper" />
+					</span>
+				</div>
+				<div id="loot-worth-container" class="goldPanel">
+					Loot Worth: 
+					<span class="gold-wrap" style="display: none;">
+						<span class="gold">0</span>
+						<img src="/static/img/coins/gold.gif" alt="gold" />
+					</span>
+					<span class="silver-wrap" style="display: none;">
+						<span class="silver">0</span>
+						<img src="/static/img/coins/silver.gif" alt="silver" />
+					</span>
+					<span class="copper-wrap">
+						<span class="copper">0</span>
+						<img src="/static/img/coins/copper.gif" alt="copper" />
+					</span>
+				</div>
+				<div id="gold-per-hour-container" class="goldPanel">
+					Gold/Hour: 
+					<span class="gold-wrap" style="display: none;">
+						<span class="gold">0</span>
+						<img src="/static/img/coins/gold.gif" alt="gold" />
+					</span>
+					<span class="silver-wrap" style="display: none;">
+						<span class="silver">0</span>
+						<img src="/static/img/coins/silver.gif" alt="silver" />
+					</span>
+					<span class="copper-wrap">
+						<span class="copper">0</span>
+						<img src="/static/img/coins/copper.gif" alt="copper" />
+					</span>
+				</div>
+			</div>
+			
+			<div id="loot-tables-container">
+				<div id="loot-container-epic">
+					<table id="loot-table-epic">
+						<tr>
+							<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+						</tr>
+					</table>
+				</div>
+				<div id="loot-container-rare">
+					<table id="loot-table-rare">
+					</table>
+				</div>
+				<div id="loot-container-uncommon">
+					<table id="loot-table-uncommon">
+					</table>
+				</div>
+				<div id="loot-container-common">
+					<table id="loot-table-common">
+					</table>
+				</div>
+				<div id="loot-container-poor">
+					<table id="loot-table-poor">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+		
 	<div id="commands">
 		<div class="toolbar">
 			<h1>Commands</h1>

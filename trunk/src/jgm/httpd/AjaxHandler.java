@@ -321,10 +321,10 @@ public class AjaxHandler extends Handler {
 		}
 		
 		
-		JSONObject skills = CE(root, "skills");
+		JSONArray skills = CA(root, "skills");
 		
 		for (Skill s : mobsTab.getSkills()) {
-			CE(skills, s.name)
+			AP(skills)
 				.put("skill", s.name)
 				.put("level", s.level)
 				.put("time", s.timestampDate);

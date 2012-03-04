@@ -36,10 +36,6 @@ h3 {
 	color: #fff;
 }
 
-img {
-	border: 0;
-}
-
 #main {
 	background: #fff;
 	position: absolute;
@@ -222,10 +218,6 @@ img {
 	background-color: #800080;
 }
 
-img.corner {
-	display: block;
-}
-
 #content div {
 	background-color: black;
 	color: white;
@@ -249,35 +241,62 @@ img.corner {
 	margin-right: auto;
 }
 
-.poor {
-	color: #9d9d9d !important;
+#view-mobs > div {
+	position: absolute;
+	top: 0; bottom: 0;
+	width: 33.3%;
+	overflow: auto;
 }
 
-.common {
-	color: white !important;
+#view-mobs #mobs-container {
+	left: 0;
 }
 
-.uncommon {
-	color: #1eff00 !important;
+#view-mobs #reps-container {
+	left: 33.3%;
+	width: 33.4%;
 }
 
-.rare {
-	color: #0070dd !important;
+#view-mobs #skills-container {
+	right: 0;
 }
 
-.epic {
-	color: #a335ee !important;
+#loot-goldPanels-container {
+	position: absolute;
+	left: 0; top: 0; right: 0;
+	height: 2em;
 }
 
-.legendary {
-	color: #ff8000 !important;
+#loot-goldPanels-container > div.goldPanel {
+	position: absolute;
+	top: 0; bottom: 0;
+	width: 33.3%;
+	height: 100%;
 }
 
-.artifact, .heirloom {
-	color: #e6cc80 !important;
+div.goldPanel {
+	line-height: 2em;
 }
 
-#view-loot > div {
+#gold-looted-container {
+	left: 0;
+}
+
+#loot-worth-container {
+	left: 33.3%;
+	width: 33.4%;
+}
+
+#gold-per-hour-container {
+	right: 0;
+}
+
+#loot-tables-container {
+	position: absolute;
+	top: 2em; left: 0; bottom: 0; right: 0;
+}
+
+#loot-tables-container > div {
 	position: absolute;
 	top: 0; bottom: 0;
 	width: 25%;
@@ -304,31 +323,4 @@ img.corner {
 #view-loot #loot-container-epic {
 	left: 75%;
 	top: 50%;
-}
-
-#view-loot table {
-	table-layout: fixed;
-	width: 100%;
-}
-
-#view-loot table caption {
-	padding-top: 0.25em;
-}
-
-#view-loot td.icon, #view-loot th.icon {
-	width: 1.25em;
-	padding-left: 0.25em;
-}
-
-#view-loot td.icon img {
-	width: 1.25em;
-	height: 1.25em;
-}
-
-#view-loot td.qty, #view-loot th.qty {
-	width: 3em;
-}
-
-#view-loot td.qty {
-	text-align: right;
 }

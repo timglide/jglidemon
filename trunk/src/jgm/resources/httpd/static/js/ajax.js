@@ -36,6 +36,7 @@ var vars = {
 // this is responsible for the bulk of the updating
 var updater = {
 	chatTimeouts: {},
+	mobsTimeout: null,
 	lootTimeout: null,
 	
 	init: function() {
@@ -90,8 +91,23 @@ var updater = {
 				status:				$('#chat-status-container'),
 			},
 			
+			mobs: {
+				tab: $('#view-mobs'),
+				mobs: $('#mobs-table'),
+				reps: $('#reps-table'),
+				skills: $('#skills-table')
+			},
+			
+			
+			lootTab: $('#view-loot'),
+			
+			goldPanels: {
+				goldLooted:  $('#gold-looted-container'),
+				lootWorth:   $('#loot-worth-container'),
+				goldPerHour: $('#gold-per-hour-container')
+			},
+			
 			loot: {
-				tab: $('#view-loot'),
 				poor: $('#loot-table-poor'),
 				common: $('#loot-table-common'),
 				uncommon: $('#loot-table-uncommon'),
@@ -100,10 +116,21 @@ var updater = {
 			}
 		};
 		
+		for (var key in els.goldPanels) {
+			var replace = {
+				container: els.goldPanels[key]
+			};
+			replace.g = $('span.gold',   replace.container[0]);
+			replace.s = $('span.silver', replace.container[0]);
+			replace.c = $('span.copper', replace.container[0]);
+			els.goldPanels[key] = replace;
+		}
+		
 		for (var key in els.chat) {
 			updater.bindChatClick(key);
 		}
 		
+		updater.bindMobsClick();
 		updater.bindLootClick();
 	},
 
@@ -124,6 +151,16 @@ var updater = {
 			updater.updateChat(els.chat[type], true);
 		});
 	},
+
+	bindMobsClick: function() {
+		$('a[href="#view-mobs"]').click(function() {
+			if (updater.mobsTimeout) {
+				clearTimeout(updater.mobsTimeout);
+			}
+			
+			updater.updateMobs(true);
+		});
+	},
 	
 	bindLootClick: function() {
 		$('a[href="#view-loot"]').click(function() {
@@ -141,6 +178,7 @@ var updater = {
 		updater.updateStatus();
 		updater.updateAllChat();
 		updater.updateScreenshot();
+		updater.updateMobs();
 		updater.updateLoot();
 	},
 	
@@ -194,9 +232,36 @@ var updater = {
 		
 		setTimeout(updater.updateScreenshot, settings.updateInterval);
 	},
-
+	
+	updateMobs: function(force) {
+		var $container = els.mobs.tab;
+		clearTimeout(updater.mobsTimeout);
+		
+		if (!force && !($container && $container.is(':visible'))) {
+			updater.mobsTimeout = setTimeout(function() {
+				updater.updateLoot();
+			}, settings.updateInterval);
+			return;
+		}
+		
+		var url = urls.mobs;
+		
+		if ($container.data('lastUpdate')) {
+			url += 'since=' + $container.data('lastUpdate').getTime();
+		}
+		
+		$.ajax(url, {
+			dataType: 'json',
+			context: $container,
+			success: updater.handleMobs,
+			error: function(jqXHR, textStatus, errorThrown) {
+				updater.failMobs(jqXHR, textStatus, errorThrown);
+			}
+		});
+	},
+	
 	updateLoot: function(force) {
-		var $container = els.loot.tab;
+		var $container = els.lootTab;
 		clearTimeout(updater.lootTimeout);
 		
 		if (!force && !($container && $container.is(':visible'))) {
@@ -307,22 +372,236 @@ var updater = {
 		}, settings.updateInterval);
 	},
 	
+	failMobs: function(jqXHR, textStatus, errorThrown) {
+		updater.mobsTimeout = setTimeout(function() {
+			updater.updateMobs();
+		}, settings.updateInterval);
+	},
+	
+	mobssTableSort: function(a, b) {
+		var countA = parseInt(a.e.children().eq(0).text()),
+			countB = parseInt(b.e.children().eq(0).text());
+	
+		// higher count should come first (descending order)
+		if (countA < countB) return 1;
+		if (countA > countB) return -1;
+		
+		var nameA = a.e.children().eq(2).text(),
+		nameB = a.e.children().eq(2).text();
+	
+		if (nameA == nameB) return 0;
+		if (nameA < nameB) return -1;
+		return 1;
+	},
+	
+	repsTableSort: function(a, b) {
+		var levelA = parseInt(a.e.children().eq(1).text()),
+			levelB = parseInt(b.e.children().eq(1).text());
+	
+		// higher level should come first (descending order)
+		if (levelA < levelB) return 1;
+		if (levelA > levelB) return -1;
+		
+		var timeA = a.e.data('time'),
+			timeB = a.e.data('time');
+		
+		if (timeA == timeB) return 0;
+		if (timeA < timeB) return -1;
+		return 1;
+	},
+	
+	skillsTableSort: function(a, b) {
+		var levelA = parseInt(a.e.children().eq(1).text()),
+			levelB = parseInt(b.e.children().eq(1).text());
+	
+		// higher level should come first (descending order)
+		if (levelA < levelB) return 1;
+		if (levelA > levelB) return -1;
+		
+		var timeA = a.e.data('time'),
+			timeB = a.e.data('time');
+		
+		if (timeA == timeB) return 0;
+		if (timeA < timeB) return -1;
+		return 1;
+	},
+	
+	handleMobs: function(json, textStatus, jqXHR) {
+		var newest = null,
+			lastTimestamp = this.data('lastUpdate');
+		
+		if (json.mobs) {
+			for (var i = 0; i < json.mobs.length; i++) {
+				var entry  = json.mobs[i],
+					$table = els.mobs.mobs,
+					$existing = $('tr[data-mob="' + entry.name + '"]', $table[0]);
+				
+				if ($existing.length) {
+					$existing.children().eq(0).text(entry.qty);
+					$existing.children().eq(1).text(entry.avgXp);
+					newest = $existing;
+					continue;
+				}
+				
+				var $element = $('<tr/>')
+					// attr() not data(), need to see if data always sets attribute as well
+					.attr('data-mob', entry.name)
+					.append($('<td class="count">' + entry.qty + '</td>'))
+					.append($('<td class="xp">' + entry.avgXp + '</td>'))
+					.append($('<td/>').text(entry.name));
+				
+				$table.append($element);
+				newest = $element;
+			}
+
+			$('tr', els.mobs.mobs).tsort('', {
+				sortFunction: updater.mobsTableSort
+			});
+		}
+		
+		if (json.rep) {
+			for (var i = 0; i < json.rep.length; i++) {
+				var entry  = json.rep[i],
+					$table = els.mobs.reps,
+					$existing = $('tr[data-faction="' + entry.faction + '"]', $table[0]);
+				
+				if ($existing.length) {
+					$existing.children().eq(0).text(updater.formatChatTimestamp(entry.time));
+					$existing.children().eq(1).text(entry.gained);
+					newest = $existing;
+					continue;
+				}
+				
+				var $element = $('<tr/>')
+					// attr() not data(), need to see if data always sets attribute as well
+					.attr('data-faction', entry.faction)
+					.data('time', entry.time)
+					.append($('<td class="time">' + updater.formatChatTimestamp(entry.time) + '</td>'))
+					.append($('<td class="gain">' + entry.gained + '</td>'))
+					.append($('<td/>').text(entry.faction));
+				
+				$table.append($element);
+				newest = $element;
+			}
+			
+			$('tr', els.mobs.reps).tsort('', {
+				sortFunction: updater.repsTableSort
+			});
+		}
+		
+		if (json.skills) {
+			for (var i = 0; i < json.skills.length; i++) {
+				var entry  = json.skills[i],
+					$table = els.mobs.skills,
+					$existing = $('tr[data-skill="' + entry.skill + '"]', $table[0]);
+				
+				if ($existing.length) {
+					$existing.children().eq(0).text(updater.formatChatTimestamp(entry.time));
+					$existing.children().eq(1).text(entry.level);
+					newest = $existing;
+					continue;
+				}
+				
+				var $element = $('<tr/>')
+					// attr() not data(), need to see if data always sets attribute as well
+					.attr('data-skill', entry.skill)
+					.append($('<td class="time">' + updater.formatChatTimestamp(entry.time) + '</td>'))
+					.append($('<td class="level">' + entry.level + '</td>'))
+					.append($('<td/>').text(entry.skill));
+				
+				$table.append($element);
+				newest = $element;
+			}
+			
+			$('tr', els.mobs.skills).tsort('', {
+				sortFunction: updater.skillsTableSort
+			});
+		}
+		
+		if (null != newest) {
+			// if there were no new entries we keep the old date
+			// which can help if there is some lag that would cause
+			// us to miss an entry
+			this.data('lastUpdate', new Date());
+			
+			if (newest.data('timestamp') > this.data('lastUpdate')) {
+				this.data('lastUpdate', newest.data('timestamp'));
+			}
+		}
+		
+		updater.mobsTimeout = setTimeout(function() {
+			updater.updateMobs();
+		}, settings.updateInterval);
+	},
+	
 	failLoot: function(jqXHR, textStatus, errorThrown) {
 		updater.lootTimeout = setTimeout(function() {
 			updater.updateLoot();
 		}, settings.updateInterval);
 	},
 	
+	copperToGSC: function(copper) {
+		// i = 1234567 (123.45.67)
+		
+		var ret = {};
+		
+		var i = Math.floor(copper / 100); // 12345 (123.45)
+		ret.g = Math.floor(i / 100);      // 123
+		ret.s = i - ret.g * 100;          // 12345 - 12300 = 45
+		ret.c = copper - i * 100;         // 1234567 - 1234500 = 67
+		
+		return ret;
+	},
+	
+	lootTableSort: function(a, b) {
+		var countA = parseInt(a.e.children().eq(2).text()),
+			countB = parseInt(b.e.children().eq(2).text());
+	
+		// higher count should come first (descending order)
+		if (countA < countB) return 1;
+		if (countA > countB) return -1;
+		
+		var nameA = a.e.children().eq(1).text(),
+			nameB = a.e.children().eq(1).text();
+		
+		if (nameA == nameB) return 0;
+		if (nameA < nameB) return -1;
+		return 1;
+	},
+	
 	handleLoot: function(json, textStatus, jqXHR) {
-		var
-			newest = null,
+		var newest = null,
 			lastTimestamp = this.data('lastUpdate');
+		
+		if (json.goldLooted) {
+			var gsc = updater.copperToGSC(json.goldLooted),
+				cur = els.goldPanels.goldLooted;
+			cur.g.text(gsc.g).parent().toggle(0 != gsc.g);
+			cur.s.text(gsc.s).parent().toggle(0 != gsc.s);
+			cur.c.text(gsc.c);
+		}
+		
+		if (json.lootWorth) {
+			var gsc = updater.copperToGSC(json.lootWorth),
+				cur = els.goldPanels.lootWorth;
+			cur.g.text(gsc.g).parent().toggle(0 != gsc.g);
+			cur.s.text(gsc.s).parent().toggle(0 != gsc.s);
+			cur.c.text(gsc.c);
+		}
+		
+		if (json.runtime) {
+			var copper = Math.floor((json.goldLooted + json.lootWorth) / (json.runtime / 1000 / 60 / 60)),
+				gsc = updater.copperToGSC(copper),
+				cur = els.goldPanels.goldPerHour;
+			cur.g.text(gsc.g).parent().toggle(0 != gsc.g);
+			cur.s.text(gsc.s).parent().toggle(0 != gsc.s);
+			cur.c.text(gsc.c);
+		}
 		
 		if (json.loot) {
 			for (var i = 0; i < json.loot.length; i++) {
-				var
-					entry  = json.loot[i],
-					$table = $('#loot-table-' + entry.qualityName),
+				var entry  = json.loot[i],
+					$table = els.loot[entry.qualityName],
 					$existing = $('#loot-row-' + entry.id);
 				
 				if ($existing.length) {
@@ -331,8 +610,7 @@ var updater = {
 					continue;
 				}
 				
-				var
-					$element = $('<tr/>')
+				var $element = $('<tr/>')
 						.attr('id', 'loot-row-' + entry.id)
 						.append($('<td class="icon"><img src="' + settings.iconBase + entry.icon + settings.iconExt + '"/></td>')),
 					$td = $('<td/>'),
@@ -345,6 +623,12 @@ var updater = {
 					.append('<td class="qty">' + entry.qty + '</td>');
 				$table.append($element);
 				newest = $element;
+			}
+			
+			for (var key in els.loot) {
+				$('tr', els.loot[key][0]).tsort('', {
+					sortFunction: updater.lootTableSort
+				});
 			}
 		}		
 		
@@ -376,9 +660,9 @@ var updater = {
 			return;
 		}
 
-		var app = json['app'];
-		var mainTitle = '';
-		var appTitle = app['name'] + ' ' + app['version'];
+		var app = json['app'],
+			mainTitle = '',
+			appTitle = app['name'] + ' ' + app['version'];
 		vars.connected = app['connected'] == 'true';
 
 		settings.updateInterval = app['update-interval'];

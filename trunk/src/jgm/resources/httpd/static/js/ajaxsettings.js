@@ -8,6 +8,7 @@ var settings = {
 var urls = {
 	ajax: '/ajax/',
 	chat: '/ajax/chat?',
+	mobs: '/ajax/mobs?',
 	loot: '/ajax/loot?',
 	command: '/ajax/command?',
 	image: '/static/img/',
