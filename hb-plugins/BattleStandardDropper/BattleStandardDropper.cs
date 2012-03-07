@@ -105,7 +105,7 @@ namespace BattleStandardDropper {
 		private static readonly int revision;
 		private static readonly Version version;
 
-		private const uint StandardCooldownMS = (uint)(10.1 * 60 * 1000);
+		private const long StandardCooldownMS = (long)(10.1 * 60 * 1000);
 
 		private static readonly uint[] BattleStandards = {
 			64402, // H 15%
@@ -189,7 +189,21 @@ namespace BattleStandardDropper {
 
 		private static bool IsItemOnCooldown(uint id) {
 			return
-				0 != Lua.GetReturnVal<int>("return GetItemCooldown(" + id + ")", 0);
+				0 != Lua.GetReturnVal<float>("return GetItemCooldown(" + id + ")", 0);
+		}
+
+		private static float GetItemCooldownTime(uint id) {
+			List<string> values = Lua.GetReturnValues("return GetTime(), GetItemCooldown(" + id + ")");
+
+			try {
+				float now = float.Parse(values[0]);
+				float cdStart = float.Parse(values[1]);
+				float duration = float.Parse(values[2]);
+
+				return (cdStart + duration) - now;
+			} catch { }
+
+			return 0;
 		}
 
 
@@ -251,6 +265,7 @@ namespace BattleStandardDropper {
 		private bool initialized = false;
 		private uint battleStandardId = 0;
 		private uint battleStandardBuffId = 0;
+		private long curStopwatchDurationMS = 0;
 
 		public override void Initialize() {
 			if (initialized) {
@@ -288,7 +303,7 @@ namespace BattleStandardDropper {
 				return;
 			}
 
-			if (useStandardSW.IsRunning && useStandardSW.ElapsedMilliseconds < StandardCooldownMS) {
+			if (useStandardSW.IsRunning && useStandardSW.ElapsedMilliseconds < curStopwatchDurationMS) {
 				return;
 			}
 
@@ -297,6 +312,11 @@ namespace BattleStandardDropper {
 			}
 
 			if (IsItemOnCooldown(battleStandardId)) {
+				int remaining = (int)GetItemCooldownTime(battleStandardId) + 1;
+				Logging.Write("Dropping battle standard again in {0} second{1}.", remaining, 1 != remaining ? "s" : "");
+				curStopwatchDurationMS = remaining * 1000;
+				useStandardSW.Reset();
+				useStandardSW.Start();
 				return;
 			}
 
@@ -304,15 +324,18 @@ namespace BattleStandardDropper {
 				return;
 			}
 
+			if (0 == useStandardSW.ElapsedMilliseconds) {
+				Logging.Write("Dropping battle standard now!");
+			} else {
+				Logging.Write("Dropping battle standard now ({0}s since last)!", useStandardSW.ElapsedMilliseconds / 1000);
+			}
+
 			useStandardSW.Reset();
-			Logging.Write("Dropping battle standard!");
+
+
 			Thread.Sleep(250);
 			Lua.DoString("UseItemByName(" + battleStandardId + ")");
 			Thread.Sleep(250);
-
-			if (null != Me.GetAuraById((int)battleStandardBuffId)) {
-				useStandardSW.Start();
-			}
 		}
 	}
 }
