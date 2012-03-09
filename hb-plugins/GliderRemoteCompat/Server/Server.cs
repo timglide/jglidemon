@@ -8,6 +8,8 @@ using System.Net;
 
 namespace GliderRemoteCompat {
 	class Server : IDisposable {
+		private const int ListenThreadDeathTimeoutMS = 2000;
+
 		internal ServerSettings settings;
 		private TcpListener tcpListener;
 		private Thread listenThread;
@@ -27,6 +29,7 @@ namespace GliderRemoteCompat {
 
 			listenThread = new Thread(Listen);
 			listenThread.Name = "GRC Server";
+			listenThread.IsBackground = true;
 			running = true;
 			listenThread.Start();
 		}
@@ -42,24 +45,33 @@ namespace GliderRemoteCompat {
 
 		private bool disposed = false;
 		public void Dispose(bool explicitlyInitiated) {
-			if (disposed) return;
+			if (disposed) {
+				return;
+			}
+
+			disposed = true;
 
 			if (explicitlyInitiated) {
 				// clean up managed resources
 			}
 
 			running = false;
-			listenThread.Interrupt();
 
 			try {
 				tcpListener.Stop();
-			} catch (SocketException) { }
+			} catch { }
+
+			listenThread.Interrupt();
+
+			if (!listenThread.Join(ListenThreadDeathTimeoutMS)) {
+				try {
+					listenThread.Abort();
+				} catch { }
+			}
 
 			for (int i = clients.Count - 1; i >= 0; i--) {
 				clients[i].Dispose();
 			}
-
-			disposed = true;
 		}
 
 		public int ClientCount { get { return clients.Count; } }

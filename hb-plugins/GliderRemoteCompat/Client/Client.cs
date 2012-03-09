@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 
 namespace GliderRemoteCompat {
 	class Client : IDisposable {
+		private const int ThreadDeathTimeoutMS = 500;
+
 		private static readonly Encoding encoder = Encoding.UTF8;
 		private static readonly byte[] emptyBytes = new byte[0];
 		private static readonly byte[] dashesBytes = encoder.GetBytes("---\r\n");
@@ -43,6 +45,7 @@ namespace GliderRemoteCompat {
 			logHandler = new ClientLogHandler(this);
 
 			thread = new Thread(Run);
+			thread.IsBackground = true;
 			thread.Name = "GRC ClientHandler-" + (server.ClientCount + 1);
 			Debug("New connection from {0}", client.Client.RemoteEndPoint);
 			running = true;
@@ -62,8 +65,8 @@ namespace GliderRemoteCompat {
 				{"queuekeys",      Commands.QueueKeys.Instance},
 				{"clearsay",       Commands.NotImplemented.Instance},
 				{"forcekeys",      Commands.NotImplemented.Instance},
-				{"holdkey",        Commands.NotImplemented.Instance},
-				{"releasekey",     Commands.NotImplemented.Instance},
+				{"holdkey",        Commands.HoldKey.Instance},
+				{"releasekey",     Commands.ReleaseKey.Instance},
 				{"grabmouse",      Commands.NotImplemented.Instance},
 				{"setmouse",       Commands.NotImplemented.Instance},
 				{"getmouse",       Commands.NotImplemented.Instance},
@@ -95,11 +98,23 @@ namespace GliderRemoteCompat {
 //			Logging.WriteDebug("[{0}] {1}", thread.Name, string.Format(str, args));
 		}
 
+		private bool disposed = false;
 		public void Dispose() {
+			if (disposed) {
+				return;
+			}
+
+			disposed = true;
 			running = false;
 
 			if (null != thread) {
 				thread.Interrupt();
+
+				if (!thread.Join(ThreadDeathTimeoutMS)) {
+					try {
+						thread.Abort();
+					} catch { }
+				}
 			}
 
 			logHandler.Dispose();
@@ -205,6 +220,11 @@ namespace GliderRemoteCompat {
 			ChatColorRegex = new Regex("\\|c[A-Za-z0-9]{6,8}"),
 			ChatLinkRegex = new Regex("\\|H.*?\\|h");
 
+		/// <summary>
+		/// Removes all color and link escape sequences from a line of WoW chat.
+		/// </summary>
+		/// <param name="str"></param>
+		/// <returns></returns>
 		public static string RemoveChatFormatting(string str) {
 			str = ChatColorRegex.Replace(str, "");
 			str = ChatLinkRegex.Replace(str, "");
@@ -213,6 +233,12 @@ namespace GliderRemoteCompat {
 			return str;
 		}
 
+		/// <summary>
+		/// Sends the supplied line of text to the specified log channel. If type
+		/// is ChatRaw, its corresponding plain Chat line will be sent automatically.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="line"></param>
 		public void SendLog(ClientLogType type, string line) {
 			if (settings.LogChannels[type]) {
 				Send(false, "[{0}] {1}", type.Name, line);
@@ -225,42 +251,89 @@ namespace GliderRemoteCompat {
 			}
 		}
 
+		/// <summary>
+		/// Sends "---\r\n".
+		/// </summary>
 		public void Send() {
 			Send("");
 		}
 
+		/// <summary>
+		/// Sends the supplied lines joined with "\r\n" followed by "---\r\n".
+		/// </summary>
+		/// <param name="lines"></param>
 		public void Send(string[] lines) {
 			Send(string.Join("\r\n", lines));
 		}
 
+		/// <summary>
+		/// Sends the supplied lines joined with "\r\n" followed by "---\r\n".
+		/// </summary>
+		/// <param name="lines"></param>
 		public void Send(IEnumerable<string> lines) {
 			Send(lines.ToArray());
 		}
 
+		/// <summary>
+		/// Sends the formatted string followed by "---\r\n".
+		/// </summary>
+		/// <param name="format"></param>
+		/// <param name="args"></param>
 		public void Send(string format, params object[] args) {
 			Send(true, format, args);
 		}
 
+		/// <summary>
+		/// Sends the formatted string and appends "---\r\n" if sendDashes is true.
+		/// </summary>
+		/// <param name="sendDashes"></param>
+		/// <param name="format"></param>
+		/// <param name="args"></param>
 		public void Send(bool sendDashes, string format, params object[] args) {
 			Send(string.Format(format, args), sendDashes);
 		}
 
+		/// <summary>
+		/// Sends the string followed by "---\r\n".
+		/// </summary>
+		/// <param name="str"></param>
 		public void Send(string str) {
 			Send(str, true);
 		}
 
+		/// <summary>
+		/// Sends the string and appends "---\r\n" if sendDashes is true.
+		/// </summary>
+		/// <param name="str"></param>
+		/// <param name="sendDashes"></param>
 		public void Send(string str, bool sendDashes) {
 			Send(0 == str.Length ? emptyBytes : encoder.GetBytes(str + "\r\n"), sendDashes);
 		}
 
+		/// <summary>
+		/// Sends the raw bytes in buffer followed by "---\r\n".
+		/// </summary>
+		/// <param name="buffer"></param>
 		public void Send(byte[] buffer) {
 			Send(buffer, true);
 		}
 
+		/// <summary>
+		/// Sends the raw bytes in buffer and appends "---\r\n" if sendDashes is true.
+		/// </summary>
+		/// <param name="buffer"></param>
+		/// <param name="sendDashes"></param>
 		public void Send(byte[] buffer, bool sendDashes) {
 			Send(buffer, 0, buffer.Length, sendDashes);
 		}
 
+		/// <summary>
+		/// Sends the specified raw bytes from buffer and appends "---\r\n" if sendDashes is true.
+		/// </summary>
+		/// <param name="buffer"></param>
+		/// <param name="offset"></param>
+		/// <param name="size"></param>
+		/// <param name="sendDashes"></param>
 		public void Send(byte[] buffer, int offset, int size, bool sendDashes) {
 			stream.Write(buffer, offset, size);
 

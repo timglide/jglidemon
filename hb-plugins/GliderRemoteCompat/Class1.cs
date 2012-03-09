@@ -33,7 +33,7 @@ namespace GliderRemoteCompat {
 			}
 		}
 
-		private const string _revision = "$Revision$";
+		private const string _revision = "$Revision$"; 
 		private static readonly int revision;
 		private static readonly Version version;
 
