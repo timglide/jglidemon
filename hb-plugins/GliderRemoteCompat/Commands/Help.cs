@@ -13,7 +13,7 @@ namespace GliderRemoteCompat.Commands {
 			"* = not yet implemented",
 			"† = partial implementation",
 			"/exit                         - shut down this connection",
-			"/exitglider*                  - shut down Glider completely",
+			"/exitglider                   - shut down Glider completely",
 			"/status                       - return current status of the game/char",
 			"/version*                     - return Glider and game version info",
 			"/log [none|all|status|chatraw|",
@@ -29,9 +29,9 @@ namespace GliderRemoteCompat.Commands {
 			"/holdkey [VK code]            - press and hold this VK code (dangerous!)",
 			"/releasekey [VK code]         - release this VK code (dangerous!)",
 			"/grabmouse [true/false]*      - tell driver to grab/release mouse for bg ops",
-			"/setmouse [X/Y]*              - position mouse, use 0 - .999 for coord",
+			"/setmouse [X/Y]               - position mouse, use 0 - .999 for coord",
 			"/getmouse*                    - return current mouse position in percentages",
-			"/clickmouse [left|right]*     - click mouse button",
+			"/clickmouse [left|right]      - click mouse button",
 			"/attach*                      - attach to the game",
 			"/startglide                   - start gliding",
 			"/stopglide                    - stop gliding",
@@ -43,11 +43,13 @@ namespace GliderRemoteCompat.Commands {
 			"/queryconfig [name]*          - retrieve a config value from Glider.config.xml",
 			"                                (name is case-sensitive!)",
 			"/config*                      - reload configuration",
-			"/selectgame*                  - bring the game window to the foreground",
+			"/selectgame                   - bring the game window to the foreground",
 			"/getgamews*                   - get the game window state",
 			"/setgamews [normal|hidden|",
 			"            shrunk]*          - set the game window state",
-			"/escapehi [on/off]*           - escape hi-bit (intl) characters with &&#...;"
+			"/escapehi [on/off]*           - escape hi-bit (intl) characters with &&#...;",
+			"                                (should no longer be needed since stream is",
+			"                                now properly UTF-8 encoded)"
 		};
 
 		public override void Execute(Server server, Client client, string args) {

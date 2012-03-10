@@ -33,7 +33,7 @@ namespace GliderRemoteCompat {
 			}
 		}
 
-		private const string _revision = "$Revision$"; 
+		private const string _revision = "$Revision$";
 		private static readonly int revision;
 		private static readonly Version version;
 
@@ -95,42 +95,47 @@ namespace GliderRemoteCompat {
 		}
 
 		public override void Dispose() {
-			if (!initialized) return;
+			lock (this) {
+				if (!initialized) return;
 
-			if (null != server) {
-				server.Dispose();
-				server = null;
-			}
+				if (null != server) {
+					server.Dispose();
+					server = null;
+				}
 
-			if (null != settingsForm) {
-				settingsForm.Dispose();
-				settingsForm = null;
+				if (null != settingsForm) {
+					settingsForm.Dispose();
+					settingsForm = null;
+				}
+
+				base.Dispose();
+				initialized = false;
+				Logging.Write("{0} unloaded", Name);
 			}
-			
-			base.Dispose();
-			initialized = false;
-			Logging.Write("{0} unloaded", Name);
 		}
 
 		public void RefreshSettings() {
-			if (null != server) {
-				server.Dispose();
-			}
+			lock (this) {
+				if (null != server) {
+					server.Dispose();
+					server = null;
+				}
 
-			try {
-				server = new Server();
-			} catch (SocketException e) {
-				Logging.Write(Color.Red, "Error starting GliderRemoteCompat server");
-				Logging.WriteException(Color.Red, e);
-				MessageBox.Show(
-					"The port is already in use. You must change it in the settings.",
-					"GliderRemoteCompat", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			} catch (Exception e) {
-				Logging.Write(Color.Red, "Error starting GliderRemoteCompat server");
-				Logging.WriteException(Color.Red, e);
-				MessageBox.Show(
-					"Error starting server:\n\n" + e,
-					"GliderRemoteCompat", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				try {
+					server = new Server();
+				} catch (SocketException e) {
+					Logging.Write(Color.Red, "Error starting GliderRemoteCompat server");
+					Logging.WriteException(Color.Red, e);
+					MessageBox.Show(
+						"The port is already in use. You must change it in the settings.",
+						"GliderRemoteCompat", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				} catch (Exception e) {
+					Logging.Write(Color.Red, "Error starting GliderRemoteCompat server");
+					Logging.WriteException(Color.Red, e);
+					MessageBox.Show(
+						"Error starting server:\n\n" + e,
+						"GliderRemoteCompat", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
 			}
 		}
 

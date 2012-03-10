@@ -83,7 +83,7 @@ namespace GliderRemoteCompat {
 		private void Listen() {
 			while (running) {
 				try {
-					//blocks until a client has connected
+					// blocks until a client has connected
 					clients.Add(new Client(this, tcpListener.AcceptTcpClient()));
 				} catch { }
 			}

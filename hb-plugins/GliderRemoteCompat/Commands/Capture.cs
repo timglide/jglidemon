@@ -121,7 +121,7 @@ namespace GliderRemoteCompat.Commands {
 					lastQuality = client.settings.CaptureQuality;
 					qualityParam = new EncoderParameter(
 						System.Drawing.Imaging.Encoder.Quality,
-						(long)Math.Round(lastQuality * 100));
+						(long)Math.Round(lastQuality * 100)); // must be long
 					encoderParams.Param[0] = qualityParam;
 				}
 
@@ -142,14 +142,17 @@ namespace GliderRemoteCompat.Commands {
 		public override void Dispose() {
 			if (null != bitmapSmall) {
 				bitmapSmall.Dispose();
+				bitmapSmall = null;
 			}
 
 			if (null != clientArea) {
 				clientArea.Dispose();
+				clientArea = null;
 			}
 
 			if (null != bitmap) {
 				bitmap.Dispose();
+				bitmap = null;
 			}
 		}
 
@@ -184,8 +187,5 @@ namespace GliderRemoteCompat.Commands {
 					return codecs[i];
 			return null;
 		}
-
-
-
 	}
 }

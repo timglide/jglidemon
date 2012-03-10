@@ -27,6 +27,8 @@ namespace GliderRemoteCompat {
 			get { return stream; }
 		}
 
+		public readonly int Number;
+
 		private StreamReader reader;
 		private Dictionary<string, Command> commands;
 
@@ -46,7 +48,8 @@ namespace GliderRemoteCompat {
 
 			thread = new Thread(Run);
 			thread.IsBackground = true;
-			thread.Name = "GRC ClientHandler-" + (server.ClientCount + 1);
+			Number = server.ClientCount + 1;
+			thread.Name = "GRC ClientHandler-" + Number;
 			Debug("New connection from {0}", client.Client.RemoteEndPoint);
 			running = true;
 			thread.Start();
@@ -56,7 +59,7 @@ namespace GliderRemoteCompat {
 			commands = new Dictionary<string, Command>() {
 				{"help",           Commands.Help.Instance},
 				{"exit",           Commands.Exit.Instance},
-				{"exitglider",     Commands.NotImplemented.Instance},
+				{"exitglider",     Commands.ExitGlider.Instance},
 				{"status",         Commands.Status.Instance},
 				{"version",        Commands.NotImplemented.Instance},
 				{"log",            Commands.Log.Instance},
@@ -81,7 +84,7 @@ namespace GliderRemoteCompat {
 				{"capturequality", Commands.CaptureQuality.Instance},
 				{"queryconfig",    Commands.NotImplemented.Instance},
 				{"config",         Commands.NotImplemented.Instance},
-				{"selectgame",     Commands.NotImplemented.Instance},
+				{"selectgame",     Commands.SelectGame.Instance},
 				{"getgamews",      Commands.NotImplemented.Instance},
 				{"setgamews",      Commands.NotImplemented.Instance},
 				{"escapehi",       Commands.NotImplemented.Instance},
@@ -107,15 +110,23 @@ namespace GliderRemoteCompat {
 			disposed = true;
 			running = false;
 
-			if (null != thread) {
+			if (null != thread && Thread.CurrentThread != thread) {
 				thread.Interrupt();
 
-				if (!thread.Join(ThreadDeathTimeoutMS)) {
+				bool joinResult = false;
+
+				try {
+					joinResult = thread.Join(ThreadDeathTimeoutMS);
+				} catch { }
+
+				if (!joinResult) {
 					try {
 						thread.Abort();
 					} catch { }
 				}
 			}
+
+			thread = null;
 
 			logHandler.Dispose();
 			reader.Close();
@@ -168,13 +179,16 @@ namespace GliderRemoteCompat {
 
 			Send("Authenticated OK", false);
 
+			bool needToDispose = false;
+
 			while (running) {
 				try {
 					line = reader.ReadLine();
 
 					if (null == line) {
 						Debug("line was null, connection closed?, disposing");
-						Dispose();
+						needToDispose = true;
+						running = false;
 						break;
 					}
 
@@ -188,9 +202,14 @@ namespace GliderRemoteCompat {
 					HandleCommand(line);
 				} catch (IOException x) {
 					Debug("IOException during read, disposing (" + x.Message + ")");
-					Dispose();
+					needToDispose = true;
+					running = false;
 					break;
 				} catch (ThreadInterruptedException) { }
+			}
+
+			if (needToDispose) {
+				Dispose();
 			}
 		}
 

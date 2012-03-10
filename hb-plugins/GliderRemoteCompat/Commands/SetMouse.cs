@@ -52,12 +52,6 @@ namespace GliderRemoteCompat.Commands {
 				return;
 			}
 
-			RECT size = new RECT();
-			if (!Win32Window.GetWindowRect(new HandleRef(this, hWnd), out size)) {
-				client.Send("Error: GetWindowRect failed");
-				return;
-			}
-
 			RECT clientSize = new RECT();
 			if (!Win32Window.GetClientRect(hWnd, out clientSize)) {
 				client.Send("Error: GetClientRect failed");

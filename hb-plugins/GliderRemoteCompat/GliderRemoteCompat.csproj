@@ -85,12 +85,14 @@
     <Compile Include="Commands\CaptureQuality.cs" />
     <Compile Include="Commands\CaptureScale.cs" />
     <Compile Include="Commands\ClickMouse.cs" />
+    <Compile Include="Commands\ExitGlider.cs" />
     <Compile Include="Commands\HoldKey.cs" />
     <Compile Include="Commands\NotImplemented.cs" />
     <Compile Include="Commands\Log.cs" />
     <Compile Include="Commands\NoLog.cs" />
     <Compile Include="Commands\QueueKeys.cs" />
     <Compile Include="Commands\ReleaseKey.cs" />
+    <Compile Include="Commands\SelectGame.cs" />
     <Compile Include="Commands\SetMouse.cs" />
     <Compile Include="Commands\StartGlide.cs" />
     <Compile Include="Commands\StatusDummy.cs" />
