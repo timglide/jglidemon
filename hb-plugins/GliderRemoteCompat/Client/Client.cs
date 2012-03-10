@@ -68,9 +68,9 @@ namespace GliderRemoteCompat {
 				{"holdkey",        Commands.HoldKey.Instance},
 				{"releasekey",     Commands.ReleaseKey.Instance},
 				{"grabmouse",      Commands.NotImplemented.Instance},
-				{"setmouse",       Commands.NotImplemented.Instance},
+				{"setmouse",       Commands.SetMouse.Instance},
 				{"getmouse",       Commands.NotImplemented.Instance},
-				{"clickmouse",     Commands.NotImplemented.Instance},
+				{"clickmouse",     Commands.ClickMouse.Instance},
 				{"attach",         Commands.NotImplemented.Instance},
 				{"startglide",     Commands.StartGlide.Instance},
 				{"stopglide",      Commands.StopGlide.Instance},
@@ -119,7 +119,10 @@ namespace GliderRemoteCompat {
 
 			logHandler.Dispose();
 			reader.Close();
-			client.Close();
+
+			try {
+				client.Close();
+			} catch { }
 			server.RemoveClient(this);
 
 			foreach (Command c in commands.Values.Where(c => c.ShouldDispose)) {

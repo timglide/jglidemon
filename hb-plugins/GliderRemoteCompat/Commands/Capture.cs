@@ -8,6 +8,9 @@ using System.IO;
 using System.Drawing.Imaging;
 using Styx.WoWInternals;
 
+using GliderRemoteCompat;
+using RECT = GliderRemoteCompat.Win32Window.RECT;
+
 namespace GliderRemoteCompat.Commands {
 	class Capture : Command {
 		private Bitmap bitmap, clientArea, bitmapSmall;
@@ -27,7 +30,7 @@ namespace GliderRemoteCompat.Commands {
 			}
 
 			RECT size = new RECT();
-			if (!GetWindowRect(new HandleRef(this, WindowHandle), out size)) {
+			if (!Win32Window.GetWindowRect(new HandleRef(this, WindowHandle), out size)) {
 				client.Send("Error: GetWindowRect failed");
 				return;
 			}
@@ -41,19 +44,19 @@ namespace GliderRemoteCompat.Commands {
 			}
 
 			using (Graphics g = Graphics.FromImage(bitmap)) {
-				PrintWindow(WindowHandle, g.GetHdc(), 0);
+				Win32Window.PrintWindow(WindowHandle, g.GetHdc(), 0);
 				g.ReleaseHdc();
 			}
 
 			// crop to just the client area
 			RECT clientSize = new RECT();
-			if (!GetClientRect(WindowHandle, out clientSize)) {
+			if (!Win32Window.GetClientRect(WindowHandle, out clientSize)) {
 				client.Send("Error: GetClientRect failed");
 				return;
 			}
 
 			Point clientPos = new Point();
-			if (!ClientToScreen(WindowHandle, ref clientPos)) {
+			if (!Win32Window.ClientToScreen(WindowHandle, ref clientPos)) {
 				client.Send("Error: ClientToScreen failed");
 				return;
 			}
@@ -183,48 +186,6 @@ namespace GliderRemoteCompat.Commands {
 		}
 
 
-		[DllImport("user32.dll")]
-		static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
 
-		static IntPtr FindWindowByCaption(string lpWindowName) {
-			return FindWindowByCaption(IntPtr.Zero, lpWindowName);
-		}
-
-		[DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
-		static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
-
-		[StructLayout(LayoutKind.Sequential)]
-		internal struct RECT {
-			internal int _Left;
-			internal int _Top;
-			internal int _Right;
-			internal int _Bottom;
-
-			internal int Width {
-				get { return _Right - _Left; }
-			}
-
-			internal int Height {
-				get { return _Bottom - _Top; }
-			}
-
-			internal void Shift(int dx, int dy) {
-				_Left += dx;
-				_Right += dx;
-				_Top += dy;
-				_Bottom += dy;
-			}
-		}
-
-		[DllImport("user32.dll")]
-		static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
-
-		[DllImport("user32.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool GetWindowRect(HandleRef hwnd, out RECT lpRect);
-
-		[DllImport("User32.dll", SetLastError = true)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool PrintWindow(IntPtr hwnd, IntPtr hDC, uint nFlags);
 	}
 }

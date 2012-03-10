@@ -84,12 +84,14 @@
     <Compile Include="Command.cs" />
     <Compile Include="Commands\CaptureQuality.cs" />
     <Compile Include="Commands\CaptureScale.cs" />
+    <Compile Include="Commands\ClickMouse.cs" />
     <Compile Include="Commands\HoldKey.cs" />
     <Compile Include="Commands\NotImplemented.cs" />
     <Compile Include="Commands\Log.cs" />
     <Compile Include="Commands\NoLog.cs" />
     <Compile Include="Commands\QueueKeys.cs" />
     <Compile Include="Commands\ReleaseKey.cs" />
+    <Compile Include="Commands\SetMouse.cs" />
     <Compile Include="Commands\StartGlide.cs" />
     <Compile Include="Commands\StatusDummy.cs" />
     <Compile Include="Commands\Exit.cs" />
@@ -110,6 +112,8 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Tools.cs" />
+    <Compile Include="Win32Input.cs" />
+    <Compile Include="Win32Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
