@@ -177,7 +177,8 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		private final String[] columnNames = {"#", "Avg XP", "Name"};
 		
 		private ArrayList<Mob> entries;
-
+		private Mob totalMob = null;
+		
 		public MobTableModel() {
 			super();
 
@@ -202,6 +203,20 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 			
 			java.util.Collections.sort(entries, comp);
 			fireTableRowsUpdated(0, entries.size() - 1);
+			increaseTotal(m);
+		}
+		
+		private void increaseTotal(Mob m) {
+			if (null == totalMob) {
+				totalMob = new Mob("", "Total", m.number, m.xp);
+				entries.add(totalMob);
+				fireTableRowsInserted(entries.size() - 1, entries.size() - 1);
+			} else {
+				totalMob.incr(m);
+			}
+			
+			java.util.Collections.sort(entries, comp);
+			fireTableRowsUpdated(0, entries.size() - 1);
 		}
 
 		public Mob get(int row) {
@@ -215,6 +230,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		
 		public void empty() {
 			entries.clear();
+			totalMob = null;
 			this.fireTableDataChanged();
 		}
 		
