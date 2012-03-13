@@ -20,29 +20,17 @@
  */
 package jgm.gui.tabs;
 
-import jgm.glider.*;
 import jgm.glider.log.*;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.util.logging.Logger;
-
 import javax.swing.*;
 
-public class ChatTab extends Tab implements ActionListener, Clearable {
-	static Logger log = Logger.getLogger(ChatTab.class.getName());
-	
+public class ChatTab extends Tab implements Clearable {
 	private JTabbedPane tabs;
 	public LogTab all;
 	public LogTab pub;
 	public LogTab whisper;
 	public LogTab guild;
-	
-	public JComboBox type;
-	public JTextField to;
-	public JTextField keys;
-	public JButton send;
-	public JButton reset;
 	
 	public ChatTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(), "Chat");
@@ -58,63 +46,7 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 		addTab(whisper);
 		addTab(guild);
 		
-		
-		// set up send keys
-		JPanel keysPanel = new JPanel(new GridBagLayout());
-		
-		type = new JComboBox(ChatType.values());
-		type.addActionListener(this);
-		c.gridx = 0; c.gridy = 0; c.weightx = 0.0;
-		keysPanel.add(type, c);
-		
-		to = new JTextField();
-		to.setToolTipText("The person to send a whisper to");
-		c.gridx++; c.weightx = 0.15;
-		keysPanel.add(to, c);
-		
-		keys = new JTextField();
-		keys.setToolTipText("<html>Slash command and a carriage return will be added except for Raw.<br>" +
-		                    "You must add everything for Raw, | = CR, #VK# = VK");
-		keys.addActionListener(this);
-		c.gridx++; c.weightx = 1.0;
-		keysPanel.add(keys, c);
-				
-		JPanel btns = new JPanel(new GridLayout(1, 0));
-		
-		send = new JButton("Send");
-		send.addActionListener(this);
-		btns.add(send);
-		
-		reset = new JButton("Reset");
-		reset.addActionListener(this);
-		btns.add(reset);
-		
-		c.gridx++; c.weightx = 0.0;
-		keysPanel.add(btns, c);
-		
-/*		c.gridy++;
-		keysPanel.add(new JLabel(
-			"<html>Whisper and Say will both add the slash command and a carriage return.<br>" +
-			"You must add everything for Raw, | = CR, #VK# = VK</html>",
-			JLabel.CENTER
-		), c);
-*/
-		
-		setEnabled(false);
-		
-		gui.sm.connector.addListener(new ConnectionAdapter() {
-			public void onConnect() {
-				setEnabled(true);
-			}
-			
-			public void onDisconnecting() {
-				setEnabled(false);
-			}
-		});
-		
-		
 		add(tabs, BorderLayout.CENTER);
-		add(keysPanel, BorderLayout.SOUTH);
 		
 		validate();
 	}
@@ -145,94 +77,6 @@ public class ChatTab extends Tab implements ActionListener, Clearable {
 			for (int i = 0; i < tabs.getComponentCount(); i++) {
 				((Clearable) tabs.getComponentAt(i)).clear(true);
 			}
-		}
-	}
-	
-	
-	// send keys related stuff
-	
-	public void resetFields() {
-//		to.setText("");
-		keys.setText("");
-	}
-	
-	public void setEnabled(boolean b) {
-		type.setEnabled(b);
-		to.setEnabled(b);
-		keys.setEnabled(b);
-		send.setEnabled(b);
-		reset.setEnabled(b);
-	}
-	
-	public boolean isEnabled() {
-		return type.isEnabled();
-	}
-	
-	public void update(Status s) {
-		if (s.attached != isEnabled()) {
-			setEnabled(s.attached);
-		}
-	}
-	
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		
-		if (source == type) {
-			ChatType selected =
-				(ChatType) type.getSelectedItem();
-			
-			boolean test = selected.equals(ChatType.WHISPER);
-			to.setVisible(test);
-			this.revalidate();
-		} else if (source == send || source == keys) {
-			if (!isEnabled()) return;
-				
-			setEnabled(false);
-			StringBuilder sb = new StringBuilder();
-			
-			ChatType t = (ChatType) type.getSelectedItem();
-			
-			switch (t) {
-				case RAW:
-					break;
-				
-				default:
-					sb.append("#13#"); // press enter first
-			}
-			
-			sb.append(t.getSlashCommand());
-			
-			if (t == ChatType.WHISPER) {
-				if (to.getText().trim().equals("")) {
-					setEnabled(true);
-					return;
-				}
-				
-				sb.append(to.getText());
-				sb.append(' ');
-			}
-			
-			if (keys.getText().trim().equals("")) {
-				setEnabled(true);
-				return;
-			}
-			
-			sb.append(keys.getText());
-			
-			switch (t) {
-				case RAW: break;
-				default:
-					sb.append("#13#");
-			}
-
-			String keys = sb.toString();
-			log.fine("Queuing keys: " + keys);
-			gui.sm.cmd.add(Command.getChatCommand(keys));
-			
-			resetFields();
-			setEnabled(true);
-		} else if (source == reset) {
-			resetFields();
 		}
 	}
 }

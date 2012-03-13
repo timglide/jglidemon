@@ -177,17 +177,13 @@ public class LogTab extends Tab implements Clearable {
 			LogEntry entry = tm.get(row);
 			
 			if (entry instanceof ChatLogEntry) {
-				ChatLogEntry centry = (ChatLogEntry) entry;
-				if (centry.getSender() == null || !centry.fromPlayer) return;
+				ChatLogEntry cEntry = (ChatLogEntry) entry;
+				if (cEntry.getSender() == null ||
+						!cEntry.fromPlayer) {
+					return;
+				}
 
-				ChatTab ct =
-					gui.tabsPane.chatLog;
-	
-				ct.type.setSelectedItem(jgm.glider.ChatType.WHISPER);
-				ct.to.setText(centry.getSender());
-				ct.keys.setText("");
-				ct.select();
-				ct.keys.requestFocusInWindow();
+				gui.setWhisperTarget(cEntry.getSender());
 			}
 		}
 	}

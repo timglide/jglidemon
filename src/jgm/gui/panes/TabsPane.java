@@ -113,5 +113,6 @@ public class TabsPane extends Pane {
 
 	public void update(Status s) {
 		lootsTab.update(s);
+		chatLog.update(s);
 	}
 }
