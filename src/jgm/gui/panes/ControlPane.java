@@ -52,43 +52,45 @@ public class ControlPane extends Pane implements ActionListener, ConnectionListe
 		c.insets.bottom = jgm.gui.GUI.PADDING / 2;
 		add(connect, c);
 
-		start = new JButton("Start Glide");
+		start = new JButton("Start Bot");
 		start.setFocusable(false);
 		start.addActionListener(this);
 		c.gridy++; c.gridwidth = 3;
 		c.insets.right = c.insets.bottom;
 		add(start, c);
 		
-		stop = new JButton("Stop Glide");
+		stop = new JButton("Stop Bot");
 		stop.setFocusable(false);
 		stop.addActionListener(this);
 		c.gridx += 3;
 		c.insets.right = 0;
 		add(stop, c);
 		
+		// hide buttons for commands HB can't do
+		
 		restore = new JButton("Restore");
 		restore.setToolTipText("Restore the WoW window for this connection");
 		restore.setFocusable(false);
 		restore.addActionListener(this);
-		c.gridx = 0; c.gridy++; c.gridwidth = 2;
-		c.insets.right = c.insets.bottom;
-		c.insets.bottom = 0;
-		add(restore, c);
+//		c.gridx = 0; c.gridy++; c.gridwidth = 2;
+//		c.insets.right = c.insets.bottom;
+//		c.insets.bottom = 0;
+//		add(restore, c);
 		
 		shrink = new JButton("Shrink");
 		shrink.setToolTipText("Shrink the WoW window for this connection");
 		shrink.setFocusable(false);
 		shrink.addActionListener(this);
-		c.gridx += 2;
-		add(shrink, c);
+//		c.gridx += 2;
+//		add(shrink, c);
 		
 		hide = new JButton("Hide");
 		hide.setToolTipText("Hide the WoW window for this connection");
 		hide.setFocusable(false);
 		hide.addActionListener(this);
-		c.gridx += 2;
-		c.insets.right = 0;
-		add(hide, c);
+//		c.gridx += 2;
+//		c.insets.right = 0;
+//		add(hide, c);
 		
 		setEnabled(false);
 	}

@@ -69,6 +69,13 @@ public class Mob {
 				if (i1.number > i2.number) ret = 1; 
 
 				if (ret == 0) {
+					if ("Total".equals(i1.name)) { 
+						return -1;
+					}
+					if ("Total".equals(i2.name)) {
+						return 1;
+					}
+					
 					return i1.name.compareTo(i2.name);
 				}
 

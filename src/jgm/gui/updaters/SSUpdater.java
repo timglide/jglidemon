@@ -102,8 +102,9 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		}
 		
 		// 2012-01-13
-		// This is all because I used to incorrectly use BufferedReader on
-		// a BufferedInputStream so the size was almost always wrong
+		// This is mostly because I used to incorrectly use BufferedReader on
+		// a BufferedInputStream so the size was almost always wrong, it
+		// could still be useful though
 		/* This timer will interrupt the screenshot updater
 		 * in X seconds if it fails to update the screenshot.
 		 */
@@ -305,12 +306,12 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 				idle = false;
 				
 				try {
-					//while (attached && tab.isCurrentTab() && !update()) {}
-					
 					// update if either the screenshot tab is viewable or if the
 					// webserver is enabled so that only one thread ever tries to
 					// update the screenshot
-					if (attached && (tab.isCurrentTab() || sm.getBool("web.enabled"))) update();
+					
+					// HB can still get screenshot when not logged in
+					if (/*attached &&*/ (tab.isCurrentTab() || sm.getBool("web.enabled"))) update();
 				} catch (InterruptedException e) {
 					log.fine(thread.getName() + " interrupted within update()");
 				} catch (Exception e) {

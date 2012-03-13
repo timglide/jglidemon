@@ -68,7 +68,7 @@ public class TabsPane extends Pane {
 
 		addTab(chatLog);
 		addTab(urgent);
-		addTab(profiles);
+//		addTab(profiles); // no HB profile support yet
 		
 		if (rawChatLog != null) {
 			addTab(rawChatLog);

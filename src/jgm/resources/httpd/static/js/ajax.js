@@ -297,6 +297,10 @@ var updater = {
 	},
 
 	formatChatTimestamp: function(date) {
+		if ('number' == typeof date) {
+			date = new Date(date);
+		}
+		
 		var h = date.getHours();
 		var m = date.getMinutes();
 		var s = date.getSeconds();
@@ -378,7 +382,7 @@ var updater = {
 		}, settings.updateInterval);
 	},
 	
-	mobssTableSort: function(a, b) {
+	mobsTableSort: function(a, b) {
 		var countA = parseInt(a.e.children().eq(0).text()),
 			countB = parseInt(b.e.children().eq(0).text());
 	
@@ -466,6 +470,7 @@ var updater = {
 					$existing = $('tr[data-faction="' + entry.faction + '"]', $table[0]);
 				
 				if ($existing.length) {
+					$existing.data('time', entry.time);
 					$existing.children().eq(0).text(updater.formatChatTimestamp(entry.time));
 					$existing.children().eq(1).text(entry.gained);
 					newest = $existing;
@@ -496,6 +501,7 @@ var updater = {
 					$existing = $('tr[data-skill="' + entry.skill + '"]', $table[0]);
 				
 				if ($existing.length) {
+					$existing.data('time', entry.time);
 					$existing.children().eq(0).text(updater.formatChatTimestamp(entry.time));
 					$existing.children().eq(1).text(entry.level);
 					newest = $existing;
@@ -505,6 +511,7 @@ var updater = {
 				var $element = $('<tr/>')
 					// attr() not data(), need to see if data always sets attribute as well
 					.attr('data-skill', entry.skill)
+					.data('time', entry.time)
 					.append($('<td class="time">' + updater.formatChatTimestamp(entry.time) + '</td>'))
 					.append($('<td class="level">' + entry.level + '</td>'))
 					.append($('<td/>').text(entry.skill));

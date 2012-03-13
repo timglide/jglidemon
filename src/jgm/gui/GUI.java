@@ -362,6 +362,7 @@ public class GUI
 		menu.fullSS.setMnemonic('F');
 		menu.fullSS.setAccelerator(
 			KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
+		menu.fullSS.setToolTipText("Press F11 to toggle between fullscreen and normal");
 		
 		ButtonGroup grp = new ButtonGroup();
 		grp.add(menu.normalSS);
@@ -461,18 +462,18 @@ public class GUI
 		// added here instead
 		menu.screenshot.add(menu.ssMode);
 		
-		menu.ssSize = new JMenu("Shrink/Restore");
-		menu.ssSize.setMnemonic('S');
-		menu.ssRestoreActivate = doMenuItem("Restore and Activate Window", menu.ssSize, this);
-		menu.ssShrinkOthers = doMenuItem("Restore and Shrink Others", menu.ssSize, this);
-		menu.ssHideOthers = doMenuItem("Restore and Hide Others", menu.ssSize, this);
-		menu.ssSize.addSeparator();
-		menu.ssShrink = doMenuItem("Shrink Window", menu.ssSize, this);
-		menu.ssShrinkAll = doMenuItem("Shrink All", menu.ssSize, this);
-		menu.ssSize.addSeparator();
-		menu.ssHide = doMenuItem("Hide Window", menu.ssSize, this);
-		menu.ssHideAll = doMenuItem("Hide All", menu.ssSize, this);
-		menu.screenshot.add(menu.ssSize);
+//		menu.ssSize = new JMenu("Shrink/Restore");
+//		menu.ssSize.setMnemonic('S');
+//		menu.ssRestoreActivate = doMenuItem("Restore and Activate Window", menu.ssSize, this);
+//		menu.ssShrinkOthers = doMenuItem("Restore and Shrink Others", menu.ssSize, this);
+//		menu.ssHideOthers = doMenuItem("Restore and Hide Others", menu.ssSize, this);
+//		menu.ssSize.addSeparator();
+//		menu.ssShrink = doMenuItem("Shrink Window", menu.ssSize, this);
+//		menu.ssShrinkAll = doMenuItem("Shrink All", menu.ssSize, this);
+//		menu.ssSize.addSeparator();
+//		menu.ssHide = doMenuItem("Hide Window", menu.ssSize, this);
+//		menu.ssHideAll = doMenuItem("Hide All", menu.ssSize, this);
+//		menu.screenshot.add(menu.ssSize);
 		
 		menu.logs = new JMenu("Logs");
 		menu.logs.setMnemonic(KeyEvent.VK_L);
