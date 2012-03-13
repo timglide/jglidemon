@@ -14,6 +14,8 @@ Version 0.19
 - Corrected level cap to 85, it should work at 90, 95, etc.
 - Made *many* improvements to the built-in webserver including a mobile
   device friendly version.
+- Changed input fields for sending chat so that they are always visible,
+  the last type of chat sent will also be remembered after restarting.
 
 Version 0.18
 ------------

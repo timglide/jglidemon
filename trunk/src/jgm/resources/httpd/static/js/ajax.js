@@ -52,6 +52,7 @@ var updater = {
 			hiddenheaders:			$('#hiddenheaders'),
 
 			loadingheader:			$('#loadingheader'),
+			ajaxerror:				$('#ajaxerror'),
 			discheader:				$('#discheader'),
 			notattached:			$('#notattached'),
 			mainheader:				$('#mainheader'),
@@ -316,6 +317,8 @@ var updater = {
 		updater.chatTimeouts[$container.data('type')] = setTimeout(function() {
 			updater.updateChat($container);
 		}, settings.updateInterval);
+		
+		setHeader(els.ajaxerror);
 	},
 	
 	handleChat: function(json, textStatus, jqXHR) {
@@ -380,6 +383,8 @@ var updater = {
 		updater.mobsTimeout = setTimeout(function() {
 			updater.updateMobs();
 		}, settings.updateInterval);
+		
+		setHeader(els.ajaxerror);
 	},
 	
 	mobsTableSort: function(a, b) {
@@ -545,6 +550,8 @@ var updater = {
 		updater.lootTimeout = setTimeout(function() {
 			updater.updateLoot();
 		}, settings.updateInterval);
+		
+		setHeader(els.ajaxerror);
 	},
 	
 	copperToGSC: function(copper) {
@@ -659,6 +666,8 @@ var updater = {
 	failStatus: function(jqXHR, textStatus, errorThrown) {
 //		alert('AJAX Error: ' + errorThrown + "\n" + textStatus);
 		setTimeout(updater.updateStatus, settings.updateInterval);
+		
+		setHeader(els.ajaxerror);
 	},
 	
 	handleStatus: function(json, textStatus, jqXHR) {

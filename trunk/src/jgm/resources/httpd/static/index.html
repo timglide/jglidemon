@@ -72,8 +72,9 @@ $(function() {
 	</div>
 
 	<div id="hiddenheaders" style="display: none;">
-		<div id="discheader"><h1>Disconnected from Glider</h1></div>
-		<div id="notattached"><h1>Connected to Glider, Detached</h1></div>
+		<div id="ajaxerror"><h1>Error connecting to JGlideMon</h1></div>
+		<div id="discheader"><h1>Disconnected from Bot</h1></div>
+		<div id="notattached"><h1>Connected to Bot, Detached</h1></div>
 		<div id="mainheader"><h1><img src="/static/img/classes/unknown.png" align="absmiddle" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
 	</div>
 
@@ -286,7 +287,7 @@ $(function() {
 					<input id="chatto" type="text" placeholder="To" title="The person to send a whisper to" />
 				</div>
 				<div id="chattextspan">
-					<input id="chattext" type="text" onfocus="this.value = this.value;" placeholder="Chat text" title="For Raw, type a full slash command just like you would in-game, for others the slash command will be added automatically" />
+					<input id="chattext" type="text" onfocus="this.value = this.value;" placeholder="Chat text" title="For Raw, type a full slash command just like you would in-game, for others the slash command will be added automatically, DO NOT try to send slash command unless using Raw" />
 				</div>
 				<input type="submit" id="sendchat" value="Send" />
 			</form>

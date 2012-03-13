@@ -29,6 +29,7 @@ import jgm.gui.panes.CharInfoPane;
 import jgm.gui.panes.ControlPane;
 import jgm.gui.panes.ExperiencePane;
 import jgm.gui.panes.MobInfoPane;
+import jgm.gui.panes.SendChatPane;
 import jgm.gui.panes.TabsPane;
 import jgm.util.Util;
 
@@ -84,6 +85,7 @@ public class GUI
 	
 	public JFrame frame;
 	public Tray tray;
+	private SendChatPane sendChatPane;
 	JStatusBar statusBar;
 	
 	// elements
@@ -102,6 +104,7 @@ public class GUI
 	// for fullscreen screenshot
 	public JPanel ssPanel = null;
 	public JPanel mainPanel;
+	private JPanel footer;
 	public ScreenshotState ssState = ScreenshotState.NORMAL;
 	Rectangle lastWindowBounds = null;
 	int lastWindowState = 0;
@@ -164,10 +167,10 @@ public class GUI
     		doServersMenu();
     	}
     	
-		public void serverAdded(ServerManager sm) {doit();}
-		public void serverRemoved(ServerManager sm) {doit();}
-		public void serverSuspended(ServerManager sm) {doit();}
-		public void serverResumed(ServerManager sm) {doit();}
+		public void serverAdded(ServerManager sm) { doit();}
+		public void serverRemoved(ServerManager sm) { doit(); }
+		public void serverSuspended(ServerManager sm) { doit(); } 
+		public void serverResumed(ServerManager sm) { doit(); }
 		public void serverPropChanged(ServerManager sm, String prop, Object value) {
 			if (prop.equals("name")) {
 				doit();
@@ -531,6 +534,16 @@ public class GUI
 		
 		menu.about = doMenuItem("About", KeyEvent.VK_A, menu.help, this);
 
+
+		footer = new JPanel(new BorderLayout());
+		
+		sendChatPane = new SendChatPane(this);
+		footer.add(sendChatPane, BorderLayout.NORTH);
+		
+		try {
+			sendChatPane.setChatType(
+				ChatType.valueOf(sm.get("window.chattype")));
+		} catch (RuntimeException e) { }
 		
 		// set up status bar
 		statusBar = new JStatusBar(this);
@@ -541,8 +554,9 @@ public class GUI
 		tmp.setMaximum(100);
 		tmp.setMinimum(0);
 		
-		frame.add(statusBar, BorderLayout.SOUTH);
-
+		footer.add(statusBar, BorderLayout.SOUTH);
+		
+		frame.add(footer, BorderLayout.SOUTH);
 		frame.setJMenuBar(menu.bar);
 
 		// ensure the system L&F
@@ -613,6 +627,10 @@ public class GUI
 		}		
 	}
 	
+	public void setWhisperTarget(String name) {
+		sendChatPane.setWhisperTarget(name);
+	}
+	
 	public void setIcon() {
 		int i = sm.getInt("icon");
 		
@@ -648,7 +666,10 @@ public class GUI
 				frame.dispose();
 				frame.setUndecorated(true);
 				frame.setJMenuBar(null);
-				frame.remove(statusBar);
+				
+				frame.remove(footer);
+				frame.add(sendChatPane, BorderLayout.SOUTH);
+				
 				lastWindowState = frame.getExtendedState();
 				lastWindowBounds = frame.getBounds();
 				frame.setExtendedState(0);
@@ -708,7 +729,11 @@ public class GUI
 			
 				frame.setUndecorated(false);
 				frame.setJMenuBar(menu.bar);
-				frame.add(statusBar, BorderLayout.SOUTH);
+				
+				frame.remove(sendChatPane);
+				footer.add(sendChatPane, BorderLayout.NORTH);
+				frame.add(footer, BorderLayout.SOUTH);
+				
 				frame.setBounds(lastWindowBounds);
 				frame.setExtendedState(lastWindowState);
 				ssPanel.setOpaque(false);				
@@ -883,8 +908,8 @@ public class GUI
 		ctrlPane.update(s);
 		xpPane.update(s);
 		tabsPane.update(s);
-
-		tabsPane.chatLog.update(s);
+		
+		sendChatPane.update(s);
 		
 		String version = "";
 		
@@ -903,7 +928,7 @@ public class GUI
 			
 			setStatusBarText(st);
 		} else if (s.attached) {
-			setStatusBarText(version + "Attached: " + s.profile);
+			setStatusBarText(version + "Attached: " + (s.profile.isEmpty() ? "(unknown profile)" : s.profile));
 		} else {
 			setStatusBarText(version + "Not Attached");
 		}
