@@ -5,7 +5,26 @@ body {
 .center {
 	text-align: center;
 }
+
+#headers {
+	font-family: "Helvetica Neue", Helvetica;
+	display: none;
+	position: fixed;
+	left: 0; bottom: 0; right: 0;
+	background-color: red;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+	/*height: 2em;*/
+	z-index: 9999999;
+	margin: 0;
+	padding: 0.5em;
+}
+
+#headers div {
 	
+}
+
 #jqt ul li .right {
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
     background: none repeat scroll 0 0 #2F3031;
