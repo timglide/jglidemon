@@ -51,9 +51,7 @@ namespace GliderRemoteCompat {
 
 		private void AddMessage(string s, float r, float g, float b, int id, params object[] rest) {
 			if (!(1f == r && 1f == g && 1f == b)) {
-				s = string.Format(
-					"|cff{0:x2}{1:x2}{2:x2}{3}|r",
-					(int)(r * 255), (int)(g * 255), (int)(b * 255), s);
+				s = FormatColor(r, g, b, s);
 			}
 
 			client.SendLog(ClientLogType.ChatRaw, s);

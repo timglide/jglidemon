@@ -24,7 +24,7 @@ using System.Threading;
 
 namespace GliderRemoteCompat {
 	public class Class1 : HBPlugin {
-		private const string _revision = "$Revision$";
+		private const string _revision = "$Revision$"; 
 		private static readonly int revision;
 		private static readonly Version version;
 
@@ -78,6 +78,7 @@ namespace GliderRemoteCompat {
 			logThread = new Thread(LogThreadRunner);
 			logThread.Name = "GRC LogThread";
 			logThread.IsBackground = true;
+			logThread.Priority = ThreadPriority.BelowNormal;
 			logThread.Start();
 		}
 

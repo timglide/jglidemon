@@ -39,6 +39,10 @@ namespace GliderRemoteCompat {
 		}
 
 		private void Logging_OnWrite(string msg, Color color) {
+			if (Color.White != color) {
+				msg = FormatColor(color, msg);
+			}
+
 			client.SendLog(ClientLogType.Status, msg);
 		}
 
@@ -104,6 +108,18 @@ namespace GliderRemoteCompat {
 					BotEvents.Player.OnMobKilled -= Player_OnMobKilled;
 				}
 			}
+		}
+
+		public static string FormatColor(Color color, string message) {
+			return string.Format(
+				"|cff{0:x2}{1:x2}{2:x2}{3}|r",
+				color.R, color.G, color.B, message);
+		}
+
+		public static string FormatColor(float r, float g, float b, string message) {
+			return string.Format(
+				"|cff{0:x2}{1:x2}{2:x2}{3}|r",
+				(int)(r * 255), (int)(g * 255), (int)(b * 255), message);
 		}
 	}
 }

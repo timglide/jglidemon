@@ -130,7 +130,7 @@ namespace GliderRemoteCompat {
 
 			logHandler.Dispose();
 			reader.Close();
-
+			
 			try {
 				client.Close();
 			} catch { }

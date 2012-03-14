@@ -8,6 +8,10 @@ using System.Drawing;
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler {
 		private void Logging_OnDebug(string msg, Color color) {
+			if (Color.White != color) {
+				msg = FormatColor(color, msg);
+			}
+
 			client.SendLog(ClientLogType.GliderLog, msg);
 		}
 
