@@ -298,7 +298,7 @@ var updater = {
 	},
 
 	formatChatTimestamp: function(date) {
-		if ('number' == typeof date) {
+		if ('object' != typeof date) {
 			date = new Date(date);
 		}
 		

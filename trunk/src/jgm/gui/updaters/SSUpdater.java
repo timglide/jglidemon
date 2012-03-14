@@ -93,14 +93,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		
 		sm.gui.setStatusBarText("Updating screenshot...", true, false);
 		sm.gui.setStatusBarProgress(0);
-		
-		int buffSize = (int) (sm.getDouble("screenshot.buffer") * 1048576);
-		
-		if (buff == null || buff.length != buffSize) {
-			log.fine("Allocating ss buffer of size " + buffSize);
-			buff = new byte[buffSize];
-		}
-		
+	
 		// 2012-01-13
 		// This is mostly because I used to incorrectly use BufferedReader on
 		// a BufferedInputStream so the size was almost always wrong, it
@@ -166,7 +159,7 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 		// 2012-01-13
 		// This is all because I used to incorrectly use BufferedReader on
 		// a BufferedInputStream so the size was almost always wrong
-		if (size < 1 || size > buff.length) { // size invalid? wtf O.o
+		if (size < 1) { // size invalid? wtf O.o
 			timer.cancel();
 			
 			String s = null;
@@ -191,6 +184,11 @@ public class SSUpdater implements Observer, Runnable, ConnectionListener {
 			return false;
 		}
 
+		if (buff == null || buff.length < size) {
+			log.fine("Allocating ss buffer of size " + (int)(size * 1.5));
+			buff = new byte[(int)(size * 1.5)];
+		}
+		
 		while (written < size) {
 			int read = conn.read(buff, written, size - written);
 			

@@ -83,7 +83,7 @@ public class LogEntry implements Comparable<LogEntry> {
 	}
 	
 	public boolean supportsHtmlText() {
-		return false;
+		return true;
 	}
 	
 	public String getHtmlPreColor() {

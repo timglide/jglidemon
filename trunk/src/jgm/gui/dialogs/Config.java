@@ -370,14 +370,14 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++; c.weightx = 1.0;
 		screenshot.add(screenshotQuality, c);
 		
-		c.gridx = 0; c.gridy++; c.weightx = 0.0;
-		screenshot.add(new JLabel("* Buffer Size (MB): "), c);
-		
+//		c.gridx = 0; c.gridy++; c.weightx = 0.0;
+//		screenshot.add(new JLabel("* Buffer Size (MB): "), c);
+//		
 		screenshotBuffer = new JSpinner(
 			new SpinnerNumberModel(1.0, 0.5, 10.0, 0.1)
 		);
-		c.gridx++; c.weightx = 1.0;
-		screenshot.add(screenshotBuffer, c);
+//		c.gridx++; c.weightx = 1.0;
+//		screenshot.add(screenshotBuffer, c);
 		
 		c.gridx = 0; c.gridy++; c.weightx = 0.0;
 		screenshot.add(new JLabel("Update Timeout (s): "), c);
@@ -386,9 +386,9 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		c.gridx++; c.weightx = 1.0;
 		screenshot.add(screenshotTimeout, c);
 		
-		c.gridx = 0; c.gridy++; c.gridwidth = 2;
-		ssInfo = new JLabel("", JLabel.CENTER);
-		screenshot.add(ssInfo, c);
+//		c.gridx = 0; c.gridy++; c.gridwidth = 2;
+//		ssInfo = new JLabel("", JLabel.CENTER);
+//		screenshot.add(ssInfo, c);
 		
 		c.gridx = 0; c.gridy++; c.weighty = 1.0;
 		screenshot.add(new JLabel(), c);
@@ -1218,24 +1218,24 @@ public class Config extends Dialog implements ActionListener, ChangeListener {
 		
 		Icon i = gui.tabsPane.screenshotTab.ssLabel.getIcon();
 		
-		if (i != null) {
-			int width = i.getIconWidth();
-			int height = i.getIconHeight();
-			int size = width * height * 3;
-			float sizeMb = (float) size / 1048576; 
-			
-			ssInfo.setText(
-				String.format(
-					"<html><br>Your last screenshot was %sx%s pixels.<br>\n" +
-					"Uncompressed it could be at most %.2fMB.",
-					width,
-					height,
-					sizeMb
-				)
-			);
-			
-			this.pack();
-		}
+//		if (i != null) {
+//			int width = i.getIconWidth();
+//			int height = i.getIconHeight();
+//			int size = width * height * 3;
+//			float sizeMb = (float) size / 1048576; 
+//			
+//			ssInfo.setText(
+//				String.format(
+//					"<html><br>Your last screenshot was %sx%s pixels.<br>\n" +
+//					"Uncompressed it could be at most %.2fMB.",
+//					width,
+//					height,
+//					sizeMb
+//				)
+//			);
+//			
+//			this.pack();
+//		}
 		
 		enableSound.setSelected(cfg.getBool("sound.enabled"));
 		soundWhisper.setSelected(cfg.getBool("sound.whisper"));

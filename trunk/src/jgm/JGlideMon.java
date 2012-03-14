@@ -29,7 +29,7 @@ import javax.swing.UIManager;
 import jgm.logging.Log;
 import jgm.gui.Splash;
 
-// this line edited so the svn revision gets updated
+// this line edited so the svn revision gets updated 
 
 /**
  * The main program.
