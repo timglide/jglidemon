@@ -327,7 +327,7 @@ public class AjaxHandler extends Handler {
 			AP(skills)
 				.put("skill", s.name)
 				.put("level", s.level)
-				.put("time", s.timestampDate);
+				.put("time", s.timestampDate.getTime());
 		}
 	}
 	
