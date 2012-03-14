@@ -18,21 +18,12 @@ using System.Net.Sockets;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Diagnostics;
+using System.Threading;
 
 namespace GliderRemoteCompat {
 	public class Class1 : HBPlugin {
-		private static Class1 instance;
-
-		public static Class1 Instance {
-			get {
-				if (null == instance) {
-					instance = new Class1();
-				}
-
-				return instance;
-			}
-		}
-
 		private const string _revision = "$Revision$";
 		private static readonly int revision;
 		private static readonly Version version;
@@ -51,10 +42,51 @@ namespace GliderRemoteCompat {
 		}
 
 		private Server server;
-		private List<string> logQueue = new List<string>();
+
+		private Queue<string> logQueue = new Queue<string>();
+		private string logFile = null;
+ 
+		public string LogFile {
+			get {
+				if (null == logFile) {
+					string path = Process.GetCurrentProcess().MainModule.FileName;
+					path = Path.GetDirectoryName(path);
+					path = Path.Combine(path, @"Plugins\GliderRemoteCompat\Logs");
+
+					if (!Directory.Exists(path)) {
+						Directory.CreateDirectory(path);
+					}
+
+					string file = string.Format("{0:yyyy-MM-dd HH-mm-ss}.txt", DateTime.Now);
+					logFile = Path.Combine(path, file);
+				}
+
+				return logFile;
+			}
+		}
+
+		private Stream logStream;
+		private StreamWriter logWriter;
+		private Thread logThread;
 
 		public Class1() {
-			instance = this;
+			logStream = new BufferedStream(new FileStream(LogFile, FileMode.Create));
+			logWriter = new StreamWriter(logStream);
+
+			AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+
+			logThread = new Thread(LogThreadRunner);
+			logThread.Name = "GRC LogThread";
+			logThread.IsBackground = true;
+			logThread.Start();
+		}
+
+		~Class1() {
+			logThread.Abort();
+			AppDomain.CurrentDomain.UnhandledException -= UnhandledException;
+
+			logWriter.Close();
+			logStream.Close();
 		}
 
 		public override string Author {
@@ -88,7 +120,6 @@ namespace GliderRemoteCompat {
 			base.Initialize();
 
 			Logging.Write("{0} v{1} loaded", Name, Version);
-			logQueue.Clear();
 			RefreshSettings();
 
 			initialized = true;
@@ -122,7 +153,7 @@ namespace GliderRemoteCompat {
 				}
 
 				try {
-					server = new Server();
+					server = new Server(this);
 				} catch (SocketException e) {
 					Logging.Write(Color.Red, "Error starting GliderRemoteCompat server");
 					Logging.WriteException(Color.Red, e);
@@ -145,7 +176,7 @@ namespace GliderRemoteCompat {
 		private SettingsForm SettingsForm {
 			get {
 				if (null == settingsForm) {
-					settingsForm = new SettingsForm();
+					settingsForm = new SettingsForm(this);
 				}
 
 				return settingsForm;
@@ -161,19 +192,34 @@ namespace GliderRemoteCompat {
 			Log(string.Format(format, args));
 		}
 
-		public void Log(string str) {
+		public void Log(object obj) {
 			lock (logQueue) {
-				logQueue.Add(str);
+				logQueue.Enqueue(obj.ToString());
 			}
 		}
 
+		private void UnhandledException(object sender, UnhandledExceptionEventArgs e) {
+			Log(e.ExceptionObject);
+		}
+
+		private void LogThreadRunner() {
+			try {
+				while (true) {
+					lock (logQueue) {
+						while (0 != logQueue.Count) {
+							logWriter.WriteLine(logQueue.Dequeue());
+						}
+					}
+
+					try {
+						Thread.Sleep(100);
+					} catch (ThreadInterruptedException) { }
+				}
+			} catch (ThreadAbortException) { }
+		}
+
 		public override void Pulse() {
-			//lock (logQueue) {
-			//    while (logQueue.Count > 0) {
-			//        Logging.Write(logQueue[0]);
-			//        logQueue.RemoveAt(0);
-			//    }
-			//}
+
 		}
 	}
 }

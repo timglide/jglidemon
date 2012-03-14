@@ -96,7 +96,7 @@ namespace GliderRemoteCompat {
 		}
 
 		internal void Debug(string str, params object[] args) {
-//			Class1.Instance.Log("[{0}] {1}", thread.Name, string.Format(str, args));
+//			server.Owner.Log("[Client-{0}] {1}", Number, string.Format(str, args));
 //			Console.WriteLine("[{0}] {1}", thread.Name, string.Format(str, args));
 //			Logging.WriteDebug("[{0}] {1}", thread.Name, string.Format(str, args));
 		}

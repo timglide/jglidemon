@@ -8,7 +8,6 @@ namespace GliderRemoteCompat.Commands {
 		public static readonly Command Instance = new Help();
 
 		private static readonly string[] lines = new string[] {
-			string.Format("Connected to {0}'s {1} v{2}", Class1.Instance.Author, Class1.Instance.Name, Class1.Instance.Version),
 			//"Connected to timglide's GliderRemoteCompat",
 			"* = not yet implemented",
 			"† = partial implementation",
@@ -53,6 +52,7 @@ namespace GliderRemoteCompat.Commands {
 		};
 
 		public override void Execute(Server server, Client client, string args) {
+			client.Send(false, "Connected to {0}'s {1} v{2}", server.Owner.Author, server.Owner.Name, server.Owner.Version);
 			client.Send(lines);
 		}
 	}

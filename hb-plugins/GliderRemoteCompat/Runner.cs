@@ -11,12 +11,6 @@ namespace GliderRemoteCompat {
 				Console.WriteLine("{0}, {1}: {2}", v.CodecName, v.MimeType, v.FormatDescription);
 			}
 			Console.ReadLine();
-			if (true)
-				return;
-
-			Server server = new Server();
-			Console.ReadLine();
-			server.Dispose();
 		}
 	}
 }

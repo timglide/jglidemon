@@ -15,9 +15,9 @@ namespace GliderRemoteCompat.Commands {
 		}
 
 		public override void Execute(Server server, Client client, string args) {
-			if (Win32Window.GetForegroundWindow() != WindowHandle) {
+			//if (Win32Window.GetForegroundWindow() != WindowHandle) {
 				Win32Window.SetForegroundWindow(WindowHandle);
-			}
+			//}
 
 			client.Send();
 		}

@@ -10,6 +10,11 @@ namespace GliderRemoteCompat {
 	class Server : IDisposable {
 		private const int ListenThreadDeathTimeoutMS = 2000;
 
+		public Class1 Owner {
+			get;
+			private set;
+		}
+
 		internal ServerSettings settings;
 		private TcpListener tcpListener;
 		private Thread listenThread;
@@ -22,7 +27,9 @@ namespace GliderRemoteCompat {
 
 		private List<Client> clients = new List<Client>();
 
-		public Server() {
+		public Server(Class1 owner) {
+			Owner = owner;
+
 			settings = ServerSettings.Instance;
 			tcpListener = new TcpListener(IPAddress.Any, settings.Port);
 			tcpListener.Start();
