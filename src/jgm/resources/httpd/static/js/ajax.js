@@ -210,7 +210,7 @@ var updater = {
 			return;
 		}
 		
-		var url = urls.chat + 'type=' + type + '&count=30';
+		var url = urls.chat + 'type=' + type + '&count=50';
 		
 		if ($container.data('lastUpdate')) {
 			url += '&since=' + $container.data('lastUpdate').getTime();

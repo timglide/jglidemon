@@ -10,25 +10,20 @@ var jQT = new $.jQTouch({
 	updater.init = function() {
 		updater_initOrig();
 		
+		els.headers    = $('#headers');
 		els.mainheader = $('#home');
-		els.lastheader = null;
 	};
 })();
 
 setHeader = function(newHeader) {
-	return;
-	
-	if (els.lastheader == newHeader) {
-		return;
+	if (newHeader == els.ajaxerror ||
+		newHeader == els.discheader ||
+		newHeader == els.notattached) {
+		
+		els.headers.children().hide();
+		newHeader.show();
+		els.headers.show();
+	} else {
+		els.headers.hide();
 	}
-	
-	var anim = 'slideup';
-	
-	if (els.mainheader == newHeader) {
-		anim = 'slideup';
-	}
-	
-	jQT.goTo('#' + newHeader.attr('id'), anim);
-	
-	els.lastheader = newHeader
 }
