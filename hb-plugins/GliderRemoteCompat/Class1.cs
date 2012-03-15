@@ -38,7 +38,7 @@ namespace GliderRemoteCompat {
 				revision = 0;
 			}
 
-			version = new Version(0, 1, 0, revision);
+			version = new Version(1, 0, revision);
 		}
 
 		private Server server;
@@ -70,24 +70,24 @@ namespace GliderRemoteCompat {
 		private Thread logThread;
 
 		public Class1() {
-			logStream = new BufferedStream(new FileStream(LogFile, FileMode.Create));
-			logWriter = new StreamWriter(logStream);
+			//logStream = new BufferedStream(new FileStream(LogFile, FileMode.Create));
+			//logWriter = new StreamWriter(logStream);
 
-			AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+			//AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
-			logThread = new Thread(LogThreadRunner);
-			logThread.Name = "GRC LogThread";
-			logThread.IsBackground = true;
-			logThread.Priority = ThreadPriority.BelowNormal;
-			logThread.Start();
+			//logThread = new Thread(LogThreadRunner);
+			//logThread.Name = "GRC LogThread";
+			//logThread.IsBackground = true;
+			//logThread.Priority = ThreadPriority.BelowNormal;
+			//logThread.Start();
 		}
 
 		~Class1() {
-			logThread.Abort();
-			AppDomain.CurrentDomain.UnhandledException -= UnhandledException;
+			//logThread.Abort();
+			//AppDomain.CurrentDomain.UnhandledException -= UnhandledException;
 
-			logWriter.Close();
-			logStream.Close();
+			//logWriter.Close();
+			//logStream.Close();
 		}
 
 		public override string Author {
