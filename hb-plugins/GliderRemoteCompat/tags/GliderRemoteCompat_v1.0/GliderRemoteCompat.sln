@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GliderRemoteCompat", "GliderRemoteCompat.csproj", "{AB79115C-0447-4CC0-91B2-811F9D88CB6B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB79115C-0447-4CC0-91B2-811F9D88CB6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB79115C-0447-4CC0-91B2-811F9D88CB6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB79115C-0447-4CC0-91B2-811F9D88CB6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB79115C-0447-4CC0-91B2-811F9D88CB6B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
