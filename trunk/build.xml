@@ -40,8 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <!-- *                                                        * -->
 	<!-- ********************************************************** -->
 	<property name="title"          value="JGlideMon"/>
-	<property name="_version"		value="0.19beta"/>
-
+	<property name="beta"           value=""/>
+	
     <path id="classpath">
 		<fileset dir="lib" includes="**/freetts.jar"/>
 	</path>
@@ -73,7 +73,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 	<target name="dist"
-			depends="jgminfo,libs,phpglidemon,jars,zips,helpfile,installer">
+			depends="jgminfo,libs,jars,zips,helpfile,installer">
 		<echo message="Built JGlideMon v${version} distribution"/>
 	</target>
 
@@ -105,7 +105,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			classname="jgm.internal.tasks.JgmInfo" 
 			classpath="${bin_dir}"/>
 		<jgminfo/>
-		<property name="version" value="${jgm.version}.${jgm.revision}"/>
+		<property name="version" value="${jgm.version}.${jgm.revision}${beta}"/>
 	</target>
 	
 	<target name="all_resources" depends="resources, compress_httpd_resources, properties" />
@@ -131,18 +131,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<!-- TODO Figure out how to do this more automatically -->
 		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
 			<arg value="-o"/>
-			<arg value="${bin_dir}/jgm/resources/httpd/static/js/prototype.js"/>
-			<arg value="${bin_dir}/jgm/resources/httpd/static/js/prototype.js"/>
-		</java>
-		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
-			<arg value="-o"/>
-			<arg value="${bin_dir}/jgm/resources/httpd/static/js/wz_tooltip.js"/>
-			<arg value="${bin_dir}/jgm/resources/httpd/static/js/wz_tooltip.js"/>
-		</java>
-		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
-			<arg value="-o"/>
-			<arg value="${bin_dir}/jgm/resources/httpd/static/js/xmldom.js"/>
-			<arg value="${bin_dir}/jgm/resources/httpd/static/js/xmldom.js"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/ajax.js"/>
+			<arg value="${bin_dir}/jgm/resources/httpd/static/js/ajax.js"/>
 		</java>
 	</target>
 
@@ -252,7 +242,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 	<!--target name="zips" depends="core_zip,profiler_zip,tts_zip,src_zip,phpglidemon_zip" -->
-	<target name="zips" depends="core_zip,profiler_zip,tts_zip,phpglidemon_zip"
+	<target name="zips" depends="core_zip,profiler_zip,tts_zip"
 			description="Build all zip files and creates MD5 hashes">
 		<!--checksum todir="${bin_dir}" forceOverwrite="yes">
 			<fileset dir="${bin_dir}">

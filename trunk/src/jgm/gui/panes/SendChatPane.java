@@ -90,6 +90,8 @@ public class SendChatPane extends Pane implements ActionListener {
 	}
 	
 	public void setWhisperTarget(String name) {
+		if (!isEnabled()) return;
+		
 		type.setSelectedItem(ChatType.WHISPER);
 		to.setText(name);
 		keys.setText("");

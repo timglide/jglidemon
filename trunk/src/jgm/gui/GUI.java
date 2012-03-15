@@ -158,6 +158,7 @@ public class GUI
 		
 		JMenu     help;
 		JMenuItem helpContents;
+		JMenuItem helpOnline;
 		JMenuItem debug;
 		JMenuItem about;
 	}
@@ -514,9 +515,17 @@ public class GUI
 		
 		menu.debug = doMenuItem("Generate Debug Info", KeyEvent.VK_D, menu.help, this);
 		menu.help.addSeparator();
+
+		menu.helpOnline   = new JMenuItem("View Help Online", KeyEvent.VK_O);
+		menu.helpOnline.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		menu.helpOnline.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Util.openURL("http://dl.dropbox.com/u/65205371/jgm/docs/index.html");
+			}
+		});
+		menu.help.add(menu.helpOnline);
 		
-		menu.helpContents = new JMenuItem("Help Contents...", KeyEvent.VK_H);
-		menu.helpContents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		menu.helpContents = new JMenuItem("Help Contents", KeyEvent.VK_H);
 		final java.io.File helpFile = new java.io.File("JGlideMon.chm");
 		if (helpFile.exists() && System.getProperty("os.name").startsWith("Windows")) {
 			menu.help.add(menu.helpContents);
@@ -874,7 +883,8 @@ public class GUI
 			if (path != null) {
 				JOptionPane.showMessageDialog(
 					frame,
-					"Debug info saved to\n" + path,
+					"Debug info saved to\n" + path + "\n\n" +
+					"Note this file may contain personal information, like folder names, you should remove.",
 					"Debug Info Generated",
 					JOptionPane.INFORMATION_MESSAGE
 				);
