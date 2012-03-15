@@ -29,7 +29,7 @@ import javax.swing.UIManager;
 import jgm.logging.Log;
 import jgm.gui.Splash;
 
-// this line edited so the svn revision gets updated 
+// this line edited so the svn revision gets updated
 
 /**
  * The main program.
@@ -38,7 +38,7 @@ import jgm.gui.Splash;
  */
 public class JGlideMon {
 	public static final String app = "JGlideMon";
-	public static final String version = "0.19";
+	public static final String version = "1.0";
 	public static final String _revision = "$Revision$";
 	public static final String revision = _revision.substring(1, _revision.length() - 1);
 	public static final int revisionNum = initRevisionNum();
@@ -55,7 +55,7 @@ public class JGlideMon {
 	public static final String _date = "$Date$";
 	public static final String date = _date.substring(1, _date.length() - 1);
 	
-	public static boolean debug = true;
+	public static boolean debug = false;
 	
 	public static JGlideMon instance;
 	public static Config        cfg;

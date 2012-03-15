@@ -1,8 +1,8 @@
 JGlideMon ChangeLog
 
-Version 0.19
-------------
-- Minimal development resumes to coincide with the GliderRemoteCompat
+Version 1.0
+-----------
+- Development resumes to coincide with the GliderRemoteCompat
   plugin for HonorBuddy.
 - Fixed systemic error in the way data was read that often caused
   the screenshot to fail to update. It nearly always works now.
@@ -16,6 +16,8 @@ Version 0.19
   device friendly version.
 - Changed input fields for sending chat so that they are always visible,
   the last type of chat sent will also be remembered after restarting.
+- PHPGlideMon will no longer be updated due to the changes in JGlideMon's
+  built-in webserver.
 
 Version 0.18
 ------------
