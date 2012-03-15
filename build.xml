@@ -129,11 +129,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			description="Compress js files to be smaller"
 			depends="resources">
 		<!-- TODO Figure out how to do this more automatically -->
-		<java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
+		<!--java jar="buildtools/yuicompressor-2.2.5.jar" fork="true" failonerror="true">
 			<arg value="-o"/>
 			<arg value="${bin_dir}/jgm/resources/httpd/static/js/ajax.js"/>
 			<arg value="${bin_dir}/jgm/resources/httpd/static/js/ajax.js"/>
-		</java>
+		</java-->
 	</target>
 
 	<target name="properties" 
@@ -192,7 +192,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		<mkdir dir="${bin_dir}"/>
 		<jar destfile="${JGlideMon_jar}" 
 				compress="true">
-				<fileset dir="${bin_dir}" includes="jgm/**" excludes="jgm/Profiler*.class,jgm/Licenser*.class,jgm/test/*"/>
+				<fileset dir="${bin_dir}" includes="jgm/**,org/**" excludes="jgm/Profiler*.class,jgm/Licenser*.class,jgm/test/*"/>
 
 			<manifest>
 				<attribute name="Main-Class" value="jgm.JGlideMon"/>
