@@ -1,0 +1,237 @@
+<HBProfile>
+	<Name>Ogri'la Dailies v1.0 by timglide</Name>
+	<MinLevel>70</MinLevel>
+	<MaxLevel>86</MaxLevel>
+
+	<QuestOrder>
+		<!-- port to blasted lands if needed -->
+		<If Condition="Me.IsHorde">
+			<If Condition="1 == Me.MapId &amp;&amp; 1637 == Me.ZoneId"> <!-- orgrimmar -->
+				<If Condition="&quot;Cleft of Shadow&quot; == Me.SubZoneText">
+					<!-- can't seem to navigate in or out of cleft of shadow -->
+					<CustomBehavior File="FlyTo" DestName="Blasted Lands Portal" X="1770.812" Y="-4326.55" Z="-8.262397" />
+					<CustomBehavior File="UseGameObject" ObjectId="195142" WaitTime="10000" X="1770.812" Y="-4326.55" Z="-8.262397" />
+				<Else>
+					<CustomBehavior File="FlyTo" DestName="Blasted Lands Portal" X="1678.24" Y="-4108" Z="49.09713" />
+					<CustomBehavior File="ForcedDismount" />
+					<MoveTo X="1685.62" Y="-4123.99" Z="66.34097" />
+					<CustomBehavior File="UseGameObject" ObjectId="195142" WaitTime="10000" X="1685.62" Y="-4123.99" Z="66.34097" />
+					</Else>
+				</If>
+			</If>
+		<Else> <!-- alliance, not tested -->
+			<If Condition="0 == Me.MapId &amp;&amp; 1519 == Me.ZoneId"> <!-- stormwind -->
+				<CustomBehavior File="FlyTo" DestName="Blasted Lands Portal" X="-8996.046" Y="860.9104" Z="128.1497" />
+				<CustomBehavior File="MyCTM" X="-9007.014" Y="871.4952" Z="129.6926" />
+				<CustomBehavior File="UseGameObject" ObjectId="195141" WaitTime="10000" X="-9007.014" Y="871.4952" Z="129.6926" />
+			</If>
+			</Else>
+		</If>
+
+		<!-- go through dark portal if needed -->
+		<If Condition="0 == Me.MapId &amp;&amp; 4 == Me.ZoneId">
+			<CustomBehavior File="FlyTo" DestName="The Dark Portal" X="-11899.99" Y="-3208.196" Z="-14.74568" />
+			<CustomBehavior File="GoThruPortal" X="-11907.03" Y="-3208.252" Z="-14.85984" Timeout="15000" />
+		</If>
+
+		<If Condition="530 != Me.MapId">
+			<CustomBehavior File="Halt" Message="You must be in Outlands before starting!" />
+		</If>
+
+		<While Condition="true"> <!-- in order to pick up and complete non-daily and then the daily if necessary, see below -->
+			<!-- pick ups -->
+			<If Condition="!HasQuest(11065)">
+				<If Condition="!IsQuestCompleted(11065)">
+					<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Aether Rays Pickup)" X="2547.623" Y="7329.488" Z="373.5052" />
+					<PickUp QuestName="Wrangle Some Aether Rays!" QuestId="11065" GiverName="Skyguard Khatie" GiverId="23335" X="2547.623" Y="7329.488" Z="373.5052" />
+				<ElseIf Condition="!HasQuest(11066) &amp;&amp; !IsQuestCompleted(11066)">
+					<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Aether Rays Daily Pickup)" X="2547.623" Y="7329.488" Z="373.5052" />
+					<PickUp QuestName="Wrangle More Aether Rays!" QuestId="11066" GiverName="Skyguard Khatie" GiverId="23335" X="2547.623" Y="7329.488" Z="373.5052" />
+					</ElseIf>
+				</If>
+			</If>
+
+			<!-- different quest for druids with slightly different text, same objective though -->
+			<!-- not sure if the druid version always existed so I added extra check for normal version -->
+			<If Condition="WoWClass.Druid == Me.Class &amp;&amp; !HasQuest(11102) &amp;&amp; !IsQuestCompleted(11102) &amp;&amp; !HasQuest(11010) &amp;&amp; !IsQuestCompleted(11010)">
+				<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Bomb Pickup [Druid])" X="2494.927" Y="7349.892" Z="380.2204" />
+				<PickUp QuestName="Bombing Run" QuestId="11102" GiverName="Sky Sergeant Vanderlip" GiverId="23120" X="2494.927" Y="7349.892" Z="380.2204" />
+				<CustomBehavior File="FlyTo" X="2504.149" Y="7335.046" Z="376.9897" /> <!-- sometimes gets stuck so move here first -->
+			</If>
+			<If Condition="WoWClass.Druid != Me.Class &amp;&amp; !HasQuest(11010) &amp;&amp; !IsQuestCompleted(11010)">
+				<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Bomb Pickup)" X="2494.927" Y="7349.892" Z="380.2204" />
+				<PickUp QuestName="Bombing Run" QuestId="11010" GiverName="Sky Sergeant Vanderlip" GiverId="23120" X="2494.927" Y="7349.892" Z="380.2204" />
+				<CustomBehavior File="FlyTo" X="2504.149" Y="7335.046" Z="376.9897" /> <!-- sometimes gets stuck so move here first -->
+			</If>
+			<If Condition="((!HasQuest(11010) &amp;&amp; IsQuestCompleted(11010)) || (!HasQuest(11102) &amp;&amp; IsQuestCompleted(11102))) &amp;&amp; !HasQuest(11023) &amp;&amp; !IsQuestCompleted(11023)">
+				<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Bomb Daily Pickup)" X="2494.927" Y="7349.892" Z="380.2204" />
+				<PickUp QuestName="Bomb Them Again!" QuestId="11023" GiverName="Sky Sergeant Vanderlip" GiverId="23120" X="2494.927" Y="7349.892" Z="380.2204" />
+				<CustomBehavior File="FlyTo" X="2504.149" Y="7335.046" Z="376.9897" /> <!-- sometimes gets stuck so move here first -->
+			</If>
+
+			<!-- The Crystals (11025) quest -->
+			<!--If Condition="!HasQuest(11025) &amp;&amp; !IsQuestCompleted(11025)">
+				<CustomBehavior File="FlyTo" DestName="Ogri'la (The Crystals Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
+				<PickUp QuestName="The Crystals" QuestId="11058" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+			</If-->
+			<!--If Condition="!HasQuest(11025) &amp;&amp; IsQuestCompleted(11025) &amp;&amp; !HasQuest(11058) &amp;&amp; !IsQuestCompleted(11058)">
+				<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
+				<PickUp QuestName="An Apexis Relic" QuestId="11058" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+			</If>
+			<If Condition="!HasQuest(11058) &amp;&amp; IsQuestCompleted(11058) &amp;&amp; !HasQuest(11080) &amp;&amp; !IsQuestCompleted(11080)">
+				<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Daily Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
+				<PickUp QuestName="The Relic's Emanation" QuestId="11080" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+			</If-->
+			<If Condition="!HasQuest(11025) &amp;&amp; IsQuestCompleted(11025) &amp;&amp; !HasQuest(11058)">
+				<If Condition="!IsQuestCompleted(11058)">
+					<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
+					<PickUp QuestName="An Apexis Relic" QuestId="11058" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+				<ElseIf Condition="!HasQuest(11080) &amp;&amp; !IsQuestCompleted(11080)">
+					<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Daily Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
+					<PickUp QuestName="The Relic's Emanation" QuestId="11080" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+					</ElseIf>
+				</If>
+			</If>
+
+			<!-- these open up at honored -->
+			<If Condition="Me.GetReputationLevelWith(1038) &gt;= Styx.WoWUnitReaction.Honored">
+				<!--If Condition="!HasQuest(11026) &amp;&amp; !IsQuestCompleted(11026)">
+					<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Pickup)" X="2313.486" Y="7278.127" Z="368.6539" />
+					<PickUp QuestName="Banish the Demons" QuestId="11026" GiverName="Kronk" GiverId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
+				</If>
+				<If Condition="!HasQuest(11026) &amp;&amp; IsQuestCompleted(11026) &amp;&amp; !HasQuest(11051) &amp;&amp; !IsQuestCompleted(11051)">
+					<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Daily Pickup)" X="2313.486" Y="7278.127" Z="368.6539" />
+					<PickUp QuestName="Banish More Demons" QuestId="11051" GiverName="Kronk" GiverId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
+				</If-->
+				<If Condition="!HasQuest(11026)">
+					<If Condition="!IsQuestCompleted(11026)">
+						<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Pickup)" X="2313.486" Y="7278.127" Z="368.6539" />
+						<PickUp QuestName="Banish the Demons" QuestId="11026" GiverName="Kronk" GiverId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
+					<ElseIf Condition="!HasQuest(11051) &amp;&amp; !IsQuestCompleted(11051)">
+						<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Daily Pickup)" X="2313.486" Y="7278.127" Z="368.6539" />
+						<PickUp QuestName="Banish More Demons" QuestId="11051" GiverName="Kronk" GiverId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
+						</ElseIf>
+					</If>
+				</If>
+			</If>
+
+
+			<!-- 3 different quests for the bombing run -->
+			<If Condition="(HasQuest(11010) &amp;&amp; !IsQuestCompleted(11010)) || (HasQuest(11102) &amp;&amp; !IsQuestCompleted(11102)) || (HasQuest(11023) &amp;&amp; !IsQuestCompleted(11023))">
+				<CustomBehavior File="FlyTo" DestName="Forge Camp: Terror (Bomb Start)" X="1621.119" Y="7214.886" Z="506.7588" />
+				<CustomBehavior File="Ogrila_Bomb" />
+			</If>
+
+
+			<!-- 2 different quests for banish demons -->
+			<If Condition="(HasQuest(11026) &amp;&amp; !IsQuestCompleted(11026)) || (HasQuest(11051) &amp;&amp; !IsQuestCompleted(11051))">
+				<CustomBehavior File="FlyTo" DestName="Forge Camp: Terror (Demons Start)" X="1618.769" Y="7319.127" Z="364.1201" />
+				<CustomBehavior File="Ogrila_Demons" />
+			</If>
+
+
+			<!-- 2 different quests for wrangle aether rays -->
+			<If Condition="(HasQuest(11065) &amp;&amp; !IsQuestCompleted(11065)) || (HasQuest(11066) &amp;&amp; !IsQuestCompleted(11066))">
+				<CustomBehavior File="FlyTo" DestName="Forge Camp: Terror (Wrangle Start)" X="1749.523" Y="7274.328" Z="364.6597" />
+				<CustomBehavior File="Ogrila_Wrangle" NakedSet="Naked" DpsSet="DPS" />
+			</If>
+
+
+
+			<!--CustomBehavior File="Halt" Message="Stopping before turn-ins!" /-->
+
+			<!-- turn ins -->
+			<!-- go to skyguard outpost first in case turning those in gets us to honored and we can pick up the banish demons quest -->
+			<If Condition="HasQuest(11065) &amp;&amp; IsQuestCompleted(11065)">
+				<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Aether Rays Turnin)" X="2547.623" Y="7329.488" Z="373.5052" />
+				<TurnIn QuestName="Wrangle Some Aether Rays!" QuestId="11065" TurnInName="Skyguard Khatie" TurnInId="23335" X="2547.623" Y="7329.488" Z="373.5052" />
+				<PickUp QuestName="Wrangle More Aether Rays!" QuestId="11066" GiverName="Skyguard Khatie" GiverId="23335" X="2547.623" Y="7329.488" Z="373.5052" />
+			</If>
+			<If Condition="HasQuest(11066) &amp;&amp; IsQuestCompleted(11066)">
+				<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Aether Rays Daily Turnin)" X="2547.623" Y="7329.488" Z="373.5052" />
+				<TurnIn QuestName="Wrangle More Aether Rays!" QuestId="11066" GiverName="Skyguard Khatie" TurnInName="Skyguard Khatie" TurnInId="23335" X="2547.623" Y="7329.488" Z="373.5052" />
+			</If>
+
+			<If Condition="HasQuest(11102) &amp;&amp; IsQuestCompleted(11102)">
+				<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Bomb Turnin [Druid])" X="2494.927" Y="7349.892" Z="380.2204" />
+				<TurnIn QuestName="Bombing Run" QuestId="11102" TurnInName="Sky Sergeant Vanderlip" TurnInId="23120" X="2494.927" Y="7349.892" Z="380.2204" />
+				<PickUp QuestName="Bomb Them Again!" QuestId="11023" GiverName="Sky Sergeant Vanderlip" GiverId="23120" X="2494.927" Y="7349.892" Z="380.2204" />
+				<CustomBehavior File="FlyTo" X="2504.149" Y="7335.046" Z="376.9897" /> <!-- sometimes gets stuck so move here first -->
+			</If>
+			<If Condition="HasQuest(11010) &amp;&amp; IsQuestCompleted(11010)">
+				<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Bomb Turnin)" X="2494.927" Y="7349.892" Z="380.2204" />
+				<TurnIn QuestName="Bombing Run" QuestId="11010" TurnInName="Sky Sergeant Vanderlip" TurnInId="23120" X="2494.927" Y="7349.892" Z="380.2204" />
+				<PickUp QuestName="Bomb Them Again!" QuestId="11023" GiverName="Sky Sergeant Vanderlip" GiverId="23120" X="2494.927" Y="7349.892" Z="380.2204" />
+				<CustomBehavior File="FlyTo" X="2504.149" Y="7335.046" Z="376.9897" /> <!-- sometimes gets stuck so move here first -->
+			</If>
+			<If Condition="HasQuest(11023) &amp;&amp; IsQuestCompleted(11023)">
+				<CustomBehavior File="FlyTo" DestName="Skyguard Outpost (Bomb Daily Turnin)" X="2494.927" Y="7349.892" Z="380.2204" />
+				<TurnIn QuestName="Bomb Them Again!" QuestId="11023" TurnInName="Sky Sergeant Vanderlip" TurnInId="23120" X="2494.927" Y="7349.892" Z="380.2204" />
+				<CustomBehavior File="FlyTo" X="2504.149" Y="7335.046" Z="376.9897" /> <!-- sometimes gets stuck so move here first -->
+			</If>
+
+
+			<If Condition="HasQuest(11058) &amp;&amp; IsQuestCompleted(11058)">
+				<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Turnin)" X="2333.708" Y="7285.747" Z="365.6173" />
+				<TurnIn QuestName="An Apexis Relic" QuestId="11058" TurnInName="Chu'a'lor" TurnInId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+				<PickUp QuestName="The Relic's Emanation" QuestId="11080" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+			</If>
+			<If Condition="HasQuest(11080) &amp;&amp; IsQuestCompleted(11080)">
+				<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Daily Turnin)" X="2333.708" Y="7285.747" Z="365.6173" />
+				<TurnIn QuestName="The Relic's Emanation" QuestId="11080" TurnInName="Chu'a'lor" TurnInId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+			</If>
+
+			<!-- maybe our rep got to honored after previous turnins -->
+			<If Condition="Me.GetReputationLevelWith(1038) &gt;= Styx.WoWUnitReaction.Honored &amp;&amp; !HasQuest(11026) &amp;&amp; !IsQuestCompleted(11026)">
+				<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Pickup)" X="2313.486" Y="7278.127" Z="368.6539" />
+				<PickUp QuestName="Banish the Demons" QuestId="11026" GiverName="Kronk" GiverId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
+			</If>
+			<If Condition="HasQuest(11026) &amp;&amp; IsQuestCompleted(11026)">
+				<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Turnin)" X="2313.486" Y="7278.127" Z="368.6539" />
+				<TurnIn QuestName="Banish the Demons" QuestId="11026" TurnInName="Kronk" TurnInId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
+				<PickUp QuestName="Banish More Demons" QuestId="11051" GiverName="Kronk" GiverId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
+			</If>
+			<If Condition="HasQuest(11051) &amp;&amp; IsQuestCompleted(11051)">
+				<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Daily Turnin)" X="2313.486" Y="7278.127" Z="368.6539" />
+				<If Condition="HasItem(32777)">
+					<!--CustomBehavior File="ForcedDismount" /-->
+					<CustomBehavior File="UseItem" ItemId="32777" /> <!-- kronk's grab bag (unique) -->
+				</If>
+				<TurnIn QuestName="Banish More Demons" QuestId="11051" TurnInName="Kronk" TurnInId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
+				<If Condition="HasItem(32777)">
+					<!--CustomBehavior File="ForcedDismount" /-->
+					<CustomBehavior File="UseItem" ItemId="32777" /> <!-- kronk's grab bag (unique) -->
+				</If>
+			</If>
+
+
+			<!-- 2 different quests for simon says -->
+			<If Condition="(HasQuest(11058) &amp;&amp; !IsQuestCompleted(11058)) || (HasQuest(11080) &amp;&amp; !IsQuestCompleted(11080))">
+				<CustomBehavior File="FlyTo" DestName="Apexis Relic" X="2122.824" Y="7136.758" Z="388.0325" />
+				<CustomBehavior File="UserDialog" Title="Manual Interaction Required" AllowBotStop="True" SoundCue="Asterisk" SoundCueInterval="1"
+					Text="Unfortunately you must do the simon says quest yourself. I hope you have the Ogri'Lazy addon. It will turn it in if you continue the profile." />
+
+				<If Condition="HasQuest(11058) &amp;&amp; IsQuestCompleted(11058)">
+					<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Turnin)" X="2333.708" Y="7285.747" Z="365.6173" />
+					<TurnIn QuestName="An Apexis Relic" QuestId="11058" TurnInName="Chu'a'lor" TurnInId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+					<PickUp QuestName="The Relic's Emanation" QuestId="11080" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+					<CustomBehavior File="FlyTo" DestName="Apexis Relic" X="2122.824" Y="7136.758" Z="388.0325" />
+					<CustomBehavior File="UserDialog" Title="Manual Interaction Required (Again)" AllowBotStop="True" SoundCue="Asterisk" SoundCueInterval="1"
+						Text="Unfortunately you must do the simon says quest yourself. I hope you have the Ogri'Lazy addon. It will turn it in if you continue the profile." />
+				</If>
+				<If Condition="HasQuest(11080) &amp;&amp; IsQuestCompleted(11080)">
+					<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Daily Turnin)" X="2333.708" Y="7285.747" Z="365.6173" />
+					<TurnIn QuestName="The Relic's Emanation" QuestId="11080" TurnInName="Chu'a'lor" TurnInId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
+				</If>
+			</If>
+
+
+			<!--CustomBehavior File="Halt" Message="Stopping after one loop for debugging!" /-->
+
+			<!-- we're done if we're not on any of the quests (ignoring the simon says quests) -->
+			<If Condition="!(HasQuest(11065) || HasQuest(11066) || HasQuest(11102) || HasQuest(11010) || HasQuest(11023) || HasQuest(11026) || HasQuest(11051))">
+				<CustomBehavior File="Halt" Message="Finished all quests we could, stopping!" />
+			</If>
+		</While>
+	</QuestOrder>
+</HBProfile>
