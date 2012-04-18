@@ -74,14 +74,6 @@
 				<CustomBehavior File="FlyTo" DestName="Ogri'la (The Crystals Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
 				<PickUp QuestName="The Crystals" QuestId="11058" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
 			</If-->
-			<!--If Condition="!HasQuest(11025) &amp;&amp; IsQuestCompleted(11025) &amp;&amp; !HasQuest(11058) &amp;&amp; !IsQuestCompleted(11058)">
-				<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
-				<PickUp QuestName="An Apexis Relic" QuestId="11058" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
-			</If>
-			<If Condition="!HasQuest(11058) &amp;&amp; IsQuestCompleted(11058) &amp;&amp; !HasQuest(11080) &amp;&amp; !IsQuestCompleted(11080)">
-				<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Daily Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
-				<PickUp QuestName="The Relic's Emanation" QuestId="11080" GiverName="Chu'a'lor" GiverId="23233" X="2333.708" Y="7285.747" Z="365.6173" />
-			</If-->
 			<If Condition="!HasQuest(11025) &amp;&amp; IsQuestCompleted(11025) &amp;&amp; !HasQuest(11058)">
 				<If Condition="!IsQuestCompleted(11058)">
 					<CustomBehavior File="FlyTo" DestName="Ogri'la (Relic Pickup)" X="2333.708" Y="7285.747" Z="365.6173" />
@@ -95,14 +87,6 @@
 
 			<!-- these open up at honored -->
 			<If Condition="Me.GetReputationLevelWith(1038) &gt;= Styx.WoWUnitReaction.Honored">
-				<!--If Condition="!HasQuest(11026) &amp;&amp; !IsQuestCompleted(11026)">
-					<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Pickup)" X="2313.486" Y="7278.127" Z="368.6539" />
-					<PickUp QuestName="Banish the Demons" QuestId="11026" GiverName="Kronk" GiverId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
-				</If>
-				<If Condition="!HasQuest(11026) &amp;&amp; IsQuestCompleted(11026) &amp;&amp; !HasQuest(11051) &amp;&amp; !IsQuestCompleted(11051)">
-					<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Daily Pickup)" X="2313.486" Y="7278.127" Z="368.6539" />
-					<PickUp QuestName="Banish More Demons" QuestId="11051" GiverName="Kronk" GiverId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
-				</If-->
 				<If Condition="!HasQuest(11026)">
 					<If Condition="!IsQuestCompleted(11026)">
 						<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Pickup)" X="2313.486" Y="7278.127" Z="368.6539" />
@@ -194,12 +178,10 @@
 			<If Condition="HasQuest(11051) &amp;&amp; IsQuestCompleted(11051)">
 				<CustomBehavior File="FlyTo" DestName="Ogri'la (Demons Daily Turnin)" X="2313.486" Y="7278.127" Z="368.6539" />
 				<If Condition="HasItem(32777)">
-					<!--CustomBehavior File="ForcedDismount" /-->
 					<CustomBehavior File="UseItem" ItemId="32777" /> <!-- kronk's grab bag (unique) -->
 				</If>
 				<TurnIn QuestName="Banish More Demons" QuestId="11051" TurnInName="Kronk" TurnInId="23253" X="2313.486" Y="7278.127" Z="368.6539" />
 				<If Condition="HasItem(32777)">
-					<!--CustomBehavior File="ForcedDismount" /-->
 					<CustomBehavior File="UseItem" ItemId="32777" /> <!-- kronk's grab bag (unique) -->
 				</If>
 			</If>
