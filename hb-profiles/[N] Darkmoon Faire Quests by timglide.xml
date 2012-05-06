@@ -1,0 +1,321 @@
+<HBProfile>
+	<Name>Darkmoon Faire Quests by timglide $Revision$</Name>
+	<MinLevel>1</MinLevel>
+	<MaxLevel>86</MaxLevel>
+		
+	<QuestOrder>
+		<If Condition="Me.FreeNormalBagSlots &lt; 2">
+			<CustomBehavior File="Halt" Message="Please free some bag space in case the bot needs to buy game tokens." />
+		</If>
+		<If Condition="5861 != Me.ZoneId &amp;&amp; Me.Silver &lt; 30">
+			<CustomBehavior File="Halt" Message="Somehow you do not have 30s for the teleport cost. Get some money or start on Darkmoon Island." />
+		</If>
+		
+		<!-- TODO buy/perform necessary tasks for weekly profession quests then port to staging area if needed -->
+		<If Condition="Me.IsHorde">
+			<If Condition="1637 == Me.ZoneId"> <!-- orgrimmar -->
+				<If Condition="CanFly()">
+					<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Mystic Mage" X="1765.778" Y="-4345.207" Z="101.7764" />
+				<Else>
+					<MoveTo X="1765.778" Y="-4345.207" Z="101.7764" />
+					</Else>
+				</If>
+				<CustomBehavior File="InteractWith" NpcId="55382" GossipOptions="1" />
+				<CustomBehavior File="RunMacro" Macro="/click StaticPopup1Button1" /> <!-- accept 30s cost -->
+			</If>
+		<Else>
+			<!-- alliance, not tested -->
+			<If Condition="1519 == Me.ZoneId"> <!-- stormwind -->
+
+			</If>
+			</Else>
+		</If>
+
+		<If Condition="215 == Me.ZoneId"> <!-- mulgore -->
+			<If Condition="CanFly()">
+				<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Portal" X="-1472.051" Y="195.5148" Z="-7.792184" />
+			<Else>
+				<MoveTo X="-1472.051" Y="195.5148" Z="-7.792184" />
+				</Else>
+			</If>
+			<CustomBehavior File="UseGameObject" ObjectId="209538" WaitTime="10000" X="-1472.051" Y="195.5148" Z="-7.792184" />
+		<ElseIf Condition="12 == Me.ZoneId"> <!-- elwynn forest -->
+				
+			</ElseIf>
+		</If>
+
+		<If Condition="5861 != Me.ZoneId">
+			<CustomBehavior File="Halt" Message="You must start this profile in Orgrimmar, Stormwind, or on Darkmoon Island." />
+		</If>
+		
+		<!-- Profession weeklies -->
+		<If Condition="false"> <!-- change to false to skip profession weeklies -->
+			<If Condition="Me.GetSkill(Styx.SkillLine.Alchemy).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29506) &amp;&amp; !IsQuestCompleted(29506)">
+				<PickUp QuestName="A Fizzy Fusion" QuestId="29506" GiverName="Sylannia" GiverId="14844" X="-4185.162" Y="6329.596" Z="13.2218" />
+			</If>
+			<If Condition="HasQuest(29506) &amp;&amp; IsQuestCompleted(29506)">
+				<TurnIn QuestName="A Fizzy Fusion" QuestId="29506" TurnInName="Sylannia" TurnInId="14844" X="-4185.162" Y="6329.596" Z="13.2218" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Archaeology).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29507) &amp;&amp; !IsQuestCompleted(29507)">
+				<PickUp QuestName="Fun for the Little Ones" QuestId="29507" GiverName="Professor Thaddeus Paleo" GiverId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<!-- hb thinks it's completed -->
+			<!--If Condition="HasQuest(29507) &amp;&amp; IsQuestCompleted(29507)">
+				<TurnIn QuestName="Fun for the Little Ones" QuestId="29507" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If-->
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Blacksmithing).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29508) &amp;&amp; !IsQuestCompleted(29508)">
+				<PickUp QuestName="Baby Needs Two Pair of Shoes" QuestId="29508" GiverName="Yebb Neblegear" GiverId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
+			</If>
+			<If Condition="HasQuest(29508) &amp;&amp; IsQuestCompleted(29508)">
+				<TurnIn QuestName="Baby Needs Two Pair of Shoes" QuestId="29508" TurnInName="Yebb Neblegear" GiverId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Cooking).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29509) &amp;&amp; !IsQuestCompleted(29509)">
+				<PickUp QuestName="Putting the Crunch in the Frog" QuestId="29509" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
+			</If>
+			<If Condition="HasQuest(29509) &amp;&amp; IsQuestCompleted(29509)">
+				<TurnIn QuestName="Putting the Crunch in the Frog" QuestId="29509" TurnInName="Stamp Thunderhorn" TurnInId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Enchanting).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29510) &amp;&amp; !IsQuestCompleted(29510)">
+				<PickUp QuestName="Putting Trash to Good Use" QuestId="29510" GiverName="Sayge" GiverId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+			</If>
+			<If Condition="HasQuest(29510) &amp;&amp; IsQuestCompleted(29510)">
+				<TurnIn QuestName="Putting Trash to Good Use" QuestId="29510" TurnInName="Sayge" TurnInId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Engineering).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29511) &amp;&amp; !IsQuestCompleted(29511)">
+				<PickUp QuestName="Talkin' Tonks" QuestId="29511" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+			</If>
+			<If Condition="HasQuest(29511) &amp;&amp; IsQuestCompleted(29511)">
+				<TurnIn QuestName="Talkin' Tonks" QuestId="29511" TurnInName="Rinling" TurnInId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Inscription).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29515) &amp;&amp; !IsQuestCompleted(29515)">
+				<PickUp QuestName="Writing the Future" QuestId="29515" GiverName="Sayge" GiverId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+			</If>
+			<If Condition="HasQuest(29515) &amp;&amp; IsQuestCompleted(29515)">
+				<TurnIn QuestName="Writing the Future" QuestId="29515" TurnInName="Sayge" TurnInId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.FirstAid).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29512) &amp;&amp; !IsQuestCompleted(29512)">
+				<PickUp QuestName="Putting the Carnies Back Together Again" QuestId="29512" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+			<If Condition="HasQuest(29512) &amp;&amp; IsQuestCompleted(29512)">
+				<TurnIn QuestName="Putting the Carnies Back Together Again" QuestId="29512" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Fishing).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
+				<PickUp QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
+			</If>
+			<If Condition="HasQuest(29513) &amp;&amp; IsQuestCompleted(29513)">
+				<TurnIn QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" TurnInName="Stamp Thunderhorn" TurnInId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Herbalism).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29514) &amp;&amp; !IsQuestCompleted(29514)">
+				<PickUp QuestName="Herbs for Healing" QuestId="29514" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+			<If Condition="HasQuest(29514) &amp;&amp; IsQuestCompleted(29514)">
+				<TurnIn QuestName="Herbs for Healing" QuestId="29514" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Jewelcrafting).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29516) &amp;&amp; !IsQuestCompleted(29516)">
+				<PickUp QuestName="Keeping the Faire Sparkling" QuestId="29516" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+			<If Condition="HasQuest(29516) &amp;&amp; IsQuestCompleted(29516)">
+				<TurnIn QuestName="Keeping the Faire Sparkling" QuestId="29516" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Leatherworking).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29517) &amp;&amp; !IsQuestCompleted(29517)">
+				<PickUp QuestName="Eyes on the Prizes" QuestId="29517" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+			</If>
+			<If Condition="HasQuest(29517) &amp;&amp; IsQuestCompleted(29517)">
+				<TurnIn QuestName="Eyes on the Prizes" QuestId="29517" TurnInName="Rinling" TurnInId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Mining).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29518) &amp;&amp; !IsQuestCompleted(29518)">
+				<PickUp QuestName="Rearm, Reuse, Recycle" QuestId="29518" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+			</If>
+			<If Condition="HasQuest(29518) &amp;&amp; IsQuestCompleted(29518)">
+				<TurnIn QuestName="Rearm, Reuse, Recycle" QuestId="29518" TurnInName="Rinling" TurnInId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Skinning).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29519) &amp;&amp; !IsQuestCompleted(29519)">
+				<PickUp QuestName="Tan My Hide" QuestId="29519" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+			<If Condition="HasQuest(29519) &amp;&amp; IsQuestCompleted(29519)">
+				<TurnIn QuestName="Tan My Hide" QuestId="29519" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Tailoring).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29520) &amp;&amp; !IsQuestCompleted(29520)">
+				<PickUp QuestName="Banners, Banners Everywhere!" QuestId="29520" GiverName="Selina Dourman" GiverId="10445" X="-4004.797" Y="6236.218" Z="13.11706" />
+			</If>
+			<If Condition="HasQuest(29520) &amp;&amp; IsQuestCompleted(29520)">
+				<TurnIn QuestName="Banners, Banners Everywhere!" QuestId="29520" TurnInName="Selina Dourman" TurnInId="10445" X="-4004.797" Y="6236.218" Z="13.11706" />
+			</If>
+		</If>
+		
+		
+		
+		<!-- Grisly trophy weekly -->
+		<If Condition="!HasQuest(29433) &amp;&amp; !IsQuestCompleted(29433)">
+			<PickUp QuestName="Test Your Strength" QuestId="29433" GiverName="Kerri Hicks" GiverId="14832" X="-4154.984" Y="6378.692" Z="12.82642" />
+		</If>
+		<If Condition="HasQuest(29433) &amp;&amp; IsQuestCompleted(29433)">
+			<TurnIn QuestName="Test Your Strength" QuestId="29433" TurnInName="Kerri Hicks" TurnInId="14832" X="-4154.984" Y="6378.692" Z="12.82642" />
+		</If>
+		
+		
+		
+		<!-- weekly item turnins -->
+		<If Condition="true"> <!-- set to false to disable weekly item turnins -->
+			<If Condition="HasItem(71637) &amp;&amp; !HasQuest(29445) &amp;&amp; !IsQuestCompleted(29445)">
+				<PickUp QuestName="An Intriguing Grimoire" QuestId="29445" GiverType="Item" GiverId="71637" />
+			</If>
+			<If Condition="HasQuest(29445) &amp;&amp; IsQuestCompleted(29445)">
+				<TurnIn QuestName="An Intriguing Grimoire" QuestId="29445" TurnInName="Sayge" TurnInId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+			</If>
+			<If Condition="HasItem(71636) &amp;&amp; !HasQuest(29444) &amp;&amp; !IsQuestCompleted(29444)">
+				<PickUp QuestName="An Exotic Egg" QuestId="29444" GiverType="Item" GiverId="71636" />
+			</If>
+			<If Condition="HasQuest(29444) &amp;&amp; IsQuestCompleted(29444)">
+				<TurnIn QuestName="An Exotic Egg" QuestId="29444" TurnInName="Yebb Neblegear" TurnInId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
+			</If>
+			<If Condition="HasItem(71635) &amp;&amp; !HasQuest(29443) &amp;&amp; !IsQuestCompleted(29443)">
+				<PickUp QuestName="A Curious Crystal" QuestId="29443" GiverType="Item" GiverId="71635" />
+			</If>
+			<If Condition="HasQuest(29443) &amp;&amp; IsQuestCompleted(29443)">
+				<TurnIn QuestName="A Curious Crystal" QuestId="29443" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71638) &amp;&amp; !HasQuest(29446) &amp;&amp; !IsQuestCompleted(29446)">
+				<PickUp QuestName="A Wondrous Weapon" QuestId="29446" GiverType="Item" GiverId="71638" />
+			</If>
+			<If Condition="HasQuest(29446) &amp;&amp; IsQuestCompleted(29446)">
+				<TurnIn QuestName="A Wondrous Weapon" QuestId="29446" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71715) &amp;&amp; !HasQuest(29451) &amp;&amp; !IsQuestCompleted(29451)">
+				<PickUp QuestName="The Master Strategist" QuestId="29451" GiverType="Item" GiverId="71715" />
+			</If>
+			<If Condition="HasQuest(29451) &amp;&amp; IsQuestCompleted(29451)">
+				<TurnIn QuestName="The Master Strategist" QuestId="29451" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71716) &amp;&amp; !HasQuest(29464) &amp;&amp; !IsQuestCompleted(29464)">
+				<PickUp QuestName="Tools of Divination" QuestId="29464" GiverType="Item" GiverId="71716" />
+			</If>
+			<If Condition="HasQuest(29464) &amp;&amp; IsQuestCompleted(29464)">
+				<TurnIn QuestName="Tools of Divination" QuestId="29464" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71953) &amp;&amp; !HasQuest(29458) &amp;&amp; !IsQuestCompleted(29458)">
+				<PickUp QuestName="The Captured Journal" QuestId="29458" GiverType="Item" GiverId="71953" />
+			</If>
+			<If Condition="HasQuest(29458) &amp;&amp; IsQuestCompleted(29458)">
+				<TurnIn QuestName="The Captured Journal" QuestId="29458" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71951) &amp;&amp; !HasQuest(29456) &amp;&amp; !IsQuestCompleted(29456)">
+				<PickUp QuestName="A Captured Banner" QuestId="29456" GiverType="Item" GiverId="71951" />
+			</If>
+			<If Condition="HasQuest(29456) &amp;&amp; IsQuestCompleted(29456)">
+				<TurnIn QuestName="A Captured Banner" QuestId="29456" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71952) &amp;&amp; !HasQuest(29457) &amp;&amp; !IsQuestCompleted(29457)">
+				<PickUp QuestName="The Enemy's Insignia" QuestId="29457" GiverType="Item" GiverId="71952" />
+			</If>
+			<If Condition="HasQuest(29457) &amp;&amp; IsQuestCompleted(29457)">
+				<TurnIn QuestName="The Enemy's Insignia" QuestId="29457" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+		</If>
+		
+		
+		
+		<!-- dailies -->
+		<While Condition="true"> <!-- the loop enables us to buy more tokens as needed -->
+			<If Condition="!HasItem(71083)">
+				<!-- using BuySlot because there are different sacks of tokens for different level players with different costs and item ids -->
+				<If Condition="!(HasItem(78909) || HasItem(78908) || HasItem(78907) || HasItem(78906) || HasItem(78905) || HasItem(78898))">
+					<CustomBehavior File="InteractWith" BuySlot="1" NpcId1="55264" NpcId2="55339" NpcId3="55266" X="-4088.264" Y="6359.938" Z="13.07626" />
+					<CustomBehavior File="Misc\RunLua" Lua="MerchantFrameCloseButton:Click()" />
+				</If>
+				
+				<!-- open the sack of tokens (different ids for different level players) -->
+				<If Condition="HasItem(78909)"><CustomBehavior File="UseItem" ItemId="78909" /></If>
+				<If Condition="HasItem(78908)"><CustomBehavior File="UseItem" ItemId="78908" /></If>
+				<If Condition="HasItem(78907)"><CustomBehavior File="UseItem" ItemId="78907" /></If>
+				<If Condition="HasItem(78906)"><CustomBehavior File="UseItem" ItemId="78906" /></If>
+				<If Condition="HasItem(78905)"><CustomBehavior File="UseItem" ItemId="78905" /></If>
+				<If Condition="HasItem(78898)"><CustomBehavior File="UseItem" ItemId="78898" /></If>
+			</If>
+			<If Condition="!HasItem(71083)">
+				<CustomBehavior File="UserDialog" AllowBotStop="true" Title="Game tokens needed!" Text="There was a problem buying game tokens. Please buy some manually." />
+			</If>
+			
+			
+			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29463) &amp;&amp; !IsQuestCompleted(29463)">
+				<PickUp QuestName="It's Hammer Time" QuestId="29463" GiverName="Mola" GiverId="54601" X="-3996.811" Y="6278.421" Z="13.08003" />
+			</If>
+			<While Condition="HasItem(71083) &amp;&amp; HasQuest(29463) &amp;&amp; !IsQuestCompleted(29463)">
+				<MoveTo X="-3996.811" Y="6278.421" Z="13.08003" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="DMF_Gnoll" HoggerWeight="50" DistanceWeight="35" MinDistance="5" MaxDistance="40" AgeWeight="25" MaxAge="5" />
+			</While>
+			<If Condition="HasQuest(29463) &amp;&amp; IsQuestCompleted(29463)">
+				<TurnIn QuestName="It's Hammer Time" QuestId="29463" TurnInName="Mola" TurnInId="54601" X="-3996.811" Y="6278.421" Z="13.08003" />
+			</If>
+
+			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29436) &amp;&amp; !IsQuestCompleted(29436)">
+				<PickUp QuestName="The Humanoid Cannonball" QuestId="29436" GiverName="Maxima Blastenheimer" GiverId="15303" X="-4018.767" Y="6293.038" Z="13.04148" />
+			</If>
+			<While Condition="HasItem(71083) &amp;&amp; HasQuest(29436) &amp;&amp; !IsQuestCompleted(29436)">
+				<MoveTo X="-4018.767" Y="6293.038" Z="13.04148" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="DMF_Cannon" CancelTimeLeft="1.1" UseTeleport="true" TickRate="60" /> <!-- cancel wings buff when it has this many seconds remaining -->
+			</While>
+			<If Condition="HasQuest(29436) &amp;&amp; IsQuestCompleted(29436)">
+				<TurnIn QuestName="The Humanoid Cannonball" QuestId="29436" TurnInName="Maxima Blastenheimer" TurnInId="15303" X="-4018.767" Y="6293.038" Z="13.04148" />
+			</If>
+		
+			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29438) &amp;&amp; !IsQuestCompleted(29438)">
+				<PickUp QuestName="He Shoots, He Scores!" QuestId="29438" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11186" />
+			</If>
+			<While Condition="HasItem(71083) &amp;&amp; HasQuest(29438) &amp;&amp; !IsQuestCompleted(29438)">
+				<MoveTo X="-4077.335" Y="6351.089" Z="12.88383" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="DMF_Shoot" />
+			</While>
+			<If Condition="HasQuest(29438) &amp;&amp; IsQuestCompleted(29438)">
+				<TurnIn QuestName="He Shoots, He Scores!" QuestId="29438" TurnInName="Rinling" TurnInId="14841" X="-4075.453" Y="6354.995" Z="13.11186" />
+			</If>
+
+			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29434) &amp;&amp; !IsQuestCompleted(29434)">
+				<PickUp QuestName="Tonk Commander" QuestId="29434" GiverName="Finlay Coolshot" GiverId="54605" X="-4130.516" Y="6326.557" Z="13.11124" />
+			</If>
+			<While Condition="HasItem(71083) &amp;&amp; HasQuest(29434) &amp;&amp; !IsQuestCompleted(29434)">
+				<MoveTo X="-4130.516" Y="6326.557" Z="13.11124" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="DMF_Tonk" />
+			</While>
+			<If Condition="HasQuest(29434) &amp;&amp; IsQuestCompleted(29434)">
+				<TurnIn QuestName="Tonk Commander" QuestId="29434" TurnInName="Finlay Coolshot" TurnInId="54605" X="-4130.516" Y="6326.557" Z="13.11124" />
+			</If>
+
+			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29455) &amp;&amp; !IsQuestCompleted(29455)">
+				<PickUp QuestName="Target: Turtle" QuestId="29455" GiverName="Jessica Rogers" GiverId="54485" X="-4287.872" Y="6308.999" Z="13.11773" />
+			</If>
+			<While Condition="HasItem(71083) &amp;&amp; HasQuest(29455) &amp;&amp; !IsQuestCompleted(29455)">
+				<MoveTo X="-4287.872" Y="6308.999" Z="13.11773" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="DMF_Turtle" />
+			</While>
+			<If Condition="HasQuest(29455) &amp;&amp; IsQuestCompleted(29455)">
+				<TurnIn QuestName="Target: Turtle" QuestId="29455" TurnInName="Jessica Rogers" TurnInId="54485" X="-4287.872" Y="6308.999" Z="13.11773" />
+			</If>
+
+
+			<!-- stop condition -->
+			<If Condition="!(HasQuest(29463) || HasQuest(29436) || HasQuest(29438) || HasQuest(29455))">
+				<CustomBehavior File="Halt" Message="Finished all Darkmoon Faire quests we could, stopping." />
+			</If>
+		</While>
+	</QuestOrder>
+</HBProfile>

@@ -1,0 +1,41 @@
+<HBProfile>
+	<Name>Darkmoon Faire Dailies Test by timglide $Revision$</Name>
+	<MinLevel>1</MinLevel>
+	<MaxLevel>86</MaxLevel>
+
+	<!-- tests the quest behavior of whichever one you are standing next to -->
+	<QuestOrder>
+		<If Condition="5861 != Me.ZoneId">
+			<CustomBehavior File="Halt" Message="You must start this profile on Darkmoon Island." />
+		</If>
+
+		<If Condition="!HasItem(71083)">
+			<CustomBehavior File="Halt" Message="No game tokens." />
+		</If>
+
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-3996.811, 6278.421, 13.08003)) &lt;= 10 * 10">
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="DMF_Gnoll" HoggerWeight="50" DistanceWeight="35" MinDistance="5" MaxDistance="40" AgeWeight="25" MaxAge="5" />
+		</If>
+
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4018.767, 6293.038, 13.04148)) &lt;= 10 * 10">
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="DMF_Cannon" UseTeleport="true" CancelTimeLeft="1.5" />
+		</If>
+
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4075.453, 6354.995, 13.11186)) &lt;= 10 * 10">
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="DMF_Shoot" />
+		</If>
+
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4130.516, 6326.557, 13.11124)) &lt;= 10 * 10">
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="DMF_Tonk" SafeDistance="40" />
+		</If>
+
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4287.872, 6308.999, 13.11773)) &lt;= 10 * 10">
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="DMF_Turtle" />
+		</If>
+	</QuestOrder>
+</HBProfile>
