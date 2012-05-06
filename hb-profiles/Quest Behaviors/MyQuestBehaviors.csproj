@@ -47,6 +47,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DMF_Cannon.cs" />
+    <Compile Include="DMF_Gnoll.cs" />
+    <Compile Include="DMF_Shoot.cs" />
+    <Compile Include="DMF_Tonk.cs" />
+    <Compile Include="DMF_Turtle.cs" />
     <Compile Include="Ogrila_Wrangle.cs" />
     <Compile Include="Ogrila_Demons.cs" />
     <Compile Include="Ogrila_Bomb.cs" />

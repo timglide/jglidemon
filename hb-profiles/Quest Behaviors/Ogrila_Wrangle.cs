@@ -74,6 +74,7 @@ namespace timglide {
 			try {
 				DpsSet = GetAttributeAs<string>("DpsSet", false, ConstrainAs.StringNonEmpty, new[] { "DPSSet" });
 				NakedSet = GetAttributeAs<string>("NakedSet", false, ConstrainAs.StringNonEmpty, new[] { "Nakedset" });
+				StayNaked = GetAttributeAsNullable<bool>("StayNaked", false, null, null) ?? false;
 			} catch (Exception except) {
 				// Maintenance problems occur for a number of reasons.  The primary two are...
 				// * Changes were made to the behavior, and boundary conditions weren't properly tested.
@@ -94,6 +95,10 @@ namespace timglide {
 		}
 
 		public string NakedSet {
+			get; private set;
+		}
+
+		public bool StayNaked {
 			get; private set;
 		}
 
@@ -283,7 +288,9 @@ namespace timglide {
 							Thread.Sleep(50);
 						}
 
-						ReequipStuff();
+						if (!StayNaked) {
+							ReequipStuff();
+						}
 					})
 				))//,
 				//new Action(c => { TreeRoot.StatusText = "ASSERT: Shouldn't get here"; })
