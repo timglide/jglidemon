@@ -1,5 +1,5 @@
 <HBProfile>
-	<Name>Ogri'la Dailies v1.0 by timglide</Name>
+	<Name>Ogri'la Dailies by timglide $Revision$</Name>
 	<MinLevel>70</MinLevel>
 	<MaxLevel>86</MaxLevel>
 
@@ -117,7 +117,7 @@
 			<!-- 2 different quests for wrangle aether rays -->
 			<If Condition="(HasQuest(11065) &amp;&amp; !IsQuestCompleted(11065)) || (HasQuest(11066) &amp;&amp; !IsQuestCompleted(11066))">
 				<CustomBehavior File="FlyTo" DestName="Forge Camp: Terror (Wrangle Start)" X="1749.523" Y="7274.328" Z="364.6597" />
-				<CustomBehavior File="Ogrila_Wrangle" NakedSet="Naked" DpsSet="DPS" />
+				<CustomBehavior File="Ogrila_Wrangle" NakedSet="Naked" DpsSet="DPS" StayNaked="false" />
 			</If>
 
 
@@ -212,7 +212,7 @@
 
 			<!-- we're done if we're not on any of the quests (ignoring the simon says quests) -->
 			<If Condition="!(HasQuest(11065) || HasQuest(11066) || HasQuest(11102) || HasQuest(11010) || HasQuest(11023) || HasQuest(11026) || HasQuest(11051))">
-				<CustomBehavior File="Halt" Message="Finished all quests we could, stopping!" />
+				<CustomBehavior File="Halt" Message="Finished all Ogri'la quests we could, stopping!" />
 			</If>
 		</While>
 	</QuestOrder>
