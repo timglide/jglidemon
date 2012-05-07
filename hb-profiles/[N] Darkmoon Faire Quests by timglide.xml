@@ -4,6 +4,10 @@
 	<MaxLevel>86</MaxLevel>
 		
 	<QuestOrder>
+		<If Condition="!HasQuest(29463) &amp;&amp; IsQuestCompleted(29463) &amp;&amp; !HasQuest(29436) &amp;&amp; IsQuestCompleted(29436) &amp;&amp; !HasQuest(29438) &amp;&amp; IsQuestCompleted(29438) &amp;&amp; !HasQuest(29455) &amp;&amp; IsQuestCompleted(29455)">
+			<CustomBehavior File="Halt" Message="You have already completed all the Darkmoon Faire dailies today." />
+		</If>
+
 		<If Condition="Me.FreeNormalBagSlots &lt; 2">
 			<CustomBehavior File="Halt" Message="Please free some bag space in case the bot needs to buy game tokens." />
 		</If>
@@ -11,7 +15,7 @@
 			<CustomBehavior File="Halt" Message="Somehow you do not have 30s for the teleport cost. Get some money or start on Darkmoon Island." />
 		</If>
 		
-		<!-- TODO buy/perform necessary tasks for weekly profession quests then port to staging area if needed -->
+		<!-- TODO buy/perform necessary tasks for monthly profession quests then port to staging area if needed -->
 		<If Condition="Me.IsHorde">
 			<If Condition="1637 == Me.ZoneId"> <!-- orgrimmar -->
 				<If Condition="CanFly()">
@@ -20,17 +24,41 @@
 					<MoveTo X="1765.778" Y="-4345.207" Z="101.7764" />
 					</Else>
 				</If>
+				<If Condition="Me.Level &gt;= 6 &amp;&amp; !HasQuest(7926) &amp;&amp; !IsQuestCompleted(7926)">
+					<PickUp QuestName="The Darkmoon Faire" QuestId="7926" GiverName="Darkmoon Faire Mystic Mage" GiverId="55382" />
+				</If>
 				<CustomBehavior File="InteractWith" NpcId="55382" GossipOptions="1" />
-				<CustomBehavior File="RunMacro" Macro="/click StaticPopup1Button1" /> <!-- accept 30s cost -->
+				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" /> <!-- accept 30s cost -->
 			</If>
 		<Else>
-			<!-- alliance, not tested -->
+			<!-- alliance, not well tested -->
 			<If Condition="1519 == Me.ZoneId"> <!-- stormwind -->
-
+				<If Condition="CanFly()">
+					<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Mystic Mage" X="-8840.929" Y="641.2292" Z="96.47674" />
+				<Else>
+					<MoveTo X="-8840.929" Y="641.2292" Z="96.47674" />
+					</Else>
+				</If>
+			<ElseIf Condition="1537 == Me.ZoneId"> <!-- ironforge -->
+				<If Condition="CanFly()">
+					<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Mystic Mage" X="-4955.073" Y="-932.4871" Z="501.6593" />
+				<Else>
+					<MoveTo X="-4955.073" Y="-932.4871" Z="501.6593" />
+					</Else>
+				</If>
+				</ElseIf>
+			</If>
+			<If Condition="1519 == Me.ZoneId || 1537 == Me.ZoneId">
+				<If Condition="Me.Level &gt;= 6 &amp;&amp; !HasQuest(7905) &amp;&amp; !IsQuestCompleted(7905)">
+					<PickUp QuestName="The Darkmoon Faire" QuestId="7905" GiverName="Darkmoon Faire Mystic Mage" GiverId="54334" />
+				</If>
+				<CustomBehavior File="InteractWith" NpcId="54334" GossipOptions="1" />
+				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" />	<!-- accept 30s cost -->
 			</If>
 			</Else>
 		</If>
 
+		
 		<If Condition="215 == Me.ZoneId"> <!-- mulgore -->
 			<If Condition="CanFly()">
 				<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Portal" X="-1472.051" Y="195.5148" Z="-7.792184" />
@@ -40,16 +68,106 @@
 			</If>
 			<CustomBehavior File="UseGameObject" ObjectId="209538" WaitTime="10000" X="-1472.051" Y="195.5148" Z="-7.792184" />
 		<ElseIf Condition="12 == Me.ZoneId"> <!-- elwynn forest -->
-				
+			<If Condition="CanFly()">
+				<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Portal" X="-9547.637" Y="85.11835" Z="59.44423" />
+			<Else>
+				<MoveTo X="-9547.637" Y="85.11835" Z="59.44423" />
+				</Else>
+			</If>
+			<CustomBehavior File="UseGameObject" ObjectId="209538" WaitTime="10000" X="-1472.051" Y="195.5148" Z="-7.792184" />
 			</ElseIf>
 		</If>
 
+		
+		
 		<If Condition="5861 != Me.ZoneId">
-			<CustomBehavior File="Halt" Message="You must start this profile in Orgrimmar, Stormwind, or on Darkmoon Island." />
+			<CustomBehavior File="Halt" Message="You must start this profile in Orgrimmar, Stormwind, Ironforge, or on Darkmoon Island." />
 		</If>
 		
-		<!-- Profession weeklies -->
-		<If Condition="false"> <!-- change to false to skip profession weeklies -->
+		
+		
+		<!-- One-time breadcrumb quest -->
+		<If Condition="HasQuest(7926) &amp;&amp; IsQuestCompleted(7926)"> <!-- Horde -->
+			<TurnIn QuestName="The Darkmoon Faire" QuestId="7926" TurnInName="Gelvas Grimegate" TurnInId="14828" X="-4125.915" Y="6381.081" Z="13.57116" />
+		</If>
+		<If Condition="HasQuest(7905) &amp;&amp; IsQuestCompleted(7905)"> <!-- Alliance -->
+			<TurnIn QuestName="The Darkmoon Faire" QuestId="7905" TurnInName="Gelvas Grimegate" TurnInId="14828" X="-4125.915" Y="6381.081" Z="13.57116" />
+		</If>
+
+		
+		
+		<!-- Grisly trophy monthly -->
+		<If Condition="!HasQuest(29433) &amp;&amp; !IsQuestCompleted(29433)">
+			<PickUp QuestName="Test Your Strength" QuestId="29433" GiverName="Kerri Hicks" GiverId="14832" X="-4154.984" Y="6378.692" Z="12.82642" />
+		</If>
+		<If Condition="HasQuest(29433) &amp;&amp; IsQuestCompleted(29433)">
+			<TurnIn QuestName="Test Your Strength" QuestId="29433" TurnInName="Kerri Hicks" TurnInId="14832" X="-4154.984" Y="6378.692" Z="12.82642" />
+		</If>
+		
+		
+		
+		<!-- monthly item turnins -->
+		<If Condition="true"> <!-- set to false to disable monthly item turnins -->
+			<If Condition="HasItem(71637) &amp;&amp; !HasQuest(29445) &amp;&amp; !IsQuestCompleted(29445)">
+				<PickUp QuestName="An Intriguing Grimoire" QuestId="29445" GiverType="Item" GiverId="71637" />
+			</If>
+			<If Condition="HasQuest(29445) &amp;&amp; IsQuestCompleted(29445)">
+				<TurnIn QuestName="An Intriguing Grimoire" QuestId="29445" TurnInName="Sayge" TurnInId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+			</If>
+			<If Condition="HasItem(71636) &amp;&amp; !HasQuest(29444) &amp;&amp; !IsQuestCompleted(29444)">
+				<PickUp QuestName="An Exotic Egg" QuestId="29444" GiverType="Item" GiverId="71636" />
+			</If>
+			<If Condition="HasQuest(29444) &amp;&amp; IsQuestCompleted(29444)">
+				<TurnIn QuestName="An Exotic Egg" QuestId="29444" TurnInName="Yebb Neblegear" TurnInId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
+			</If>
+			<If Condition="HasItem(71635) &amp;&amp; !HasQuest(29443) &amp;&amp; !IsQuestCompleted(29443)">
+				<PickUp QuestName="A Curious Crystal" QuestId="29443" GiverType="Item" GiverId="71635" />
+			</If>
+			<If Condition="HasQuest(29443) &amp;&amp; IsQuestCompleted(29443)">
+				<TurnIn QuestName="A Curious Crystal" QuestId="29443" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71638) &amp;&amp; !HasQuest(29446) &amp;&amp; !IsQuestCompleted(29446)">
+				<PickUp QuestName="A Wondrous Weapon" QuestId="29446" GiverType="Item" GiverId="71638" />
+			</If>
+			<If Condition="HasQuest(29446) &amp;&amp; IsQuestCompleted(29446)">
+				<TurnIn QuestName="A Wondrous Weapon" QuestId="29446" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71715) &amp;&amp; !HasQuest(29451) &amp;&amp; !IsQuestCompleted(29451)">
+				<PickUp QuestName="The Master Strategist" QuestId="29451" GiverType="Item" GiverId="71715" />
+			</If>
+			<If Condition="HasQuest(29451) &amp;&amp; IsQuestCompleted(29451)">
+				<TurnIn QuestName="The Master Strategist" QuestId="29451" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71716) &amp;&amp; !HasQuest(29464) &amp;&amp; !IsQuestCompleted(29464)">
+				<PickUp QuestName="Tools of Divination" QuestId="29464" GiverType="Item" GiverId="71716" />
+			</If>
+			<If Condition="HasQuest(29464) &amp;&amp; IsQuestCompleted(29464)">
+				<TurnIn QuestName="Tools of Divination" QuestId="29464" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71953) &amp;&amp; !HasQuest(29458) &amp;&amp; !IsQuestCompleted(29458)">
+				<PickUp QuestName="The Captured Journal" QuestId="29458" GiverType="Item" GiverId="71953" />
+			</If>
+			<If Condition="HasQuest(29458) &amp;&amp; IsQuestCompleted(29458)">
+				<TurnIn QuestName="The Captured Journal" QuestId="29458" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71951) &amp;&amp; !HasQuest(29456) &amp;&amp; !IsQuestCompleted(29456)">
+				<PickUp QuestName="A Captured Banner" QuestId="29456" GiverType="Item" GiverId="71951" />
+			</If>
+			<If Condition="HasQuest(29456) &amp;&amp; IsQuestCompleted(29456)">
+				<TurnIn QuestName="A Captured Banner" QuestId="29456" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+			<If Condition="HasItem(71952) &amp;&amp; !HasQuest(29457) &amp;&amp; !IsQuestCompleted(29457)">
+				<PickUp QuestName="The Enemy's Insignia" QuestId="29457" GiverType="Item" GiverId="71952" />
+			</If>
+			<If Condition="HasQuest(29457) &amp;&amp; IsQuestCompleted(29457)">
+				<TurnIn QuestName="The Enemy's Insignia" QuestId="29457" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
+			</If>
+		</If>
+
+
+
+		<!-- Profession monthlies -->
+		<If Condition="false"> <!-- change to false to skip profession monthlies -->
 			<If Condition="Me.GetSkill(Styx.SkillLine.Alchemy).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29506) &amp;&amp; !IsQuestCompleted(29506)">
 				<PickUp QuestName="A Fizzy Fusion" QuestId="29506" GiverName="Sylannia" GiverId="14844" X="-4185.162" Y="6329.596" Z="13.2218" />
 			</If>
@@ -60,7 +178,7 @@
 			<If Condition="Me.GetSkill(Styx.SkillLine.Archaeology).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29507) &amp;&amp; !IsQuestCompleted(29507)">
 				<PickUp QuestName="Fun for the Little Ones" QuestId="29507" GiverName="Professor Thaddeus Paleo" GiverId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
 			</If>
-			<!-- hb thinks it's completed -->
+			<!-- hb always thinks it's completed -->
 			<!--If Condition="HasQuest(29507) &amp;&amp; IsQuestCompleted(29507)">
 				<TurnIn QuestName="Fun for the Little Ones" QuestId="29507" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
 			</If-->
@@ -156,79 +274,9 @@
 				<TurnIn QuestName="Banners, Banners Everywhere!" QuestId="29520" TurnInName="Selina Dourman" TurnInId="10445" X="-4004.797" Y="6236.218" Z="13.11706" />
 			</If>
 		</If>
-		
-		
-		
-		<!-- Grisly trophy weekly -->
-		<If Condition="!HasQuest(29433) &amp;&amp; !IsQuestCompleted(29433)">
-			<PickUp QuestName="Test Your Strength" QuestId="29433" GiverName="Kerri Hicks" GiverId="14832" X="-4154.984" Y="6378.692" Z="12.82642" />
-		</If>
-		<If Condition="HasQuest(29433) &amp;&amp; IsQuestCompleted(29433)">
-			<TurnIn QuestName="Test Your Strength" QuestId="29433" TurnInName="Kerri Hicks" TurnInId="14832" X="-4154.984" Y="6378.692" Z="12.82642" />
-		</If>
-		
-		
-		
-		<!-- weekly item turnins -->
-		<If Condition="true"> <!-- set to false to disable weekly item turnins -->
-			<If Condition="HasItem(71637) &amp;&amp; !HasQuest(29445) &amp;&amp; !IsQuestCompleted(29445)">
-				<PickUp QuestName="An Intriguing Grimoire" QuestId="29445" GiverType="Item" GiverId="71637" />
-			</If>
-			<If Condition="HasQuest(29445) &amp;&amp; IsQuestCompleted(29445)">
-				<TurnIn QuestName="An Intriguing Grimoire" QuestId="29445" TurnInName="Sayge" TurnInId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
-			</If>
-			<If Condition="HasItem(71636) &amp;&amp; !HasQuest(29444) &amp;&amp; !IsQuestCompleted(29444)">
-				<PickUp QuestName="An Exotic Egg" QuestId="29444" GiverType="Item" GiverId="71636" />
-			</If>
-			<If Condition="HasQuest(29444) &amp;&amp; IsQuestCompleted(29444)">
-				<TurnIn QuestName="An Exotic Egg" QuestId="29444" TurnInName="Yebb Neblegear" TurnInId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
-			</If>
-			<If Condition="HasItem(71635) &amp;&amp; !HasQuest(29443) &amp;&amp; !IsQuestCompleted(29443)">
-				<PickUp QuestName="A Curious Crystal" QuestId="29443" GiverType="Item" GiverId="71635" />
-			</If>
-			<If Condition="HasQuest(29443) &amp;&amp; IsQuestCompleted(29443)">
-				<TurnIn QuestName="A Curious Crystal" QuestId="29443" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
-			</If>
-			<If Condition="HasItem(71638) &amp;&amp; !HasQuest(29446) &amp;&amp; !IsQuestCompleted(29446)">
-				<PickUp QuestName="A Wondrous Weapon" QuestId="29446" GiverType="Item" GiverId="71638" />
-			</If>
-			<If Condition="HasQuest(29446) &amp;&amp; IsQuestCompleted(29446)">
-				<TurnIn QuestName="A Wondrous Weapon" QuestId="29446" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
-			</If>
-			<If Condition="HasItem(71715) &amp;&amp; !HasQuest(29451) &amp;&amp; !IsQuestCompleted(29451)">
-				<PickUp QuestName="The Master Strategist" QuestId="29451" GiverType="Item" GiverId="71715" />
-			</If>
-			<If Condition="HasQuest(29451) &amp;&amp; IsQuestCompleted(29451)">
-				<TurnIn QuestName="The Master Strategist" QuestId="29451" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
-			</If>
-			<If Condition="HasItem(71716) &amp;&amp; !HasQuest(29464) &amp;&amp; !IsQuestCompleted(29464)">
-				<PickUp QuestName="Tools of Divination" QuestId="29464" GiverType="Item" GiverId="71716" />
-			</If>
-			<If Condition="HasQuest(29464) &amp;&amp; IsQuestCompleted(29464)">
-				<TurnIn QuestName="Tools of Divination" QuestId="29464" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
-			</If>
-			<If Condition="HasItem(71953) &amp;&amp; !HasQuest(29458) &amp;&amp; !IsQuestCompleted(29458)">
-				<PickUp QuestName="The Captured Journal" QuestId="29458" GiverType="Item" GiverId="71953" />
-			</If>
-			<If Condition="HasQuest(29458) &amp;&amp; IsQuestCompleted(29458)">
-				<TurnIn QuestName="The Captured Journal" QuestId="29458" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
-			</If>
-			<If Condition="HasItem(71951) &amp;&amp; !HasQuest(29456) &amp;&amp; !IsQuestCompleted(29456)">
-				<PickUp QuestName="A Captured Banner" QuestId="29456" GiverType="Item" GiverId="71951" />
-			</If>
-			<If Condition="HasQuest(29456) &amp;&amp; IsQuestCompleted(29456)">
-				<TurnIn QuestName="A Captured Banner" QuestId="29456" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
-			</If>
-			<If Condition="HasItem(71952) &amp;&amp; !HasQuest(29457) &amp;&amp; !IsQuestCompleted(29457)">
-				<PickUp QuestName="The Enemy's Insignia" QuestId="29457" GiverType="Item" GiverId="71952" />
-			</If>
-			<If Condition="HasQuest(29457) &amp;&amp; IsQuestCompleted(29457)">
-				<TurnIn QuestName="The Enemy's Insignia" QuestId="29457" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
-			</If>
-		</If>
-		
-		
-		
+
+
+
 		<!-- dailies -->
 		<While Condition="true"> <!-- the loop enables us to buy more tokens as needed -->
 			<If Condition="!HasItem(71083)">
@@ -312,6 +360,7 @@
 			</If>
 
 
+			
 			<!-- stop condition -->
 			<If Condition="!(HasQuest(29463) || HasQuest(29436) || HasQuest(29438) || HasQuest(29455))">
 				<CustomBehavior File="Halt" Message="Finished all Darkmoon Faire quests we could, stopping." />
