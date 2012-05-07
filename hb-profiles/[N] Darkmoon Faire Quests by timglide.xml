@@ -364,7 +364,7 @@
 
 			
 			<!-- stop condition -->
-			<If Condition="!(HasQuest(29463) || HasQuest(29436) || HasQuest(29438) || HasQuest(29455))">
+			<If Condition="!(HasQuest(29463) || HasQuest(29436) || HasQuest(29438) || HasQuest(29434) || HasQuest(29455))">
 				<CustomBehavior File="Halt" Message="Finished all Darkmoon Faire quests we could, stopping." />
 			</If>
 		</While>
