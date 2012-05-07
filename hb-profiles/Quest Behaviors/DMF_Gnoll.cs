@@ -25,6 +25,13 @@ namespace timglide {
 	/// <summary>
 	/// Custom quest behavior for "It's Hammer Time" Darkmoon Faire daily quest.
 	/// By timglide
+	/// ##Syntax##
+	/// HoggerWeight: Relative importance of Hogger vs. regular gnolls
+	/// DistanceWeight: Relative importance of distance in determining which gnoll to whack next
+	/// MinDistance: If you are within this distance of a target, it will receive the full value of DistanceWeight
+	/// MaxDistance: If you are greater than this distance from a target, it will be negatively weighted by DistanceWeight
+	/// AgeWeight: Relative importance of how long since the gnoll spawned in determining which gnoll to whack next
+	/// MaxAge: (Seconds) The longer a gnoll has been up the lower weight it will receive and if it is older than this value it will not be considered at all
 	/// </summary>
 	class DMF_Gnoll : CustomForcedBehavior {
 		private static readonly int[] QuestIds = { 29463 };

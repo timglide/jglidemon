@@ -25,6 +25,10 @@ namespace timglide {
 	/// <summary>
 	/// Custom quest behavior for "The Humanoid Cannonball" Darkmoon Faire daily quest.
 	/// By timglide
+	/// ##Syntax##
+	/// CancelTimeLeft: The wings buff will be cancelled when there are this many seconds left (ideally)
+	/// UseTeleport: (boolean) Whether or not to talk to the gnome to be teleported back to the cannon for a fee
+	/// TickRate: How many ticks per second to run HonorBuddy at during this quest behavior, needs to be high due to the importance of timing removal of wings buff
 	/// </summary>
 	class DMF_Cannon : CustomForcedBehavior {
 		private static readonly int[] QuestIds = { 29436 };
@@ -213,7 +217,7 @@ namespace timglide {
 							if (UseTeleport && Me.Silver >= TeleportCostSilver) {
 								GossipFrame.Instance.SelectGossipOption(TeleportGossipOption);
 								Thread.Sleep(1000);
-								Lua.DoString("RunMacroText(\"/click StaticPopup1Button1\")"); // accept cost
+								Lua.DoString("StaticPopup1Button1:Click()"); // accept cost
 							}
 						}),
 						new Action(c => { _isDone = true; })
