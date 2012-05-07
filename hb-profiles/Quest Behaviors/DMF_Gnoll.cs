@@ -165,6 +165,7 @@ namespace timglide {
 
 			public override bool Equals(object obj) {
 				if (!(obj is Entry)) return false;
+				if (object.ReferenceEquals(this, obj)) return true;
 				Entry e = (Entry)obj;
 
 				return this.Unit.Guid == e.Unit.Guid;
@@ -175,6 +176,10 @@ namespace timglide {
 			}
 
 			public int CompareTo(Entry that) {
+				// prevent System.ArgumentException: IComparer (or the IComparable methods it relies upon) did not return zero when Array.Sort called x.CompareTo(x).
+				// since Score changes constantly
+				if (object.ReferenceEquals(this, that)) return 0;
+
 				float thisWeight = Score, thatWeight = that.Score;
 
 				if (thisWeight > thatWeight) { // higher weight comes first
@@ -297,8 +302,6 @@ namespace timglide {
 		private Entry FirstEntry {
 			get {
 				lock (_queueLock) {
-					_queue.RemoveAll(o => o.IsExpired);
-
 					foreach (WoWUnit u in ObjectManager.GetObjectsOfType<WoWUnit>()
 							.Where(o => !Blacklist.Contains(o) && o.IsValid && HoggerUnitId == o.Entry || GnollUnitId == o.Entry)) {
 						Entry e = new Entry(this, u);
@@ -309,6 +312,13 @@ namespace timglide {
 						}
 					}
 
+					foreach (Entry e in _queue.Where(o => o.IsExpired)) {
+						Blacklist.Add(e.Unit, BlacklistTime);
+						//_queue.Remove(e); // cause concurrent modification error
+					}
+
+					_queue.RemoveAll(o => o.IsExpired);
+
 					if (0 == _queue.Count) return null;
 
 					_queue.Sort();
@@ -318,7 +328,11 @@ namespace timglide {
 		}
 
 		public void PerformAction(uint button) {
-			KeyboardManager.KeyUpDown((char)('1' + (button - 1)));
+			Lua.DoString("BonusActionButton{0}:Click()", button);
+		}
+
+		public bool IsActionOnCooldown(uint button) {
+			return 0 != Lua.GetReturnVal<float>("return GetActionCooldown(" + (120 + button) + ")", 0);
 		}
 
 		#region Overrides of CustomForcedBehavior
@@ -345,28 +359,31 @@ namespace timglide {
 							WoWMovement.ClickToMove(Center);
 						})
 					)),
-					new Decorator(ret => HasEntry && Me.Location.Distance2DSqr(FirstEntry.Location) <= WhackRangeSqr, new Action(c => {
-						lock (_queueLock) {
-							if (!HasEntry) return;
-							TreeRoot.StatusText = "Whacking " + FirstEntry;
-							Blacklist.Add(_queue[0].Unit, BlacklistTime);
-							_queue.RemoveAt(0);
-						}
+					new Decorator(ret => HasEntry, new PrioritySelector(
+						new Decorator(ret => Me.Location.Distance2DSqr(FirstEntry.Location) > WhackRangeSqr, new Action(c => {
+							lock (_queueLock) {
+								if (!HasEntry) return;
+								TreeRoot.StatusText = "Moving to " + FirstEntry;
+								WoWMovement.ClickToMove(FirstEntry.Location);
+							}
+						})),
+						new Decorator(ret => IsActionOnCooldown(ActionButton), new ActionAlwaysSucceed()),
+						new Action(c => {
+							lock (_queueLock) {
+								if (!HasEntry) return;
+								TreeRoot.StatusText = "Whacking " + FirstEntry;
+								Blacklist.Add(_queue[0].Unit, BlacklistTime);
+								_queue.RemoveAt(0);
+							}
 
-						if (IsBabyNear) { // sanity check
-							LogMessage("debug", "We were about to hit a baby?!");
-						} else {
-							PerformAction(ActionButton);
-							StyxWoW.SleepForLagDuration();
-						}
-					})),
-					new Action(c => {
-						lock (_queueLock) {
-							if (!HasEntry) return;
-							TreeRoot.StatusText = "Moving to " + FirstEntry;
-							WoWMovement.ClickToMove(FirstEntry.Location);
-						}
-					})
+							if (IsBabyNear) { // sanity check
+								LogMessage("debug", "We were about to hit a baby?!");
+							} else {
+								PerformAction(ActionButton);
+								StyxWoW.SleepForLagDuration();
+							}
+						})
+					))
 				)),
 				new Decorator(ret => !_started, new PrioritySelector(
 					new Decorator(ret => !HasGameToken, new Action(c => {

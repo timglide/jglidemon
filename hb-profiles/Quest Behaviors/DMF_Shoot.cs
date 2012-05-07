@@ -142,7 +142,7 @@ namespace timglide {
 		}
 
 		public void PerformAction(uint button) {
-			KeyboardManager.KeyUpDown((char)('1' + (button - 1)));
+			Lua.DoString("BonusActionButton{0}:Click()", button);
 		}
 
 		#region Overrides of CustomForcedBehavior

@@ -135,8 +135,16 @@ namespace timglide {
 			get { return Me.HasAura(MarkedSpellId) || (HasTonk && PlayerTonk.HasAura(MarkedSpellId)); }
 		}
 
+		public bool HasSpeedBoost {
+			get { return Me.HasAura(SpeedBoostSpellId) || (HasTonk && PlayerTonk.HasAura(SpeedBoostSpellId)); }
+		}
+
+		private bool CanFireCannon {
+			get { return !IsActionOnCooldown(CannonActionButton); }
+		}
+
 		private bool CanSpeedBoost {
-			get { return false; /* SpellManager.CanCast(SpeedBoostSpellId);*/ }
+			get { return !IsActionOnCooldown(SpeedBoostActionButton); }
 		}
 
 		public bool HasDebuff {
@@ -214,7 +222,11 @@ namespace timglide {
 		}
 
 		public void PerformAction(uint button) {
-			KeyboardManager.KeyUpDown((char)('1' + (button - 1)));
+			Lua.DoString("CastPetAction({0})", button);
+		}
+
+		public bool IsActionOnCooldown(uint button) {
+			return 0 != Lua.GetReturnVal<float>("return GetPetActionCooldown(" + button + ")", 0);
 		}
 
 		private void COMBAT_LOG_EVENT_UNFILTERED(object sender, LuaEventArgs args) {
@@ -287,9 +299,10 @@ namespace timglide {
 						new Decorator(ret => _escapePathPoints.Peek().DistanceSqr(PlayerTonk.Location) <= DistanceCheckSqr, new Action(c => {
 							_escapePathPoints.Dequeue();
 						})),
-						new Decorator(ret => CanSpeedBoost, new Action(c => {
-							PerformAction(SpeedBoostActionButton);
-						})),
+						// not working well, but unnecessary anyway
+						//new Decorator(ret => !HasSpeedBoost && CanSpeedBoost, new Action(c => {
+						//    PerformAction(SpeedBoostActionButton);
+						//})),
 						new Action(c => {
 							WoWMovement.ClickToMove(_escapePathPoints.Peek());
 						})
@@ -314,7 +327,7 @@ namespace timglide {
 							_pathPoints.Enqueue(p);
 						}
 					})),
-					new Decorator(ret => null != _target && _target.Location.DistanceSqr(PlayerTonk.Location) <= DistanceCheckSqr, new Action(c => {
+					new Decorator(ret => null != _target && _target.Location.DistanceSqr(PlayerTonk.Location) <= DistanceCheckSqr && CanFireCannon, new Action(c => {
 						TreeRoot.StatusText = "Firing on target at " + _target.Location + ".";
 						PerformAction(CannonActionButton);
 						Blacklist.Add(_target, BlacklistTime);

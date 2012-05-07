@@ -36,7 +36,7 @@ namespace timglide {
 		private const uint GameTokenId = 71083;
 		private const int BuffId = 102116; // Magic Wings
 		private const float BuffMaxDuration = 8.5f;
-		private const float BuffCancelDuration = 0.975f;
+		private const float DefaultCancelTimeLeft = 1.1f;
 		private static readonly int[] BadBuffIds = { 130, 1706, 3714 }; // slow fall, levitate, path of frost
 		private const int CancelWingsSpellId = 102120; // Cancel Magic Wings
 		private const uint NpcId = 15303; // Maxima Blastenheimer
@@ -54,7 +54,7 @@ namespace timglide {
 			: base(args) {
 
 			try {
-				CancelTimeLeft = GetAttributeAsNullable<float>("CancelTimeLeft", false, new ConstrainTo.Domain<float>(0f, BuffMaxDuration), new[] { "Cancel", "TimeLeft" }) ?? BuffCancelDuration;
+				CancelTimeLeft = GetAttributeAsNullable<float>("CancelTimeLeft", false, new ConstrainTo.Domain<float>(0f, BuffMaxDuration), new[] { "Cancel", "TimeLeft" }) ?? DefaultCancelTimeLeft;
 				UseTeleport = GetAttributeAsNullable<bool>("UseTeleport", false, null, new[] { "Teleport", "PortBack" }) ?? true;
 				TickRate = GetAttributeAsNullable<byte>("TickRate", false, new ConstrainTo.Domain<byte>(15, byte.MaxValue), new[] { "TicksPerSecond" }) ?? DefaultTickRate;
 			} catch (Exception except) {
@@ -173,7 +173,7 @@ namespace timglide {
 		}
 
 		public void PerformAction(uint button) {
-			KeyboardManager.KeyUpDown((char)('1' + (button - 1)));
+			Lua.DoString("BonusActionButton{0}:Click()", button);
 		}
 
 		#region Overrides of CustomForcedBehavior
