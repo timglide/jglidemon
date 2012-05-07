@@ -13,29 +13,34 @@
 			<CustomBehavior File="Halt" Message="No game tokens." />
 		</If>
 
-		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-3996.811, 6278.421, 13.08003)) &lt;= 30 * 30">
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-3996.811, 6278.421, 13.08003)) &lt;= 20 * 20">
 			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="DMF_Gnoll" HoggerWeight="50" DistanceWeight="35" MinDistance="5" MaxDistance="40" AgeWeight="25" MaxAge="5" />
+			<CustomBehavior File="Halt" Message="Stopping after one behavior." />
 		</If>
 
-		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4018.767, 6293.038, 13.04148)) &lt;= 30 * 30">
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4018.767, 6293.038, 13.04148)) &lt;= 20 * 20">
 			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="DMF_Cannon" CancelTimeLeft="1.1" UseTeleport="true" TickRate="60" />
+			<CustomBehavior File="Halt" Message="Stopping after one behavior." />
 		</If>
 
-		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4075.453, 6354.995, 13.11186)) &lt;= 30 * 30">
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4075.453, 6354.995, 13.11186)) &lt;= 25 * 25">
 			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="DMF_Shoot" />
+			<CustomBehavior File="Halt" Message="Stopping after one behavior." />
 		</If>
 
-		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4130.516, 6326.557, 13.11124)) &lt;= 30 * 30">
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4130.516, 6326.557, 13.11124)) &lt;= 25 * 25">
 			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="DMF_Tonk" SafeDistance="40" />
+			<CustomBehavior File="Halt" Message="Stopping after one behavior." />
 		</If>
 
-		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4287.872, 6308.999, 13.11773)) &lt;= 30 * 30">
+		<If Condition="Me.Location.DistanceSqr(new WoWPoint(-4287.872, 6308.999, 13.11773)) &lt;= 25 * 25">
 			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="DMF_Turtle" />
+			<CustomBehavior File="Halt" Message="Stopping after one behavior." />
 		</If>
 	</QuestOrder>
 </HBProfile>

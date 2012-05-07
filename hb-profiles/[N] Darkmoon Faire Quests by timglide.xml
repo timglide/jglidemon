@@ -4,7 +4,7 @@
 	<MaxLevel>86</MaxLevel>
 		
 	<QuestOrder>
-		<If Condition="!HasQuest(29463) &amp;&amp; IsQuestCompleted(29463) &amp;&amp; !HasQuest(29436) &amp;&amp; IsQuestCompleted(29436) &amp;&amp; !HasQuest(29438) &amp;&amp; IsQuestCompleted(29438) &amp;&amp; !HasQuest(29455) &amp;&amp; IsQuestCompleted(29455)">
+		<If Condition="!HasQuest(29463) &amp;&amp; IsQuestCompleted(29463) &amp;&amp; !HasQuest(29436) &amp;&amp; IsQuestCompleted(29436) &amp;&amp; !HasQuest(29438) &amp;&amp; IsQuestCompleted(29438) &amp;&amp; !HasQuest(29434) &amp;&amp; IsQuestCompleted(29434) &amp;&amp; !HasQuest(29455) &amp;&amp; IsQuestCompleted(29455)">
 			<CustomBehavior File="Halt" Message="You have already completed all the Darkmoon Faire dailies today." />
 		</If>
 
@@ -110,6 +110,7 @@
 		
 		<!-- monthly item turnins -->
 		<If Condition="true"> <!-- set to false to disable monthly item turnins -->
+			<CustomBehavior File="Message" Text="Compiling monthly turnin quests." LogColor="Green" />
 			<If Condition="HasItem(71637) &amp;&amp; !HasQuest(29445) &amp;&amp; !IsQuestCompleted(29445)">
 				<PickUp QuestName="An Intriguing Grimoire" QuestId="29445" GiverType="Item" GiverId="71637" />
 			</If>
@@ -170,6 +171,7 @@
 
 		<!-- Profession monthlies -->
 		<If Condition="false"> <!-- change to false to skip profession monthlies -->
+			<CustomBehavior File="Message" Text="Compiling monthly profession quests." LogColor="Green" />
 			<If Condition="Me.GetSkill(Styx.SkillLine.Alchemy).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29506) &amp;&amp; !IsQuestCompleted(29506)">
 				<PickUp QuestName="A Fizzy Fusion" QuestId="29506" GiverName="Sylannia" GiverId="14844" X="-4185.162" Y="6329.596" Z="13.2218" />
 			</If>
@@ -280,6 +282,7 @@
 
 
 		<!-- dailies -->
+		<CustomBehavior File="Message" Text="Compiling daily quests." LogColor="Green" />
 		<While Condition="true"> <!-- the loop enables us to buy more tokens as needed -->
 			<If Condition="!HasItem(71083)">
 				<!-- using BuySlot because there are different sacks of tokens for different level players with different costs and item ids -->
