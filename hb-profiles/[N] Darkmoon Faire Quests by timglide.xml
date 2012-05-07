@@ -29,6 +29,7 @@
 				</If>
 				<CustomBehavior File="InteractWith" NpcId="55382" GossipOptions="1" />
 				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" /> <!-- accept 30s cost -->
+				<CustomBehavior File="WaitTimer" WaitTime="5000" />
 			</If>
 		<Else>
 			<!-- alliance, not well tested -->
@@ -54,7 +55,8 @@
 				</If>
 				<CustomBehavior File="InteractWith" NpcId="54334" GossipOptions="1" />
 				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" />	<!-- accept 30s cost -->
-			</If>
+				<CustomBehavior File="WaitTimer" WaitTime="5000" />
+				</If>
 			</Else>
 		</If>
 
