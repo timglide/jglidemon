@@ -2,28 +2,112 @@
 	<Name>Darkmoon Faire Quests by timglide $Revision$</Name>
 	<MinLevel>1</MinLevel>
 	<MaxLevel>86</MaxLevel>
-		
+
+	<Blackspots>
+		<Blackspot X="-4080.025" Y="6353.404" Z="12.95191" Radius="1.995877" /> <!-- sign by rinling -->
+	</Blackspots>
+	
 	<QuestOrder>
 		<If Condition="!HasQuest(29463) &amp;&amp; IsQuestCompleted(29463) &amp;&amp; !HasQuest(29436) &amp;&amp; IsQuestCompleted(29436) &amp;&amp; !HasQuest(29438) &amp;&amp; IsQuestCompleted(29438) &amp;&amp; !HasQuest(29434) &amp;&amp; IsQuestCompleted(29434) &amp;&amp; !HasQuest(29455) &amp;&amp; IsQuestCompleted(29455)">
-			<CustomBehavior File="Halt" Message="You have already completed all the Darkmoon Faire dailies today." />
+			<CustomBehavior File="UserDialog" AllowBotStop="true" Title="Notice!" Text="You have already completed all the Darkmoon Faire dailies today, continue if you want to do item turn-ins or profession quests." />
 		</If>
 
 		<If Condition="Me.FreeNormalBagSlots &lt; 2">
-			<CustomBehavior File="Halt" Message="Please free some bag space in case the bot needs to buy game tokens." />
+			<CustomBehavior File="Halt" Message="Please free some bag space in case the bot needs to buy game tokens. You may need more for profession quests." />
 		</If>
 		<If Condition="5861 != Me.ZoneId &amp;&amp; Me.Silver &lt; 30">
 			<CustomBehavior File="Halt" Message="Somehow you do not have 30s for the teleport cost. Get some money or start on Darkmoon Island." />
 		</If>
 		
-		<!-- TODO buy/perform necessary tasks for monthly profession quests then port to staging area if needed -->
+		<!-- buy/do stuff for monthly profession quests then port to staging area if needed -->
+		<If Condition="3703 == Me.ZoneId"><!-- shattrath -->
+			<If Condition="CanFly()">
+				<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Mystic Mage" X="-1729.477" Y="5456.734" Z="-12.42679" />
+				<Else>
+					<MoveTo X="-1729.477" Y="5456.734" Z="-12.42679" />
+				</Else>
+			</If>
+		</If>
 		<If Condition="Me.IsHorde">
-			<If Condition="1637 == Me.ZoneId"> <!-- orgrimmar -->
+			<If Condition="1638 == Me.ZoneId"> <!-- thunder bluff -->
+				<!-- quests that need to buy/do stuff in city: alchemy, blacksmithing, cooking, inscription, leatherworking, tailoring -->
+				<If Condition="HasQuest(29506) || HasQuest(29508) || HasQuest(29509) || HasQuest(29515) || HasQuest(29517) || HasQuest(29520)">
+					<CustomBehavior File="Message" Text="Buying/doing stuff for profession quests since we're in town." LogColor="Yellow" />
+
+					<If Condition="HasItem(71964)"> <!-- iron stock, no need to check quest in this case -->
+						<CustomBehavior File="Message" Text="Doing blacksmith stuff." LogColor="LimeGreen" />
+						<MoveTo X="-1242.275" Y="105.4413" Z="129.1405" /> <!-- forge -->
+						<While Condition="HasItem(71964)">
+							<CustomBehavior File="UseItem" ItemId="71964" WaitTime="3000" X="-1242.275" Y="105.4413" Z="129.1405" />
+						</While>
+					</If>
+
+					<If Condition="HasQuest(29506) &amp;&amp; !IsQuestCompleted(29506) &amp;&amp; GetItemCount(1645) &lt; 5">
+						<CustomBehavior File="Message" Text="Buying stuff for alchemy." LogColor="LimeGreen" />
+						<MoveTo X="-1300.173" Y="110.5405" Z="131.3685" />
+						<CustomBehavior File="InteractWith" NpcId="8362" BuyItemId="1645" BuyItemCount="5" X="-1300.173" Y="110.5405" Z="131.3685" />
+					</If>
+
+					<If Condition="HasQuest(29509) &amp;&amp; !IsQuestCompleted(29509) &amp;&amp; GetItemCount(30817) &lt; 5">
+						<CustomBehavior File="Message" Text="Buying stuff for cooking." LogColor="LimeGreen" />
+						<MoveTo X="-1291.038" Y="95.90452" Z="130.1139" />
+						<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="30817" BuyItemCount="5" X="-1291.038" Y="95.90452" Z="130.1139" />
+					</If>
+
+					<If Condition="HasQuest(29515) &amp;&amp; !IsQuestCompleted(29515) &amp;&amp; GetItemCount(39354) &lt; 5">
+						<CustomBehavior File="Message" Text="Buying stuff for inscription." LogColor="LimeGreen" />
+						<MoveTo X="-1291.038" Y="95.90452" Z="130.1139" />
+						<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="39354" BuyItemCount="5" X="-1291.038" Y="95.90452" Z="130.1139" />
+					</If>
+
+					<If Condition="HasQuest(29517) &amp;&amp; !IsQuestCompleted(29517)">
+						<CustomBehavior File="Message" Text="Buying stuff for leatherworking." LogColor="LimeGreen" />
+						<MoveTo X="-1291.038" Y="95.90452" Z="130.1139" />
+						<If Condition="GetItemCount(6529) &lt; 10">
+							<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="6529" BuyItemCount="10" X="-1291.038" Y="95.90452" Z="130.1139" />
+						</If>
+						<If Condition="GetItemCount(2320) &lt; 5">
+							<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="2320" BuyItemCount="5" X="-1291.038" Y="95.90452" Z="130.1139" />
+						</If>
+						<If Condition="GetItemCount(6260) &lt; 5">
+							<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="6260" BuyItemCount="5" X="-1291.038" Y="95.90452" Z="130.1139" />
+						</If>
+					</If>
+
+					<If Condition="HasQuest(29520) &amp;&amp; !IsQuestCompleted(29520)">
+						<CustomBehavior File="Message" Text="Buying stuff for tailoring." LogColor="LimeGreen" />
+						<MoveTo X="-1291.038" Y="95.90452" Z="130.1139" />
+						<If Condition="GetItemCount(2320) &lt; 1 || HasQuest(29517)"> <!-- in rare case someone is LW + Tailor just buy an extra-->
+							<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="2320" BuyItemCount="1" X="-1291.038" Y="95.90452" Z="130.1139" />
+						</If>
+						<If Condition="GetItemCount(2604) &lt; 1">
+							<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="2604" BuyItemCount="1" X="-1291.038" Y="95.90452" Z="130.1139" />
+						</If>
+						<If Condition="GetItemCount(6260) &lt; 1 || HasQuest(29517)">
+							<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="6260" BuyItemCount="1" X="-1291.038" Y="95.90452" Z="130.1139" />
+						</If>
+					</If>
+					
+					<!-- gets stuck in hut -->
+					<MoveTo X="-1291.24" Y="106.2429" Z="131.0605" />
+				</If>
+				
+				<If Condition="CanFly()">
+					<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Mystic Mage" X="-1215.995" Y="58.10938" Z="129.909" />
+				<Else>
+					<MoveTo X="-1215.995" Y="58.10938" Z="129.909" />
+					</Else>
+				</If>
+			<ElseIf Condition="1637 == Me.ZoneId"> <!-- orgrimmar -->
 				<If Condition="CanFly()">
 					<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Mystic Mage" X="1765.778" Y="-4345.207" Z="101.7764" />
 				<Else>
 					<MoveTo X="1765.778" Y="-4345.207" Z="101.7764" />
 					</Else>
 				</If>
+				</ElseIf>
+			</If>
+			<If Condition="3703 == Me.ZoneId || 1638 == Me.ZoneId || 1637 == Me.ZoneId">
 				<If Condition="Me.Level &gt;= 6 &amp;&amp; !HasQuest(7926) &amp;&amp; !IsQuestCompleted(7926)">
 					<PickUp QuestName="The Darkmoon Faire" QuestId="7926" GiverName="Darkmoon Faire Mystic Mage" GiverId="55382" />
 				</If>
@@ -49,7 +133,7 @@
 				</If>
 				</ElseIf>
 			</If>
-			<If Condition="1519 == Me.ZoneId || 1537 == Me.ZoneId">
+			<If Condition="3703 == Me.ZoneId || 1519 == Me.ZoneId || 1537 == Me.ZoneId">
 				<If Condition="Me.Level &gt;= 6 &amp;&amp; !HasQuest(7905) &amp;&amp; !IsQuestCompleted(7905)">
 					<PickUp QuestName="The Darkmoon Faire" QuestId="7905" GiverName="Darkmoon Faire Mystic Mage" GiverId="54334" />
 				</If>
@@ -70,6 +154,65 @@
 			</If>
 			<CustomBehavior File="UseGameObject" ObjectId="209538" WaitTime="10000" X="-1472.051" Y="195.5148" Z="-7.792184" />
 		<ElseIf Condition="12 == Me.ZoneId"> <!-- elwynn forest -->
+			<!-- quests that need to buy/do stuff in city: alchemy, blacksmithing, cooking, inscription, leatherworking, tailoring -->
+			<If Condition="Me.IsAlliance &amp;&amp; (HasQuest(29506) || HasQuest(29508) || HasQuest(29509) || HasQuest(29515) || HasQuest(29517) || HasQuest(29520))">
+				<CustomBehavior File="Message" Text="Buying/doing stuff for profession quests in Goldshire." LogColor="Yellow" />
+
+				<If Condition="HasItem(71964)"> <!-- iron stock, no need to check quest in this case -->
+					<CustomBehavior File="Message" Text="Doing blacksmith stuff." LogColor="LimeGreen" />
+					<MoveTo X="-9456.812" Y="90.98833" Z="58.3431" />
+					<While Condition="HasItem(71964)">
+						<CustomBehavior File="UseItem" ItemId="71964" WaitTime="3000" />
+					</While>
+				</If>
+				
+				<If Condition="HasQuest(29506) &amp;&amp; !IsQuestCompleted(29506) &amp;&amp; GetItemCount(1645) &lt; 5">
+					<CustomBehavior File="Message" Text="Buying stuff for alchemy." LogColor="LimeGreen" />
+					<MoveTo X="-9491.402" Y="80.60412" Z="56.05033" />
+					<CustomBehavior File="InteractWith" NpcId="465" BuyItemId="1645" BuyItemCount="5" />
+				</If>
+
+				<If Condition="HasQuest(29515) &amp;&amp; !IsQuestCompleted(29515) &amp;&amp; GetItemCount(39354) &lt; 5">
+					<CustomBehavior File="Message" Text="Buying stuff for inscription." LogColor="LimeGreen" />
+					<MoveTo X="-9491.402" Y="80.60412" Z="56.05033" />
+					<CustomBehavior File="InteractWith" NpcId="66" BuyItemId="39354" BuyItemCount="5" />
+				</If>
+
+				<If Condition="HasQuest(29517) &amp;&amp; !IsQuestCompleted(29517)">
+					<CustomBehavior File="Message" Text="Buying stuff for leatherworking." LogColor="LimeGreen" />
+					<MoveTo X="-9491.402" Y="80.60412" Z="56.05033" />
+					<If Condition="GetItemCount(6529) &lt; 10">
+						<CustomBehavior File="InteractWith" NpcId="66" BuyItemId="6529" BuyItemCount="10" />
+					</If>
+					<If Condition="GetItemCount(2320) &lt; 5">
+						<CustomBehavior File="InteractWith" NpcId="66" BuyItemId="2320" BuyItemCount="5" />
+					</If>
+					<If Condition="GetItemCount(6260) &lt; 5">
+						<CustomBehavior File="InteractWith" NpcId="66" BuyItemId="6260" BuyItemCount="5" />
+					</If>
+				</If>
+
+				<If Condition="HasQuest(29520) &amp;&amp; !IsQuestCompleted(29520)">
+					<CustomBehavior File="Message" Text="Buying stuff for tailoring." LogColor="LimeGreen" />
+					<MoveTo X="-9491.402" Y="80.60412" Z="56.05033" />
+					<If Condition="GetItemCount(2320) &lt; 1 || HasQuest(29517)"> <!-- in rare case someone is LW + Tailor just buy an extra -->
+						<CustomBehavior File="InteractWith" NpcId="66" BuyItemId="2320" BuyItemCount="1" />
+					</If>
+					<If Condition="GetItemCount(2604) &lt; 1">
+						<CustomBehavior File="InteractWith" NpcId="66" BuyItemId="2604" BuyItemCount="1" />
+					</If>
+					<If Condition="GetItemCount(6260) &lt; 1 || HasQuest(29517)">
+						<CustomBehavior File="InteractWith" NpcId="66" BuyItemId="6260" BuyItemCount="1" />
+					</If>
+				</If>
+
+				<If Condition="HasQuest(29509) &amp;&amp; !IsQuestCompleted(29509) &amp;&amp; GetItemCount(30817) &lt; 5">
+					<CustomBehavior File="Message" Text="Buying stuff for cooking." LogColor="LimeGreen" />
+					<MoveTo X="-9491.402" Y="80.60412" Z="56.05033" />
+					<CustomBehavior File="InteractWith" NpcId="66" BuyItemId="30817" BuyItemCount="5" />
+				</If>
+			</If>
+
 			<If Condition="CanFly()">
 				<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Portal" X="-9547.637" Y="85.11835" Z="59.44423" />
 			<Else>
@@ -83,7 +226,14 @@
 		
 		
 		<If Condition="5861 != Me.ZoneId">
-			<CustomBehavior File="Halt" Message="You must start this profile in Orgrimmar, Stormwind, Ironforge, or on Darkmoon Island." />
+			<CustomBehavior File="Halt" Message="You must start this profile in Orgrimmar, Thunder Bluff, Stormwind, Ironforge, or on Darkmoon Island." />
+		</If>
+
+
+
+		<!-- ensure we take our mount from the portal to the faire itself -->
+		<If Condition="Me.X &gt; -3941.27">
+			<MoveTo X="-3986.256" Y="6238.308" Z="11.90836" />
 		</If>
 		
 		
@@ -109,7 +259,7 @@
 		
 		
 		<!-- monthly item turnins -->
-		<If Condition="true"> <!-- set to false to disable monthly item turnins -->
+		<If Condition="true"> <!-- change to false to disable monthly item turnins -->
 			<CustomBehavior File="Message" Text="Compiling monthly turnin quests." LogColor="Green" />
 			<If Condition="HasItem(71637) &amp;&amp; !HasQuest(29445) &amp;&amp; !IsQuestCompleted(29445)">
 				<PickUp QuestName="An Intriguing Grimoire" QuestId="29445" GiverType="Item" GiverId="71637" />
@@ -170,10 +320,34 @@
 
 
 		<!-- Profession monthlies -->
-		<If Condition="false"> <!-- change to false to skip profession monthlies -->
+		<If Condition="true"> <!-- change to false to skip profession monthlies -->
 			<CustomBehavior File="Message" Text="Compiling monthly profession quests." LogColor="Green" />
 			<If Condition="Me.GetSkill(Styx.SkillLine.Alchemy).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29506) &amp;&amp; !IsQuestCompleted(29506)">
 				<PickUp QuestName="A Fizzy Fusion" QuestId="29506" GiverName="Sylannia" GiverId="14844" X="-4185.162" Y="6329.596" Z="13.2218" />
+			</If>
+			<If Condition="HasQuest(29506) &amp;&amp; !IsQuestCompleted(29506)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on alchemy quest." LogColor="LimeGreen" />
+				<If Condition="HasItem(72043)"> <!-- cocktail shaker -->
+					<If Condition="GetItemCount(19299) &lt; 5">
+						<!-- hb seems to not be able to click the vendor option when we're on the quest so do it manually -->
+						<CustomBehavior File="InteractWith" NpcId="14844" X="-4185.162" Y="6329.596" Z="13.22196" />
+						<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton3:Click()" />
+						<CustomBehavior File="WaitTimer" WaitTime="1000" />
+						<CustomBehavior File="InteractWith" NpcId="14844" BuyItemId="19299" BuyItemCount="5" X="-4185.162" Y="6329.596" Z="13.22196" />
+						<CustomBehavior File="Misc\RunLua" Lua="MerchantFrameCloseButton:Click()" />
+						<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					</If>
+					<!-- moonberry juice, fizzy faire drink -->
+					<While Condition="HasItem(1645) &amp;&amp; HasItem(19299)">
+						<CustomBehavior File="UseItem" ItemId="72043" WaitTime="3000" />
+					</While>
+				<Else>
+					<CustomBehavior File="AbandonQuest" QuestId="29506" /> <!-- something went wrong -->
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<PickUp QuestName="A Fizzy Fusion" QuestId="29506" GiverName="Sylannia" GiverId="14844" X="-4185.162" Y="6329.596" Z="13.2218" />
+					</Else>
+				</If>
 			</If>
 			<If Condition="HasQuest(29506) &amp;&amp; IsQuestCompleted(29506)">
 				<TurnIn QuestName="A Fizzy Fusion" QuestId="29506" TurnInName="Sylannia" TurnInId="14844" X="-4185.162" Y="6329.596" Z="13.2218" />
@@ -182,27 +356,59 @@
 			<If Condition="Me.GetSkill(Styx.SkillLine.Archaeology).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29507) &amp;&amp; !IsQuestCompleted(29507)">
 				<PickUp QuestName="Fun for the Little Ones" QuestId="29507" GiverName="Professor Thaddeus Paleo" GiverId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
 			</If>
-			<!-- hb always thinks it's completed -->
-			<!--If Condition="HasQuest(29507) &amp;&amp; IsQuestCompleted(29507)">
+			<!-- hb seems to always think it's completed so do direct fragment check -->
+			<!--If Condition="HasQuest(29507) &amp;&amp; IsQuestCompleted(29507)"-->
+			<If Condition="HasQuest(29507) &amp;&amp; IsQuestCompleted(29507) &amp;&amp; Styx.WoWInternals.Lua.GetReturnVal&lt;int&gt;(&quot;return GetArchaeologyRaceInfo(3)&quot;, 3) &gt;= 15">
 				<TurnIn QuestName="Fun for the Little Ones" QuestId="29507" TurnInName="Professor Thaddeus Paleo" TurnInId="14847" X="-4078.156" Y="6304.444" Z="13.11956" />
-			</If-->
-
-			<If Condition="Me.GetSkill(Styx.SkillLine.Blacksmithing).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29508) &amp;&amp; !IsQuestCompleted(29508)">
-				<PickUp QuestName="Baby Needs Two Pair of Shoes" QuestId="29508" GiverName="Yebb Neblegear" GiverId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
-			</If>
-			<If Condition="HasQuest(29508) &amp;&amp; IsQuestCompleted(29508)">
-				<TurnIn QuestName="Baby Needs Two Pair of Shoes" QuestId="29508" TurnInName="Yebb Neblegear" GiverId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
 			</If>
 
 			<If Condition="Me.GetSkill(Styx.SkillLine.Cooking).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29509) &amp;&amp; !IsQuestCompleted(29509)">
 				<PickUp QuestName="Putting the Crunch in the Frog" QuestId="29509" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
 			</If>
+			<If Condition="HasQuest(29509) &amp;&amp; !IsQuestCompleted(29509)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on cooking quest." LogColor="LimeGreen" />
+				<!-- simple flour, plump frogs -->
+				<If Condition="GetItemCount(30817) &gt;= 5 &amp;&amp; HasItem(72056)">
+					<CustomBehavior File="UseItem" ItemId="72056" WaitTime="2000" /> <!-- make breaded frogs -->
+				</If>
+				<While Condition="HasItem(72057)"> <!-- breaded frogs -->
+					<CustomBehavior File="UseItem" ItemId="72057" WaitTime="1000" X="-4168.328" Y="6289.727" Z="13.1182" /> <!-- fry the frogs -->
+				</While>
+				<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				<If Condition="!HasItem(72056) &amp;&amp; !IsQuestCompleted(29509)">
+					<CustomBehavior File="AbandonQuest" QuestId="29509" /> <!-- something went wrong -->
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<PickUp QuestName="Putting the Crunch in the Frog" QuestId="29509" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
+				</If>
+			</If>
 			<If Condition="HasQuest(29509) &amp;&amp; IsQuestCompleted(29509)">
 				<TurnIn QuestName="Putting the Crunch in the Frog" QuestId="29509" TurnInName="Stamp Thunderhorn" TurnInId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
 			</If>
 
+			<If Condition="Me.GetSkill(Styx.SkillLine.Fishing).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
+				<PickUp QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
+			</If>
+			<!-- TODO -->
+			<If Condition="HasQuest(29513) &amp;&amp; IsQuestCompleted(29513)">
+				<TurnIn QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" TurnInName="Stamp Thunderhorn" TurnInId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
+			</If>
+			
 			<If Condition="Me.GetSkill(Styx.SkillLine.Enchanting).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29510) &amp;&amp; !IsQuestCompleted(29510)">
 				<PickUp QuestName="Putting Trash to Good Use" QuestId="29510" GiverName="Sayge" GiverId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+			</If>
+			<If Condition="HasQuest(29510) &amp;&amp; !IsQuestCompleted(29510)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on enchanting quest." LogColor="LimeGreen" />
+				<CustomBehavior File="CollectThings" CollectUntil="RequiredCountReached" ObjectId="209283" CollectItemId="72018" CollectItemCount="6" HuntingGroundRadius="50">
+					<Hotspot X="-4159.759" Y="6326.659" Z="13.11576" />
+					<Hotspot X="-4076.589" Y="6319.339" Z="10.11177" />
+					<Hotspot X="-4226.81" Y="6345.107" Z="9.746612" />
+					<Hotspot X="-4328.464" Y="6342.683" Z="10.16483" />
+				</CustomBehavior>
+				<While Condition="HasItem(72018)">
+					<CustomBehavior File="UseItem" ItemId="72018" WaitTime="1500" />
+				</While>
 			</If>
 			<If Condition="HasQuest(29510) &amp;&amp; IsQuestCompleted(29510)">
 				<TurnIn QuestName="Putting Trash to Good Use" QuestId="29510" TurnInName="Sayge" TurnInId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
@@ -211,12 +417,42 @@
 			<If Condition="Me.GetSkill(Styx.SkillLine.Engineering).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29511) &amp;&amp; !IsQuestCompleted(29511)">
 				<PickUp QuestName="Talkin' Tonks" QuestId="29511" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
 			</If>
+			<If Condition="HasQuest(29511) &amp;&amp; !IsQuestCompleted(29511)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on engineering quest." LogColor="LimeGreen" />
+				<If Condition="HasItem(72110)"> <!-- battered wrench -->
+					<While Condition="!IsQuestCompleted(29511)">
+						<!-- MobState="Dead" doesn't seem to work for these mobs -->
+						<CustomBehavior File="UseItemOn" ItemId="72110" MobId="54504" WaitTime="2000" X="-4096.472" Y="6390.844" Z="13.12113" />
+					</While>
+				<Else>
+					<CustomBehavior File="AbandonQuest" QuestId="29511" /> <!-- something went wrong -->
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<PickUp QuestName="Talkin' Tonks" QuestId="29511" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+					</Else>
+				</If>
+			</If>
 			<If Condition="HasQuest(29511) &amp;&amp; IsQuestCompleted(29511)">
 				<TurnIn QuestName="Talkin' Tonks" QuestId="29511" TurnInName="Rinling" TurnInId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
 			</If>
 
 			<If Condition="Me.GetSkill(Styx.SkillLine.Inscription).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29515) &amp;&amp; !IsQuestCompleted(29515)">
 				<PickUp QuestName="Writing the Future" QuestId="29515" GiverName="Sayge" GiverId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+			</If>
+			<If Condition="HasQuest(29515) &amp;&amp; !IsQuestCompleted(29515)">
+				<CustomBehavior File="Message" Text="Working on inscription quest." LogColor="LimeGreen" />
+				<While Condition="HasItem(71971)"> <!-- bundle of exotic herbs -->
+					<CustomBehavior File="UseItem" ItemId="71971" WaitTime="2000" />
+				</While>
+				<While Condition="HasItem(71972) &amp;&amp; HasItem(39354)"> <!-- prophetic ink, light parchment -->
+					<CustomBehavior File="UseItem" ItemId="71972" WaitTime="1000" />
+				</While>
+				<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				<If Condition="!HasItem(71971) &amp;&amp; !IsQuestCompleted(29515)">
+					<CustomBehavior File="AbandonQuest" QuestId="29515" /> <!-- something went wrong -->
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<PickUp QuestName="Writing the Future" QuestId="29515" GiverName="Sayge" GiverId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
+				</If>
 			</If>
 			<If Condition="HasQuest(29515) &amp;&amp; IsQuestCompleted(29515)">
 				<TurnIn QuestName="Writing the Future" QuestId="29515" TurnInName="Sayge" TurnInId="14822" X="-4263.003" Y="6279.333" Z="13.12501" />
@@ -225,33 +461,78 @@
 			<If Condition="Me.GetSkill(Styx.SkillLine.FirstAid).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29512) &amp;&amp; !IsQuestCompleted(29512)">
 				<PickUp QuestName="Putting the Carnies Back Together Again" QuestId="29512" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
 			</If>
+			<If Condition="HasQuest(29512) &amp;&amp; !IsQuestCompleted(29512)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on first aid quest." LogColor="LimeGreen" />
+				<If Condition="HasItem(71978)">
+					<While Condition="!IsQuestCompleted(29512)">
+						<CustomBehavior File="UseItemOn" ItemId="71978" WaitTime="1500" NpcId="54518" MobState="BelowHp" MobHpPercentLeft="75" X="-4246.52" Y="6373.576" Z="13.11691" />
+					</While>
+				<Else>
+					<CustomBehavior File="AbandonQuest" QuestId="29512" /> <!-- something went wrong -->
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<PickUp QuestName="Putting the Carnies Back Together Again" QuestId="29512" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+					</Else>
+				</If>
+			</If>
 			<If Condition="HasQuest(29512) &amp;&amp; IsQuestCompleted(29512)">
 				<TurnIn QuestName="Putting the Carnies Back Together Again" QuestId="29512" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
-			</If>
-
-			<If Condition="Me.GetSkill(Styx.SkillLine.Fishing).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
-				<PickUp QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
-			</If>
-			<If Condition="HasQuest(29513) &amp;&amp; IsQuestCompleted(29513)">
-				<TurnIn QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" TurnInName="Stamp Thunderhorn" TurnInId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
-			</If>
-
-			<If Condition="Me.GetSkill(Styx.SkillLine.Herbalism).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29514) &amp;&amp; !IsQuestCompleted(29514)">
-				<PickUp QuestName="Herbs for Healing" QuestId="29514" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
-			</If>
-			<If Condition="HasQuest(29514) &amp;&amp; IsQuestCompleted(29514)">
-				<TurnIn QuestName="Herbs for Healing" QuestId="29514" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
 			</If>
 
 			<If Condition="Me.GetSkill(Styx.SkillLine.Jewelcrafting).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29516) &amp;&amp; !IsQuestCompleted(29516)">
 				<PickUp QuestName="Keeping the Faire Sparkling" QuestId="29516" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
 			</If>
+			<If Condition="HasQuest(29516) &amp;&amp; !IsQuestCompleted(29516)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on jewelcrafting quest." LogColor="LimeGreen" />
+				<CustomBehavior File="CollectThings" CollectUntil="RequiredCountReached" ObjectId="209287" CollectItemId="72052" CollectItemCount="5" HuntingGroundRadius="50">
+					<Hotspot X="-4159.759" Y="6326.659" Z="13.11576" />
+					<Hotspot X="-4076.589" Y="6319.339" Z="10.11177" />
+					<Hotspot X="-4226.81" Y="6345.107" Z="9.746612" />
+					<Hotspot X="-4328.464" Y="6342.683" Z="10.16483" />
+				</CustomBehavior>
+				<While Condition="HasItem(72052)">
+					<CustomBehavior File="UseItem" ItemId="72052" WaitTime="1000" />
+				</While>
+			</If>
 			<If Condition="HasQuest(29516) &amp;&amp; IsQuestCompleted(29516)">
 				<TurnIn QuestName="Keeping the Faire Sparkling" QuestId="29516" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
 			</If>
 
+			<If Condition="Me.GetSkill(Styx.SkillLine.Herbalism).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29514) &amp;&amp; !IsQuestCompleted(29514)">
+				<PickUp QuestName="Herbs for Healing" QuestId="29514" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+			<If Condition="HasQuest(29514) &amp;&amp; !IsQuestCompleted(29514)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on herbalism quest." LogColor="LimeGreen" />
+				<!-- CollectItemId="72046" -->
+				<CustomBehavior File="CollectThings" QuestId="29514" CollectUntil="QuestComplete" ObjectId="209284" HuntingGroundRadius="50" PostInteractDelay="3000">
+					<Hotspot X="-4159.759" Y="6326.659" Z="13.11576" />
+					<Hotspot X="-4076.589" Y="6319.339" Z="10.11177" />
+					<Hotspot X="-4226.81" Y="6345.107" Z="9.746612" />
+					<Hotspot X="-4328.464" Y="6342.683" Z="10.16483" />
+				</CustomBehavior>
+			</If>
+			<If Condition="HasQuest(29514) &amp;&amp; IsQuestCompleted(29514)">
+				<TurnIn QuestName="Herbs for Healing" QuestId="29514" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+
 			<If Condition="Me.GetSkill(Styx.SkillLine.Leatherworking).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29517) &amp;&amp; !IsQuestCompleted(29517)">
 				<PickUp QuestName="Eyes on the Prizes" QuestId="29517" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+			</If>
+			<If Condition="HasQuest(29517) &amp;&amp; !IsQuestCompleted(29517)">
+				<CustomBehavior File="Message" Text="Working on leatherworking quest." LogColor="LimeGreen" />
+				<If Condition="HasItem(71977)">
+					<!-- shiny bauble, coarse thread, blue dye -->
+					<While Condition="GetItemCount(6529) &gt;= 2 &amp;&amp; HasItem(2320) &amp;&amp; HasItem(6260)">
+						<CustomBehavior File="UseItem" ItemId="71977" />
+					</While>
+				<Else>
+					<CustomBehavior File="AbandonQuest" QuestId="29517" /> <!-- something went wrong -->
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<PickUp QuestName="Eyes on the Prizes" QuestId="29517" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
+					</Else>
+				</If>
 			</If>
 			<If Condition="HasQuest(29517) &amp;&amp; IsQuestCompleted(29517)">
 				<TurnIn QuestName="Eyes on the Prizes" QuestId="29517" TurnInName="Rinling" TurnInId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
@@ -260,12 +541,33 @@
 			<If Condition="Me.GetSkill(Styx.SkillLine.Mining).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29518) &amp;&amp; !IsQuestCompleted(29518)">
 				<PickUp QuestName="Rearm, Reuse, Recycle" QuestId="29518" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
 			</If>
+			<If Condition="HasQuest(29518) &amp;&amp; !IsQuestCompleted(29518)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on mining quest." LogColor="LimeGreen" />
+				<!-- CollectItemId="71968" -->
+				<CustomBehavior File="CollectThings" QuestId="29518" CollectUntil="QuestComplete" ObjectId="209273" HuntingGroundRadius="50" PostInteractDelay="3000">
+					<Hotspot X="-4159.759" Y="6326.659" Z="13.11576" />
+					<Hotspot X="-4076.589" Y="6319.339" Z="10.11177" />
+					<Hotspot X="-4226.81" Y="6345.107" Z="9.746612" />
+					<Hotspot X="-4328.464" Y="6342.683" Z="10.16483" />
+				</CustomBehavior>
+			</If>
 			<If Condition="HasQuest(29518) &amp;&amp; IsQuestCompleted(29518)">
 				<TurnIn QuestName="Rearm, Reuse, Recycle" QuestId="29518" TurnInName="Rinling" TurnInId="14841" X="-4075.453" Y="6354.995" Z="13.11216" />
 			</If>
 
 			<If Condition="Me.GetSkill(Styx.SkillLine.Skinning).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29519) &amp;&amp; !IsQuestCompleted(29519)">
 				<PickUp QuestName="Tan My Hide" QuestId="29519" GiverName="Chronos" GiverId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
+			</If>
+			<If Condition="HasQuest(29519) &amp;&amp; !IsQuestCompleted(29519)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on skinning quest." LogColor="LimeGreen" />
+				<CustomBehavior File="CollectThings" QuestId="29519" CollectUntil="QuestComplete" ObjectId="209276" HuntingGroundRadius="50" PostInteractDelay="3000">
+					<Hotspot X="-4159.759" Y="6326.659" Z="13.11576" />
+					<Hotspot X="-4076.589" Y="6319.339" Z="10.11177" />
+					<Hotspot X="-4226.81" Y="6345.107" Z="9.746612" />
+					<Hotspot X="-4328.464" Y="6342.683" Z="10.16483" />
+				</CustomBehavior>
 			</If>
 			<If Condition="HasQuest(29519) &amp;&amp; IsQuestCompleted(29519)">
 				<TurnIn QuestName="Tan My Hide" QuestId="29519" TurnInName="Chronos" TurnInId="14833" X="-4200.146" Y="6246.726" Z="13.11721" />
@@ -274,11 +576,111 @@
 			<If Condition="Me.GetSkill(Styx.SkillLine.Tailoring).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29520) &amp;&amp; !IsQuestCompleted(29520)">
 				<PickUp QuestName="Banners, Banners Everywhere!" QuestId="29520" GiverName="Selina Dourman" GiverId="10445" X="-4004.797" Y="6236.218" Z="13.11706" />
 			</If>
+			<If Condition="HasQuest(29520) &amp;&amp; !IsQuestCompleted(29520)">
+				<CustomBehavior File="Message" Text="Working on tailoring quest." LogColor="LimeGreen" />
+				<!-- banner kit, coarse thread, red dye, blue dye -->
+				<If Condition="HasItem(72048) &amp;&amp; HasItem(2320) &amp;&amp; HasItem(2604) &amp;&amp; HasItem(6260)">
+					<CustomBehavior File="UseItem" ItemId="72048" WaitTime="5000" />
+				</If>
+				<If Condition="HasItem(72049)">
+					<CustomBehavior File="UseItem" ItemId="72049" WaitTime="3000" X="-4269.294" Y="6357.731" Z="12.94166" />
+				</If>
+				<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				<If Condition="!HasItem(72048) &amp;&amp; !IsQuestCompleted(29520)">
+					<CustomBehavior File="AbandonQuest" QuestId="29520" /> <!-- something went wrong -->
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<PickUp QuestName="Banners, Banners Everywhere!" QuestId="29520" GiverName="Selina Dourman" GiverId="10445" X="-4004.797" Y="6236.218" Z="13.11706" />
+				</If>
+			</If>
 			<If Condition="HasQuest(29520) &amp;&amp; IsQuestCompleted(29520)">
 				<TurnIn QuestName="Banners, Banners Everywhere!" QuestId="29520" TurnInName="Selina Dourman" TurnInId="10445" X="-4004.797" Y="6236.218" Z="13.11706" />
 			</If>
+
+			<If Condition="Me.GetSkill(Styx.SkillLine.Blacksmithing).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29508) &amp;&amp; !IsQuestCompleted(29508)">
+				<PickUp QuestName="Baby Needs Two Pair of Shoes" QuestId="29508" GiverName="Yebb Neblegear" GiverId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
+			</If>
+			<If Condition="HasQuest(29508) &amp;&amp; !IsQuestCompleted(29508)">
+				<!-- tested by tim -->
+				<CustomBehavior File="Message" Text="Working on blacksmithing quest." LogColor="LimeGreen" />
+				<If Condition="GetItemCount(71967) &gt;= 4"> <!-- horseshoe -->
+					<CustomBehavior File="UseItemOn" ItemId="71967" NpcId="54510" WaitTime="3000" X="-4340.056" Y="6315.554" Z="13.11671" />
+				</If>
+				<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				<If Condition="!HasItem(71964) &amp;&amp; !IsQuestCompleted(29508)"> <!-- iron stock -->
+					<CustomBehavior File="AbandonQuest" QuestId="29508" /> <!-- something went wrong -->
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<PickUp QuestName="Baby Needs Two Pair of Shoes" QuestId="29508" GiverName="Yebb Neblegear" GiverId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
+				</If>
+			</If>
+			<If Condition="HasQuest(29508) &amp;&amp; IsQuestCompleted(29508)">
+				<!-- tested by tim -->
+				<!-- doesn't seem to be able to turn this in for some reason -->
+				<!--TurnIn QuestName="Baby Needs Two Pair of Shoes" QuestId="29508" TurnInName="Yebb Neblegear" GiverId="14829" X="-4339.936" Y="6319.089" Z="13.11781" /-->
+				<CustomBehavior File="InteractWith" NpcId="14829" X="-4339.936" Y="6319.089" Z="13.11781" />
+				<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click()" />
+				<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" />
+			</If>
+
+			<CustomBehavior File="WaitTimer" WaitTime="1000" />
 		</If>
 
+
+
+		<!-- go back to town to buy stuff/perform tasks for profession quests that require it -->
+		<!-- by this point we know that if we're on the quest, it cannot possibly be complete -->
+		<!-- quests that need to buy/do stuff in city: alchemy, blacksmithing, cooking, inscription, leatherworking, tailoring -->
+		<If Condition="HasQuest(29506) || HasQuest(29508) || HasQuest(29509) || HasQuest(29515) || HasQuest(29517) || HasQuest(29520)">
+			<CustomBehavior File="Message" Text="Going to town to buy/do stuff for profession quests." LogColor="Yellow" />
+			<MoveTo X="-4445.835" Y="6329.296" Z="13.26439" />
+			
+			<If Condition="Me.IsHorde">
+				<CustomBehavior File="UseGameObject" ObjectId="210176" WaitTime="10000" X="-4445.835" Y="6329.296" Z="13.26439" />
+				
+				<If Condition="215 != Me.ZoneId">
+					<CustomBehavior File="Halt" Text="We should be in Mulgore but aren't!" />
+				</If>
+				
+				<If Condition="CanFly()">
+					<CustomBehavior File="FlyTo" X="-1291.443" Y="142.9302" Z="129.911" />
+				<Else>
+					<MoveTo X="-1314.705" Y="182.4519" Z="68.55228" />
+					<CustomBehavior File="ForcedDismount" /> <!-- gets stuck on TB elevator if mounted -->
+					<CustomBehavior File="UseTransport"
+									TransportId="4171"
+									WaitAtX="-1313.532" WaitAtY="182.5009" WaitAtZ="68.55237"
+									TransportStartX="-1308.373" TransportStartY="185.2901" TransportStartZ="68.58609"
+									TransportEndX="-1308.373" TransportEndY="185.2901" TransportEndZ="130.0842"
+									StandOnX="-1308.319" StandOnY="185.1367" StandOnZ="68.62617"
+									GetOffX="-1307.943" GetOffY="179.3203" GetOffZ="129.9952"
+									/>
+					<MoveTo X="-1291.443" Y="142.9302" Z="129.911" />	
+					</Else>
+				</If>
+			<Else>
+				<CustomBehavior File="UseGameObject" ObjectId="210175" WaitTime="10000" X="-4445.835" Y="6329.296" Z="13.26439" />
+				
+				<If Condition="12 != Me.ZoneId">
+					<CustomBehavior File="Halt" Text="We should be in Elwynn Forest but aren't!" />
+				</If>
+				
+				<!-- we don't have to go anywhere since we buy/do everything in goldshire -->
+				<!--
+				<If Condition="CanFly()">
+					<CustomBehavior File="FlyTo" />
+				<Else>
+					<MoveTo />	
+					</Else>
+				</If>-->
+				</Else>
+			</If>
+
+			<!--CustomBehavior File="Halt" Message="Halting until buying stuff is implemented." /-->
+			<!-- start this profile over again since we are now in thunder bluff or elwynn and it will buy stuff from the code at the beginning of the profile -->
+			<CustomBehavior File="LoadProfile" ProfileName="[N] Darkmoon Faire Quests by timglide.xml" />
+		</If>
+		
 
 
 		<!-- dailies -->
@@ -365,9 +767,65 @@
 			</If>
 
 
-			
+
 			<!-- stop condition -->
 			<If Condition="!(HasQuest(29463) || HasQuest(29436) || HasQuest(29438) || HasQuest(29434) || HasQuest(29455))">
+				<If Condition="HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
+					<CustomBehavior File="Message" Text="Moving to fishing spot for you to do manually." LogColor="Yellow" />
+
+					<If Condition="Chance(6.0)">
+						<MoveTo X="-4454.267" Y="6350.082" Z="1.058467" />
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4452.726" Y="6305.127" Z="1.436078" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4441.502" Y="6185.265" Z="0.885707" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4401.586" Y="6134.161" Z="0.6347259" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4305.896" Y="6111.682" Z="4.450766" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4426.372" Y="5893.174" Z="0.0185667" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4365.217" Y="5822.712" Z="0.007924721" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4146.005" Y="5809.52" Z="3.43452" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-3627.87" Y="6141.243" Z="1.195866" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-3630.823" Y="6677.222" Z="1.162532" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-3732.402" Y="6779.723" Z="1.812989" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-3936.043" Y="6749.634" Z="2.555389" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4025.01" Y="6739.711" Z="3.849565" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4188.331" Y="6688.014" Z="2.793402" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4309.599" Y="6703.573" Z="1.149253" />
+						</ElseIf>
+					<ElseIf Condition="Chance(6.0)">
+						<MoveTo X="-4372.485" Y="6628.217" Z="0.8825334" />
+						</ElseIf>
+					<Else>
+						<MoveTo X="-4420.298" Y="6559.932" Z="1.988309" />
+						</Else>
+					</If>
+				</If>
+				
 				<CustomBehavior File="Halt" Message="Finished all Darkmoon Faire quests we could, stopping." />
 			</If>
 		</While>
