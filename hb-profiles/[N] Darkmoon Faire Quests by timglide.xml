@@ -773,56 +773,14 @@
 				<If Condition="HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
 					<CustomBehavior File="Message" Text="Moving to fishing spot for you to do manually." LogColor="Yellow" />
 
-					<If Condition="Chance(6.0)">
-						<MoveTo X="-4454.267" Y="6350.082" Z="1.058467" />
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4452.726" Y="6305.127" Z="1.436078" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4441.502" Y="6185.265" Z="0.885707" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4401.586" Y="6134.161" Z="0.6347259" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4305.896" Y="6111.682" Z="4.450766" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4426.372" Y="5893.174" Z="0.0185667" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4365.217" Y="5822.712" Z="0.007924721" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4146.005" Y="5809.52" Z="3.43452" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-3627.87" Y="6141.243" Z="1.195866" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-3630.823" Y="6677.222" Z="1.162532" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-3732.402" Y="6779.723" Z="1.812989" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-3936.043" Y="6749.634" Z="2.555389" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4025.01" Y="6739.711" Z="3.849565" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4188.331" Y="6688.014" Z="2.793402" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4309.599" Y="6703.573" Z="1.149253" />
-						</ElseIf>
-					<ElseIf Condition="Chance(6.0)">
-						<MoveTo X="-4372.485" Y="6628.217" Z="0.8825334" />
-						</ElseIf>
+					<If Condition="Chance(25.0)">
+						<MoveTo X="-4450.319" Y="6303.257" Z="2.173741" />
+					<ElseIf Condition="Chance(25.0)">
+						<MoveTo X="-4452.552" Y="6311.159" Z="1.52834" /></ElseIf>
+					<ElseIf Condition="Chance(25.0)">
+						<MoveTo X="-4452.156" Y="6344.45" Z="1.680187" /></ElseIf>
 					<Else>
-						<MoveTo X="-4420.298" Y="6559.932" Z="1.988309" />
-						</Else>
+						<MoveTo X="-4452.53" Y="6353.468" Z="1.62248" /></Else>
 					</If>
 				</If>
 				
