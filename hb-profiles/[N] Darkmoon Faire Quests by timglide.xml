@@ -769,7 +769,8 @@
 
 
 			<!-- stop condition -->
-			<If Condition="!(HasQuest(29463) || HasQuest(29436) || HasQuest(29438) || HasQuest(29434) || HasQuest(29455))">
+			<!-- it's possible to be out of game tokens after turning in one of the dailies in which case we're not on any quests but we're not finished either so we need the full check here -->
+			<If Condition="!HasQuest(29463) &amp;&amp; IsQuestCompleted(29463) &amp;&amp; !HasQuest(29436) &amp;&amp; IsQuestCompleted(29436) &amp;&amp; !HasQuest(29438) &amp;&amp; IsQuestCompleted(29438) &amp;&amp; !HasQuest(29434) &amp;&amp; IsQuestCompleted(29434) &amp;&amp; !HasQuest(29455) &amp;&amp; IsQuestCompleted(29455)">
 				<If Condition="HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
 					<CustomBehavior File="Message" Text="Moving to fishing spot for you to do manually." LogColor="Yellow" />
 
