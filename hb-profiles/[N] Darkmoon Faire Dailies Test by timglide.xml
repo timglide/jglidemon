@@ -9,6 +9,11 @@
 			<CustomBehavior File="Halt" Message="You must start this profile on Darkmoon Island." />
 		</If>
 
+		<If Condition="Me.X &lt;= -4410.48">
+			<CustomBehavior File="DMF_Fishing" />
+			<CustomBehavior File="Halt" Message="Stopping after one behavior." />
+		</If>
+		
 		<If Condition="!HasItem(71083)">
 			<CustomBehavior File="Halt" Message="No game tokens." />
 		</If>

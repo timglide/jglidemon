@@ -5,6 +5,7 @@
 
 	<Blackspots>
 		<Blackspot X="-4080.025" Y="6353.404" Z="12.95191" Radius="1.995877" /> <!-- sign by rinling -->
+		<Blackspot X="-4079.959" Y="6354.242" Z="12.92315" Radius="3.126519" />
 	</Blackspots>
 	
 	<QuestOrder>
@@ -37,6 +38,7 @@
 					<If Condition="HasItem(71964)"> <!-- iron stock, no need to check quest in this case -->
 						<CustomBehavior File="Message" Text="Doing blacksmith stuff." LogColor="LimeGreen" />
 						<MoveTo X="-1242.275" Y="105.4413" Z="129.1405" /> <!-- forge -->
+						<CustomBehavior File="ForcedDismount" />
 						<While Condition="HasItem(71964)">
 							<CustomBehavior File="UseItem" ItemId="71964" WaitTime="3000" X="-1242.275" Y="105.4413" Z="129.1405" />
 						</While>
@@ -161,6 +163,7 @@
 				<If Condition="HasItem(71964)"> <!-- iron stock, no need to check quest in this case -->
 					<CustomBehavior File="Message" Text="Doing blacksmith stuff." LogColor="LimeGreen" />
 					<MoveTo X="-9456.812" Y="90.98833" Z="58.3431" />
+					<CustomBehavior File="ForcedDismount" />
 					<While Condition="HasItem(71964)">
 						<CustomBehavior File="UseItem" ItemId="71964" WaitTime="3000" />
 					</While>
@@ -339,6 +342,7 @@
 						<CustomBehavior File="WaitTimer" WaitTime="1000" />
 					</If>
 					<!-- moonberry juice, fizzy faire drink -->
+					<CustomBehavior File="ForcedDismount" />
 					<While Condition="HasItem(1645) &amp;&amp; HasItem(19299)">
 						<CustomBehavior File="UseItem" ItemId="72043" WaitTime="3000" />
 					</While>
@@ -369,6 +373,7 @@
 				<!-- tested by tim -->
 				<CustomBehavior File="Message" Text="Working on cooking quest." LogColor="LimeGreen" />
 				<!-- simple flour, plump frogs -->
+				<CustomBehavior File="ForcedDismount" />
 				<If Condition="GetItemCount(30817) &gt;= 5 &amp;&amp; HasItem(72056)">
 					<CustomBehavior File="UseItem" ItemId="72056" WaitTime="2000" /> <!-- make breaded frogs -->
 				</If>
@@ -389,7 +394,22 @@
 			<If Condition="Me.GetSkill(Styx.SkillLine.Fishing).CurrentValue &gt;= 75 &amp;&amp; !HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
 				<PickUp QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
 			</If>
-			<!-- TODO -->
+			<If Condition="HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
+				<CustomBehavior File="Message" Text="Working on fishing quest." LogColor="LimeGreen" />
+				<If Condition="Chance(25.0)">
+					<MoveTo X="-4450.319" Y="6303.257" Z="2.173741" />
+					<ElseIf Condition="Chance(25.0)">
+						<MoveTo X="-4452.552" Y="6311.159" Z="1.52834" />
+					</ElseIf>
+					<ElseIf Condition="Chance(25.0)">
+						<MoveTo X="-4452.156" Y="6344.45" Z="1.680187" />
+					</ElseIf>
+					<Else>
+						<MoveTo X="-4452.53" Y="6353.468" Z="1.62248" />
+					</Else>
+				</If>
+				<CustomBehavior File="DMF_Fishing" />
+			</If>
 			<If Condition="HasQuest(29513) &amp;&amp; IsQuestCompleted(29513)">
 				<TurnIn QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" TurnInName="Stamp Thunderhorn" TurnInId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
 			</If>
@@ -406,6 +426,7 @@
 					<Hotspot X="-4226.81" Y="6345.107" Z="9.746612" />
 					<Hotspot X="-4328.464" Y="6342.683" Z="10.16483" />
 				</CustomBehavior>
+				<CustomBehavior File="ForcedDismount" />
 				<While Condition="HasItem(72018)">
 					<CustomBehavior File="UseItem" ItemId="72018" WaitTime="1500" />
 				</While>
@@ -441,6 +462,7 @@
 			</If>
 			<If Condition="HasQuest(29515) &amp;&amp; !IsQuestCompleted(29515)">
 				<CustomBehavior File="Message" Text="Working on inscription quest." LogColor="LimeGreen" />
+				<CustomBehavior File="ForcedDismount" />
 				<While Condition="HasItem(71971)"> <!-- bundle of exotic herbs -->
 					<CustomBehavior File="UseItem" ItemId="71971" WaitTime="2000" />
 				</While>
@@ -491,6 +513,7 @@
 					<Hotspot X="-4226.81" Y="6345.107" Z="9.746612" />
 					<Hotspot X="-4328.464" Y="6342.683" Z="10.16483" />
 				</CustomBehavior>
+				<CustomBehavior File="ForcedDismount" />
 				<While Condition="HasItem(72052)">
 					<CustomBehavior File="UseItem" ItemId="72052" WaitTime="1000" />
 				</While>
@@ -523,6 +546,7 @@
 			<If Condition="HasQuest(29517) &amp;&amp; !IsQuestCompleted(29517)">
 				<CustomBehavior File="Message" Text="Working on leatherworking quest." LogColor="LimeGreen" />
 				<If Condition="HasItem(71977)">
+					<CustomBehavior File="ForcedDismount" />
 					<!-- shiny bauble, coarse thread, blue dye -->
 					<While Condition="GetItemCount(6529) &gt;= 2 &amp;&amp; HasItem(2320) &amp;&amp; HasItem(6260)">
 						<CustomBehavior File="UseItem" ItemId="71977" />
@@ -550,6 +574,19 @@
 					<Hotspot X="-4076.589" Y="6319.339" Z="10.11177" />
 					<Hotspot X="-4226.81" Y="6345.107" Z="9.746612" />
 					<Hotspot X="-4328.464" Y="6342.683" Z="10.16483" />
+					<!-- credit to JimT for below hotspots -->
+					<Hotspot X="-4193.234" Y="6321.614" Z="13.13739" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4175.034" Y="6288.377" Z="13.11763" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4178.987" Y="6255.531" Z="13.11763" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4197.443" Y="6235.959" Z="13.11766" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4182.137" Y="6222.059" Z="13.11737" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4159.25" Y="6204.41" Z="13.11687" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4124.841" Y="6260.053" Z="13.11707" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4099.552" Y="6233.314" Z="13.4956" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4103.518" Y="6257.678" Z="13.11731" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4096.441" Y="6262.258" Z="13.1169" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4101.663" Y="6281.354" Z="13.11977" /> <!-- Added June 4/12 -->
+					<Hotspot X="-4085.928" Y="6288.595" Z="13.11813" /> <!-- Added June 4/12 --> 
 				</CustomBehavior>
 			</If>
 			<If Condition="HasQuest(29518) &amp;&amp; IsQuestCompleted(29518)">
@@ -579,6 +616,7 @@
 			<If Condition="HasQuest(29520) &amp;&amp; !IsQuestCompleted(29520)">
 				<CustomBehavior File="Message" Text="Working on tailoring quest." LogColor="LimeGreen" />
 				<!-- banner kit, coarse thread, red dye, blue dye -->
+				<CustomBehavior File="ForcedDismount" />
 				<If Condition="HasItem(72048) &amp;&amp; HasItem(2320) &amp;&amp; HasItem(2604) &amp;&amp; HasItem(6260)">
 					<CustomBehavior File="UseItem" ItemId="72048" WaitTime="5000" />
 				</If>
@@ -740,6 +778,7 @@
 			</While>
 			<If Condition="HasQuest(29438) &amp;&amp; IsQuestCompleted(29438)">
 				<TurnIn QuestName="He Shoots, He Scores!" QuestId="29438" TurnInName="Rinling" TurnInId="14841" X="-4075.453" Y="6354.995" Z="13.11186" />
+				<CustomBehavior File="MyCTM" X="-4085.832" Y="6336.537" Z="9.702446" /> <!-- avoid stupid sign -->
 			</If>
 
 			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29434) &amp;&amp; !IsQuestCompleted(29434)">
@@ -752,6 +791,7 @@
 			</While>
 			<If Condition="HasQuest(29434) &amp;&amp; IsQuestCompleted(29434)">
 				<TurnIn QuestName="Tonk Commander" QuestId="29434" TurnInName="Finlay Coolshot" TurnInId="54605" X="-4130.516" Y="6326.557" Z="13.11124" />
+				<CustomBehavior File="MyCTM" X="-4121.946" Y="6338.686" Z="10.55348" /> <!-- avoid sign -->
 			</If>
 
 			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29455) &amp;&amp; !IsQuestCompleted(29455)">
@@ -771,20 +811,6 @@
 			<!-- stop condition -->
 			<!-- it's possible to be out of game tokens after turning in one of the dailies in which case we're not on any quests but we're not finished either so we need the full check here -->
 			<If Condition="!HasQuest(29463) &amp;&amp; IsQuestCompleted(29463) &amp;&amp; !HasQuest(29436) &amp;&amp; IsQuestCompleted(29436) &amp;&amp; !HasQuest(29438) &amp;&amp; IsQuestCompleted(29438) &amp;&amp; !HasQuest(29434) &amp;&amp; IsQuestCompleted(29434) &amp;&amp; !HasQuest(29455) &amp;&amp; IsQuestCompleted(29455)">
-				<If Condition="HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
-					<CustomBehavior File="Message" Text="Moving to fishing spot for you to do manually." LogColor="Yellow" />
-
-					<If Condition="Chance(25.0)">
-						<MoveTo X="-4450.319" Y="6303.257" Z="2.173741" />
-					<ElseIf Condition="Chance(25.0)">
-						<MoveTo X="-4452.552" Y="6311.159" Z="1.52834" /></ElseIf>
-					<ElseIf Condition="Chance(25.0)">
-						<MoveTo X="-4452.156" Y="6344.45" Z="1.680187" /></ElseIf>
-					<Else>
-						<MoveTo X="-4452.53" Y="6353.468" Z="1.62248" /></Else>
-					</If>
-				</If>
-				
 				<CustomBehavior File="Halt" Message="Finished all Darkmoon Faire quests we could, stopping." />
 			</If>
 		</While>
