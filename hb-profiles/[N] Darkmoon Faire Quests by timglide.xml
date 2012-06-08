@@ -175,6 +175,11 @@
 					<CustomBehavior File="InteractWith" NpcId="465" BuyItemId="1645" BuyItemCount="5" />
 				</If>
 
+				<MoveTo X="-9482.946" Y="69.12139" Z="56.34609" />
+				<!-- try not to get stuck on awning -->
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="MyCTM" X="-9491.366" Y="80.74424" Z="56.05242" />
+				
 				<If Condition="HasQuest(29515) &amp;&amp; !IsQuestCompleted(29515) &amp;&amp; GetItemCount(39354) &lt; 5">
 					<CustomBehavior File="Message" Text="Buying stuff for inscription." LogColor="LimeGreen" />
 					<MoveTo X="-9491.402" Y="80.60412" Z="56.05033" />
@@ -216,6 +221,9 @@
 				</If>
 			</If>
 
+			<!-- try not to get stuck on awning -->
+			<CustomBehavior File="MyCTM" X="-9482.946" Y="69.12139" Z="56.34609" />
+			
 			<If Condition="CanFly()">
 				<CustomBehavior File="FlyTo" DestName="Darkmoon Faire Portal" X="-9547.637" Y="85.11835" Z="59.44423" />
 			<Else>
@@ -769,6 +777,10 @@
 			</If>
 		
 			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29438) &amp;&amp; !IsQuestCompleted(29438)">
+				<MoveTo X="-4078.942" Y="6344.496" Z="10.45022" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="MyCTM" X="-4074.581" Y="6349.334" Z="12.94444" />
+				<CustomBehavior File="MyCTM" X="-4076.096" Y="6352.526" Z="14.00889" />
 				<PickUp QuestName="He Shoots, He Scores!" QuestId="29438" GiverName="Rinling" GiverId="14841" X="-4075.453" Y="6354.995" Z="13.11186" />
 			</If>
 			<While Condition="HasItem(71083) &amp;&amp; HasQuest(29438) &amp;&amp; !IsQuestCompleted(29438)">
@@ -782,6 +794,9 @@
 			</If>
 
 			<If Condition="HasItem(71083) &amp;&amp; !HasQuest(29434) &amp;&amp; !IsQuestCompleted(29434)">
+				<MoveTo X="-4123.167" Y="6337.439" Z="10.961" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="MyCTM" X="-4128.164" Y="6325.352" Z="13.11519" />
 				<PickUp QuestName="Tonk Commander" QuestId="29434" GiverName="Finlay Coolshot" GiverId="54605" X="-4130.516" Y="6326.557" Z="13.11124" />
 			</If>
 			<While Condition="HasItem(71083) &amp;&amp; HasQuest(29434) &amp;&amp; !IsQuestCompleted(29434)">
