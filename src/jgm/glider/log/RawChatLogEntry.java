@@ -171,38 +171,51 @@ public class RawChatLogEntry extends LogEntry {
 			jgm.gui.components.GoldPanel.gscToC(gold, silver, copper);
 	}
 
+	
 	/* From http://www.wowwiki.com/ItemString
 	 * item:itemId:enchantId:jewelId1:jewelId2:jewelId3:jewelId4:suffixId:uniqueId
 	 */
-	private static Pattern ITEM_PATTERN =
-		Pattern.compile(
-			".*(?:(?:You\\s+receive|Received)\\s+(?:loot|item)|You\\s+create):\\s+\\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h(?:x(\\d+))?\\.*"
-	);
-
-		/* group 1: item id
-		 *       2: item name
-		 *       3: optional quantity
-		 */
+	
+	/* group 1: item id
+	 *       2: item name
+	 *       3: optional quantity
+	 */
+	private static Pattern ITEM_PATTERN1 = Pattern.compile(
+		".*(?:(?:You receive|Received) (?:loot|item)|You create): \\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h(?:x(\\d+))?\\.*");
+	
+	/* group 1: quantity
+	 *       2: item id
+	 *       3: item name
+	 */
+	private static Pattern ITEM_PATTERN2 = Pattern.compile(
+		".*Received (\\d+) of item: \\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h\\.*");
 
 	private void parseItem() {
 		// |Hitem:1487:0:0:0:0:0:0:799645190|h[Conjured Pumpernickel]|h|rx4
 
-		Matcher m = ITEM_PATTERN.matcher(text);
+		Matcher m = ITEM_PATTERN1.matcher(text);
 //		System.out.println("Checking for item: " + text);
-
-		if (!m.matches()) return;
-
-//		System.out.println("Found item match in RawChatLog");
 
 		int id = 0, qty = 1;
 		String name = null;
-
-		try {
-			id   = Integer.parseInt(m.group(1));
-			name = m.group(2);
-			qty  = Integer.parseInt(m.group(3));
-		} catch (NumberFormatException e) {}
-		  catch (NullPointerException e)  {}
+		
+		if (m.matches()) {
+//		System.out.println("Found item match in RawChatLog");
+			try {
+				id   = Integer.parseInt(m.group(1));
+				name = m.group(2);
+				qty  = Integer.parseInt(m.group(3));
+			} catch (NumberFormatException e) {}
+			  catch (NullPointerException e)  {}
+		} else if ((m = ITEM_PATTERN2.matcher(text)).matches()) {
+			try {
+				qty  = Integer.parseInt(m.group(1));
+				id   = Integer.parseInt(m.group(2));
+				name = m.group(3);
+			} catch (NumberFormatException e) {}
+		} else {
+			return;
+		}
 
 		itemSet = ItemSet.factory(id, name, qty);
 	}

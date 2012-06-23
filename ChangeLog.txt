@@ -1,5 +1,11 @@
 JGlideMon ChangeLog
 
+Version 1.1
+-----------
+- Will now recognize loot in the form of "Received # of item: [Item]."
+- Updated mobile version of web interface to support more devices
+  (IN PROGRESS).
+
 Version 1.0
 -----------
 - Development resumes to coincide with the GliderRemoteCompat

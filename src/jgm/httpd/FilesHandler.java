@@ -44,11 +44,6 @@ public class FilesHandler extends Handler {
 	 */
 	@Override
 	public Response handle(String uri, String method, Properties headers, Properties params) {
-		// Make sure we won't die of an exception later
-		if ( !baseDir.isDirectory())
-			return new Response( HTTPD.HTTP_INTERNALERROR, HTTPD.MIME_PLAINTEXT,
-								 "INTERNAL ERRROR: serveFile(): given homeDir is not a directory." );
-
 		// Remove URL arguments
 		uri = uri.trim().replace( File.separatorChar, '/' );
 		if ( uri.indexOf( '?' ) >= 0 )

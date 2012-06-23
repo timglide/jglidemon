@@ -205,6 +205,10 @@ public class HTTPD implements Runnable
 				if (!f.exists()) {
 					f = new File("src/jgm/resources/httpd/static");
 				}
+
+				if (!f.exists()) {
+					f = new File("jgm/resources/httpd/static");
+				}
 				
 				if (!f.exists()) {
 					f = null;
