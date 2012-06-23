@@ -1,10 +1,3 @@
-var jQT = new $.jQTouch({
-    icon: '/static/img/stitch-57.png',
-    icon4: '/static/img/stitch-114.png',
-    statusBar: 'black-translucent',
-    preloadImages: []
-});
-
 (function() {
 	var updater_initOrig = updater.init;
 	updater.init = function() {
