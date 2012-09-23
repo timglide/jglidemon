@@ -5,15 +5,15 @@ using System.Text;
 using Styx;
 using System.Threading;
 using Styx.WoWInternals.WoWObjects;
-using Styx.Logic.Inventory;
 using Styx.WoWInternals;
 using Styx.Helpers;
-using Styx.Logic.Pathing;
-using Styx.Logic.Inventory.Frames.Merchant;
-using TreeSharp;
-using Action = TreeSharp.Action;
-using Styx.Logic.BehaviorTree;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.Misc;
+using Styx.CommonBot;
+using Styx.Common;
+using Styx.TreeSharp;
+using Styx.CommonBot.Frames;
+using Styx.Pathing;
 
 namespace LoveTokenBuyBot {
 	/// <summary>
@@ -83,7 +83,7 @@ namespace LoveTokenBuyBot {
 				createdCount = BraceletCount - braceletCount;
 			}
 
-			Logging.WriteDebug("Wanted {0} bracelets, actually made {1}.", createCount, createdCount);
+			Logging.WriteDiagnostic("Wanted {0} bracelets, actually made {1}.", createCount, createdCount);
 
 			return RunStatus.Success;
 		});
