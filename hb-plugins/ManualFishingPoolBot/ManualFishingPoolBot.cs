@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using Styx;
 using Styx.Helpers;
-using TreeSharp;
-using Action = TreeSharp.Action;
+using Styx.TreeSharp;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.WoWObjects;
 using CommonBehaviors.Actions;
 using Styx.WoWInternals;
-using Styx.Logic.BehaviorTree;
 using System.Threading;
-using Styx.Logic.Combat;
-using Styx.Logic;
+using Styx.CommonBot;
+using Styx.MemoryManagement;
+using Styx.Common;
 
 namespace timglide {
 	/// <summary>
@@ -21,14 +21,13 @@ namespace timglide {
 	/// $Revision$
 	/// </summary>
 	class ManualFishingPoolBot : BotBase {
-		private static readonly int[] FishingSpellIds = { 7620, 7731, 7732, 18248, 33095, 51294, 88868 };
+		private static readonly int[] FishingSpellIds = { 131474, 7620, 7731, 7732, 18248, 33095, 51294, 88868 };
 
 		private const float
 			PoolDistanceCheck = 30f,
 			PoolDistanceCheckSqr = PoolDistanceCheck * PoolDistanceCheck,
 			BobberDistanceCheck = 3.5f, // this is a little less than the value autoangler uses
 			BobberDistanceCheckSqr = BobberDistanceCheck * BobberDistanceCheck;
-
 
 		public override string Name {
 			get { return "ManualFishingPoolBot"; }
@@ -66,15 +65,15 @@ namespace timglide {
 			get {
 				return bobber = ObjectManager.GetObjectsOfType<WoWGameObject>()
 					.FirstOrDefault(o =>
-						o.IsValid && o.SubType == WoWGameObjectType.FishingBobber &&
-						o.CreatedByGuid == Me.Guid);
+						o.IsValid && o.CreatedByGuid == Me.Guid &&
+						o.SubType == WoWGameObjectType.FishingNode);
 			}
 		}
 
 		public bool IsBobbing {
 			get {
 				bobber = Bobber;
-				return null != bobber ? ((WoWFishingBobber) bobber.SubObj).IsBobbing : false;
+				return null != bobber ? 1 == bobber.AnimationState : false;
 			}
 		}
 
@@ -82,7 +81,7 @@ namespace timglide {
 			bobber = Bobber;
 
 			if (null != bobber) {
-				((WoWFishingBobber) bobber.SubObj).Use();
+				bobber.SubObj.Use();
 			}
 		}
 
@@ -126,10 +125,9 @@ namespace timglide {
 					})),
 					new Decorator(ret => State.Running == state && null != pool && null == NearestPool, new Action(c => {
 						//System.Media.SystemSounds.Exclamation.Play();
-						using (new FrameLock()) {
-							Lua.DoString(@"PlaySoundFile('Sound\\Creature\\HoodWolf\\HoodWolfTransformPlayer01.wav', 'Master')");
-							Lua.DoString("DEFAULT_CHAT_FRAME:AddMessage('**** Pool Empty! Move to next! ****')");
-						}
+						Lua.DoString(
+							@"PlaySoundFile('Sound\\Creature\\HoodWolf\\HoodWolfTransformPlayer01.wav', 'Master') " +
+							 "DEFAULT_CHAT_FRAME:AddMessage('**** Pool Empty! Move to next! ****')");
 					})),
 					new Decorator(ret => null == NearestPool, new Action(c => {
 						state = State.WaitingForFirstCast;
@@ -140,18 +138,18 @@ namespace timglide {
 						new SwitchArgument<State>(State.Running, new PrioritySelector(
 							new Decorator(ret => Me.IsCasting, new PrioritySelector(
 								new Decorator(ret => null == Bobber, new Action(c => {
-									Logging.WriteDebug("Casting line because bobber was null");
+									Logging.WriteDiagnostic("Casting line because bobber was null");
 									CastLine();
 									Thread.Sleep(250); // sue me
 								})),
 								new Decorator(ret => IsBobbing, new Action(c => {
 									TreeRoot.StatusText = "Looting bobber";
-									Logging.WriteDebug("Using bobber because it bobbed");
+									Logging.WriteDiagnostic("Using bobber because it bobbed");
 									UseBobber();
 									StyxWoW.SleepForLagDuration(); // sue me
 								})),
 								new Decorator(ret => bobber.Location.Distance2DSqr(pool.Location) > BobberDistanceCheckSqr, new Action(c => {
-									Logging.WriteDebug("Casting line because it wasn't close enough to the pool");
+									Logging.WriteDiagnostic("Casting line because it wasn't close enough to the pool");
 									CastLine();
 									Thread.Sleep(250); // sue me
 								})),
@@ -160,7 +158,7 @@ namespace timglide {
 								})
 							)),
 							new Action(c => {
-								Logging.WriteDebug("Casting line because we weren't casting already");
+								Logging.WriteDiagnostic("Casting line because we weren't casting already");
 								CastLine();
 								Thread.Sleep(250); // sue me
 							})
