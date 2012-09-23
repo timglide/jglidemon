@@ -11,12 +11,16 @@ using System.Drawing;
 using Styx;
 using Styx.Helpers;
 using Styx.WoWInternals;
-using Styx.Logic.Pathing;
-using Styx.Plugins.PluginClass;
 using Styx.WoWInternals.WoWObjects;
+using Styx.Plugins;
+using Styx.Common;
 
 
 namespace BattleStandardDropper {
+	public class Color {
+		public static readonly System.Windows.Media.Color Red = System.Windows.Media.Color.FromRgb(255, 0, 0);
+	}
+
 	[Serializable]
 	public class Settings {
 		private static Settings instance;
@@ -246,7 +250,7 @@ namespace BattleStandardDropper {
 			battleStandardId = 0;
 			battleStandardBuffId = 0;
 
-			using (new FrameLock()) {
+			//using (new FrameLock()) { // FIXME framelock
 				if ((int)Me.GetReputationLevelWith(GuildFaction) < (int)WoWUnitReaction.Friendly) {
 					return;
 				}
@@ -258,7 +262,7 @@ namespace BattleStandardDropper {
 						return;
 					}
 				}
-			}
+			//}
 		}
 
 		private Stopwatch useStandardSW = new Stopwatch();
@@ -289,7 +293,9 @@ namespace BattleStandardDropper {
 		}
 
 		public override void Dispose() {
-			Settings.Instance.Save();
+			// Settings were saved when the button was pressed, this would save an empty file
+			// for chars that haven't even pressed the button
+//			Settings.Instance.Save();
 			initialized = false;
 			useStandardSW.Reset();
 		}
