@@ -4,22 +4,19 @@ using System.Collections.Generic;
 
 using Styx;
 using Styx.Helpers;
-using Styx.Logic.BehaviorTree;
-using Styx.Logic.Pathing;
-using Styx.Logic.Questing;
 
-using TreeSharp;
-using Action = TreeSharp.Action;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.WoWObjects;
 using Styx.WoWInternals;
 using System.Drawing;
-using Styx.Logic.Combat;
 using System.Threading;
 using CommonBehaviors.Actions;
-using Styx.Combat.CombatRoutine;
-using Styx.Logic;
-using Styx.Logic.Inventory;
-using Styx.Logic.Inventory.Frames.Gossip;
+using Styx.CommonBot.Profiles;
+using Styx.TreeSharp;
+using Styx.CommonBot;
+using Styx.CommonBot.Frames;
+using Styx.Pathing;
+using Styx.MemoryManagement;
 
 namespace timglide {
 	/// <summary>
@@ -150,7 +147,12 @@ namespace timglide {
 
 				if (null == a) return 0;
 
-				return a.TimeLeft.TotalSeconds;
+				return Lua.GetReturnVal<double>(string.Format(
+					"local id={0} for i=0,40 do if select(11, UnitBuff(\"player\", i))==id then return -1*(GetTime()-select(7, UnitBuff(\"player\", i))) end end return 0",
+					BuffId),
+				0);
+				// not working for me, always returns 0
+				//return a.TimeLeft.TotalSeconds;
 			}
 		}
 
@@ -178,7 +180,7 @@ namespace timglide {
 
 		#region Overrides of CustomForcedBehavior
 
-		protected override TreeSharp.Composite CreateBehavior() {
+		protected override Composite CreateBehavior() {
 			return _root ?? (_root = new PrioritySelector(
 				new Decorator(ret => IsDone, new Action(c => {
 					TreeRoot.StatusText = "The Humanoid Cannonball complete!";
@@ -186,8 +188,10 @@ namespace timglide {
 				new Decorator(ret => HasBuff, new PrioritySelector(
 					new Decorator(ret => !_hadWings, new Action(c => {
 						_hadWings = true;
+						LogMessage("debug", "Got wings buff.");
 					})),
 					new Decorator(ret => BuffDuration <= (CancelTimeLeft + _latency), new Action(c => {
+						LogMessage("debug", "Cancelling wings with {0}s left. CancelTime+Latency = {1} + {2} = {3}", BuffDuration, CancelTimeLeft, _latency, CancelTimeLeft + _latency);
 						TreeRoot.StatusText = "Cancelling wings.";
 						PerformAction(ActionButton);
 					})),
@@ -238,13 +242,13 @@ namespace timglide {
 					})),
 					new Sequence(
 						new Action(c => {
-							using (new FrameLock()) {
+							//using (new FrameLock()) { // FIXME
 								foreach (int buffId in BadBuffIds) {
 									if (Me.HasAura(buffId)) {
 										CancelBuff(buffId);
 									}
 								}
-							}
+							//}
 						}),
 						new Action(c => {
 							Npc.Interact();

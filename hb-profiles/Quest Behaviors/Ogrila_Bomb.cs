@@ -4,19 +4,18 @@ using System.Collections.Generic;
 
 using Styx;
 using Styx.Helpers;
-using Styx.Logic.BehaviorTree;
-using Styx.Logic.Pathing;
-using Styx.Logic.Questing;
 
-using TreeSharp;
-using Action = TreeSharp.Action;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.WoWObjects;
 using Styx.WoWInternals;
 using System.Drawing;
-using Styx.Logic.Combat;
 using System.Threading;
 using CommonBehaviors.Actions;
-using Styx.Logic;
+using Styx.CommonBot.Profiles;
+using Styx.Common;
+using Styx.TreeSharp;
+using Styx.CommonBot;
+using Styx.Pathing;
 
 namespace timglide {
 	class Ogrila_Bomb : CustomForcedBehavior {
@@ -143,7 +142,7 @@ namespace timglide {
 		private WoWPoint _nextWaypoint = WoWPoint.Empty;
 		private WoWPoint _nextPoint = WoWPoint.Empty;
 
-		protected override TreeSharp.Composite CreateBehavior() {
+		protected override Composite CreateBehavior() {
 			return _root ?? (_root = new PrioritySelector(
 				new Decorator(ret => IsDone, new Action(c => {
 					TreeRoot.StatusText = "Bombing run complete!";
@@ -189,7 +188,7 @@ namespace timglide {
 							new Action(c => {
 								TreeRoot.StatusText = "Bombing cannonball.";
 								Item.UseContainerItem();
-								LegacySpellManager.ClickRemoteLocation(_nearestUnit.Location);
+								SpellManager.ClickRemoteLocation(_nearestUnit.Location);
 							}),
 							new Wait(TimeSpan.FromSeconds(0.5), ret => StyxWoW.Me.IsCasting, new ActionAlwaysSucceed()),
 							new WaitContinue(TimeSpan.FromSeconds(0.5), ret => !StyxWoW.Me.IsCasting, new ActionAlwaysSucceed()),
@@ -255,7 +254,8 @@ namespace timglide {
 
 			if (null == Item) {
 				_isDone = true;
-				Logging.Write(Color.Red, "Missing item Skyguard Bombs, skipping.");
+				// FIXME color
+				Logging.Write(/*Color.Red,*/ "Missing item Skyguard Bombs, skipping.");
 			}
 
 			// If the quest is complete, this behavior is already done...

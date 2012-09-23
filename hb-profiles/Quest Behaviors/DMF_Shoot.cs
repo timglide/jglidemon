@@ -4,22 +4,19 @@ using System.Collections.Generic;
 
 using Styx;
 using Styx.Helpers;
-using Styx.Logic.BehaviorTree;
-using Styx.Logic.Pathing;
-using Styx.Logic.Questing;
 
-using TreeSharp;
-using Action = TreeSharp.Action;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.WoWObjects;
 using Styx.WoWInternals;
 using System.Drawing;
-using Styx.Logic.Combat;
 using System.Threading;
 using CommonBehaviors.Actions;
-using Styx.Combat.CombatRoutine;
-using Styx.Logic;
-using Styx.Logic.Inventory;
-using Styx.Logic.Inventory.Frames.Gossip;
+using Styx.TreeSharp;
+using Styx.CommonBot;
+using Styx.Pathing;
+using Styx.CommonBot.Frames;
+using Styx.Common;
+using Styx.CommonBot.Profiles;
 
 namespace timglide {
 	/// <summary>
@@ -147,7 +144,7 @@ namespace timglide {
 
 		#region Overrides of CustomForcedBehavior
 
-		protected override TreeSharp.Composite CreateBehavior() {
+		protected override Composite CreateBehavior() {
 			return _root ?? (_root = new PrioritySelector(
 				new Decorator(ret => IsDone, new Action(c => {
 					TreeRoot.StatusText = "He Shoots, He Scores! complete!";

@@ -4,22 +4,19 @@ using System.Collections.Generic;
 
 using Styx;
 using Styx.Helpers;
-using Styx.Logic.BehaviorTree;
-using Styx.Logic.Pathing;
-using Styx.Logic.Questing;
 
-using TreeSharp;
-using Action = TreeSharp.Action;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.WoWObjects;
 using Styx.WoWInternals;
 using System.Drawing;
-using Styx.Logic.Combat;
 using System.Threading;
 using CommonBehaviors.Actions;
-using Styx.Combat.CombatRoutine;
-using Styx.Logic;
-using Styx.Logic.Inventory;
-using Styx.Logic.Inventory.Frames.Gossip;
+using Styx.TreeSharp;
+using Styx.CommonBot;
+using Styx.Common;
+using Styx.CommonBot.Profiles;
+using Styx.Pathing;
+using Styx.CommonBot.Frames;
 
 namespace timglide {
 	/// <summary>
@@ -45,6 +42,8 @@ namespace timglide {
 		private const uint DistanceCheckSqr = DistanceCheck * DistanceCheck;
 
 		private static readonly TimeSpan BlacklistTime = TimeSpan.FromSeconds(60);
+		private static readonly TimeSpan TempBlacklistTime = TimeSpan.FromSeconds(5);
+		private static readonly TimeSpan StuckTimeLimit = TimeSpan.FromSeconds(2);
 		private static readonly WoWPoint Center = new WoWPoint(-4136.531, 6302.656, 13.1169);
 
 		public DMF_Tonk(Dictionary<string, string> args)
@@ -76,6 +75,9 @@ namespace timglide {
 
 		private Queue<WoWPoint> _pathPoints = new Queue<WoWPoint>();
 		private Queue<WoWPoint> _escapePathPoints = new Queue<WoWPoint>();
+
+		private DateTime _lastMoveTime = DateTime.Now;
+		private WoWPoint _lastPlayerTonkLocation = WoWPoint.Empty;
 
 		// DON'T EDIT THESE--they are auto-populated by Subversion
 		public override string SubversionId { get { return ("$Id$"); } }
@@ -272,7 +274,7 @@ namespace timglide {
 
 		#region Overrides of CustomForcedBehavior
 
-		protected override TreeSharp.Composite CreateBehavior() {
+		protected override Composite CreateBehavior() {
 			return _root ?? (_root = new PrioritySelector(
 				new Decorator(ret => HasDebuff, new Action(c => {
 					// can't move when debuffed even if we're done so just wait
@@ -286,6 +288,11 @@ namespace timglide {
 				})),
 				new Decorator(ret => HasTonk, new PrioritySelector(
 					new Decorator(ret => !(PlayerTonk.IsValid && PlayerTonk.IsAlive), new ActionAlwaysSucceed()), // when it dies you can't do anything for a moment
+					new Decorator(ret => IsQuestComplete, new Action(c => {
+						TreeRoot.StatusText = "Exiting vehicle.";
+						Lua.DoString("VehicleExit()");
+						Thread.Sleep(1000); // sue me
+					})),
 					new Decorator(ret => HasMark && HasEnemyTonk, new PrioritySelector(
 						new Decorator(ret => 0 == _escapePathPoints.Count, new Action(c => {
 							WoWPoint safeLocation = SafeLocation;
@@ -305,6 +312,8 @@ namespace timglide {
 						//})),
 						new Action(c => {
 							WoWMovement.ClickToMove(_escapePathPoints.Peek());
+							// no stuck detection when fleeing
+							//_stuckPoint = Me.Location;
 						})
 					)),
 					new Decorator(ret => 0 != _escapePathPoints.Count, new Action(c => {
@@ -340,6 +349,23 @@ namespace timglide {
 					})),
 					new Action(c => {
 						WoWMovement.ClickToMove(_pathPoints.Peek());
+
+						if (null != _target && WoWPoint.Empty != _lastPlayerTonkLocation) {
+							if ((DateTime.Now - _lastMoveTime) >= StuckTimeLimit) {
+								LogMessage("debug", "Stuck, blacklisting current target.");
+								Blacklist.Add(_target, TempBlacklistTime);
+							}
+
+							if (PlayerTonk.Location.Distance2DSqr(_lastPlayerTonkLocation) <= 0.5 * 0.5) {
+								// we might be stuck, keep the stuck time/point where they are
+							} else {
+								_lastMoveTime = DateTime.Now;
+								_lastPlayerTonkLocation = PlayerTonk.Location;
+							}
+						} else {
+							_lastMoveTime = DateTime.Now;
+							_lastPlayerTonkLocation = PlayerTonk.Location;
+						}
 					})
 				)),
 				new Decorator(ret => !_started, new PrioritySelector(
@@ -378,17 +404,8 @@ namespace timglide {
 
 		private bool _isDone = false;
 
-		public override bool IsDone {
+		private bool IsQuestComplete {
 			get {
-				// too lazy to add exiting vehicle so just wait until it finishes by itself
-				if (HasTonk) return false;
-
-				// can't move so wait
-				if (HasDebuff) return false;
-
-				// manually set to done
-				if (_isDone) return true;
-
 				foreach (int qid in QuestIds) {
 					// if any of the quests are in the log and complete then this behavior is done
 					if (UtilIsProgressRequirementsMet(qid, QuestInLogRequirement.InLog, QuestCompleteRequirement.Complete)) {
@@ -404,6 +421,20 @@ namespace timglide {
 
 				// if none of the quests were in the log then do the behavior anyway for testing
 				return false;
+			}
+		}
+
+		public override bool IsDone {
+			get {
+				// can't move so wait
+				if (HasDebuff) return false;
+
+				// manually set to done
+				if (_isDone) return true;
+
+				if (HasTonk) return false;
+
+				return IsQuestComplete;
 			}
 		}
 

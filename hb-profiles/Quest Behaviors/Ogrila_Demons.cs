@@ -4,20 +4,19 @@ using System.Collections.Generic;
 
 using Styx;
 using Styx.Helpers;
-using Styx.Logic.BehaviorTree;
-using Styx.Logic.Pathing;
-using Styx.Logic.Questing;
 
-using TreeSharp;
-using Action = TreeSharp.Action;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.WoWObjects;
 using Styx.WoWInternals;
 using System.Drawing;
-using Styx.Logic.Combat;
 using System.Threading;
 using CommonBehaviors.Actions;
-using Styx.Combat.CombatRoutine;
-using Styx.Logic;
+using Styx.CommonBot.Profiles;
+using Styx.Common;
+using Styx.TreeSharp;
+using Styx.CommonBot;
+using Styx.Pathing;
+using Styx.Common.Helpers;
 
 namespace timglide {
 	/// <summary>
@@ -157,7 +156,7 @@ namespace timglide {
 
 		private WoWPoint _nextWaypoint = WoWPoint.Empty;
 
-		protected override TreeSharp.Composite CreateBehavior() {
+		protected override Composite CreateBehavior() {
 			return _root ?? (_root = new PrioritySelector(
 				new Decorator(ret => IsDone, new Action(c => {
 					TreeRoot.StatusText = "Demon banishing complete!";
@@ -311,7 +310,8 @@ namespace timglide {
 
 			if (null == Item) {
 				_isDone = true;
-				Logging.Write(Color.Red, "Missing item Banishing Crystal, skipping.");
+				// FIXME color
+				Logging.Write(/*Color.Red,*/ "Missing item Banishing Crystal, skipping.");
 			}
 
 			// If the quest is complete, this behavior is already done...
@@ -333,7 +333,7 @@ namespace timglide {
 				// to dismount and engage a mob if it is within its normal PullDistance.
 				// NOTE: these settings are restored to their normal values when the behavior completes
 				// or the bot is stopped.
-				StyxSettings.Instance.KillBetweenHotspots = false;
+				GlobalSettings.Instance.KillBetweenHotspots = false;
 				CharacterSettings.Instance.HarvestHerbs = false;
 				CharacterSettings.Instance.HarvestMinerals = false;
 				CharacterSettings.Instance.LootChests = false;

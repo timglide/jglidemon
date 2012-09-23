@@ -4,22 +4,19 @@ using System.Collections.Generic;
 
 using Styx;
 using Styx.Helpers;
-using Styx.Logic.BehaviorTree;
-using Styx.Logic.Pathing;
-using Styx.Logic.Questing;
 
-using TreeSharp;
-using Action = TreeSharp.Action;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.WoWObjects;
 using Styx.WoWInternals;
 using System.Drawing;
-using Styx.Logic.Combat;
 using System.Threading;
 using CommonBehaviors.Actions;
-using Styx.Combat.CombatRoutine;
-using Styx.Logic;
-using Styx.Logic.Inventory;
-using Styx.Logic.Inventory.Frames.Gossip;
+using Styx.CommonBot.Profiles;
+using Styx.TreeSharp;
+using Styx.CommonBot;
+using Styx.Pathing;
+using Styx.CommonBot.Frames;
+using Styx.Common;
 
 namespace timglide {
 	/// <summary>
@@ -149,7 +146,7 @@ namespace timglide {
 
 		#region Overrides of CustomForcedBehavior
 
-		protected override TreeSharp.Composite CreateBehavior() {
+		protected override Composite CreateBehavior() {
 			return _root ?? (_root = new PrioritySelector(
 				new Decorator(ret => IsDone, new Action(c => {
 					TreeRoot.StatusText = "Target: Turtle complete!";
@@ -169,7 +166,7 @@ namespace timglide {
 							TreeRoot.StatusText = "Throwing ring.";
 							PerformAction(ActionButton);
 							Thread.Sleep(50);
-							LegacySpellManager.ClickRemoteLocation(Target.Location);
+							SpellManager.ClickRemoteLocation(Target.Location);
 						}),
 						new Wait(TimeSpan.FromSeconds(1), ret => Me.IsCasting, new ActionAlwaysSucceed()),
 						new WaitContinue(TimeSpan.FromSeconds(1), ret => !Me.IsCasting, new ActionAlwaysSucceed())

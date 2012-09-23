@@ -4,23 +4,18 @@ using System.Collections.Generic;
 
 using Styx;
 using Styx.Helpers;
-using Styx.Logic.BehaviorTree;
-using Styx.Logic.Pathing;
-using Styx.Logic.Questing;
 
-using TreeSharp;
-using Action = TreeSharp.Action;
+using Action = Styx.TreeSharp.Action;
 using Styx.WoWInternals.WoWObjects;
 using Styx.WoWInternals;
 using System.Drawing;
-using Styx.Logic.Combat;
 using System.Threading;
 using CommonBehaviors.Actions;
-using Styx.Combat.CombatRoutine;
-using Styx.Logic;
-using Styx.Logic.Inventory;
-using Styx.Logic.Inventory.Frames.Gossip;
-using Styx.Logic.Inventory.Frames.LootFrame;
+using Styx.CommonBot.Profiles;
+using Styx.TreeSharp;
+using Styx.CommonBot;
+using Styx.CommonBot.Frames;
+using Styx.Common;
 
 namespace timglide {
 	/// <summary>
@@ -32,7 +27,7 @@ namespace timglide {
 		private static readonly int[] QuestIds = { 29513 };
 		private const float FacingDirectionDegrees = 180f; // due south
 		private const float FacingLeewayDegrees = 5f;
-		private static readonly int[] FishingSpellIds = { 7620, 7731, 7732, 18248, 33095, 51294, 88868 };
+		private static readonly int[] FishingSpellIds = { 131474, 7620, 7731, 7732, 18248, 33095, 51294, 88868 };
 
 		public DMF_Fishing(Dictionary<string, string> args)
 			: base(args) {
@@ -123,15 +118,15 @@ namespace timglide {
 			get {
 				return ObjectManager.GetObjectsOfType<WoWGameObject>()
 					.FirstOrDefault(
-						o => o.IsValid && o.SubType == WoWGameObjectType.FishingBobber &&
-						o.CreatedByGuid == Me.Guid);
+						o => o.IsValid && o.CreatedByGuid == Me.Guid &&
+						o.SubType == WoWGameObjectType.FishingNode);
 			}
 		}
 
 		public bool IsBobbing {
 			get {
 				WoWGameObject bobber = Bobber;
-				return null != bobber ? ((WoWFishingBobber) bobber.SubObj).IsBobbing : false;
+				return null != bobber ? 1 == bobber.AnimationState : false;
 			}
 		}
 
@@ -139,7 +134,7 @@ namespace timglide {
 			WoWGameObject bobber = Bobber;
 
 			if (null != bobber) {
-				((WoWFishingBobber) bobber.SubObj).Use();
+				bobber.SubObj.Use();
 			}
 		}
 
@@ -169,7 +164,7 @@ namespace timglide {
 		}
 
 		public void EquipOriginalWeapons() {
-			using (new FrameLock()) {
+			//using (new FrameLock()) { // FIXME
 				SpellManager.StopCasting();
 
 				if (null != mainHand && mainHand != Me.Inventory.Equipped.MainHand) {
@@ -185,12 +180,12 @@ namespace timglide {
 				if (null != mainHand || null != offHand) {
 					Thread.Sleep(500);
 				}
-			}
+			//}
 		}
 
 		#region Overrides of CustomForcedBehavior
 
-		protected override TreeSharp.Composite CreateBehavior() {
+		protected override Composite CreateBehavior() {
 			return _root ?? (_root = new PrioritySelector(
 				new Decorator(ret => IsDone, new Action(c => {
 					TreeRoot.StatusText = "DMF Fishing complete!";
