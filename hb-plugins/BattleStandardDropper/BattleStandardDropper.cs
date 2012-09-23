@@ -179,7 +179,7 @@ namespace BattleStandardDropper {
 				revision = 0;
 			}
 
-			version = new Version(0, 1, 0, revision);
+			version = new Version(0, 1, 1, revision);
 		}
 
 		public static LocalPlayer Me {
