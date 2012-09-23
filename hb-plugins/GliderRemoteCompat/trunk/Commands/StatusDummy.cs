@@ -5,7 +5,6 @@ using System.Text;
 using Styx;
 using System.Reflection;
 using Styx.WoWInternals.WoWObjects;
-using Styx.Combat.CombatRoutine;
 using Styx.Helpers;
 
 namespace GliderRemoteCompat.Commands {

@@ -12,7 +12,7 @@ namespace GliderRemoteCompat.Commands {
 
 		private IntPtr WindowHandle {
 			get {
-				return ObjectManager.WoWProcess.MainWindowHandle;
+				return Styx.StyxWoW.Memory.WindowHandle;
 			}
 		}
 

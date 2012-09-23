@@ -33,7 +33,7 @@ namespace GliderRemoteCompat.Commands {
 			if (VKRegex.IsMatch(args)) {
 				// ignore anything that requires sending VK codes
 			} else if (args.StartsWith("/")) {
-				// escape so it's a valid Lua string
+				// escape so it's a valid Lua string (order of replacement is important)
 				args = args.Replace("\\", "\\\\").Replace("\"", "\\\"");
 				args = string.Format("RunMacroText(\"{0}\")", args);
 				Lua.DoString(args, 0);

@@ -6,10 +6,12 @@ using System.Text;
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler {
 		public class GlobalHelper {
+			private static readonly Type type = typeof(ClientLogHandler);
+
 			public string this[string key] {
 				get {
 					try {
-						return (string)typeof(ClientLogHandler).GetField(key).GetValue(null);
+						return (string)type.GetField(key).GetValue(null);
 					} catch { }
 
 					return "";

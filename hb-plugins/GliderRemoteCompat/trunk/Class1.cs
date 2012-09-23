@@ -6,12 +6,7 @@ using System.Reflection;
 
 using Styx;
 using Styx.Helpers;
-using Styx.Logic;
 using Styx.Plugins;
-using Styx.Combat.CombatRoutine;
-using Styx.Logic.Combat;
-using Styx.Logic.Questing;
-using Styx.Plugins.PluginClass;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
 using System.Net.Sockets;
@@ -21,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
+using Styx.Common;
 
 namespace GliderRemoteCompat {
 	public class Class1 : HBPlugin {
@@ -38,7 +34,7 @@ namespace GliderRemoteCompat {
 				revision = 0;
 			}
 
-			version = new Version(1, 0, revision);
+			version = new Version(1, 0, 1, revision);
 		}
 
 		private Server server;

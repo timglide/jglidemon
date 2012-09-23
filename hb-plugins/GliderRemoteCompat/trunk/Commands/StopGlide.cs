@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Styx;
-using Styx.Logic.BehaviorTree;
+using Styx.CommonBot;
 
 namespace GliderRemoteCompat.Commands {
 	class StopGlide : Command {

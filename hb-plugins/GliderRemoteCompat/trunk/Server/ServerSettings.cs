@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using Styx.Helpers;
 using System.Drawing;
 using System.ComponentModel;
+using Styx.Common;
 
 namespace GliderRemoteCompat {
 	[Serializable]

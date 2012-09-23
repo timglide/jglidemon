@@ -6,6 +6,9 @@ using Styx.WoWInternals;
 using Styx.Helpers;
 using System.Drawing;
 using Styx;
+using Styx.Common;
+using System.Collections.ObjectModel;
+using Styx.CommonBot;
 
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler : IDisposable {
@@ -21,6 +24,22 @@ namespace GliderRemoteCompat {
 			ChatEnabled = false;
 		}
 
+		private bool isLogEventAttached = false;
+
+		private void CheckLogEventAttached() {
+			if (statusEnabled || gliderLogEnabled) {
+				if (!isLogEventAttached) {
+					Logging.OnLogMessage += Logging_OnLogMessage;
+					isLogEventAttached = true;
+				}
+			} else {
+				if (isLogEventAttached) {
+					Logging.OnLogMessage -= Logging_OnLogMessage;
+					isLogEventAttached = false;
+				}
+			}
+		}
+
 		private bool statusEnabled = false;
 
 		public bool StatusEnabled {
@@ -29,23 +48,39 @@ namespace GliderRemoteCompat {
 				if (value == statusEnabled) return;
 
 				statusEnabled = value;
+				CheckLogEventAttached();
+			}
+		}
 
-				if (value) {
-					Logging.OnWrite += Logging_OnWrite;
-				} else {
-					Logging.OnWrite -= Logging_OnWrite;
+		private void Logging_OnLogMessage(ReadOnlyCollection<Logging.LogMessage> messages) {
+			foreach (Logging.LogMessage m in messages) {
+				switch (m.Level) {
+					case LogLevel.Normal:
+					case LogLevel.Quiet:
+						if (statusEnabled) {
+							SendLog(ClientLogType.Status, m);
+						}
+						break;
+
+					case LogLevel.Diagnostic:
+					case LogLevel.Verbose:
+						if (gliderLogEnabled) {
+							SendLog(ClientLogType.GliderLog, m);
+						}
+						break;
 				}
 			}
 		}
 
-		private void Logging_OnWrite(string msg, Color color) {
-			if (Color.White != color) {
-				msg = FormatColor(color, msg);
+		private void SendLog(ClientLogType type, Logging.LogMessage message) {
+			string msg = message.Message;
+
+			if (Color.White != message.Color) {
+				msg = FormatColor(message.Color, msg);
 			}
 
-			client.SendLog(ClientLogType.Status, msg);
+			client.SendLog(type, msg);
 		}
-
 
 		private bool gliderLogEnabled = false;
 
@@ -55,12 +90,11 @@ namespace GliderRemoteCompat {
 				if (value == gliderLogEnabled) return;
 
 				gliderLogEnabled = value;
+				CheckLogEventAttached();
 
 				if (value) {
-					Logging.OnDebug += Logging_OnDebug;
 					BotEvents.Player.OnPlayerDied += Player_OnPlayerDied;
 				} else {
-					Logging.OnDebug -= Logging_OnDebug;
 					BotEvents.Player.OnPlayerDied -= Player_OnPlayerDied;
 				}
 			}
@@ -110,7 +144,13 @@ namespace GliderRemoteCompat {
 			}
 		}
 
-		public static string FormatColor(Color color, string message) {
+		public static string FormatColor(System.Drawing.Color color, string message) {
+			return string.Format(
+				"|cff{0:x2}{1:x2}{2:x2}{3}|r",
+				color.R, color.G, color.B, message);
+		}
+
+		public static string FormatColor(System.Windows.Media.Color color, string message) {
 			return string.Format(
 				"|cff{0:x2}{1:x2}{2:x2}{3}|r",
 				color.R, color.G, color.B, message);

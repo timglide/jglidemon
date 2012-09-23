@@ -7,16 +7,10 @@ using System.Drawing;
 
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler {
-		private void Logging_OnDebug(string msg, Color color) {
-			if (Color.White != color) {
-				msg = FormatColor(color, msg);
-			}
-
-			client.SendLog(ClientLogType.GliderLog, msg);
-		}
-
 		private void Player_OnPlayerDied() {
-			client.SendLog(ClientLogType.GliderLog, "Died while gliding");
+			if (StyxWoW.IsInGame && StyxWoW.IsInWorld) {
+				client.SendLog(ClientLogType.GliderLog, "Died while gliding");
+			}
 		}
 	}
 }

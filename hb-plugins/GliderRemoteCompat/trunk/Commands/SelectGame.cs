@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Styx.WoWInternals;
+using Styx.MemoryManagement;
+using Styx;
 
 namespace GliderRemoteCompat.Commands {
 	class SelectGame : Command {
@@ -10,7 +12,7 @@ namespace GliderRemoteCompat.Commands {
 
 		private IntPtr WindowHandle {
 			get {
-				return ObjectManager.WoWProcess.MainWindowHandle;
+				return StyxWoW.Memory.WindowHandle;
 			}
 		}
 

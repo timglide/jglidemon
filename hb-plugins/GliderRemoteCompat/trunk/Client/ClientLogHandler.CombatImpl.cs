@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Styx;
+using Styx.CommonBot;
 
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler {

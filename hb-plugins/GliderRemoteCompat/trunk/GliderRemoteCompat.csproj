@@ -55,6 +55,7 @@
       <ExecutableExtension>.exe</ExecutableExtension>
       <HintPath>..\..\Honorbuddy.exe</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -81,6 +82,7 @@
     <Compile Include="Client\ClientLogHandler.ChatImpl.cs" />
     <Compile Include="Client\ClientLogHandler.GliderImpl.cs" />
     <Compile Include="Client\ClientLogType.cs" />
+    <Compile Include="Color.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Commands\CaptureQuality.cs" />
     <Compile Include="Commands\CaptureScale.cs" />

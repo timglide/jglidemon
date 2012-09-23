@@ -5,6 +5,7 @@ using System.Text;
 using Styx.WoWInternals;
 using Styx.Helpers;
 using System.Drawing;
+using Styx.Common;
 
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler {
@@ -26,7 +27,7 @@ namespace GliderRemoteCompat {
 						ret.g = float.Parse(values[1]);
 						ret.b = float.Parse(values[2]);
 					} catch (Exception e) {
-						Logging.WriteDebug(Color.Yellow, "Error getting ChatTypeInfo");
+						Logging.WriteDiagnostic(Color.Yellow, "Error getting ChatTypeInfo");
 						Logging.WriteException(Color.OrangeRed, e);
 						ret = Instance;
 					}

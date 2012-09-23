@@ -5,9 +5,9 @@ using System.Text;
 using Styx;
 using System.Reflection;
 using Styx.WoWInternals.WoWObjects;
-using Styx.Combat.CombatRoutine;
 using Styx.Helpers;
-using Styx.Logic.Profiles;
+using Styx.CommonBot;
+using Styx.CommonBot.Profiles;
 
 namespace GliderRemoteCompat.Commands {
 	class Status : Command {
@@ -52,11 +52,11 @@ namespace GliderRemoteCompat.Commands {
 				// Next-Experience
 				l.Add("Next-Experience: " + me.NextLevelExperience);
 				// XP/Hour
-				l.Add("XP/Hour: " + (int)InfoPanel.XPPerHour);
+				l.Add("XP/Hour: " + (int)GameStats.XPPerHour);
 				// Heading
 				l.Add("Heading: " + me.Rotation);
 				// KLD: kills/loots/deaths
-				l.Add(string.Format("KLD: {0}/{1}/{2}", InfoPanel.MobsKilled, InfoPanel.Loots, InfoPanel.Deaths));
+				l.Add(string.Format("KLD: {0}/{1}/{2}", GameStats.MobsKilled, GameStats.Loots, GameStats.Deaths));
 
 				if (null != me.CurrentTarget) {
 					// Target-Level
