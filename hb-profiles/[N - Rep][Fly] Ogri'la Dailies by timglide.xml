@@ -1,7 +1,7 @@
 <HBProfile>
 	<Name>Ogri'la Dailies by timglide $Revision$</Name>
 	<MinLevel>70</MinLevel>
-	<MaxLevel>86</MaxLevel>
+	<MaxLevel>91</MaxLevel>
 
 	<QuestOrder>
 		<!-- port to blasted lands if needed -->

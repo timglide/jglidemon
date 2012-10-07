@@ -1,7 +1,7 @@
 <HBProfile>
 	<Name>Darkmoon Faire Quests by timglide $Revision$</Name>
 	<MinLevel>1</MinLevel>
-	<MaxLevel>86</MaxLevel>
+	<MaxLevel>91</MaxLevel>
 
 	<Blackspots>
 		<Blackspot X="-4080.025" Y="6353.404" Z="12.95191" Radius="1.995877" /> <!-- sign by rinling -->

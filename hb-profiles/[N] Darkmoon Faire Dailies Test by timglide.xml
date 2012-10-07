@@ -1,7 +1,7 @@
 <HBProfile>
 	<Name>Darkmoon Faire Dailies Test by timglide $Revision$</Name>
 	<MinLevel>1</MinLevel>
-	<MaxLevel>86</MaxLevel>
+	<MaxLevel>91</MaxLevel>
 
 	<!-- tests the quest behavior of whichever one you are standing next to -->
 	<QuestOrder>
