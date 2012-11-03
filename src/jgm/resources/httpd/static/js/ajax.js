@@ -149,7 +149,6 @@ var updater = {
 			
 			element.animate({
 				scrollTop: element[0].scrollHeight});
-			
 			updater.updateChat(els.chat[type], true);
 		});
 	},
@@ -363,9 +362,9 @@ var updater = {
 			if (newest.data('timestamp') > this.data('lastUpdate')) {
 				this.data('lastUpdate', newest.data('timestamp'));
 			}
-
-			var element = this;
 			
+			// this accomodates both normal and mobile versions
+			var element = this;
 			if ('auto' != element.css('overflow')) {
 				element = element.parent();
 			}

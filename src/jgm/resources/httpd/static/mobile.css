@@ -1,14 +1,9 @@
 body {
 	color: white;
-	background-color: gray;
 }
 
-.center, .info {
+.center {
 	text-align: center;
-}
-
-.ui-page {
-    -webkit-backface-visibility: hidden;
 }
 
 #headers {
@@ -31,12 +26,18 @@ body {
 }
 
 #jqt ul li .right {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: none repeat scroll 0 0 #2F3031;
+    border-radius: 3px 3px 3px 3px;
+    color: #949698;
     display: block;
     font-weight: bold;
+    text-shadow: 0 -1px 0 #0A0A0A;
     width: auto;
     z-index: 10;
     float: right;
     overflow: hidden;
+    padding: 2px 8px 4px;
     position: relative;
     text-align: right;
     white-space: nowrap;
@@ -44,10 +45,6 @@ body {
 
 div.chat-text {
 	color: white;
-}
-
-div.chat-text p {
-	margin: 0;
 }
 
 div.chat-text a.chat-link {
