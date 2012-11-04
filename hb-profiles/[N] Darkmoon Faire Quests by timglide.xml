@@ -30,6 +30,12 @@
 			</If>
 		</If>
 		<If Condition="Me.IsHorde">
+			<If Condition="6141 == Me.ZoneId"> <!-- Shrine of Two Moons -->
+				<MoveTo X="1746.341" Y="874.5515" Z="487.3591" />
+				<!-- take port to TB -->
+				<CustomBehavior File="UseGameObject" ObjectId="215125" WaitTime="10000" X="-4445.835" Y="6329.296" Z="13.26439" />
+			</If>
+			
 			<If Condition="1638 == Me.ZoneId"> <!-- thunder bluff -->
 				<!-- quests that need to buy/do stuff in city: alchemy, blacksmithing, cooking, inscription, leatherworking, tailoring -->
 				<If Condition="HasQuest(29506) || HasQuest(29508) || HasQuest(29509) || HasQuest(29515) || HasQuest(29517) || HasQuest(29520)">
