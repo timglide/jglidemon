@@ -139,7 +139,7 @@ namespace timglide {
 		}
 
 		public void PerformAction(uint button) {
-			Lua.DoString("BonusActionButton{0}:Click()", button);
+			Lua.DoString("OverrideActionBarButton{0}:Click()", button);
 		}
 
 		#region Overrides of CustomForcedBehavior
