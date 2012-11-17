@@ -1,0 +1,299 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Loading...</title>
+
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="/static/common.css" />
+<link rel="stylesheet" type="text/css" href="/static/main.css" />
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css" /> 
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.tinysort.min.js"></script>
+<script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script> 
+<script type="text/javascript" src="/static/js/ajaxsettings.js"></script>
+<script type="text/javascript" src="/static/js/ajax.js"></script>
+
+<script type="text/javascript">
+$(function() {
+	var
+		$content = $('#content').tabs(),
+		liveContext = $content[0];
+
+	$('a.chat-link.player', liveContext).live('click', function(event) {
+		var $this = $(this);
+
+		els.chattype.val('w');
+		els.chatto.val($this.data('linkId'));
+		els.chattext.val('');
+		els.chattext.focus();
+		commands.typeChange();
+		
+		return false;
+	});
+
+	$('a.chat-link.channel', liveContext).live('click', function(event) {
+		var	$this = $(this);
+		
+		els.chattype.val('Raw');
+		els.chattext.val('/' + $this.data('linkId') + ' ');
+		els.chattext.focus();
+		commands.typeChange();
+		
+		return false;
+	});
+	
+	/*setTimeout(function() {
+		$('#content > div').css('top', $('#content > ul').outerHeight(true) + 'px');
+	}, 200);*/
+	
+	$('#theform').submit(function(event) {
+		commands.chat();
+		event.preventDefault();
+		return false;
+	});
+	
+	updater.init();
+	commands.typeChange(); // to ensure it's correct if the page is refreshed
+	updater.update();
+});
+</script>
+
+</head>
+
+<body>
+
+<div id="main" class="container">
+	<div id="header">
+		<div id="headerdiv">
+			<div id="loadingheader"><h1>Loading...</h1></div>
+		</div>
+	</div>
+
+	<div id="hiddenheaders" style="display: none;">
+		<div id="ajaxerror"><h1>Error connecting to JGlideMon</h1></div>
+		<div id="discheader"><h1>Disconnected from Bot</h1></div>
+		<div id="notattached"><h1>Connected to Bot, Detached</h1></div>
+		<div id="mainheader"><h1><img src="/static/img/classes/unknown.png" align="absmiddle" alt="" id="classimage" /> <span id="name_text">$name</span>: Level <span id="level_text">$level</span> <span id="class_text">$class</span></h1></div>
+	</div>
+
+	<div id="connected">
+		<div id="nav">
+			<div id="navpad">
+				<div id="attached_info">
+					<div class="info_bar" id="health_bar">
+						<div class="info_text" id="health_text"></div>
+						<div class="info_percent" id="health_percent"></div>
+					</div>
+					<div class="info_bar" id="secondary_bar">
+						<div class="info_text" id="secondary_text"></div>
+						<div class="info_percent mana" id="secondary_percent"></div>
+					</div>
+					<div class="info_bar" id="xp_bar">
+						<div class="info_text" id="xp_text"></div>
+						<div class="info_percent" id="xp_percent"></div>
+					</div>
+					<div id="xp_per_hour_div"><strong>XP/Hour:</strong> <span id="xp_per_hour_text">0</span></div>
+					<div id="ttl_div"><strong>Time To Level:</strong> <span id="ttl_text">Unknown</span></div>
+					
+					<div id="mode_div"><strong>Mode:</strong> <span id="mode_text">None</span></div>
+					<div id="profilediv"><strong>Profile:</strong> <span id="profile_text">None</span></div>
+					<div id="kills_div"><strong>KLD:</strong> <span id="kills_text">0</span>/<span id="loots_text">0</span>/<span id="deaths_text">0</span></div>
+				</div>
+
+				<a href="javascript:commands.start();" title="Start Bot"><img src="/static/img/buttons/play.png" alt="Start Bot" /></a>
+				<a href="javascript:commands.stop();" title="Stop Bot"><img src="/static/img/buttons/stop.png" alt="Stop Bot" /></a>
+				<a href="javascript:window.location.reload(false);" title="Refresh Page Manually"><img src="/static/img/buttons/refresh.png" alt="Refresh Page Manually" /></a>
+				
+			</div>
+		</div>
+
+		<div id="content_wrap">
+			<div id="content">
+		        <ul>
+		            <li><a href="#screenshot">Screenshot</a></li>
+		            <li><a href="#view-chat-all" title="All Chat">All</a></li>
+		            <li><a href="#view-chat-public" title="Public Chat">Public</a></li>
+		            <li><a href="#view-chat-whisper" title="Whisper / Say / Yell">Whisper</a></li>
+		            <li><a href="#view-chat-guild" title="Guild Chat">Guild</a></li>
+					<li><a href="#view-chat-urgent" title="Urgent Log">Urgent</a></li>
+					<li><a href="#view-chat-combat" title="Combat Log">Combat</a></li>
+					<li><a href="#view-chat-glider" title="Bot Log">Bot</a></li>
+					<li><a href="#view-chat-status" title="Status Log">Status</a></li>
+					<li><a href="#view-mobs" title="Mobs / Rep / Skills">Mobs</a></li>
+					<li><a href="#view-loot" title="Loot / Gold">Loot</a></li>
+		        </ul>
+		        
+				<div id="screenshot">
+					<img src="/static/img/classes/unknown.png" id="screenshotImage" />
+				</div>
+				
+				<div id="view-chat-all">
+					<div class="chat-text" id="chat-all-container" data-type="all"></div>
+				</div>
+				<div id="view-chat-public">
+					<div class="chat-text" id="chat-public-container" data-type="public"></div>
+				</div>
+				<div id="view-chat-whisper">
+					<div class="chat-text" id="chat-whisper-container" data-type="whisper"></div>
+				</div>
+				<div id="view-chat-guild">
+					<div class="chat-text" id="chat-guild-container" data-type="guild"></div>
+				</div>
+				<div id="view-chat-urgent">
+					<div class="chat-text" id="chat-urgent-container" data-type="urgent"></div>
+				</div>
+				<div id="view-chat-combat">
+					<div class="chat-text" id="chat-combat-container" data-type="combat"></div>
+				</div>
+				<div id="view-chat-glider">
+					<div class="chat-text" id="chat-glider-container" data-type="glider"></div>
+				</div>
+				<div id="view-chat-status">
+					<div class="chat-text" id="chat-status-container" data-type="status"></div>
+				</div>
+				
+				<div id="view-mobs">
+					<div id="mobs-container">
+						<table id="mobs-table">
+							<caption>Mobs</caption>
+							<tr>
+								<th class="count">#</th><th class="xp">Avg XP</th><th>Name</th>
+							</tr>
+						</table>
+					</div>
+					<div id="reps-container">
+						<table id="reps-table">
+							<caption>Reputation</caption>
+							<tr>
+								<th class="time">Time</th><th class="gain">Gained</th><th>Faction</th>
+							</tr>
+						</table>
+					</div>
+					<div id="skills-container">
+						<table id="skills-table">
+							<caption>Skills</caption>
+							<tr>
+								<th class="time">Time</th><th class="level">Level</th><th>Skill</th>
+							</tr>
+						</table>
+					</div>
+				</div>
+				
+				<div id="view-loot">
+					<div id="loot-goldPanels-container">
+						<div id="gold-looted-container" class="goldPanel">
+							Gold Looted: 
+							<span class="gold-wrap" style="display: none;">
+								<span class="gold">0</span>
+								<img src="/static/img/coins/gold.gif" alt="gold" />
+							</span>
+							<span class="silver-wrap" style="display: none;">
+								<span class="silver">0</span>
+								<img src="/static/img/coins/silver.gif" alt="silver" />
+							</span>
+							<span class="copper-wrap">
+								<span class="copper">0</span>
+								<img src="/static/img/coins/copper.gif" alt="copper" />
+							</span>
+						</div>
+						<div id="loot-worth-container" class="goldPanel">
+							Loot Worth: 
+							<span class="gold-wrap" style="display: none;">
+								<span class="gold">0</span>
+								<img src="/static/img/coins/gold.gif" alt="gold" />
+							</span>
+							<span class="silver-wrap" style="display: none;">
+								<span class="silver">0</span>
+								<img src="/static/img/coins/silver.gif" alt="silver" />
+							</span>
+							<span class="copper-wrap">
+								<span class="copper">0</span>
+								<img src="/static/img/coins/copper.gif" alt="copper" />
+							</span>
+						</div>
+						<div id="gold-per-hour-container" class="goldPanel">
+							Gold/Hour: 
+							<span class="gold-wrap" style="display: none;">
+								<span class="gold">0</span>
+								<img src="/static/img/coins/gold.gif" alt="gold" />
+							</span>
+							<span class="silver-wrap" style="display: none;">
+								<span class="silver">0</span>
+								<img src="/static/img/coins/silver.gif" alt="silver" />
+							</span>
+							<span class="copper-wrap">
+								<span class="copper">0</span>
+								<img src="/static/img/coins/copper.gif" alt="copper" />
+							</span>
+						</div>
+					</div>
+					
+					<div id="loot-tables-container">
+						<div id="loot-container-poor">
+							<table id="loot-table-poor">
+								<caption class="poor">Poor</caption>
+								<tr>
+									<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+								</tr>
+							</table>
+						</div>
+						<div id="loot-container-common">
+							<table id="loot-table-common">
+								<caption class="common">Common</caption>
+								<tr>
+									<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+								</tr>
+							</table>
+						</div>
+						<div id="loot-container-uncommon">
+							<table id="loot-table-uncommon">
+								<caption class="uncommon">Uncommon</caption>
+								<tr>
+									<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+								</tr>
+							</table>
+						</div>
+						<div id="loot-container-rare">
+							<table id="loot-table-rare">
+								<caption class="rare">Rare</caption>
+								<tr>
+									<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+								</tr>
+							</table>
+						</div>
+						<div id="loot-container-epic">
+							<table id="loot-table-epic">
+								<caption class="epic">Epic</caption>
+								<tr>
+									<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+								</tr>
+							</table>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<form id="theform" action="#">
+				<select id="chattype" onchange="commands.typeChange();">
+					<option value="w">Whisper</option>
+					<option value="r">Reply</option>
+					<option value="s">Say</option>
+					<option value="g">Guild</option>
+					<option>Raw</option>
+				</select>
+				<div id="chattospan">
+					<input id="chatto" type="text" placeholder="To" title="The person to send a whisper to" />
+				</div>
+				<div id="chattextspan">
+					<input id="chattext" type="text" onfocus="this.value = this.value;" placeholder="Chat text" title="For Raw, type a full slash command just like you would in-game, for others the slash command will be added automatically, DO NOT try to send slash command unless using Raw" />
+				</div>
+				<input type="submit" id="sendchat" value="Send" />
+			</form>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

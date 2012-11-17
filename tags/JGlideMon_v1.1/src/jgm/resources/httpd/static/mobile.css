@@ -1,0 +1,57 @@
+body {
+	color: white;
+}
+
+.center {
+	text-align: center;
+}
+
+#headers {
+	font-family: "Helvetica Neue", Helvetica;
+	display: none;
+	position: fixed;
+	left: 0; bottom: 0; right: 0;
+	background-color: red;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+	/*height: 2em;*/
+	z-index: 9999999;
+	margin: 0;
+	padding: 0.5em;
+}
+
+#headers div {
+	
+}
+
+#jqt ul li .right {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: none repeat scroll 0 0 #2F3031;
+    border-radius: 3px 3px 3px 3px;
+    color: #949698;
+    display: block;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 #0A0A0A;
+    width: auto;
+    z-index: 10;
+    float: right;
+    overflow: hidden;
+    padding: 2px 8px 4px;
+    position: relative;
+    text-align: right;
+    white-space: nowrap;
+}
+
+div.chat-text {
+	color: white;
+}
+
+div.chat-text a.chat-link {
+	color: inherit !important;
+	text-decoration: none;
+}
+
+#theform .error {
+	background: #aa0000 !important;
+}

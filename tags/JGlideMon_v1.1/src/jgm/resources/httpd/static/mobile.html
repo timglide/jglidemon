@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>JGlideMon</title>
+
+<style type="text/css" media="screen">@import "/static/css/jqtouch.css";</style>
+<link rel="stylesheet" type="text/css" href="/static/common.css" />
+<link rel="stylesheet" type="text/css" href="/static/mobile.css" />
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="/static/js/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/jqtouch-jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/jquery.tinysort.min.js"></script>
+<!--script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script-->
+<script type="text/javascript" src="/static/js/ajaxsettings.js"></script>
+<script type="text/javascript" src="/static/js/ajax.js"></script>
+<script src="/static/js/mobile.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+$(function() {
+	var $jqt = $('#jqt'),
+		liveContext = $jqt[0];
+
+	$('a.chat-link.player', liveContext).live('click', function(event) {
+		var $this = $(this);
+
+		els.chattype.val('w');
+		els.chatto.val($this.data('linkId'));
+		els.chattext.val('');
+		els.chattext.focus();
+		commands.typeChange();
+
+		jQT.goTo('#send-chat', 'slideup');
+		return false;
+	});
+
+	$('a.chat-link.channel', liveContext).live('click', function(event) {
+		var	$this = $(this);
+		
+		els.chattype.val('Raw');
+		els.chattext.val('/' + $this.data('linkId') + ' ');
+		els.chattext.focus();
+		commands.typeChange();
+		
+		jQT.goTo('#send-chat', 'slideup');
+		return false;
+	});
+	
+	$('#theform').submit(function(event) {
+		commands.chat();
+
+		if (!(els.chatto.hasClass('error') || els.chattext.hasClass('error'))) {
+			jQT.goBack();
+		}
+		
+		event.preventDefault();
+		return false;
+	});
+
+	$('#sendchat').click(function(event) {
+		commands.chat();
+		
+		if (!(els.chatto.hasClass('error') || els.chattext.hasClass('error'))) {
+			jQT.goBack();
+		}
+		
+		return false;
+	});
+	
+	updater.init();
+	commands.typeChange(); // to ensure it's correct if the page is refreshed
+	updater.update();
+});
+</script>
+
+</head>
+
+<body>
+<div id="headers">
+	<div id="ajaxerror">Error connecting to JGlideMon</div>
+	<div id="discheader">Disconnected from Bot</div>
+	<div id="notattached">Connected to Bot, Detached</div>
+</div>
+<div id="jqt">
+	<div id="home" class="current">
+		<div class="toolbar">
+			<h1>JGlideMon</h1>
+		</div>
+		<div class="scroll">
+			<ul class="rounded">
+				<li class="forward"><a href="#status">Status</a></li>
+				<li class="forward"><a href="#screenshot">Screenshot</a></li>
+				<li class="forward"><a href="#view-chat">View Chat / Logs</a></li>
+				<li class="forward"><a href="#send-chat">Send Chat</a></li>
+				<li class="forward"><a href="#view-mobs">Mobs / Rep / Skills</a></li>
+				<li class="forward"><a href="#view-loot">View Loot</a></li>
+				<li class="forward"><a href="#commands">Commands</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="status">
+		<div class="toolbar">
+			<h1>Status</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<ul class="edgetoedge">
+				<li class="center"><span id="name_text">Charname</span> (<span id="level_text">86</span> <span id="class_text">Warrior</span>)</li>
+				<li>Health <span id="health_text" class="right">86%</span></li>
+				<li><span id="secondary_name">Mana</span> <span id="secondary_text" class="right">59%</span></li>
+				<li>XP <span id="xp_text" class="right">123 / 456 (45%)</span></li>
+				<li>XP/Hr <span id="xp_per_hour_text" class="right">123456</span></li>
+				<li>Level up <span id="ttl_text" class="right">0:12:34</span></li>
+				<li>
+					KLD
+					<span class="right">
+						<span id="kills_text">12</span> / 
+						<span id="loots_text">34</span> / 
+						<span id="deaths_text">6</span>
+					</span>
+				</li>
+				<li>Mode <span id="mode_text" class="right">Questing</span></li>
+				<li class="sep">Profile</li>
+				<li id="profile_text">Some profile</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="screenshot">
+		<div class="toolbar">
+			<h1>Screenshot</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<div class="screenshotHolder" style="overflow: auto; width: 100%; height: 100%;">
+				<img id="screenshotImage" src="/static/img/classes/unknown.png" alt="" />
+			</div>
+		</div>
+	</div>
+	
+	<div id="view-chat">
+		<div class="toolbar">
+			<h1>View Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<ul class="rounded">
+				<li class="forward"><a href="#view-chat-all">All Chat</a></li>
+				<li class="forward"><a href="#view-chat-public">Public Chat</a></li>
+				<li class="forward"><a href="#view-chat-whisper">Whisper / Say / Yell</a></li>
+				<li class="forward"><a href="#view-chat-guild">Guild Chat</a></li>
+				<li class="forward"><a href="#view-chat-urgent">Urgent Log</a></li>
+				<li class="forward"><a href="#view-chat-combat">Combat Log</a></li>
+				<li class="forward"><a href="#view-chat-glider">Bot Log</a></li>
+				<li class="forward"><a href="#view-chat-status">Status Log</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="view-chat-all">
+		<div class="toolbar">
+			<h1>All Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-all-container" data-type="all">
+		</div>
+	</div>
+	
+	<div id="view-chat-public">
+		<div class="toolbar">
+			<h1>Public Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-public-container" data-type="public">
+		</div>
+	</div>
+	
+	<div id="view-chat-whisper">
+		<div class="toolbar">
+			<h1>Whisper/Say/Yell</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-whisper-container" data-type="whisper">
+		</div>
+	</div>
+	
+	<div id="view-chat-guild">
+		<div class="toolbar">
+			<h1>Guild Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-guild-container" data-type="guild">
+		</div>
+	</div>
+	
+	<div id="view-chat-urgent">
+		<div class="toolbar">
+			<h1>Urgent Log</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-urgent-container" data-type="urgent">
+		</div>
+	</div>
+	
+	<div id="view-chat-combat">
+		<div class="toolbar">
+			<h1>Combat Log</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-combat-container" data-type="combat">
+		</div>
+	</div>
+	
+	<div id="view-chat-glider">
+		<div class="toolbar">
+			<h1>Bot Log</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-glider-container" data-type="glider">
+		</div>
+	</div>
+	
+	<div id="view-chat-status">
+		<div class="toolbar">
+			<h1>Status Log</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll chat-text" id="chat-status-container" data-type="status">
+		</div>
+	</div>
+	
+	<div id="send-chat">
+		<div class="toolbar">
+			<h1>Send Chat</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<form class="scroll" id="theform" action="#">
+			<ul class="edit rounded">
+				<li class="arrow">
+					<select id="chattype" onchange="commands.typeChange();">
+						<option value="w">Whisper</option>
+						<option value="r">Reply</option>
+						<option value="s">Say</option>
+						<option value="g">Guild</option>
+						<option>Raw</option>
+					</select>
+				</li>
+				<li id="chattospan"><input type="text" id="chatto" placeholder="Whisper to" /></li>
+				<li><input type="text" id="chattext" placeholder="Chat text" /></li>
+			</ul>
+			<div style="margin-top: 10px;">
+				<a href="#" id="sendchat" class="grayButton">Send</a>
+			</div>
+		</form>
+		<div class="info">
+			Only add slash command for Raw chat type.
+		</div>
+	</div>
+	
+	<div id="view-mobs">
+		<div class="toolbar">
+			<h1>Mobs/Rep/Skills</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<div id="mobs-container">
+				<table id="mobs-table">
+					<caption>Mobs</caption>
+					<tr>
+						<th class="count">#</th><th class="xp">Avg XP</th><th>Name</th>
+					</tr>
+				</table>
+			</div>
+			<div id="reps-container">
+				<table id="reps-table">
+					<caption>Reputation</caption>
+					<tr>
+						<th class="time">Time</th><th class="gain">Gained</th><th>Faction</th>
+					</tr>
+				</table>
+			</div>
+			<div id="skills-container">
+				<table id="skills-table">
+					<caption>Skills</caption>
+					<tr>
+						<th class="time">Time</th><th class="level">Level</th><th>Skill</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	<div id="view-loot">
+		<div class="toolbar">
+			<h1>Loot</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll">
+			<div id="loot-goldPanels-container">
+				<div id="gold-looted-container" class="goldPanel">
+					Gold Looted: 
+					<span class="gold-wrap" style="display: none;">
+						<span class="gold">0</span>
+						<img src="/static/img/coins/gold.gif" alt="gold" />
+					</span>
+					<span class="silver-wrap" style="display: none;">
+						<span class="silver">0</span>
+						<img src="/static/img/coins/silver.gif" alt="silver" />
+					</span>
+					<span class="copper-wrap">
+						<span class="copper">0</span>
+						<img src="/static/img/coins/copper.gif" alt="copper" />
+					</span>
+				</div>
+				<div id="loot-worth-container" class="goldPanel">
+					Loot Worth: 
+					<span class="gold-wrap" style="display: none;">
+						<span class="gold">0</span>
+						<img src="/static/img/coins/gold.gif" alt="gold" />
+					</span>
+					<span class="silver-wrap" style="display: none;">
+						<span class="silver">0</span>
+						<img src="/static/img/coins/silver.gif" alt="silver" />
+					</span>
+					<span class="copper-wrap">
+						<span class="copper">0</span>
+						<img src="/static/img/coins/copper.gif" alt="copper" />
+					</span>
+				</div>
+				<div id="gold-per-hour-container" class="goldPanel">
+					Gold/Hour: 
+					<span class="gold-wrap" style="display: none;">
+						<span class="gold">0</span>
+						<img src="/static/img/coins/gold.gif" alt="gold" />
+					</span>
+					<span class="silver-wrap" style="display: none;">
+						<span class="silver">0</span>
+						<img src="/static/img/coins/silver.gif" alt="silver" />
+					</span>
+					<span class="copper-wrap">
+						<span class="copper">0</span>
+						<img src="/static/img/coins/copper.gif" alt="copper" />
+					</span>
+				</div>
+			</div>
+			
+			<div id="loot-tables-container">
+				<div id="loot-container-epic">
+					<table id="loot-table-epic">
+						<tr>
+							<th class="icon"></th><th>Name</th><th class="qty">Qty</th>
+						</tr>
+					</table>
+				</div>
+				<div id="loot-container-rare">
+					<table id="loot-table-rare">
+					</table>
+				</div>
+				<div id="loot-container-uncommon">
+					<table id="loot-table-uncommon">
+					</table>
+				</div>
+				<div id="loot-container-common">
+					<table id="loot-table-common">
+					</table>
+				</div>
+				<div id="loot-container-poor">
+					<table id="loot-table-poor">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	<div id="commands">
+		<div class="toolbar">
+			<h1>Commands</h1>
+			<a href="#" class="back">Back</a>
+		</div>
+		<div class="scroll" style="margin-top: 10px;">
+			<a href="javascript:commands.start();" class="greenButton">Start Bot</a>
+			<br>
+			<a href="javascript:commands.stop();" class="redButton">Stop Bot</a>
+		</div>
+		<div class="info" style="display: none;">
+			Result of command goes here.
+		</div>
+	</div>
+</div>
+</body>
+</html>
