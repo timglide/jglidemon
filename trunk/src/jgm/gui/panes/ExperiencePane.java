@@ -68,8 +68,11 @@ public class ExperiencePane extends Pane {
 			xp.setText("Experience: Unknown");
 		}
 		
-		// hide this pane if we're at the level cap.
-		this.setVisible(!s.atLevelCap());
+		// hide this pane if we're at the level cap but only if we're connected and the level is valid
+		// so we don't keep toggling visibility just because we disconnect and reconnect right away
+		if (gui.sm.connector.isConnected() && s.level > 0) {
+			this.setVisible(!s.atLevelCap());
+		}
 		
 		if (s.xpPerHour > 0) {
 			int seconds = 0, minutes = 0, hours = 0;
