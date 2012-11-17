@@ -45,7 +45,7 @@ public enum ManaType {
 		Pattern.compile(".*?(\\d+).*");
 	private static final Pattern druid =
 		// find rage, energy, or mana, in that order
-		// R = ##, E=##, (##%)
+		// "R = ##", "E=##", or "... (##%)"
 		Pattern.compile("(?:.*?R = (\\d+).*|.*?E=(\\d+).*|.*\\((\\d+)%\\).*)");
 		
 	private String type;

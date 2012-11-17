@@ -3,8 +3,12 @@ JGlideMon ChangeLog
 Version 1.1
 -----------
 - Will now recognize loot in the form of "Received # of item: [Item]."
-- Updated mobile version of web interface to support more devices
-  (IN PROGRESS).
+- Experience pane will no longer be shown and hidden again when momentarily
+  disconnected from the bot when your character is at max level.
+- Added Monk support. It will always display mana (and never energy) until
+  GliderRemoteCompat is updated. Also corrected code so that if new classes
+  are ever added in the future, JGlideMon will still work but simply label
+  the class as Unknown instead of not working altogether.
 
 Version 1.0
 -----------
