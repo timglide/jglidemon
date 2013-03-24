@@ -132,6 +132,10 @@ namespace WaitForDebuff {
 			return new PrioritySelector(
 				new Decorator(ret => ShouldNotWait(), new Action(ctx => {
 					//Logging.Write("Should not wait was true.");
+					if (null != lastStatus) {
+						TreeRoot.StatusText = lastStatus;
+						lastStatus = null;
+					}
 					return RunStatus.Failure;
 				})),
 				new Action(ctx => {
@@ -193,7 +197,7 @@ namespace WaitForDebuff {
 		}
 
 		public bool ShouldNotWait() {
-			return Me.IsActuallyInCombat || Me.IsDead || Me.IsFalling;
+			return Me.Combat || Me.IsDead || Me.IsFalling;
 		}
 
 		public override void Pulse() {
