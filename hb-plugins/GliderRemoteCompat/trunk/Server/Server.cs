@@ -10,7 +10,7 @@ namespace GliderRemoteCompat {
 	class Server : IDisposable {
 		private const int ListenThreadDeathTimeoutMS = 2000;
 
-		public Class1 Owner {
+		public GliderRemoteCompat Owner {
 			get;
 			private set;
 		}
@@ -27,7 +27,7 @@ namespace GliderRemoteCompat {
 
 		private List<Client> clients = new List<Client>();
 
-		public Server(Class1 owner) {
+		public Server(GliderRemoteCompat owner) {
 			Owner = owner;
 
 			settings = ServerSettings.Instance;
@@ -92,7 +92,12 @@ namespace GliderRemoteCompat {
 				try {
 					// blocks until a client has connected
 					clients.Add(new Client(this, tcpListener.AcceptTcpClient()));
+				} catch (ThreadInterruptedException) {
+					break;
+				} catch (ThreadAbortException) {
+					break;
 				} catch { }
+				
 			}
 		}
 	}

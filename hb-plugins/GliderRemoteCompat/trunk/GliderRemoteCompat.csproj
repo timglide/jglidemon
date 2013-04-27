@@ -74,7 +74,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="GliderRemoteCompat.cs" />
     <Compile Include="Client\Client.cs" />
     <Compile Include="Client\ClientLogHandler.ChatTypeInfo.cs" />
     <Compile Include="Client\ClientLogHandler.CombatImpl.cs" />
@@ -89,11 +89,13 @@
     <Compile Include="Commands\ClickMouse.cs" />
     <Compile Include="Commands\ExitGlider.cs" />
     <Compile Include="Commands\HoldKey.cs" />
+    <Compile Include="Commands\Inventory.cs" />
     <Compile Include="Commands\NotImplemented.cs" />
     <Compile Include="Commands\Log.cs" />
     <Compile Include="Commands\NoLog.cs" />
     <Compile Include="Commands\QueueKeys.cs" />
     <Compile Include="Commands\ReleaseKey.cs" />
+    <Compile Include="Commands\RunLua.cs" />
     <Compile Include="Commands\SelectGame.cs" />
     <Compile Include="Commands\SetMouse.cs" />
     <Compile Include="Commands\StartGlide.cs" />
@@ -116,6 +118,7 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Tools.cs" />
+    <Compile Include="Updater.cs" />
     <Compile Include="Win32Input.cs" />
     <Compile Include="Win32Window.cs" />
   </ItemGroup>

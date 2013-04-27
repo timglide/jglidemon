@@ -19,22 +19,44 @@ using System.Threading;
 using Styx.Common;
 
 namespace GliderRemoteCompat {
-	public class Class1 : HBPlugin {
+	public class GliderRemoteCompat : HBPlugin {
 		private const string _revision = "$Revision$"; 
 		private static readonly int revision;
 		private static readonly Version version;
+		private static string pluginPath = null;
 
-		static Class1() {
+		static GliderRemoteCompat() {
 			string str = string.Empty;
 
 			try {
 				str = _revision.Substring(11, _revision.Length - 2 - 11);
 				revision = int.Parse(str);
 			} catch {
-				revision = 0;
+				revision = Updater.GetInstalledRevision();
 			}
 
-			version = new Version(1, 0, 1, revision);
+			version = new Version(1, 1, 0, revision);
+		}
+
+		public static string PluginPath {
+			get {
+				if (null == pluginPath)
+					pluginPath = GetPluginPath();
+				return pluginPath;
+			}
+		}
+
+		private static string GetPluginPath() {   // taken from Singular.
+			// bit of a hack, but location of source code for assembly is only.
+			var asmName = Assembly.GetExecutingAssembly().GetName().Name;
+			var len = asmName.LastIndexOf("_", StringComparison.Ordinal);
+			var folderName = asmName.Substring(0, len);
+
+			var botsPath = GlobalSettings.Instance.PluginsPath;
+			if (!Path.IsPathRooted(botsPath)) {
+				botsPath = Path.Combine(Utilities.AssemblyDirectory, botsPath);
+			}
+			return Path.Combine(botsPath, folderName);
 		}
 
 		private Server server;
@@ -45,9 +67,7 @@ namespace GliderRemoteCompat {
 		public string LogFile {
 			get {
 				if (null == logFile) {
-					string path = Process.GetCurrentProcess().MainModule.FileName;
-					path = Path.GetDirectoryName(path);
-					path = Path.Combine(path, @"Plugins\GliderRemoteCompat\Logs");
+					string path = PluginPath + "\\Logs";
 
 					if (!Directory.Exists(path)) {
 						Directory.CreateDirectory(path);
@@ -65,7 +85,7 @@ namespace GliderRemoteCompat {
 		private StreamWriter logWriter;
 		private Thread logThread;
 
-		public Class1() {
+		public GliderRemoteCompat() {
 			//logStream = new BufferedStream(new FileStream(LogFile, FileMode.Create));
 			//logWriter = new StreamWriter(logStream);
 
@@ -78,7 +98,7 @@ namespace GliderRemoteCompat {
 			//logThread.Start();
 		}
 
-		~Class1() {
+		~GliderRemoteCompat() {
 			//logThread.Abort();
 			//AppDomain.CurrentDomain.UnhandledException -= UnhandledException;
 
@@ -100,7 +120,7 @@ namespace GliderRemoteCompat {
 
 		public override bool WantButton {
 			get {
-				return initialized;
+				return true;
 			}
 		}
 
@@ -115,11 +135,12 @@ namespace GliderRemoteCompat {
 		public override void Initialize() {
 			if (initialized) return;
 			base.Initialize();
+			initialized = true;
 
 			Logging.Write("{0} v{1} loaded", Name, Version);
 			RefreshSettings();
 
-			initialized = true;
+			new Thread(Updater.CheckForUpdate) { Name = "GRC-Updater" }.Start();
 		}
 
 		public override void Dispose() {
@@ -143,6 +164,9 @@ namespace GliderRemoteCompat {
 		}
 
 		public void RefreshSettings() {
+			if (!initialized)
+				return;
+
 			lock (this) {
 				if (null != server) {
 					server.Dispose();
@@ -181,7 +205,6 @@ namespace GliderRemoteCompat {
 		}
 
 		public override void OnButtonPress() {
-			if (!initialized) return;
 			SettingsForm.ShowDialog();
 		}
 

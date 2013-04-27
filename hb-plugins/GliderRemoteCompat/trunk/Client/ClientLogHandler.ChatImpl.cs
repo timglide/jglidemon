@@ -81,7 +81,9 @@ namespace GliderRemoteCompat {
 		/// <param name="args"></param>
 		private void Lua_ChatMsg_Impl(object sender, LuaEventArgs args) {
 			//Logging.Write("Lua_ChatMsg() called: {0}, Args.Length={1}", args.EventName, args.Args.Length);
-			Debug.Assert(args.EventName.StartsWith("CHAT_MSG"));
+			if (!args.EventName.StartsWith("CHAT_MSG"))
+				return;
+
 			object[] Args = args.Args;
 			var arg1  = Args.Length < 1 ? "" : Args[0].ToString();
 			var arg2  = Args.Length < 2 ? "" : Args[1].ToString();
@@ -124,8 +126,8 @@ namespace GliderRemoteCompat {
 				}
 			}
 
-			if (type == "SYSTEM" || type == "SKILL" || type == "LOOT" || type == "MONEY" ||
-				type == "OPENING" || type == "TRADESKILLS" || type == "PET_INFO" || type == "TARGETICONS") {
+			if (type == "SYSTEM" || type == "SKILL" || type == "LOOT" || type == "CURRENCY" || type == "MONEY" ||
+                type == "OPENING" || type == "TRADESKILLS" || type == "PET_INFO" || type == "TARGETICONS" || type == "BN_WHISPER_PLAYER_OFFLINE") {
 				AddMessage(arg1, info.r, info.g, info.b, info.id);
 			} else if (type.StartsWith("COMBAT_")) {
 				switch (type) {
@@ -143,18 +145,18 @@ namespace GliderRemoteCompat {
 			} else if (type.StartsWith("BG_SYSTEM_")) {
 				AddMessage(arg1, info.r, info.g, info.b, info.id);
 			} else if (type.StartsWith("ACHIEVEMENT")) {
-				AddMessage(Tools.sprintf(arg1, "|Hplayer:" + arg2 + "|h" + "[" + coloredName + "]" + "|h"), info.r, info.g, info.b, info.id);
+				AddMessage(sprintf(arg1, "|Hplayer:" + arg2 + "|h" + "[" + coloredName + "]" + "|h"), info.r, info.g, info.b, info.id);
 			} else if (type.StartsWith("GUILD_ACHIEVEMENT")) {
-				AddMessage(Tools.sprintf(arg1, "|Hplayer:" + arg2 + "|h" + "[" + coloredName + "]" + "|h"), info.r, info.g, info.b, info.id);
+				AddMessage(sprintf(arg1, "|Hplayer:" + arg2 + "|h" + "[" + coloredName + "]" + "|h"), info.r, info.g, info.b, info.id);
 			} else if (type == "IGNORED") {
-				AddMessage(Tools.sprintf(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
+				AddMessage(sprintf(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
 			} else if (type == "FILTERED") {
-				AddMessage(Tools.sprintf(CHAT_FILTERED, arg2), info.r, info.g, info.b, info.id);
+				AddMessage(sprintf(CHAT_FILTERED, arg2), info.r, info.g, info.b, info.id);
 			} else if (type == "RESTRICTED") {
 				AddMessage(CHAT_RESTRICTED, info.r, info.g, info.b, info.id);
 			} else if (type == "CHANNEL_LIST") {
 				if (channelLength > 0) {
-					AddMessage(Tools.sprintf(_G["CHAT_" + type + "_GET"] + arg1, int.Parse(arg8), arg4), info.r, info.g, info.b, info.id);
+					AddMessage(sprintf(_G["CHAT_" + type + "_GET"] + arg1, int.Parse(arg8), arg4), info.r, info.g, info.b, info.id);
 				} else {
 					AddMessage(arg1, info.r, info.g, info.b, info.id);
 				}
@@ -167,11 +169,11 @@ namespace GliderRemoteCompat {
 
 				if (arg5.Length > 0) {
 					// TWO users in this notice (E.G. x kicked y)
-					AddMessage(Tools.sprintf(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
+					AddMessage(sprintf(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
 				} else if (arg1 == "INVITE" ) {
-					AddMessage(Tools.sprintf(globalstring, arg4, arg2), info.r, info.g, info.b, info.id);
+					AddMessage(sprintf(globalstring, arg4, arg2), info.r, info.g, info.b, info.id);
 				} else {
-					AddMessage(Tools.sprintf(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
+					AddMessage(sprintf(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
 				}
 			} else if (type == "CHANNEL_NOTICE") {
 				string globalstring = _G["CHAT_" + arg1 + "_NOTICE_BN"];
@@ -186,17 +188,17 @@ namespace GliderRemoteCompat {
 
 				int accessID = 0; //ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 				int typeID = 0; //ChatHistory_GetAccessID(infoType, arg8);
-				AddMessage(Tools.sprintf(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, false, accessID, typeID);
+				AddMessage(sprintf(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, false, accessID, typeID);
 			} else if (type == "BN_CONVERSATION_NOTICE") {
-				string channelLink = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
-				string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), arg8, arg2);
-				string message = Tools.sprintf(_G["CHAT_CONVERSATION_" + arg1 + "_NOTICE"], channelLink, playerLink);
+				string channelLink = sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
+				string playerLink = sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), arg8, arg2);
+				string message = sprintf(_G["CHAT_CONVERSATION_" + arg1 + "_NOTICE"], channelLink, playerLink);
 				int accessID = 0; //ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 				int typeID = 0; //ChatHistory_GetAccessID(infoType, arg8);
 				AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);
 			} else if (type == "BN_CONVERSATION_LIST") {
-				string channelLink = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
-				string message = Tools.sprintf(CHAT_BN_CONVERSATION_LIST, channelLink, arg1);
+				string channelLink = sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
+				string message = sprintf(CHAT_BN_CONVERSATION_LIST, channelLink, arg1);
 				AddMessage(message, info.r, info.g, info.b, info.id, false/*, accessID, typeID*/);
 			} else if (type == "BN_INLINE_TOAST_ALERT") {
 				string globalstring = _G["BN_INLINE_TOAST_" + arg1];
@@ -205,20 +207,20 @@ namespace GliderRemoteCompat {
 				if (arg1 == "FRIEND_REQUEST") {
 					message = globalstring;
 				} else if (arg1 == "FRIEND_PENDING") {
-					message = Tools.sprintf(BN_INLINE_TOAST_FRIEND_PENDING, 0 /*BNGetNumFriendInvites()*/);
+					message = sprintf(BN_INLINE_TOAST_FRIEND_PENDING, 0 /*BNGetNumFriendInvites()*/);
 				} else if (arg1 == "FRIEND_REMOVED") {
-					message = Tools.sprintf(globalstring, arg2);
+					message = sprintf(globalstring, arg2);
 				} else {
-					string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
-					message = Tools.sprintf(globalstring, playerLink);
+					string playerLink = sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
+					message = sprintf(globalstring, playerLink);
 				}
 
 				AddMessage(message, info.r, info.g, info.b, info.id);
 			} else if (type == "BN_INLINE_TOAST_BROADCAST") {
 				if (arg1 != "") {
 					arg1 = RemoveExtraSpaces(arg1);
-					string playerLink = Tools.sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
-					AddMessage(Tools.sprintf(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
+					string playerLink = sprintf("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
+					AddMessage(sprintf(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 				}
 			} else if (type == "BN_INLINE_TOAST_BROADCAST_INFORM") {
 				if (arg1 != "") {
@@ -226,7 +228,7 @@ namespace GliderRemoteCompat {
 					AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
 				}
 			} else if (type == "BN_INLINE_TOAST_CONVERSATION") {
-				AddMessage(Tools.sprintf(BN_INLINE_TOAST_CONVERSATION, arg1), info.r, info.g, info.b, info.id);
+				AddMessage(sprintf(BN_INLINE_TOAST_CONVERSATION, arg1), info.r, info.g, info.b, info.id);
 			} else {
 				string body = "";
 
@@ -296,25 +298,25 @@ namespace GliderRemoteCompat {
 				if (false) {
 					string languageHeader = "[" + arg3 + "] ";
 					if (showLink && (arg2.Length > 0)) {
-						body = Tools.sprintf(_G["CHAT_" + type + "_GET"] + languageHeader + message, pflag + playerLink + "[" + coloredName + "]" + "|h");
+						body = sprintf(_G["CHAT_" + type + "_GET"] + languageHeader + message, pflag + playerLink + "[" + coloredName + "]" + "|h");
 					} else {
-						body = Tools.sprintf(_G["CHAT_" + type + "_GET"] + languageHeader + message, pflag + arg2);
+						body = sprintf(_G["CHAT_" + type + "_GET"] + languageHeader + message, pflag + arg2);
 					}
 				} else {
 					if (!showLink || arg2.Length == 0) {
 						if (type == "TEXT_EMOTE") {
 							body = message;
 						} else {
-							body = Tools.sprintf(_G["CHAT_" + type + "_GET"] + message, pflag + arg2, arg2);
+							body = sprintf(_G["CHAT_" + type + "_GET"] + message, pflag + arg2, arg2);
 						}
 					} else {
 						if (type == "EMOTE") {
-							body = Tools.sprintf(_G["CHAT_" + type + "_GET"] + message, pflag + playerLink + coloredName + "|h");
+							body = sprintf(_G["CHAT_" + type + "_GET"] + message, pflag + playerLink + coloredName + "|h");
 						} else if (type == "TEXT_EMOTE") {
 							//body = string.gsub(message, arg2, pflag + playerLink + coloredName + "|h", 1);
 							body = message.Replace(arg2, pflag + playerLink + coloredName + "|h");
 						} else {
-							body = Tools.sprintf(_G["CHAT_" + type + "_GET"] + message, pflag + playerLink + "[" + coloredName + "]" + "|h");
+							body = sprintf(_G["CHAT_" + type + "_GET"] + message, pflag + playerLink + "[" + coloredName + "]" + "|h");
 						}
 					}
 				}
@@ -322,7 +324,7 @@ namespace GliderRemoteCompat {
 				// Add Channel
 				//arg4 = gsub(arg4, "%s%-%s.*", "");
 				if (chatGroup  == "BN_CONVERSATION") {
-					body = Tools.sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8) + body;
+					body = sprintf(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8) + body;
 				} else if (channelLength > 0) {
 					body = "|Hchannel:channel:" + arg8 + "|h[" + arg4 + "]|h " + body;
 				}

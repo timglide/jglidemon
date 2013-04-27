@@ -9,10 +9,10 @@ using System.Windows.Forms;
 
 namespace GliderRemoteCompat {
 	public partial class SettingsForm : Form {
-		private Class1 owner;
+		private GliderRemoteCompat owner;
 		private ServerSettings serverSettings;
 
-		public SettingsForm(Class1 owner) {
+		public SettingsForm(GliderRemoteCompat owner) {
 			this.owner = owner;
 			InitializeComponent();
 		}
@@ -27,9 +27,16 @@ namespace GliderRemoteCompat {
 		}
 
 		private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e) {
-			ServerSettings.Instance = serverSettings;
-			ServerSettings.Instance.Save();
-			owner.RefreshSettings();
+		}
+
+		private void saveButton_Click(object sender, EventArgs e) {
+			if (!ServerSettings.Instance.Equals(serverSettings)) {
+				ServerSettings.Instance = serverSettings;
+				ServerSettings.Instance.Save();
+				owner.RefreshSettings();
+			}
+
+			this.Close();
 		}
 	}
 }

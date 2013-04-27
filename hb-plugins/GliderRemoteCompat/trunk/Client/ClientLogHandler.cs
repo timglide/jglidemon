@@ -9,6 +9,8 @@ using Styx;
 using Styx.Common;
 using System.Collections.ObjectModel;
 using Styx.CommonBot;
+using AT.MIN;
+using System.Text.RegularExpressions;
 
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler : IDisposable {
@@ -160,6 +162,36 @@ namespace GliderRemoteCompat {
 			return string.Format(
 				"|cff{0:x2}{1:x2}{2:x2}{3}|r",
 				(int)(r * 255), (int)(g * 255), (int)(b * 255), message);
+		}
+
+
+		private static readonly Regex COUNT_CHECK_PATTERN = new Regex("\\|4([^:]*):([^;]*);");
+
+		/// <summary>
+		/// Performs additional WoW-specific processing before passing off to sprintf,
+		/// namely checking for strings like "|4request:requests;"
+		/// </summary>
+		/// <param name="fmt"></param>
+		/// <param name="args"></param>
+		/// <returns></returns>
+		public static string sprintf(string fmt, params object[] args) {
+			// assume this only occurs once per format string and uses the first argument
+			if (args.Length > 0) {
+				Match m = COUNT_CHECK_PATTERN.Match(fmt);
+
+				if (null != m && m.Success) {
+					int i;
+
+					if (int.TryParse(args[0].ToString(), out i)) {
+						fmt = fmt.Substring(0, m.Index) +
+							(1 == i ? m.Groups[1].Value : m.Groups[2].Value) +
+							fmt.Substring(m.Index + m.Length);
+					}
+				}
+			}
+
+
+			return Tools.sprintf(fmt, args);
 		}
 	}
 }

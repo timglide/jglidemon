@@ -7,6 +7,7 @@ using System.Threading;
 using System.IO;
 using Styx.Helpers;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace GliderRemoteCompat {
 	class Client : IDisposable {
@@ -40,6 +41,7 @@ namespace GliderRemoteCompat {
 		public Client(Server server, TcpClient client) {
 			this.server = server;
 			this.client = client;
+			this.client.LingerState = new LingerOption(true, 0);
 			this.stream = client.GetStream();
 			this.reader = new StreamReader(client.GetStream(), encoder);
 			InitCommands();
@@ -88,6 +90,8 @@ namespace GliderRemoteCompat {
 				{"getgamews",      Commands.NotImplemented.Instance},
 				{"setgamews",      Commands.NotImplemented.Instance},
 				{"escapehi",       Commands.NotImplemented.Instance},
+				{"inventory",      Commands.Inventory.Instance},
+				{"runlua",         Commands.RunLua.Instance}
 			};
 		}
 
@@ -144,9 +148,10 @@ namespace GliderRemoteCompat {
 		public string FormattedLogChannels {
 			get {
 				List<string> channels = new List<string>();
-				foreach (ClientLogType t in settings.LogChannels.Keys.Where(k => settings.LogChannels[k])) {
-					channels.Add(t.Name.ToLower());
-				}
+				channels.AddRange(
+					settings.LogChannels.Keys
+						.Where(k => settings.LogChannels[k])
+						.Select(t => t.Name.ToLower()));
 
 				if (0 == channels.Count) {
 					return "none";
@@ -205,7 +210,15 @@ namespace GliderRemoteCompat {
 					needToDispose = true;
 					running = false;
 					break;
-				} catch (ThreadInterruptedException) { }
+				} catch (ThreadInterruptedException) {
+					needToDispose = false;
+					running = false;
+					break;
+				} catch (ThreadAbortException) {
+					needToDispose = false;
+					running = false;
+					break;
+				}
 			}
 
 			if (needToDispose) {
@@ -234,7 +247,13 @@ namespace GliderRemoteCompat {
 			try {
 				command.Execute(server, this, args);
 			} catch (Exception x) {
-				Send(x.ToString());
+				Send("Error: exception", false);
+				string[] lines = x.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+				for (int i = 0; i < lines.Length; i++)
+					lines[i] = "! " + lines[i];
+
+				Send(lines);
 			}
 		}
 
@@ -285,7 +304,7 @@ namespace GliderRemoteCompat {
 		/// </summary>
 		/// <param name="lines"></param>
 		public void Send(string[] lines) {
-			Send(string.Join("\r\n", lines));
+			Send(null != lines ? string.Join("\r\n", lines) : "");
 		}
 
 		/// <summary>
@@ -293,7 +312,11 @@ namespace GliderRemoteCompat {
 		/// </summary>
 		/// <param name="lines"></param>
 		public void Send(IEnumerable<string> lines) {
-			Send(lines.ToArray());
+			if (null == lines) {
+				Send();
+			} else {
+				Send(lines.ToArray());
+			}
 		}
 
 		/// <summary>

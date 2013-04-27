@@ -9,6 +9,7 @@ using Styx.Helpers;
 using System.Drawing;
 using System.ComponentModel;
 using Styx.Common;
+using Styx;
 
 namespace GliderRemoteCompat {
 	[Serializable]
@@ -26,9 +27,26 @@ namespace GliderRemoteCompat {
 			}
 		}
 
-		public static string ConfigFile = "GliderRemoteCompat.config";
+		public static string ConfigFile {
+			get {
+				return string.Format(configFile, StyxWoW.Me.Name);
+			}
+		}
+
+		private const string configFile = "{0}.xml";
 
 		public static string SavePath {
+			get {
+				string path = Process.GetCurrentProcess().MainModule.FileName;
+				path = Path.GetDirectoryName(path);
+				path = Path.Combine(path, "Settings\\GliderRemoteCompat");
+				return path;
+			}
+		}
+
+		private const string oldConfigFile = "GliderRemoteCompat.config";
+
+		private static string OldSavePath {
 			get {
 				string path = Process.GetCurrentProcess().MainModule.FileName;
 				path = Path.GetDirectoryName(path);
@@ -50,10 +68,21 @@ namespace GliderRemoteCompat {
 		}
 
 		public static ServerSettings Load() {
+			string oldPath = OldSavePath;
+			string oldFile = Path.Combine(oldPath, oldConfigFile);
+
 			string path = SavePath;
 			string file = Path.Combine(path, ConfigFile);
 
 			try {
+				if (File.Exists(oldFile) && !File.Exists(file)) {
+					if (!Directory.Exists(path))
+						Directory.CreateDirectory(path);
+
+					Logging.Write("[GRC] Moving old config file to new location: {0}", file);
+					File.Move(oldFile, file);
+				}
+
 				using (FileStream fStream = new FileStream(file, FileMode.Open, FileAccess.Read)) {
 					return (ServerSettings)Serializer.Deserialize(fStream);
 				}
@@ -102,6 +131,16 @@ namespace GliderRemoteCompat {
 		public string Password {
 			get { return password; }
 			set { password = value; }
+		}
+
+		public override bool Equals(object obj) {
+			if (object.ReferenceEquals(this, obj))
+				return true;
+			if (!(obj is ServerSettings))
+				return false;
+			ServerSettings s = (ServerSettings)obj;
+
+			return this.password == s.password && this.port == s.port;
 		}
 
 		#region ICloneable Members
