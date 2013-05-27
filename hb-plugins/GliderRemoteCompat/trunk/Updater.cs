@@ -111,8 +111,8 @@ namespace GliderRemoteCompat {
                         dirPath = Environment.CurrentDirectory;
 						filePath = Path.Combine(GliderRemoteCompat.PluginPath, file);
                     }
-                    Logging.Write("[GRC] Downloading: {0}/{1}", relativePath, file);
-					Logging.Write("[GRC]          To: {0}", filePath);
+					//Logging.Write("[GRC] Downloading: {0}{1}", relativePath, file);
+					//Logging.Write("[GRC]          To: {0}", filePath);
                     if (!Directory.Exists(dirPath))
                         Directory.CreateDirectory(dirPath);
                     client.DownloadFile(newUrl, filePath);

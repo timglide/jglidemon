@@ -6,15 +6,25 @@ using System.Text;
 namespace GliderRemoteCompat {
 	partial class ClientLogHandler {
 		public class GlobalHelper {
+			private static readonly Dictionary<string, string> cache = new Dictionary<string, string>();
 			private static readonly Type type = typeof(ClientLogHandler);
 
 			public string this[string key] {
 				get {
-					try {
-						return (string)type.GetField(key).GetValue(null);
-					} catch { }
+					string val = "";
 
-					return "";
+					if (!cache.TryGetValue(key, out val)) {
+						try {
+							val = (string)type.GetField(key).GetValue(null);
+							cache[key] = val;
+						} catch {
+							val = "";
+						}
+					} else if (null == val) {
+						val = "";
+					}
+
+					return val;
 				}
 			}
 		}
