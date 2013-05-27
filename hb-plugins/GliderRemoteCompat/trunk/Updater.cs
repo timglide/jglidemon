@@ -51,8 +51,9 @@ namespace GliderRemoteCompat {
 		public static bool SkipUpdate {
 			get {
 				return
-					Directory.Exists(Path.Combine(GliderRemoteCompat.PluginPath, ".svn")) ||
-					Directory.Exists(Path.Combine(GliderRemoteCompat.PluginPath, "_svn"));
+					File.Exists(Path.Combine(GliderRemoteCompat.PluginPath, "noautoupdate.txt"));
+					//Directory.Exists(Path.Combine(GliderRemoteCompat.PluginPath, ".svn")) ||
+					//Directory.Exists(Path.Combine(GliderRemoteCompat.PluginPath, "_svn"));
 			}
 		}
 

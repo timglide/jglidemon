@@ -20,7 +20,7 @@ using Styx.Common;
 
 namespace GliderRemoteCompat {
 	public class GliderRemoteCompat : HBPlugin {
-		private const string _revision = "$Revision$"; 
+		private const string _revision = "$Revision$";
 		private static readonly int revision;
 		private static readonly Version version;
 		private static string pluginPath = null;
