@@ -17,6 +17,7 @@ using Styx.Common;
 using Styx.CommonBot.Profiles;
 using Styx.Pathing;
 using Styx.CommonBot.Frames;
+using Styx.Common.Helpers;
 
 namespace timglide {
 	/// <summary>
@@ -78,6 +79,9 @@ namespace timglide {
 
 		private DateTime _lastMoveTime = DateTime.Now;
 		private WoWPoint _lastPlayerTonkLocation = WoWPoint.Empty;
+
+		// Max time you can be a tonk
+		private WaitTimer timeoutTimer = new WaitTimer(TimeSpan.FromSeconds(60.0));
 
 		// DON'T EDIT THESE--they are auto-populated by Subversion
 		public override string SubversionId { get { return ("$Id$"); } }
@@ -286,6 +290,9 @@ namespace timglide {
 				new Decorator(ret => _started && !HasTonk, new Action(c => {
 					_isDone = true; // Ran out of time
 				})),
+				new Decorator(ret => _started && timeoutTimer.IsFinished, new Action(c => {
+					_isDone = true; // Extra sanity check
+				})),
 				new Decorator(ret => HasTonk, new PrioritySelector(
 					new Decorator(ret => !(PlayerTonk.IsValid && PlayerTonk.IsAlive), new ActionAlwaysSucceed()), // when it dies you can't do anything for a moment
 					new Decorator(ret => IsQuestComplete, new Action(c => {
@@ -387,6 +394,7 @@ namespace timglide {
 						}),
 						new Action(c => {
 							_started = true;
+							timeoutTimer.Reset();
 							Lua.Events.AttachEvent("COMBAT_LOG_EVENT_UNFILTERED", COMBAT_LOG_EVENT_UNFILTERED);
 						})
 					)
