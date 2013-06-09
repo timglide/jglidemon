@@ -50,6 +50,7 @@ namespace QuestBehavoirs {
 	/// Pool Fish
 	/// <CustomBehavior File="Fishing" QuestId="26420" PoolFish="true" PoolId="100" X="-8190.623" Y="732.9164" Z="68.12978" />
 	/// </summary>
+	[CustomBehaviorFileName(@"Fishing")]
 	internal class Fishing : CustomForcedBehavior {
 		#region Base
 		public Fishing(Dictionary<string, string> args)

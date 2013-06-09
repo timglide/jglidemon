@@ -27,6 +27,7 @@ namespace timglide {
 	///           does not necessarily have to be completely naked
 	/// DpsSet: The name of an equipment manager set to equip when not attacking aether rays
 	/// </summary>
+	[CustomBehaviorFileName(@"Ogrila_Wrangle")]
 	class Ogrila_Wrangle : CustomForcedBehavior {
 		public static readonly int[] QuestIds = { 11065, 11066 };
 		public const uint ItemId = 32698; // wrangling rope

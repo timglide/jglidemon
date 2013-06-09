@@ -24,6 +24,7 @@ namespace timglide {
 	/// Custom quest behavior for "Tonk Commander" Darkmoon Faire daily quest.
 	/// By timglide
 	/// </summary>
+	[CustomBehaviorFileName(@"DMF_Tonk")]
 	class DMF_Tonk : CustomForcedBehavior {
 		private static readonly int[] QuestIds = { 29434 };
 		private const uint GameTokenId = 71083;

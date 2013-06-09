@@ -23,6 +23,7 @@ namespace timglide {
 	/// Custom quest behavior for "He Shoots, He Scores!" Darkmoon Faire daily quest.
 	/// By timglide
 	/// </summary>
+	[CustomBehaviorFileName(@"DMF_Shoot")]
 	class DMF_Shoot : CustomForcedBehavior {
 		private static readonly int[] QuestIds = { 29438 };
 		private const uint GameTokenId = 71083;

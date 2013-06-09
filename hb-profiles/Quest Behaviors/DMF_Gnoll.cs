@@ -30,6 +30,7 @@ namespace timglide {
 	/// AgeWeight: Relative importance of how long since the gnoll spawned in determining which gnoll to whack next
 	/// MaxAge: (Seconds) The longer a gnoll has been up the lower weight it will receive and if it is older than this value it will not be considered at all
 	/// </summary>
+	[CustomBehaviorFileName(@"DMF_Gnoll")]
 	class DMF_Gnoll : CustomForcedBehavior {
 		private static readonly int[] QuestIds = { 29463 };
 		private const uint GameTokenId = 71083;

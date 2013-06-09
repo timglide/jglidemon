@@ -23,6 +23,7 @@ namespace timglide {
 	/// from AutoAngler.
 	/// By timglide
 	/// </summary>
+	[CustomBehaviorFileName(@"DMF_Fishing")]
 	class DMF_Fishing : CustomForcedBehavior {
 		private static readonly int[] QuestIds = { 29513 };
 		private const float FacingDirectionDegrees = 180f; // due south
@@ -140,6 +141,7 @@ namespace timglide {
 
 		public bool IsPoleEquipped {
 			get {
+				return true;
 				WoWItem mainHand = Me.Inventory.Equipped.MainHand;
 				return null != mainHand && WoWItemWeaponClass.FishingPole == mainHand.ItemInfo.WeaponClass;
 			}
@@ -193,7 +195,7 @@ namespace timglide {
 				new Decorator(ret => null != LootFrame.Instance && LootFrame.Instance.IsVisible, new Action(c => {
 					LootFrame.Instance.LootAll();
 				})),
-				new Decorator(ret => !IsPoleEquipped, new Action(c => {
+				/*new Decorator(ret => !IsPoleEquipped true, new Action(c => {
 					try {
 						Logging.Write("pole: {0} [{1}]", Me.Inventory.Equipped.MainHand, Me.Inventory.Equipped.MainHand.ItemInfo.WeaponClass);
 					} catch {}
@@ -204,7 +206,7 @@ namespace timglide {
 						LogMessage("error", "No fishing pole found, skipping.");
 						_isDone = true;
 					}
-				})),
+				})),*/
 				new Decorator(ret => Math.Abs(FacingDirectionDegrees - Math.Abs(Me.RotationDegrees)) > FacingLeewayDegrees, new Action(c => {
 					LogMessage("debug", "Facing water");
 					Me.SetFacing(WoWMathHelper.DegreesToRadians(FacingDirectionDegrees));

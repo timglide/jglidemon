@@ -18,6 +18,7 @@ using Styx.CommonBot;
 using Styx.Pathing;
 
 namespace timglide {
+	[CustomBehaviorFileName(@"Ogrila_Bomb")]
 	class Ogrila_Bomb : CustomForcedBehavior {
 		/// <summary>
 		/// Custom quest behavior for initial and daily versions of bombing run quests.

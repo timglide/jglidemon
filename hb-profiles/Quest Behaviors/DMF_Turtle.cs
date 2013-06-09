@@ -23,6 +23,7 @@ namespace timglide {
 	/// Custom quest behavior for "Target: Turtle" Darkmoon Faire daily quest.
 	/// By timglide
 	/// </summary>
+	[CustomBehaviorFileName(@"DMF_Turtle")]
 	class DMF_Turtle : CustomForcedBehavior {
 		private static readonly int[] QuestIds = { 29455 };
 		private const uint GameTokenId = 71083;

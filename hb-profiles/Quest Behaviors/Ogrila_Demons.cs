@@ -23,6 +23,7 @@ namespace timglide {
 	/// Custom quest behavior for initial and daily version of banish demons quests.
 	/// By timglide
 	/// </summary>
+	[CustomBehaviorFileName(@"Ogrila_Demons")]
 	class Ogrila_Demons : CustomForcedBehavior {
 		public static readonly int[] QuestIds = { 11026, 11051 };
 		public const uint ItemId = 32696; // banishing crystal

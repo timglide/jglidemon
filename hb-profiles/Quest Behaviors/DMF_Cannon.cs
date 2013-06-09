@@ -27,6 +27,7 @@ namespace timglide {
 	/// UseTeleport: (boolean) Whether or not to talk to the gnome to be teleported back to the cannon for a fee
 	/// TickRate: How many ticks per second to run HonorBuddy at during this quest behavior, needs to be high due to the importance of timing removal of wings buff
 	/// </summary>
+	[CustomBehaviorFileName(@"DMF_Cannon")]
 	class DMF_Cannon : CustomForcedBehavior {
 		private static readonly int[] QuestIds = { 29436 };
 		private const byte DefaultTickRate = 30;
