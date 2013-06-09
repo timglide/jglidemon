@@ -1,5 +1,5 @@
 <HBProfile>
-	<Name>Darkmoon Faire Quests by timglide $Revision$</Name>
+	<Name>Darkmoon Faire Quests by timglide &amp; Alisha Fixed $Revision$</Name>
 	<MinLevel>1</MinLevel>
 	<MaxLevel>91</MaxLevel>
 
@@ -46,7 +46,7 @@
 						<MoveTo X="-1242.275" Y="105.4413" Z="129.1405" /> <!-- forge -->
 						<CustomBehavior File="ForcedDismount" />
 						<While Condition="HasItem(71964)">
-							<CustomBehavior File="UseItem" ItemId="71964" WaitTime="3000" X="-1242.275" Y="105.4413" Z="129.1405" />
+							<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(71964)" WaitTime="3000" X="-1242.275" Y="105.4413" Z="129.1405" />
 						</While>
 					</If>
 
@@ -58,8 +58,8 @@
 
 					<If Condition="HasQuest(29509) &amp;&amp; !IsQuestCompleted(29509) &amp;&amp; GetItemCount(30817) &lt; 5">
 						<CustomBehavior File="Message" Text="Buying stuff for cooking." LogColor="LimeGreen" />
-						<MoveTo X="-1291.038" Y="95.90452" Z="130.1139" />
-						<CustomBehavior File="InteractWith" NpcId="8363" BuyItemId="30817" BuyItemCount="5" X="-1291.038" Y="95.90452" Z="130.1139" />
+						<CustomBehavior File="FlyTo" X="-1213.755" Y="-15.12248" Z="165.8759" />
+						<CustomBehavior File="InteractWith" NpcId="3027" BuyItemId="30817" BuyItemCount="5" X="-1213.755" Y="-15.12248" Z="165.8759" />
 					</If>
 
 					<If Condition="HasQuest(29515) &amp;&amp; !IsQuestCompleted(29515) &amp;&amp; GetItemCount(39354) &lt; 5">
@@ -119,7 +119,7 @@
 				<If Condition="Me.Level &gt;= 6 &amp;&amp; !HasQuest(7926) &amp;&amp; !IsQuestCompleted(7926)">
 					<PickUp QuestName="The Darkmoon Faire" QuestId="7926" GiverName="Darkmoon Faire Mystic Mage" GiverId="55382" />
 				</If>
-				<CustomBehavior File="InteractWith" NpcId="55382" GossipOptions="1" />
+				<CustomBehavior File="InteractWith" NpcId="55382" GossipOptions="1" KeepTargetSelected="True" />
 				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" /> <!-- accept 30s cost -->
 				<CustomBehavior File="WaitTimer" WaitTime="5000" />
 			</If>
@@ -145,7 +145,7 @@
 				<If Condition="Me.Level &gt;= 6 &amp;&amp; !HasQuest(7905) &amp;&amp; !IsQuestCompleted(7905)">
 					<PickUp QuestName="The Darkmoon Faire" QuestId="7905" GiverName="Darkmoon Faire Mystic Mage" GiverId="54334" />
 				</If>
-				<CustomBehavior File="InteractWith" NpcId="54334" GossipOptions="1" />
+				<CustomBehavior File="InteractWith" NpcId="54334" GossipOptions="1" KeepTargetSelected="True" />
 				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" />	<!-- accept 30s cost -->
 				<CustomBehavior File="WaitTimer" WaitTime="5000" />
 				</If>
@@ -171,7 +171,7 @@
 					<MoveTo X="-9456.812" Y="90.98833" Z="58.3431" />
 					<CustomBehavior File="ForcedDismount" />
 					<While Condition="HasItem(71964)">
-						<CustomBehavior File="UseItem" ItemId="71964" WaitTime="3000" />
+						<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(71964)" WaitTime="3000" />
 					</While>
 				</If>
 				
@@ -181,7 +181,7 @@
 					<CustomBehavior File="InteractWith" NpcId="465" BuyItemId="1645" BuyItemCount="5" />
 				</If>
 
-				<MoveTo X="-9482.946" Y="69.12139" Z="56.34609" />
+				<RunTo X="-9503.865" Y="78.67805" Z="58.04575" />
 				<!-- try not to get stuck on awning -->
 				<CustomBehavior File="ForcedDismount" />
 				<CustomBehavior File="MyCTM" X="-9491.366" Y="80.74424" Z="56.05242" />
@@ -358,7 +358,7 @@
 					<!-- moonberry juice, fizzy faire drink -->
 					<CustomBehavior File="ForcedDismount" />
 					<While Condition="HasItem(1645) &amp;&amp; HasItem(19299)">
-						<CustomBehavior File="UseItem" ItemId="72043" WaitTime="3000" />
+						<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(72043)" WaitTime="3000" />
 					</While>
 				<Else>
 					<CustomBehavior File="AbandonQuest" QuestId="29506" /> <!-- something went wrong -->
@@ -387,19 +387,20 @@
 				<!-- tested by tim -->
 				<CustomBehavior File="Message" Text="Working on cooking quest." LogColor="LimeGreen" />
 				<!-- simple flour, plump frogs -->
-				<CustomBehavior File="ForcedDismount" />
 				<If Condition="GetItemCount(30817) &gt;= 5 &amp;&amp; HasItem(72056)">
-					<CustomBehavior File="UseItem" ItemId="72056" WaitTime="2000" /> <!-- make breaded frogs -->
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(72056)" WaitTime="2000" /><!-- make breaded frogs -->
 				</If>
 				<While Condition="HasItem(72057)"> <!-- breaded frogs -->
-					<CustomBehavior File="UseItem" ItemId="72057" WaitTime="1000" X="-4168.328" Y="6289.727" Z="13.1182" /> <!-- fry the frogs -->
+					<CustomBehavior File="FlyTo" X="-4167.563" Y="6286.996" Z="14.17099" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(72057)" WaitTime="1000" X="-4167.563" Y="6286.996" Z="14.17099" /> <!-- fry the frogs -->
 				</While>
-				<CustomBehavior File="WaitTimer" WaitTime="1000" />
-				<If Condition="!HasItem(72056) &amp;&amp; !IsQuestCompleted(29509)">
-					<CustomBehavior File="AbandonQuest" QuestId="29509" /> <!-- something went wrong -->
+				<CustomBehavior File="WaitTimer" WaitTime="2000" />
+				<!-- something went wrong -->
+				<!--If Condition="!HasItem(72056) &amp;&amp; !IsQuestCompleted(29509)">
+					<CustomBehavior File="AbandonQuest" QuestId="29509" /> 
 					<CustomBehavior File="WaitTimer" WaitTime="1000" />
 					<PickUp QuestName="Putting the Crunch in the Frog" QuestId="29509" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
-				</If>
+				</If-->
 			</If>
 			<If Condition="HasQuest(29509) &amp;&amp; IsQuestCompleted(29509)">
 				<TurnIn QuestName="Putting the Crunch in the Frog" QuestId="29509" TurnInName="Stamp Thunderhorn" TurnInId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
@@ -409,7 +410,8 @@
 				<PickUp QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" GiverName="Stamp Thunderhorn" GiverId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
 			</If>
 			<If Condition="HasQuest(29513) &amp;&amp; !IsQuestCompleted(29513)">
-				<CustomBehavior File="Message" Text="Working on fishing quest." LogColor="LimeGreen" />
+				<CustomBehavior File="Message" Text="Fishing quest is not currently working." LogColor="Orange" />
+				<!--CustomBehavior File="Message" Text="Working on fishing quest." LogColor="LimeGreen" />
 				<If Condition="Chance(25.0)">
 					<MoveTo X="-4450.319" Y="6303.257" Z="2.173741" />
 					<ElseIf Condition="Chance(25.0)">
@@ -422,7 +424,7 @@
 						<MoveTo X="-4452.53" Y="6353.468" Z="1.62248" />
 					</Else>
 				</If>
-				<CustomBehavior File="DMF_Fishing" />
+				<CustomBehavior File="DMF_Fishing" /-->
 			</If>
 			<If Condition="HasQuest(29513) &amp;&amp; IsQuestCompleted(29513)">
 				<TurnIn QuestName="Spoilin' for Salty Sea Dogs" QuestId="29513" TurnInName="Stamp Thunderhorn" TurnInId="14845" X="-4165.073" Y="6285.713" Z="13.11746" />
@@ -442,7 +444,7 @@
 				</CustomBehavior>
 				<CustomBehavior File="ForcedDismount" />
 				<While Condition="HasItem(72018)">
-					<CustomBehavior File="UseItem" ItemId="72018" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(72018)" WaitTime="1500" />
 				</While>
 			</If>
 			<If Condition="HasQuest(29510) &amp;&amp; IsQuestCompleted(29510)">
@@ -478,10 +480,10 @@
 				<CustomBehavior File="Message" Text="Working on inscription quest." LogColor="LimeGreen" />
 				<CustomBehavior File="ForcedDismount" />
 				<While Condition="HasItem(71971)"> <!-- bundle of exotic herbs -->
-					<CustomBehavior File="UseItem" ItemId="71971" WaitTime="2000" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(71971)" WaitTime="2000" />
 				</While>
 				<While Condition="HasItem(71972) &amp;&amp; HasItem(39354)"> <!-- prophetic ink, light parchment -->
-					<CustomBehavior File="UseItem" ItemId="71972" WaitTime="1000" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(71972)" WaitTime="1000" />
 				</While>
 				<CustomBehavior File="WaitTimer" WaitTime="1000" />
 				<If Condition="!HasItem(71971) &amp;&amp; !IsQuestCompleted(29515)">
@@ -529,7 +531,7 @@
 				</CustomBehavior>
 				<CustomBehavior File="ForcedDismount" />
 				<While Condition="HasItem(72052)">
-					<CustomBehavior File="UseItem" ItemId="72052" WaitTime="1000" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(72052)" WaitTime="1000" />
 				</While>
 			</If>
 			<If Condition="HasQuest(29516) &amp;&amp; IsQuestCompleted(29516)">
@@ -563,7 +565,7 @@
 					<CustomBehavior File="ForcedDismount" />
 					<!-- shiny bauble, coarse thread, blue dye -->
 					<While Condition="GetItemCount(6529) &gt;= 2 &amp;&amp; HasItem(2320) &amp;&amp; HasItem(6260)">
-						<CustomBehavior File="UseItem" ItemId="71977" />
+						<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(71977)" />
 					</While>
 				<Else>
 					<CustomBehavior File="AbandonQuest" QuestId="29517" /> <!-- something went wrong -->
@@ -631,19 +633,24 @@
 				<CustomBehavior File="Message" Text="Working on tailoring quest." LogColor="LimeGreen" />
 				<!-- banner kit, coarse thread, red dye, blue dye -->
 				<CustomBehavior File="ForcedDismount" />
-				<If Condition="HasItem(72048) &amp;&amp; HasItem(2320) &amp;&amp; HasItem(2604) &amp;&amp; HasItem(6260)">
-					<CustomBehavior File="UseItem" ItemId="72048" WaitTime="5000" />
-				</If>
-				<If Condition="HasItem(72049)">
-					<CustomBehavior File="UseItem" ItemId="72049" WaitTime="3000" X="-4269.294" Y="6357.731" Z="12.94166" />
-				</If>
-				<CustomBehavior File="WaitTimer" WaitTime="1000" />
-				<If Condition="!HasItem(72048) &amp;&amp; !IsQuestCompleted(29520)">
-					<CustomBehavior File="AbandonQuest" QuestId="29520" /> <!-- something went wrong -->
-					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				<While Condition="HasItem(72048) &amp;&amp; HasItem(2320) &amp;&amp; HasItem(2604) &amp;&amp; HasItem(6260)">
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(72048)" WaitTime="5000" />
+				</While>
+				<While Condition="HasItem(72049)">
+					<CustomBehavior File="Message" Text="Creating Tailoring" LogColor="LimeGreen" />
+					<CustomBehavior File="FlyTo" X="-4144.048" Y="6333.929" Z="13.54555" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(72049)" WaitTime="3000" X="-4144.048" Y="6333.929" Z="13.54555" />
+				</While>
+				<CustomBehavior File="WaitTimer" WaitTime="3000" />
+				<!-- If Condition="!HasItem(72048) &amp;&amp; !IsQuestCompleted(29520)"-->
+					<!--CustomBehavior File="AbandonQuest" QuestId="29520" /--> <!-- something went wrong -->
+					<!--CustomBehavior File="WaitTimer" WaitTime="1000" />
 					<PickUp QuestName="Banners, Banners Everywhere!" QuestId="29520" GiverName="Selina Dourman" GiverId="10445" X="-4004.797" Y="6236.218" Z="13.11706" />
-				</If>
+				</If -->
 			</If>
+
+
+
 			<If Condition="HasQuest(29520) &amp;&amp; IsQuestCompleted(29520)">
 				<TurnIn QuestName="Banners, Banners Everywhere!" QuestId="29520" TurnInName="Selina Dourman" TurnInId="10445" X="-4004.797" Y="6236.218" Z="13.11706" />
 			</If>
@@ -688,7 +695,7 @@
 			<MoveTo X="-4445.835" Y="6329.296" Z="13.26439" />
 			
 			<If Condition="Me.IsHorde">
-				<CustomBehavior File="UseGameObject" ObjectId="210176" WaitTime="10000" X="-4445.835" Y="6329.296" Z="13.26439" />
+				<CustomBehavior File="UseGameObject" ObjectId="216776" WaitTime="10000" X="-4445.835" Y="6329.296" Z="13.26439" />
 				
 				<If Condition="215 != Me.ZoneId">
 					<CustomBehavior File="Halt" Text="We should be in Mulgore but aren't!" />
@@ -711,7 +718,7 @@
 					</Else>
 				</If>
 			<Else>
-				<CustomBehavior File="UseGameObject" ObjectId="210175" WaitTime="10000" X="-4445.835" Y="6329.296" Z="13.26439" />
+				<CustomBehavior File="UseGameObject" ObjectId="216667" WaitTime="10000" X="-4445.835" Y="6329.296" Z="13.26439" />
 				
 				<If Condition="12 != Me.ZoneId">
 					<CustomBehavior File="Halt" Text="We should be in Elwynn Forest but aren't!" />
@@ -730,7 +737,7 @@
 
 			<!--CustomBehavior File="Halt" Message="Halting until buying stuff is implemented." /-->
 			<!-- start this profile over again since we are now in thunder bluff or elwynn and it will buy stuff from the code at the beginning of the profile -->
-			<CustomBehavior File="LoadProfile" ProfileName="[N] Darkmoon Faire Quests by timglide.xml" />
+			<CustomBehavior File="LoadProfile" ProfileName="[N] Darkmoon Faire Quests by timglide &amp; alisha.xml" />
 		</If>
 		
 
@@ -740,18 +747,19 @@
 		<While Condition="true"> <!-- the loop enables us to buy more tokens as needed -->
 			<If Condition="!HasItem(71083)">
 				<!-- using BuySlot because there are different sacks of tokens for different level players with different costs and item ids -->
-				<If Condition="!(HasItem(78909) || HasItem(78908) || HasItem(78907) || HasItem(78906) || HasItem(78905) || HasItem(78898))">
+				<If Condition="!(HasItem(78910) || HasItem(78909) || HasItem(78908) || HasItem(78907) || HasItem(78906) || HasItem(78905) || HasItem(78898))">
 					<CustomBehavior File="InteractWith" BuySlot="1" NpcId1="55264" NpcId2="55339" NpcId3="55266" X="-4088.264" Y="6359.938" Z="13.07626" />
 					<CustomBehavior File="Misc\RunLua" Lua="MerchantFrameCloseButton:Click()" />
 				</If>
 				
 				<!-- open the sack of tokens (different ids for different level players) -->
-				<If Condition="HasItem(78909)"><CustomBehavior File="UseItem" ItemId="78909" /></If>
-				<If Condition="HasItem(78908)"><CustomBehavior File="UseItem" ItemId="78908" /></If>
-				<If Condition="HasItem(78907)"><CustomBehavior File="UseItem" ItemId="78907" /></If>
-				<If Condition="HasItem(78906)"><CustomBehavior File="UseItem" ItemId="78906" /></If>
-				<If Condition="HasItem(78905)"><CustomBehavior File="UseItem" ItemId="78905" /></If>
-				<If Condition="HasItem(78898)"><CustomBehavior File="UseItem" ItemId="78898" /></If>
+				<If Condition="HasItem(78910)"><CustomBehavior File="Misc\RunLua" Lua="UseItemByName(78910)" WaitTime="1000" /></If>
+				<If Condition="HasItem(78909)"><CustomBehavior File="Misc\RunLua" Lua="UseItemByName(78909)" WaitTime="1000" /></If>
+				<If Condition="HasItem(78908)"><CustomBehavior File="Misc\RunLua" Lua="UseItemByName(78908)" WaitTime="1000" /></If>
+				<If Condition="HasItem(78907)"><CustomBehavior File="Misc\RunLua" Lua="UseItemByName(78907)" WaitTime="1000" /></If>
+				<If Condition="HasItem(78906)"><CustomBehavior File="Misc\RunLua" Lua="UseItemByName(78906)" WaitTime="1000" /></If>
+				<If Condition="HasItem(78905)"><CustomBehavior File="Misc\RunLua" Lua="UseItemByName(78905)" WaitTime="1000" /></If>
+				<If Condition="HasItem(78898)"><CustomBehavior File="Misc\RunLua" Lua="UseItemByName(78898)" WaitTime="1000" /></If>
 			</If>
 			<If Condition="!HasItem(71083)">
 				<CustomBehavior File="UserDialog" AllowBotStop="true" Title="Game tokens needed!" Text="There was a problem buying game tokens. Please buy some manually." />
