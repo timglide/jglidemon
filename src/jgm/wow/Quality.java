@@ -22,6 +22,9 @@ package jgm.wow;
 
 import java.awt.Color;
 
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
+
 public enum Quality {
 	POOR     (0, Color.DARK_GRAY,        new Color(0x9d9d9d)),
 	COMMON   (1, Color.BLACK,            Color.WHITE),
@@ -35,11 +38,15 @@ public enum Quality {
 	public final int value;
 	public final Color darkColor;
 	public final Color lightColor;
+	public final Border darkBorder;
+	public final Border lightBorder;
 	
 	private Quality(int value, Color darkColor, Color lightColor) {
 		this.value = value;
 		this.darkColor = darkColor;
 		this.lightColor = lightColor;
+		darkBorder = BorderFactory.createLineBorder(darkColor);
+		lightBorder = BorderFactory.createLineBorder(lightColor);
 	}
 	
 	public String toString() {

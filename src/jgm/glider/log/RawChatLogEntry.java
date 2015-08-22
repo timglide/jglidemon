@@ -26,13 +26,15 @@ import java.util.regex.*;
 
 public class RawChatLogEntry extends LogEntry {	
 	private ItemSet itemSet = null;
-	private int    money = 0;
+	private long    money = 0;
 
 	private String repFaction = null;
 	private int repAmount = 0;
 	
 	private String skillName = null;
 	private int skillLevel = 0;
+	
+	private Currency currency;
 	
 	public RawChatLogEntry(String s) {
 		this("RawChat", s);
@@ -46,6 +48,7 @@ public class RawChatLogEntry extends LogEntry {
 		parseItem();
 		parseRep();
 		parseSkill();
+		parseCurrency();
 		removeLinks();
 		
 		/*if (money > 0) {
@@ -94,12 +97,16 @@ public class RawChatLogEntry extends LogEntry {
 	public ItemSet getItemSet() {
 		return itemSet;
 	}
+	
+	public Item getItem() {
+		return null != itemSet ? itemSet.getItem() : null;
+	}
 
 	public boolean hasMoney() {
 		return money > 0;
 	}
 	
-	public int getMoney() {
+	public long getMoney() {
 		return money;
 	}
 	
@@ -125,6 +132,10 @@ public class RawChatLogEntry extends LogEntry {
 	
 	public int getSkillLevel() {
 		return skillLevel;
+	}
+	
+	public Currency getCurrency() {
+		return currency;
 	}
 	
 	private static Pattern MONEY_PATTERN =
@@ -180,14 +191,14 @@ public class RawChatLogEntry extends LogEntry {
 	 *       2: item name
 	 *       3: optional quantity
 	 */
-	private static Pattern ITEM_PATTERN1 = Pattern.compile(
-		".*(?:(?:You receive|Received) (?:loot|item)|You create): \\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h(?:x(\\d+))?\\.*");
+	private static final Pattern ITEM_PATTERN1 = Pattern.compile(
+		".*(?:(?:You receive|Received) (?:loot|item)|You create): \\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h\\s*(?:x(\\d+))?\\.*");
 	
 	/* group 1: quantity
 	 *       2: item id
 	 *       3: item name
 	 */
-	private static Pattern ITEM_PATTERN2 = Pattern.compile(
+	private static final Pattern ITEM_PATTERN2 = Pattern.compile(
 		".*Received (\\d+) of item: \\|Hitem:(\\d+)(?::-?\\d+)*?\\|h\\[(.*?)\\]\\|h\\.*");
 
 	private void parseItem() {
@@ -222,7 +233,7 @@ public class RawChatLogEntry extends LogEntry {
 
 	// "Your %s reputation has increased by %d."
 	private static final Pattern REP_REGEX =
-		Pattern.compile("Reputation with (.+) (increased|decreased) by (\\d+)\\.");
+		Pattern.compile("Reputation with (.+) (increased|decreased) by (\\d+).*");
 	
 	private void parseRep() {
 		Matcher m = REP_REGEX.matcher(text);
@@ -251,5 +262,41 @@ public class RawChatLogEntry extends LogEntry {
 		try {
 			skillLevel = Integer.parseInt(m.group(2));
 		} catch (NumberFormatException e) {}
+	}
+	
+	
+	// |cff00aa00You receive currency: |cffa335ee|Hcurrency:396|h[Valor Points]|h|r x5.|r
+	private static final Pattern CURRENCY_REGEX =
+			Pattern.compile("You receive currency: \\|Hcurrency:(\\d+)\\|h\\[(.+?)\\]\\|h\\s*(?:x(\\d+))?");
+	
+	private void parseCurrency() {
+		Matcher m = CURRENCY_REGEX.matcher(text);
+		
+		if (!m.find())
+			return;
+		
+		int id = 0;
+		String name = "UNKNOWN";
+		int count = 1;
+		
+		try {
+			id = Integer.parseInt(m.group(1));
+		} catch (NumberFormatException nfe) {
+			return;
+		}
+		
+		name = m.group(2);
+		
+		if (m.groupCount() >= 3) {
+			try {
+				count = Integer.parseInt(m.group(3));
+			} catch (NumberFormatException nfe) { }
+		}
+		
+		currency = Currency.factory(id, name, count);
+		
+		if (null != currency) {
+			System.out.println("Got currency: " + currency);
+		}
 	}
 }

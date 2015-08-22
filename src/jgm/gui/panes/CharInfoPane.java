@@ -101,12 +101,19 @@ public class CharInfoPane extends Pane {
 	}
 
 	public void update(Status s) {
-		name.setText(s.name);
-		level.setText(((s.level > 0) ? Integer.toString(s.level) : ""));
-		health.setValue((int) s.health);
-		health.setToolTipText(Integer.toString((int) s.health) + "%");
-		mana.setValue((int) s.mana);
-		mana.setToolTipText(Integer.toString((int) s.mana) + "%");
+		if (s.attached) {
+			name.setText(s.name);
+			level.setText(((s.level > 0) ? Integer.toString(s.level) : ""));
+			health.setValue((int) s.health);
+			health.setToolTipText(Integer.toString((int) s.health) + "%");
+			mana.setValue((int) s.mana);
+			mana.setToolTipText(Integer.toString((int) s.mana) + "%");
+			
+			// need to update it each time to account for druids
+			manaLbl.setText(s.manaName + ": ");
+	
+			heading.setHeading(s.heading);
+		}
 
 		if (!clazz.getText().equals(s.clazz.toString())) {
 			try {
@@ -118,10 +125,5 @@ public class CharInfoPane extends Pane {
 				e.printStackTrace();
 			}
 		}
-		
-		// need to update it each time to account for druids
-		manaLbl.setText(s.manaName + ": ");
-
-		heading.setHeading(s.heading);
 	}
 }

@@ -52,6 +52,8 @@ public class LogEntry implements Comparable<LogEntry> {
 	private String htmlText = null;
 	private String html5Text = null;
 
+	private Map<Integer, ChatLink> chatLinks;
+	
 	/**
 	 * Create a new LogEntry.
 	 * @param type The type of entry, Whisper, Chat, GliderLog, etc.
@@ -61,6 +63,15 @@ public class LogEntry implements Comparable<LogEntry> {
 		this.type = type;
 		this.rawText = rawText;
 		this.text = rawText;
+		parseLinks();
+	}
+	
+	public boolean hasChatLinks() {
+		return !chatLinks.isEmpty();
+	}
+	
+	public Map<Integer, ChatLink> getChatLinks() {
+		return chatLinks;
 	}
 	
 	public final String getType() {
@@ -397,6 +408,54 @@ public class LogEntry implements Comparable<LogEntry> {
 	// removing formatting, links
 	protected static final Pattern LINK_REGEX =
 		Pattern.compile("\\|H[^|]+(?=|h)");
+	
+	public static Map<Integer, ChatLink> parseLinks(String str) {
+		Map<Integer, ChatLink> ret = new LinkedHashMap<Integer, ChatLink>(0);
+		
+		str = removeFormatting(str);
+		
+		ChatLinkType curType;
+		ChatLink curLink, lastLink = null;
+		Matcher m = CONVERT_LINK_REGEX.matcher(str);
+		int rawIndex = 0;
+		int index = 0;
+		int discardedChars = 0;
+		String[] parts;
+		
+		while (m.find(rawIndex)) {
+			rawIndex = m.start();
+			index = rawIndex - discardedChars;
+			
+			parts = m.group(1).split(":");
+			try {
+				curType = ChatLinkType.valueOf(parts[0].toUpperCase());
+			} catch (IllegalArgumentException iae) {
+				curType = ChatLinkType.UNKNOWN;
+			}
+			curLink = new ChatLink(rawIndex, index, curType, m.group(0), parts, m.group(2));
+			
+			discardedChars += curLink.rawLength() - curLink.length();
+			
+			ret.put(index, curLink);
+			lastLink = curLink;
+			
+			rawIndex = m.end();
+		}
+		
+		return ret;
+	}
+	
+	protected void parseLinks() {
+		chatLinks = parseLinks(rawText);
+		
+//		if (!chatLinks.isEmpty()) {
+//			System.out.println("\nLinks found for: " + getText());
+//			
+//			for (ChatLink cl : chatLinks.values()) {
+//				System.out.println("  " + cl);
+//			}
+//		}
+	}
 	
 	public static String removeLinks(String str) {
 		Matcher m = LINK_REGEX.matcher(str);

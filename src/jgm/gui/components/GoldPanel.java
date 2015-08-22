@@ -20,6 +20,8 @@
  */
 package jgm.gui.components;
 
+import java.text.NumberFormat;
+
 import javax.swing.*;
 
 /**
@@ -30,8 +32,9 @@ import javax.swing.*;
  * @since 0.1
  */
 public class GoldPanel extends JPanel {
+	private NumberFormat numberFormat = NumberFormat.getIntegerInstance();
 	private String      title;
-	private int         money  = 0;
+	private long         money  = 0;
 	private boolean     hideWhenZero = false;
 
 	private        JLabel      ttlLabel = null;
@@ -69,16 +72,16 @@ public class GoldPanel extends JPanel {
 	/**
 	 * Create a new GoldPanel.
 	 * @param s A prefix to precede the gold icons with
-	 * @param i The amount of copper to represend
+	 * @param i The amount of copper to represent
 	 * @param hide Whether to hide the panel when there is zero copper worth
 	 * @param fontColor The foreground color of the labels
 	 */
-	public GoldPanel(String s, int i, boolean hide, java.awt.Color fontColor) {
+	public GoldPanel(String s, long i, boolean hide, java.awt.Color fontColor) {
 		this(i, s, hide);
 		setTextColor(fontColor);
 	}
 	
-	public GoldPanel(int i, String s, boolean hide) {
+	public GoldPanel(long i, String s, boolean hide) {
 		super();
 		if (icons == null) {
 			icons = new ImageIcon[3];
@@ -105,6 +108,11 @@ public class GoldPanel extends JPanel {
 		setMoney(i);
 	}
 	
+	@Override
+	public int getBaseline(int width, int height) {
+		return ttlLabel.getBaseline(width, height);
+	}
+	
 	public void setText(String s) {
 		title = s;
 		ttlLabel.setText(title);
@@ -118,11 +126,11 @@ public class GoldPanel extends JPanel {
 		}
 	}
 	
-	public int getMoney() {
+	public long getMoney() {
 		return money;
 	}
 	
-	public void setMoney(int c) {
+	public void setMoney(long c) {
 		setMoney(cToGsc(c));
 	}
 	
@@ -133,9 +141,9 @@ public class GoldPanel extends JPanel {
 	public void setMoney(int g, int s, int c) {
 		money = gscToC(g, s, c);
 		
-		labels[0].setText(Integer.toString(g));
-		labels[1].setText(Integer.toString(s));
-		labels[2].setText(Integer.toString(c));
+		labels[0].setText(numberFormat.format(g));
+		labels[1].setText(numberFormat.format(s));
+		labels[2].setText(numberFormat.format(c));
 		
 		if (g == 0) {
 			labels[0].setVisible(false);
@@ -159,7 +167,7 @@ public class GoldPanel extends JPanel {
 		}
 	}
 	
-	public void addMoney(int c) {
+	public void addMoney(long c) {
 		setMoney(money + c);
 	}
 	
@@ -175,7 +183,7 @@ public class GoldPanel extends JPanel {
 	 * @param copper The amount of copper
 	 * @return The total amount of copper
 	 */
-	public static int gscToC(int gold, int silver, int copper) {
+	public static long gscToC(int gold, int silver, int copper) {
 		return copper + silver * 100 + gold * 100 * 100;
 	}
 	
@@ -186,15 +194,15 @@ public class GoldPanel extends JPanel {
 	 * @return An array with 3 elements corresponding to 
 	 * the amount of gold, silver, and copper.
 	 */
-	public static int[] cToGsc(int copper) {
+	public static int[] cToGsc(long copper) {
 		// i = 1234567 (123.45.67)
 		
 		int[] ret = new int[3];
 		
-		int i = copper / 100;       // 12345 (123.45)
+		int i = (int) (copper / 100);       // 12345 (123.45)
 		ret[0] = i / 100;           // 123
 		ret[1] = i - ret[0] * 100;  // 12345 - 12300 = 45
-		ret[2] = copper - i * 100;  // 1234567 - 1234500 = 67
+		ret[2] = (int) (copper - i * 100);  // 1234567 - 1234500 = 67
 		
 		return ret;
 	}

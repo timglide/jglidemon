@@ -35,18 +35,37 @@ public class Rep {
 	public String timestamp = "";
 	public String faction = "";
 	public int amount = 0;
+	public Date firstSeen;
+	public Date lastSeen;
 	
 	public Rep(Date timestampDate, String faction, int amount) {
 		this.timestampDate = timestampDate;
 		this.timestamp = RawChatLogEntry.getFormattedTimestamp(timestampDate);
 		this.faction = faction;
 		this.amount = amount;
+		firstSeen = new Date();
+		lastSeen = new Date(firstSeen.getTime());
 	}
 	
 	public void incr(Rep rep) {
 		this.timestampDate = rep.timestampDate;
 		this.timestamp = rep.timestamp;
 		this.amount += rep.amount;
+		lastSeen.setTime(System.currentTimeMillis());
+	}
+	
+	public double getAmountPerHour()
+	{
+		if (0 == amount)
+			return 0;
+		
+		long now = System.currentTimeMillis();
+		long diff = now - firstSeen.getTime();
+		
+		if (0L == diff)
+			return 0;
+		
+		return (double) amount / ((double) diff / 3600000L);
 	}
 	
 	public boolean equals(Object o) {

@@ -45,6 +45,41 @@ public class Status {
 	public int    targetLevel;
 	public double targetHealth;
 	
+
+	public String goalText;
+	public String statusText;
+	public long copper;
+	public double timeToLevel; // in seconds
+	public boolean targetIsPlayer;
+	public int honorGained;
+	public int honorPerHour;
+	public int bgsWon;
+	public int bgsLost;
+	public int bgsCompleted;
+	public int bgsWonPerHour;
+	public int bgsLostPerHour;
+	public int bgsPerHour;
+	public int killsPerHour;
+	public int lootsPerHour;
+	public int deathsPerHour;
+	public int nodes;
+	public int nodesPerHour;
+	public int solves;
+	public int solvesPerHour;
+	public int fish;
+	public int fishPerHour;
+	
+	public boolean running;
+	public String accountName;
+	public String realm;
+	public String map;
+	public int mapId;
+	public String internalMapName;
+	public String zone;
+	public int zoneId;
+	public String realZone;
+	public String subZone;
+	
 	public Status() {
 		resetData();
 	}
@@ -52,7 +87,7 @@ public class Status {
 	public void resetData() {
 		version        = "";
 		attached       = false;
-		mode           = "Auto";
+		mode           = "Unknown";
 		profile        = "";
 		logMode        = "None";
 		health         = 0.0;
@@ -73,6 +108,41 @@ public class Status {
 		targetName     = "";
 		targetLevel    = 0;
 		targetHealth   = 0.0;
+		
+
+		goalText = "";
+		statusText = "";
+		copper = 0L;
+		timeToLevel = Double.POSITIVE_INFINITY; // in seconds
+		targetIsPlayer = false;
+		honorGained = 0;
+		honorPerHour = 0;
+		bgsWon = 0;
+		bgsLost = 0;
+		bgsCompleted = 0;
+		bgsWonPerHour = 0;
+		bgsLostPerHour = 0;
+		bgsPerHour = 0;
+		killsPerHour = 0;
+		lootsPerHour = 0;
+		deathsPerHour = 0;
+		nodes = 0;
+		nodesPerHour = 0;
+		solves = 0;
+		solvesPerHour = 0;
+		fish = 0;
+		fishPerHour = 0;
+		
+		running = false;
+		accountName = "";
+		realm = "";
+		map = "";
+		mapId = -1;
+		internalMapName = "";
+		zone = "";
+		zoneId = -1;
+		realZone = "";
+		subZone = "";
 	}
 	
 	/**
@@ -96,31 +166,13 @@ public class Status {
 	}
 	
 	public Status clone() {
-		Status ret = new Status();
+		Status ret = null;
 		
-		ret.version        = version;
-		ret.attached       = attached;
-		ret.mode           = mode;
-		ret.profile        = profile;
-		ret.logMode        = logMode;
-		ret.health         = health;
-		ret.mana           = mana;
-		ret.manaName       = manaName;
-		ret.name           = name;
-		ret.clazz          = clazz; // class
-		ret.level          = level;
-		ret.experience     = experience;
-		ret.nextExperience = nextExperience;
-		ret.xpPerHour      = xpPerHour;
-		ret.xpPercent      = xpPercent;
-		ret.location       = location;
-		ret.heading        = heading;
-		ret.kills          = kills;
-		ret.loots          = loots;
-		ret.deaths         = deaths;
-		ret.targetName     = targetName;
-		ret.targetLevel    = targetLevel;
-		ret.targetHealth   = targetHealth;
+		try {
+			ret = (Status) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw (InternalError) new InternalError().initCause(e);
+		}
 		
 		return ret;
 	}

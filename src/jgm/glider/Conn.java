@@ -119,7 +119,8 @@ public class Conn {
 	 * @param str
 	 */
 	public void send(String str) {
-		while (!isConnected()) {}
+		if (!isConnected())
+			return;
 		
 		//try {
 //			synchronized (out) {
@@ -155,6 +156,9 @@ public class Conn {
 	}
 
 	public String readLine() throws IOException {
+		if (null == inStream)
+			return "";
+		
 		byte[] buf = new byte[128];
 		int ch, pos = 0;
 		boolean hadCR = false, hadLF = false;
@@ -212,14 +216,14 @@ public class Conn {
 		
 		try {
 			if (isConnected()) {
-				try {
+//				try {
 //					synchronized (s) {
 						send("/exit");
-						log.finest("  Result: " + readLine());
+//						log.finest("  Result: " + readLine());
 //						in.readLine(); // Bye!
 //						Thread.sleep(500);
 //					}
-				} catch (IOException e) {}
+//				} catch (IOException e) {}
 			}
 		} catch (Throwable e) {
 			log.log(Level.SEVERE, "Exception during close", e);

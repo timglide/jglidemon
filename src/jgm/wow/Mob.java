@@ -21,6 +21,7 @@
 package jgm.wow;
 
 import java.awt.Color;
+import java.util.Date;
 
 /**
  * 
@@ -32,6 +33,8 @@ public class Mob {
 	public int number = 0;
 	public int xp = 0;
 	public String name = "UNKNOWN";
+	public Date firstSeen;
+	public Date lastSeen;
 	
 	public Mob(String name) {
 		this("", name, 0, 0);
@@ -42,12 +45,29 @@ public class Mob {
 		this.name = name;
 		this.number = number;
 		this.xp = xp;
+		firstSeen = new Date();
+		lastSeen = new Date(firstSeen.getTime());
 	}
 	
 	public void incr(Mob mob) {
 		this.xp += mob.xp;
 		this.xp /= 2;
 		this.number++;
+		lastSeen.setTime(System.currentTimeMillis());
+	}
+	
+	public double getNumberPerHour()
+	{
+		if (0 == number)
+			return 0;
+		
+		long now = System.currentTimeMillis();
+		long diff = now - firstSeen.getTime();
+		
+		if (0L == diff)
+			return 0;
+		
+		return (double) number / ((double) diff / 3600000L);
 	}
 	
 	public boolean equals(Object o) {

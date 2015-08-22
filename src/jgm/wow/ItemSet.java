@@ -20,6 +20,8 @@
  */
 package jgm.wow;
 
+import java.util.Date;
+
 /**
  * Represents a quantity of a certain item.
  * @author Tim
@@ -27,11 +29,17 @@ package jgm.wow;
  */
 public class ItemSet {
 	public int quantity = 0;
+	private int initialQuantity;
 	private Item item;
+	public Date firstSeen;
+	public Date lastSeen;
 	
 	public ItemSet(Item item, int quantity) {
 		this.quantity = quantity;
+		initialQuantity = quantity;
 		this.item = item;
+		firstSeen = new Date();
+		lastSeen = new Date(firstSeen.getTime());
 	}
 
 	public Item getItem() {
@@ -44,10 +52,25 @@ public class ItemSet {
 	
 	public void addQuantity(int i) {
 		quantity += i;
+		lastSeen.setTime(System.currentTimeMillis());
 	}
 
 	public void addQuantity(ItemSet i) {
 		addQuantity(i.quantity);
+	}
+	
+	public double getQuantityPerHour()
+	{
+		if (0 == quantity)
+			return 0;
+		
+		long now = System.currentTimeMillis();
+		long diff = now - firstSeen.getTime();
+		
+		if (0L == diff)
+			return 0;
+		
+		return (double) (quantity /*- initialQuantity*/) / (((double) diff) / 3600000.0);
 	}
 	
 	public boolean equals(Object o) {

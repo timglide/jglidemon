@@ -200,6 +200,17 @@ public final class Command {
 		
 		throw new IllegalArgumentException("State must be on or off");
 	}
+	
+	static final Command INVENTORY = new Command("inventory");
+	public static Command getInventoryCommand() {
+		return INVENTORY;
+	}
+	
+	public static Command getInventoryCommand(String slot) {
+		if (null == slot || slot.isEmpty())
+			return INVENTORY;
+		return new Command("inventory", slot);
+	}
 }
 
 ///exit                         - shut down this connection

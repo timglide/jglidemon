@@ -40,8 +40,7 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * @param s The name of the Tab
 	 */
 	public Tab(GUI gui, String s) {
-		super(gui);
-		name = s;
+		this(gui, null, s);
 	}
 
 	/**
@@ -71,17 +70,10 @@ public abstract class Tab extends jgm.gui.panes.Pane {
 	 * @return Whether this Tab is currently selected
 	 */
 	public final boolean isCurrentTab() {
-		return ((JTabbedPane) this.getParent()).getSelectedIndex()
-				== getIndex();
+		return ((JTabbedPane) this.getParent()).getSelectedComponent() == this;
 	}
 	
 	public final void select() {
 		((JTabbedPane) this.getParent()).setSelectedComponent(this);
 	}
-	
-	/**
-	 * It is optional for a Tab to implement this method
-	 * for when the StatusUpdater has updated.
-	 */
-	public void update(Status s) {}
 }

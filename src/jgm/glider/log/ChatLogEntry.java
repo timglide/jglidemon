@@ -99,7 +99,7 @@ public class ChatLogEntry extends RawChatLogEntry {
 		return null == ret ? super.getHtmlPreColor() : ret;
 	}
 	
-	private static Pattern PATTERN1 =
+	private static final Pattern PATTERN1 =
 		Pattern.compile(".*?(<GM>|<Away>|<Busy>|)(\\[?)([^]]+)\\]? (whisper|say|yell)s: (.*)");
 		/* group 1: <GM>?
 		 *       2: [, to determine if player or npc
@@ -108,7 +108,7 @@ public class ChatLogEntry extends RawChatLogEntry {
 		 *       5: message
 		 */
 
-	private static Pattern PATTERN2 =
+	private static final Pattern PATTERN2 =
 		Pattern.compile(".*?\\[(\\d+\\.?\\s*?|)(Guild|Officer|[^]]+)\\]\\s*(<GM>|<Away>|<Busy>|)\\[([^]]+)\\]: (.*)");
 		/* group 1: number => public chat channel
 		 *       2: channel name (Guild|Office|public channel name)
@@ -118,7 +118,7 @@ public class ChatLogEntry extends RawChatLogEntry {
 		 */
 	
 	// for when you send a whisper to someone else
-	private static Pattern PATTERN3 =
+	private static final Pattern PATTERN3 =
 		Pattern.compile(".*?To \\[([^]]+)\\]: (.*)");
 	
 	private static ChatLogEntry parse(String s) {

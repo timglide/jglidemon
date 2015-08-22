@@ -249,6 +249,7 @@ public final class ServerManager implements Comparable<ServerManager> {
 	public LogUpdater    logUpdater;
 	public SSUpdater     ssUpdater;
 	public PlayerChartUpdater chartUpdater;
+	public InventoryUpdater inventoryUpdater;
 	
 	public Connector connector;
 
@@ -361,6 +362,9 @@ public final class ServerManager implements Comparable<ServerManager> {
 		
 		chartUpdater = new PlayerChartUpdater(ServerManager.this);
 		
+		inventoryUpdater = new InventoryUpdater(ServerManager.this, gui.tabsPane.lootTab);
+		connector.addListener(inventoryUpdater);
+		
 		gui.makeVisible();
 		
 		// create a seperate thread to connect in case it
@@ -451,6 +455,7 @@ public final class ServerManager implements Comparable<ServerManager> {
 		connector.removeListener(logUpdater);
 		connector.removeListener(ssUpdater);
 		connector.removeListener(status);
+		connector.removeListener(inventoryUpdater);
 		
 		// seems to hang the shutdown hook
 		if (!fromHook)

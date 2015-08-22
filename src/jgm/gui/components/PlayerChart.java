@@ -267,7 +267,7 @@ public class PlayerChart extends JPanel {
 		g.setRenderingHints(rh);
 	}
 	
-	class DataPoint implements Comparable<DataPoint> {
+	static class DataPoint implements Comparable<DataPoint> {
 		Date timestamp;
 		double value;
 		

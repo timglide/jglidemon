@@ -22,6 +22,9 @@ package jgm.gui.panes;
 
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 
 import jgm.glider.Status;
@@ -31,10 +34,6 @@ public class MobInfoPane extends Pane {
 	private JLabel level;
 
 	private JProgressBar health;
-
-	private JLabel kills;
-	private JLabel loots;
-	private JLabel deaths;
 
 	public MobInfoPane(jgm.gui.GUI gui) {
 		super(gui);
@@ -64,31 +63,17 @@ public class MobInfoPane extends Pane {
 		c.gridx++; c.weightx = 1.0;
 		lbls.add(health, c);
 		
-		c.gridx = 0; c.gridy = 0; c.gridwidth = 3; c.weightx = 1.0;
+		c.gridx = 0; c.gridy = 0; c.gridwidth = 4; c.weightx = 1.0;
 		add(lbls, c);
-
-		kills = new JLabel("Kills: 0", JLabel.CENTER);
-		c.gridx = 0; c.gridy++; c.gridwidth = 1;
-		add(kills, c);
-
-		loots = new JLabel("Loots: 0", JLabel.CENTER);
-		c.gridx++;
-		add(loots, c);
-
-		deaths = new JLabel("Deaths: 0", JLabel.CENTER);
-		c.gridx++;
-		add(deaths, c);
 	}
 
 	public void update(Status s) {
-		name.setText(s.targetName.equals("") ? "No Target" : s.targetName);
-		level.setText(s.targetLevel > 0 ? Integer.toString(s.targetLevel) : "");
-		level.setForeground(s.targetLevel > 0 ? jgm.wow.Mob.getMobColor(s.level, s.targetLevel) : Color.BLACK);
-		health.setValue((int) s.targetHealth);
-		health.setToolTipText(Integer.toString((int) s.targetHealth) + "%");
-
-		kills.setText("Kills: " + s.kills);
-		loots.setText("Loots: " + s.loots);
-		deaths.setText("Deaths: " +s.deaths);
+		if (s.attached) {
+			name.setText(s.targetName.equals("") ? "No Target" : s.targetName + (s.targetIsPlayer ? " (target is a player)" : ""));
+			level.setText(s.targetLevel > 0 ? Integer.toString(s.targetLevel) : "");
+			level.setForeground(s.targetLevel > 0 ? jgm.wow.Mob.getMobColor(s.level, s.targetLevel) : Color.BLACK);
+			health.setValue((int) s.targetHealth);
+			health.setToolTipText(Integer.toString((int) s.targetHealth) + "%");
+		}
 	}
 }

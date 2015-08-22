@@ -46,7 +46,7 @@ public enum ManaType {
 	private static final Pattern druid =
 		// find rage, energy, or mana, in that order
 		// "R = ##", "E=##", or "... (##%)"
-		Pattern.compile("(?:.*?R = (\\d+).*|.*?E=(\\d+).*|.*\\((\\d+)%\\).*)");
+		Pattern.compile(".*?R\\s*=\\s*(\\d+).*?E\\s*=\\s*(\\d+).*\\((\\d+)%\\).*");
 		
 	private String type;
 	
@@ -73,6 +73,13 @@ public enum ManaType {
 	public int numRegexGroups() {
 		switch (this) {
 			case DRUID: return 3;
+			default:    return 1;
+		}
+	}
+
+	public int getDisplayRegexGroup() {
+		switch (this) {
+			case DRUID: return 2;
 			default:    return 1;
 		}
 	}

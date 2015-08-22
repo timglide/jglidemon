@@ -46,6 +46,8 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 	private SkillTable skillTable;
 	private SkillTableModel skillEntries;
 	
+	private Timer repaintTimer;
+	
 	public MobsTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(20, 20), "Mobs/Rep/Skills");
 		
@@ -73,6 +75,19 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		jp.add(myp);
 		
 		add(jp, BorderLayout.CENTER);
+		
+		repaintTimer = new Timer(1000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!MobsTab.this.gui.sm.connector.isConnected())
+					return;
+				
+				mobTable.repaint();
+				repTable.repaint();
+				skillTable.repaint();
+			}
+		});
+		repaintTimer.start();
 	}
 	
 	public void add(LogEntry e) {
@@ -167,14 +182,34 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 			cm.getColumn(1).setResizable(false);
 			cm.getColumn(1).setMinWidth(75);
 			cm.getColumn(1).setMaxWidth(75);
+			cm.getColumn(2).setResizable(false);
+			cm.getColumn(2).setMinWidth(75);
+			cm.getColumn(2).setMaxWidth(75);
 			
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
 	}
-
+	
+	private enum MobCols {
+		COUNT("Count", Integer.class),
+		PER_HOUR("Per Hour", Integer.class),
+		AVG_XP("Avg XP", Integer.class),
+		NAME("Name", String.class)
+		;
+		
+		private MobCols(String name, java.lang.Class<?> clazz) {
+			this.name = name;
+			this.clazz = clazz;
+		}
+		
+		public final String name;
+		public final java.lang.Class<?> clazz;
+	}
+	
+	private static final MobCols[] MOB_COLS = MobCols.values();
+	
 	private class MobTableModel extends AbstractTableModel {
 		private final java.util.Comparator<Mob> comp = Mob.getQuantityComparator();
-		private final String[] columnNames = {"#", "Avg XP", "Name"};
 		
 		private ArrayList<Mob> entries;
 		private Mob totalMob = null;
@@ -235,7 +270,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 		
 		public int getColumnCount() {
-			return 3;
+			return MOB_COLS.length;
 		}
 
 		public int getRowCount() {
@@ -243,23 +278,27 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 
 		public String getColumnName(int col) {
-			return columnNames[col];
+			return MOB_COLS[col].name;
 		}
 
 		public Object getValueAt(int row, int col) {
 			Mob i = entries.get(row);
 			Object ret = null;
 
-			switch (col) {
-				case 0:
+			switch (MOB_COLS[col]) {
+				case COUNT:
 					ret = i.number;
 					break;
 
-				case 1:
+				case PER_HOUR:
+					ret = (int) i.getNumberPerHour();
+					break;
+					
+				case AVG_XP:
 					ret = i.xp;
 					break;
 					
-				case 2:
+				case NAME:
 					ret = i.name;
 					break;
 			}
@@ -268,7 +307,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 
 		public java.lang.Class<?> getColumnClass(int c) {
-			return getValueAt(0, c).getClass();
+			return MOB_COLS[c].clazz;
 		}
 
 		public boolean isCellEditable(int row, int col) {
@@ -294,14 +333,34 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 			cm.getColumn(1).setResizable(false);
 			cm.getColumn(1).setMinWidth(75);
 			cm.getColumn(1).setMaxWidth(75);
+			cm.getColumn(2).setResizable(false);
+			cm.getColumn(2).setMinWidth(75);
+			cm.getColumn(2).setMaxWidth(75);
 			
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
 	}
-
+	
+	private enum RepCols {
+		TIME("Time", String.class),
+		GAINED("Gained", Integer.class),
+		PER_HOUR("Per Hour", Integer.class),
+		FACTION("Faction", String.class)
+		;
+		
+		private RepCols(String name, java.lang.Class<?> clazz) {
+			this.name = name;
+			this.clazz = clazz;
+		}
+		
+		public final String name;
+		public final java.lang.Class<?> clazz;
+	}
+	
+	private static final RepCols[] REP_COLS = RepCols.values();
+	
 	private class RepTableModel extends AbstractTableModel {
 		private final java.util.Comparator<Rep> comp = Rep.getAmountComparator();
-		private final String[] columnNames = {"Time", "Gained", "Faction"};
 		
 		private ArrayList<Rep> entries;
 
@@ -346,7 +405,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 		
 		public int getColumnCount() {
-			return 3;
+			return REP_COLS.length;
 		}
 
 		public int getRowCount() {
@@ -354,23 +413,27 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 
 		public String getColumnName(int col) {
-			return columnNames[col];
+			return REP_COLS[col].name;
 		}
 
 		public Object getValueAt(int row, int col) {
 			Rep i = entries.get(row);
 			Object ret = null;
 
-			switch (col) {
-				case 0:
+			switch (REP_COLS[col]) {
+				case TIME:
 					ret = i.timestamp;
 					break;
 
-				case 1:
+				case GAINED:
 					ret = i.amount;
 					break;
 					
-				case 2:
+				case PER_HOUR:
+					ret = (int) i.getAmountPerHour();
+					break;
+					
+				case FACTION:
 					ret = i.faction;
 					break;
 			}
@@ -379,7 +442,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 
 		public java.lang.Class<?> getColumnClass(int c) {
-			return getValueAt(0, c).getClass();
+			return REP_COLS[c].clazz;
 		}
 
 		public boolean isCellEditable(int row, int col) {
@@ -405,14 +468,34 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 			cm.getColumn(1).setResizable(false);
 			cm.getColumn(1).setMinWidth(75);
 			cm.getColumn(1).setMaxWidth(75);
+			cm.getColumn(2).setResizable(false);
+			cm.getColumn(2).setMinWidth(75);
+			cm.getColumn(2).setMaxWidth(75);
 			
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
 	}
 
+	private enum SkillCols {
+		TIME("Time", String.class),
+		LEVEL("Level", Integer.class),
+		PER_HOUR("Per Hour", Integer.class),
+		Skill("Faction", String.class)
+		;
+		
+		private SkillCols(String name, java.lang.Class<?> clazz) {
+			this.name = name;
+			this.clazz = clazz;
+		}
+		
+		public final String name;
+		public final java.lang.Class<?> clazz;
+	}
+	
+	private static final SkillCols[] SKILL_COLS = SkillCols.values();
+	
 	private class SkillTableModel extends AbstractTableModel {
 		private final java.util.Comparator<Skill> comp = Skill.getLevelComparator();
-		private final String[] columnNames = {"Time", "Level", "Skill"};
 		
 		private ArrayList<Skill> entries;
 
@@ -457,7 +540,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 		
 		public int getColumnCount() {
-			return 3;
+			return SKILL_COLS.length;
 		}
 
 		public int getRowCount() {
@@ -465,23 +548,27 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 
 		public String getColumnName(int col) {
-			return columnNames[col];
+			return SKILL_COLS[col].name;
 		}
 
 		public Object getValueAt(int row, int col) {
 			Skill i = entries.get(row);
 			Object ret = null;
 
-			switch (col) {
-				case 0:
+			switch (SKILL_COLS[col]) {
+				case TIME:
 					ret = i.timestamp;
 					break;
 
-				case 1:
+				case LEVEL:
 					ret = i.level;
 					break;
 					
-				case 2:
+				case PER_HOUR:
+					ret = (int) i.getSkillPerHour();
+					break;
+					
+				case Skill:
 					ret = i.name;
 					break;
 			}
@@ -490,7 +577,7 @@ public class MobsTab extends Tab implements ActionListener, Clearable {
 		}
 
 		public java.lang.Class<?> getColumnClass(int c) {
-			return getValueAt(0, c).getClass();
+			return SKILL_COLS[c].clazz;
 		}
 
 		public boolean isCellEditable(int row, int col) {

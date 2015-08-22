@@ -35,18 +35,39 @@ public class Skill {
 	public String timestamp = "";
 	public String name = "";
 	public int level = 0;
+	public int initialLevel;
+	public Date firstSeen;
+	public Date lastSeen;
 	
 	public Skill(Date timestampDate, String name, int level) {
 		this.timestampDate = timestampDate;
 		this.timestamp = RawChatLogEntry.getFormattedTimestamp(timestampDate);
 		this.name = name;
 		this.level = level;
+		initialLevel = level;
+		firstSeen = new Date();
+		lastSeen = new Date(firstSeen.getTime());
 	}
 	
 	public void incr(Skill s) {
 		this.timestampDate = s.timestampDate;
 		this.timestamp = s.timestamp;
 		this.level = s.level;
+		lastSeen.setTime(System.currentTimeMillis());
+	}
+	
+	public double getSkillPerHour()
+	{
+		if (0 == level)
+			return 0;
+		
+		long now = System.currentTimeMillis();
+		long diff = now - firstSeen.getTime();
+		
+		if (0L == diff)
+			return 0;
+		
+		return (double) (level - initialLevel) / ((double) diff / 3600000L);
 	}
 	
 	public boolean equals(Object o) {
