@@ -20,29 +20,35 @@
  */
 package jgm.gui.tabs;
 
-import jgm.glider.log.*;
-import jgm.glider.Friend;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FontMetrics;
 import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
-//import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+
+import jgm.glider.Friend;
+import jgm.glider.log.ChatLogEntry;
+import jgm.glider.log.GliderLogEntry;
+import jgm.glider.log.LogEntry;
+import jgm.gui.panes.TabsPaneBase;
+//import javax.swing.table.TableColumnModel;
 
 public class UrgentTab extends Tab implements Clearable {
 //	static Logger log = Logger.getLogger(ChatTab.class.getName());
 	
-	private JTabbedPane tabs;
+	private TabsPaneBase tabs;
 	public LogTab logs;
 	public FollowersTab followers;
 	
 	public UrgentTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(), "Urgent");
 		
-		tabs = new JTabbedPane();
-		logs = new LogTab(gui, "Logs", tabs);
+		tabs = new TabsPaneBase(gui);
+		logs = new LogTab(gui, "Logs");
 		followers = new FollowersTab(gui);
 		
 		addTab(logs);
@@ -54,24 +60,26 @@ public class UrgentTab extends Tab implements Clearable {
 	}
 	
 	private void addTab(Tab t) {
-		tabs.addTab(t.name, t);
+		tabs.addTab(t);
 	}
 	
 	public void add(LogEntry e, boolean select) {
 		if (select) 
 			this.select();
 		
+		if (e instanceof ChatLogEntry) {
+			ChatLogEntry ce = (ChatLogEntry) e;
+			
+			if (ce.fromPlayer && "Whisper".equalsIgnoreCase(ce.getChannel())) {
+				gui.tabsPane.overviewTab.incrementWhispers();
+			}
+		}
+		
 		logs.add(e, select);
 	}
 	
 	public void clear(boolean clearingAll) {
-		if (!clearingAll) {
-			((Clearable) tabs.getSelectedComponent()).clear(false);
-		} else {
-			for (int i = 0; i < tabs.getComponentCount(); i++) {
-				((Clearable) tabs.getComponentAt(i)).clear(true);
-			}
-		}
+		tabs.clear(clearingAll);
 	}
 	
 	public class FollowersTab extends Tab implements Clearable {

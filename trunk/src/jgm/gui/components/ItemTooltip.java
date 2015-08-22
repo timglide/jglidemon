@@ -23,7 +23,10 @@ package jgm.gui.components;
 import jgm.wow.*;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -74,6 +77,18 @@ public class ItemTooltip extends JPanel {
 	}
 	
 	private void init() {
+		InputStream is = ItemTooltip.class.getResourceAsStream("/jgm/resources/images/tooltip_border.png");
+		
+		if (null != is) {
+			try {
+				BufferedImage bi = ImageIO.read(is);
+				ImageBorder border = new ImageBorder(bi);
+				setBorder(border);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 		this.setMaximumSize(new Dimension(300, 600));
 		p = new JPanel();
 		c = new GridBagConstraints();
@@ -81,8 +96,8 @@ public class ItemTooltip extends JPanel {
 		p.setLayout(new GridBagLayout());
 		p.setOpaque(false);
 		setBounds(0, 0, 250, 300);
-		setBackground(Color.black);
-		setOpaque(true);
+//		setBackground(new Color(0xCC010721, true));
+		setOpaque(false);
 		setVisible(false);
 				
 		titleLabel = new JLabel(title, JLabel.CENTER);
@@ -176,6 +191,10 @@ public class ItemTooltip extends JPanel {
 		add(sourceLabel, c);*/
 		
 		add(p, BorderLayout.CENTER);
+	}
+	
+	public ItemSet getItemSet() {
+		return itemSet;
 	}
 	
 	/**

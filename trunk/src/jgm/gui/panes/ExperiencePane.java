@@ -21,6 +21,8 @@
 package jgm.gui.panes;
 
 
+import java.text.NumberFormat;
+
 import javax.swing.*;
 
 import jgm.glider.Status;
@@ -55,17 +57,18 @@ public class ExperiencePane extends Pane {
 	}
 
 	public void update(Status s) {		
-		if (s.nextExperience > 0) {
-			xp.setText(
-				String.format(
-					"%s: %s/%s (%s%%)",
-					"Experience",
-					s.experience,
-					s.nextExperience,
-					s.xpPercent
-			));
-		} else {
-			xp.setText("Experience: Unknown");
+		if (s.attached) {
+			if (s.nextExperience > 0) {
+				xp.setText(
+					String.format(
+						"Experience: %,d/%,d (%s%%)",
+						s.experience,
+						s.nextExperience,
+						s.xpPercent
+				));
+			} else {
+				xp.setText("Experience: Unknown");
+			}
 		}
 		
 		// hide this pane if we're at the level cap but only if we're connected and the level is valid
@@ -74,7 +77,7 @@ public class ExperiencePane extends Pane {
 			this.setVisible(!s.atLevelCap());
 		}
 		
-		if (s.xpPerHour > 0) {
+		if (s.xpPerHour > 0 && s.attached) {
 			int seconds = 0, minutes = 0, hours = 0;
 			int xpDiff = s.nextExperience - s.experience;
 			double d = (double) xpDiff / (double) s.xpPerHour;
@@ -92,6 +95,6 @@ public class ExperiencePane extends Pane {
 		xpbar.setValue(s.xpPercent);
 		// redundant
 //		xpbar.setToolTipText(xpPercent + "%");
-		xph.setText("XP/Hour: " + Integer.toString(s.xpPerHour));
+		xph.setText(String.format("XP/Hour: %,d", s.xpPerHour));
 	}
 }

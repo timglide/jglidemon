@@ -109,26 +109,27 @@ public class StatusUpdater extends Observable
 
 			if (parts.length != 2) continue;
 
-			m.put(parts[0], parts[1].replace(',', '.').trim());
+			m.put(parts[0], parts[1].trim());
 //			System.out.println(parts[0] + ": " + parts[1].trim());
 		}
 		} catch (Exception e) {}
 
 //		System.out.println("--><--");
 
-		last = s.clone();
+		Status tmp = last;
+		last = s;
+		s = tmp;
+		s.resetData();
 		
-		s.version    = m.containsKey("Version")     ? m.get("Version")     : "";
-		s.attached   = m.containsKey("Attached")
-					 && m.get("Attached").equals("True")
-					 							  ? true                 : false;
-		s.mode       = m.containsKey("Mode")        ? m.get("Mode")        : "Auto";
-		s.profile    = m.containsKey("Profile")     ? m.get("Profile")     : "";
-		s.logMode    = m.containsKey("Log")         ? m.get("Log")         : "None";
-		s.name       = m.containsKey("Name")        ? m.get("Name")        : "";
-		s.clazz      = m.containsKey("Class")       ? jgm.wow.Class.strToClass(m.get("Class")) : jgm.wow.Class.UNKNOWN;
-		s.location   = m.containsKey("Location")    ? m.get("Location")    : "";
-		s.targetName = m.containsKey("Target-Name") ? m.get("Target-Name") : "";
+		s.version    = _(m, "Version");
+		s.attached   = "True".equals(_(m, "Attached"));;
+		s.mode       = _(m, "Mode", "Auto");
+		s.profile    = _(m, "Profile");
+		s.logMode    = _(m, "Log", "None");
+		s.name       = _(m, "Name");
+		s.clazz      = m.containsKey("Class") ? jgm.wow.Class.strToClass(m.get("Class")) : jgm.wow.Class.UNKNOWN;
+		s.location   = _(m, "Location");
+		s.targetName = _(m, "Target-Name");
 		
 		int i = s.profile.toLowerCase().indexOf("profiles\\");
 
@@ -142,14 +143,7 @@ public class StatusUpdater extends Observable
 			}
 		}
 
-		try {
-			s.health = m.containsKey("Health")
-					 ? Double.parseDouble(m.get("Health"))
-					 : 0.0;
-		} catch (NumberFormatException e) {
-			s.health = 0.0;
-		}
-
+		s.health = _(m, "Health", 0.0);
 		s.health *= 100; // health was a percent
 
 		try {
@@ -172,16 +166,7 @@ public class StatusUpdater extends Observable
 //				}
 //				System.out.println();
 				
-				int group = 1;
-				
-				// only check if the groups are null if there's more than 1
-				// don't check the last one because we must assume that the
-				// last one won't be null if all the others are
-				for (int j = 1; j < s.clazz.mana.numRegexGroups(); j++) {
-					if (x.group(group) == null) group++;
-					else break;
-				}
-				
+				int group = s.clazz.mana.getDisplayRegexGroup();
 				s.mana = Double.parseDouble(x.group(group));
 				s.manaName = s.clazz.mana.toString(group);
 				
@@ -194,37 +179,10 @@ public class StatusUpdater extends Observable
 			s.manaName = "Mana";
 		}
 
-		try {
-			s.level = m.containsKey("Level")
-					? Integer.parseInt(m.get("Level"))
-					: 0;
-		} catch (NumberFormatException e) {
-			s.level = 0;
-		}
-
-		try {
-			s.experience = m.containsKey("Experience")
-						 ? Integer.parseInt(m.get("Experience"))
-						 : 0;
-		} catch (NumberFormatException e) {
-			s.experience = 0;
-		}
-
-		try {
-			s.nextExperience = m.containsKey("Next-Experience")
-							 ? Integer.parseInt(m.get("Next-Experience"))
-							 : 0;
-		} catch (NumberFormatException e) {
-			s.nextExperience = 0;
-		}
-
-		try {
-			s.xpPerHour = m.containsKey("XP/Hour")
-						? Integer.parseInt(m.get("XP/Hour"))
-						: 0;
-		} catch (NumberFormatException e) {
-			s.xpPerHour = 0;
-		}
+		s.level = _(m, "Level", 0);
+		s.experience = _(m, "Experience", 0);
+		s.nextExperience = _(m, "Next-Experience", 0);
+		s.xpPerHour = _(m, "XP/Hour", 0);
 
 		if (s.nextExperience > 0) {
 			s.xpPercent = (int) (100 * ((float) s.experience / (float) s.nextExperience));
@@ -232,15 +190,7 @@ public class StatusUpdater extends Observable
 			s.xpPercent = 0;
 		}
 		
-		try {
-			if (!m.containsKey("Heading")) {
-				s.heading = -1.0;
-			} else {
-				s.heading = Double.parseDouble(m.get("Heading"));
-			}
-		} catch (NumberFormatException e) {
-			s.heading = -1.0;
-		}
+		s.heading = _(m, "Heading", -1.0);
 
 		try {
 			if (!m.containsKey("KLD")) {
@@ -258,24 +208,46 @@ public class StatusUpdater extends Observable
 			s.kills = s.loots = s.deaths = 0;
 		}
 
-		try {
-			s.targetLevel = m.containsKey("Target-Level")
-						  ? Integer.parseInt(m.get("Target-Level"))
-						  : 0;
-		} catch (NumberFormatException e) {
-			s.targetLevel = 0;
-		}
-
-		try {
-			s.targetHealth = m.containsKey("Target-Health")
-						   ? Double.parseDouble(m.get("Target-Health"))
-						   : 0.0;
-		} catch (NumberFormatException e) {
-			s.targetHealth = 0.0;
-		}
-
+		s.targetLevel = _(m, "Target-Level", 0);
+		s.targetHealth = _(m, "Target-Health", 0.0);
 		s.targetHealth *= 100; // health was a percent
 
+		
+		
+		s.goalText = _(m, "Goal-Text");
+		s.statusText = _(m, "Status-Text");
+		s.copper = _(m, "Copper", 0L);
+		s.timeToLevel = _(m, "Time-To-Level", Double.POSITIVE_INFINITY); // in seconds
+		s.targetIsPlayer = _(m, "Target-Is-Player", false);
+		s.honorGained = _(m, "Honor-Gained", 0);
+		s.honorPerHour = _(m, "Honor/Hour", 0);
+		s.bgsWon = _(m, "BGs-Won", 0);
+		s.bgsLost = _(m, "BGs-Lost", 0);
+		s.bgsCompleted = _(m, "BGs-Completed", 0);
+		s.bgsWonPerHour = _(m, "BGs-Won/Hour", 0);
+		s.bgsLostPerHour = _(m, "BGs-Lost/Hour", 0);
+		s.bgsPerHour = _(m, "BGs/Hour", 0);
+		s.killsPerHour = _(m, "Kills/Hour", 0);
+		s.lootsPerHour = _(m, "Loots/Hour", 0);
+		s.deathsPerHour = _(m, "Deaths/Hour", 0);
+		
+		s.nodes = _(m, "Nodes", 0);
+		s.nodesPerHour = _(m, "Nodes/Hour", 0);
+		s.solves = _(m, "Solves", 0);
+		s.solvesPerHour = _(m, "Solves/Hour", 0);
+		s.fish = _(m, "Fish", 0);
+		s.fishPerHour = _(m, "Fish/Hour", 0);
+		
+		s.running = _(m, "Running", false);
+		s.accountName = _(m, "Account-Name");
+		s.realm = _(m, "Realm");
+		s.map = _(m, "Map");
+		s.mapId = _(m, "Map-Id", -1);
+		s.zone = _(m, "Zone");
+		s.realZone = _(m, "Real-Zone");
+		s.subZone = _(m, "Sub-Zone");
+		
+		
 		setChanged();
 		notifyObservers(s);
 		
@@ -283,6 +255,42 @@ public class StatusUpdater extends Observable
 			fireOnAttach();
 		else if (!s.attached && last.attached)
 			fireOnDetach();
+	}
+	
+	private String _(Map<String, String> m, String key) {
+		return _(m, key, "");
+	}
+	
+	private String _(Map<String, String> m, String key, String defaultValue) {
+		return m.get(key) != null ? m.get(key) : defaultValue;
+	}
+	
+	private int _(Map<String, String> m, String key, int defaultValue) {
+		try {
+			return m.get(key) != null ? Integer.parseInt(m.get(key)) : defaultValue;
+		} catch (NumberFormatException nfe) {
+			return defaultValue;
+		}
+	}
+	
+	private long _(Map<String, String> m, String key, long defaultValue) {
+		try {
+			return m.get(key) != null ? Long.parseLong(m.get(key)) : defaultValue;
+		} catch (NumberFormatException nfe) {
+			return defaultValue;
+		}
+	}
+	
+	private double _(Map<String, String> m, String key, double defaultValue) {
+		try {
+			return m.get(key) != null ? Double.parseDouble(m.get(key)) : defaultValue;
+		} catch (NumberFormatException nfe) {
+			return defaultValue;
+		}
+	}
+	
+	private boolean _(Map<String, String> m, String key, boolean defaultValue) {
+		return m.get(key) != null ? Boolean.parseBoolean(m.get(key)) : defaultValue;
 	}
 	
 	List<GliderListener> gliderListeners = new Vector<GliderListener>();

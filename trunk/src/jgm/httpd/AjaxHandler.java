@@ -20,10 +20,6 @@
  */
 package jgm.httpd;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -38,9 +34,12 @@ import jgm.gui.tabs.MobsTab;
 import jgm.wow.Item;
 import jgm.wow.ItemSet;
 import jgm.wow.Mob;
-import jgm.wow.Quality;
 import jgm.wow.Rep;
 import jgm.wow.Skill;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class AjaxHandler extends Handler {
 	public static final String DEF_ERROR_JSON =
@@ -332,7 +331,7 @@ public class AjaxHandler extends Handler {
 	}
 	
 	private void loot(JSONObject root, String since) throws JSONException {
-		LootsTab lootsTab = httpd.sm.gui.tabsPane.lootsTab;
+		LootsTab lootsTab = httpd.sm.gui.tabsPane.lootTab.lootsTab;
 		
 		if (null != since) {
 			long iSince = 0L;

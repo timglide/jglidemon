@@ -20,20 +20,24 @@
  */
 package jgm.gui.panes;
 
-import jgm.glider.Status;
-import jgm.gui.tabs.*;
+import jgm.gui.tabs.ChartsTab;
+import jgm.gui.tabs.ChatTab;
+import jgm.gui.tabs.LogTab;
+import jgm.gui.tabs.LootTab;
+import jgm.gui.tabs.MobsTab;
+import jgm.gui.tabs.OverviewTab;
+import jgm.gui.tabs.PlayerChartTab;
+import jgm.gui.tabs.ProfilesTab;
+import jgm.gui.tabs.ScreenshotTab;
+import jgm.gui.tabs.UrgentTab;
 
-import java.awt.*;
-import javax.swing.*;
-
-public class TabsPane extends Pane {
-	public JTabbedPane  tabbedPane;
-
+public class TabsPane extends TabsPaneBase {
+	public OverviewTab overviewTab;
 	public ScreenshotTab screenshotTab;
 	public LogTab        statusLog;
-	public PlayerChartTab chartTab;
+	public ChartsTab     chartsTab;
 	public MobsTab       mobsTab;
-	public LootsTab      lootsTab;
+	public LootTab       lootTab;
 	
 	public ChatTab       chatLog;
 	
@@ -45,25 +49,27 @@ public class TabsPane extends Pane {
 	public LogTab        rawLog;
 
 	public TabsPane(jgm.gui.GUI gui) {
-		super(gui, new BorderLayout());
+		super(gui);
 
-		tabbedPane = new JTabbedPane();
-
+		overviewTab = new OverviewTab(gui);
+		addTab(overviewTab);
+		
 		screenshotTab = new ScreenshotTab(gui);
 		tabbedPane.addChangeListener(screenshotTab);
+		tabbedPane.addChangeListener(lootTab);
 		tabbedPane.addKeyListener(screenshotTab);
 		addTab(screenshotTab);
 		
 		chatLog   = new ChatTab(gui);
 		urgent    = new UrgentTab(gui);
 		profiles  = new ProfilesTab(gui);
-		combatLog = new LogTab(gui, "Combat Log", tabbedPane);
-		gliderLog = new LogTab(gui, "Glider Log", tabbedPane);
-		statusLog = new LogTab(gui, "Status", tabbedPane);
+		combatLog = new LogTab(gui, "Combat Log");
+		gliderLog = new LogTab(gui, "Glider Log");
+		statusLog = new LogTab(gui, "Status");
 		
 		if (jgm.JGlideMon.debug) {
-			rawChatLog = new LogTab(gui, "Raw Chat Log", tabbedPane);
-			rawLog     = new LogTab(gui, "Raw Log", tabbedPane);
+			rawChatLog = new LogTab(gui, "Raw Chat Log");
+			rawLog     = new LogTab(gui, "Raw Log");
 		}
 
 		addTab(chatLog);
@@ -82,14 +88,14 @@ public class TabsPane extends Pane {
 			addTab(rawLog);
 		}
 
-		chartTab = new PlayerChartTab(gui);
-		addTab(chartTab);
+		chartsTab = new ChartsTab(gui);
+		addTab(chartsTab);
 		
 		mobsTab = new MobsTab(gui);
 		addTab(mobsTab);
 		
-		lootsTab = new LootsTab(gui);
-		addTab(lootsTab);
+		lootTab = new LootTab(gui);
+		addTab(lootTab);
 
 		try {
 			tabbedPane.setSelectedIndex(gui.sm.getInt("general.lasttab"));
@@ -103,16 +109,5 @@ public class TabsPane extends Pane {
 				}
 			}
 		);
-		
-		add(tabbedPane, BorderLayout.CENTER);
-	}
-
-	private void addTab(Tab t) {
-		tabbedPane.addTab(t.name, t);
-	}
-
-	public void update(Status s) {
-		lootsTab.update(s);
-		chatLog.update(s);
 	}
 }

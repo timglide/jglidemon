@@ -341,23 +341,29 @@ public class Item implements Comparable<Item>, Serializable {
 
 	public ImageIcon getIcon() {
 		if (icon == null) {
-			if (iconCache.containsKey(iconPath)) {
-				icon = iconCache.get(iconPath);
-				return icon;
-			}
-			
-			try {
-				icon = new javax.swing.ImageIcon(
-					   new java.net.URL(String.format(ICON_BASE, iconPath)));
-				icon = jgm.util.Util.resizeIcon(icon, 32, 32);
-				iconCache.put(iconPath, icon);
-			} catch (java.net.MalformedURLException e) {
-				// shouldn't get in here...
-				System.err.println("Unable to make icon in Item: " + e.getMessage());
-				icon = null;
-			}
+			icon = getIcon(iconPath);
 		}
 
+		return icon;
+	}
+	
+	public static ImageIcon getIcon(String iconPath)
+	{
+		if (iconCache.containsKey(iconPath)) {
+			return iconCache.get(iconPath);
+		}
+		
+		ImageIcon icon = null;
+		try {
+			icon = new javax.swing.ImageIcon(
+				   new java.net.URL(String.format(ICON_BASE, iconPath)));
+			icon = jgm.util.Util.resizeIcon(icon, 32, 32);
+			iconCache.put(iconPath, icon);
+		} catch (java.net.MalformedURLException e) {
+			// shouldn't get in here...
+			System.err.println("Unable to make icon in Item: " + e.getMessage());
+		}
+		
 		return icon;
 	}
 	

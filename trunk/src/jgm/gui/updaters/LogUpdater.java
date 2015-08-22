@@ -77,7 +77,7 @@ public class LogUpdater implements Runnable, ConnectionListener {
 		urgent     = t.urgent;
 		combatLog  = t.combatLog;
 		mobsTab    = t.mobsTab;
-		lootsTab   = t.lootsTab;
+		lootsTab   = t.lootTab.lootsTab;
 		
 		conn = new Conn(sm, "LogUpdater");
  	}

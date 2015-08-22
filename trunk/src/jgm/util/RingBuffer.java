@@ -38,7 +38,7 @@ import java.util.*;
  */
 
 @SuppressWarnings("unchecked")
-public class RingBuffer<T> implements List<T> {
+public class RingBuffer<T> implements List<T>, RandomAccess {
 	T[] data;
 	int first = 0, count = 0;
 	int nextInsert = 0;
@@ -140,6 +140,7 @@ public class RingBuffer<T> implements List<T> {
 		first = 0;
 		count = 0;
 		nextInsert = 0;
+		Arrays.fill(data, null);
 	}
 	
 	public T[] toArray() {
@@ -166,7 +167,7 @@ public class RingBuffer<T> implements List<T> {
 	}
 	
 	public List<T> subList(int from, int to) {
-		RingBuffer ret = new RingBuffer(to - from);
+		RingBuffer<T> ret = new RingBuffer<T>(to - from);
 		
 		for (int i = from; i < to; i++) {
 			ret.add(get(i));

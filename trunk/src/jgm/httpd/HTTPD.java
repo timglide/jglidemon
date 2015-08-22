@@ -27,6 +27,10 @@ import jgm.util.Properties;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -164,6 +168,8 @@ public class HTTPD implements Runnable
 	protected Map<String, Handler> handlers = new HashMap<String, Handler>();
 	public final ServerManager sm;
 	
+	private ExecutorService execService;
+	
 	// ==================================================
 	// Socket & server code
 	// ==================================================
@@ -175,6 +181,18 @@ public class HTTPD implements Runnable
 	public HTTPD(ServerManager sm)
 	{
 		this.sm = sm;
+		
+		execService = Executors.newCachedThreadPool(new ThreadFactory() {
+			private AtomicInteger count = new AtomicInteger();
+			
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread t = new Thread(r);
+				t.setDaemon(true);
+				t.setName("HTTPD-Sess-" + count.incrementAndGet());
+				return t;
+			}
+		});
 		
 		File jf = null;
 		
@@ -247,6 +265,7 @@ public class HTTPD implements Runnable
 
 		ss = new ServerSocket(port);
 		thread = new Thread(this);
+		thread.setName("HTTPD-Main");
 		thread.setDaemon(true);
 		thread.start();
 	}
@@ -325,9 +344,7 @@ public class HTTPD implements Runnable
 		public HTTPSession( Socket s )
 		{
 			mySocket = s;
-			Thread t = new Thread( this );
-			t.setDaemon( true );
-			t.start();
+			execService.execute(this);
 		}
 
 		public void run()

@@ -20,15 +20,16 @@
  */
 package jgm.gui.updaters;
 
-import jgm.gui.components.PlayerChart;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import java.util.*;
+import jgm.gui.tabs.ChartsTab;
 
 public class PlayerChartUpdater {
 	// updates every second
 	static final int UPDATE_INTERVAL = 1000;
 	
-	PlayerChart chart;
+	ChartsTab charts;
 	jgm.glider.Status status;
 	Timer timer;
 	
@@ -37,7 +38,7 @@ public class PlayerChartUpdater {
 	public PlayerChartUpdater(jgm.ServerManager sm) {
 		this.sm = sm;
 		status = sm.status.s;
-		chart = sm.gui.tabsPane.chartTab.chart;
+		charts = sm.gui.tabsPane.chartsTab;
 		
 		timer = new Timer(sm.name + ":PlayerChartUpdater", true);
 		timer.scheduleAtFixedRate(
@@ -47,11 +48,14 @@ public class PlayerChartUpdater {
 					// don't add points when we're dced or not attached
 					if (!sm.connector.isConnected() || !status.attached) return;
 					
-					chart.addData(
+					charts.playerChartTab.chart.addData(
 						status.health,
 						status.mana,
 						status.targetName.isEmpty()
 						? -1 : status.targetHealth);
+					
+					if (null != charts.locationChartTab)
+						charts.locationChartTab.update(status);
 				}
 			}, 0, UPDATE_INTERVAL
 		);

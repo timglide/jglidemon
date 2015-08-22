@@ -24,6 +24,8 @@ import jgm.Config;
 import jgm.JGlideMon;
 import jgm.ServerManager;
 import jgm.glider.*;
+import jgm.gui.components.ItemTooltip;
+import jgm.gui.components.ItemTooltipLayeredPane;
 import jgm.gui.components.JStatusBar;
 import jgm.gui.panes.CharInfoPane;
 import jgm.gui.panes.ControlPane;
@@ -87,6 +89,9 @@ public class GUI
 	public Tray tray;
 	private SendChatPane sendChatPane;
 	JStatusBar statusBar;
+
+	private ItemTooltip itemTooltip;
+	public ItemTooltipLayeredPane itemTooltipPane;
 	
 	// elements
 	public CharInfoPane   charInfo;
@@ -283,7 +288,13 @@ public class GUI
 		});
 
 		frame.setLayout(new BorderLayout());
-				
+		
+		
+		// Global item tooltip
+		itemTooltip = new ItemTooltip("Test Item");
+		itemTooltipPane = new ItemTooltipLayeredPane(itemTooltip);
+		
+		
 		////////////////
 		// set up panels
 		mainPanel = new JPanel(new GridBagLayout());
@@ -319,8 +330,9 @@ public class GUI
 		tabsPanel.add(tabsPane, BorderLayout.CENTER);
 		c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.weightx = 1.0; c.weighty = 1.0;
 		mainPanel.add(tabsPanel, c);
-
-		frame.add(mainPanel, BorderLayout.CENTER);
+		
+		itemTooltipPane.add(mainPanel, BorderLayout.CENTER, 1);
+		frame.add(itemTooltipPane, BorderLayout.CENTER);
 		
 		addKeyAndContainerListenerRecursively(tabsPane.screenshotTab, this, frame);
 		
@@ -815,15 +827,9 @@ public class GUI
 		} else if (source == menu.parseLogFile) {
 			showParse();
 		} else if (source == menu.clearCurLog) {
-			if (tabsPane.tabbedPane.getSelectedComponent() instanceof jgm.gui.tabs.Clearable) {
-				((jgm.gui.tabs.Clearable) tabsPane.tabbedPane.getSelectedComponent()).clear(false);
-			}
+			tabsPane.clear(false);
 		} else if (source == menu.clearAllLogs) {
-			for (int i = 0; i < tabsPane.tabbedPane.getComponentCount(); i++) {
-				if (tabsPane.tabbedPane.getComponentAt(i) instanceof jgm.gui.tabs.Clearable) {
-					((jgm.gui.tabs.Clearable) tabsPane.tabbedPane.getComponentAt(i)).clear(true);
-				}
-			}
+			tabsPane.clear(true);
 		} else if (source == menu.addServer) {
 			ServerManager.addServer();
 		} else if (source == menu.removeServer) {

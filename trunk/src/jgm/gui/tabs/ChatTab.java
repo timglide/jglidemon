@@ -21,12 +21,13 @@
 package jgm.gui.tabs;
 
 import jgm.glider.log.*;
+import jgm.gui.panes.TabsPaneBase;
 
 import java.awt.*;
 import javax.swing.*;
 
 public class ChatTab extends Tab implements Clearable {
-	private JTabbedPane tabs;
+	private TabsPaneBase tabs;
 	public LogTab all;
 	public LogTab pub;
 	public LogTab whisper;
@@ -35,11 +36,11 @@ public class ChatTab extends Tab implements Clearable {
 	public ChatTab(jgm.gui.GUI gui) {
 		super(gui, new BorderLayout(), "Chat");
 		
-		tabs = new JTabbedPane();
-		all = new LogTab(gui, "All Chat", tabs);
-		pub = new LogTab(gui, "Public Chat", tabs);
-		whisper = new LogTab(gui, "Whisper/Say/Yell", tabs);
-		guild = new LogTab(gui, "Guild", tabs);
+		tabs = new TabsPaneBase(gui);
+		all = new LogTab(gui, "All Chat");
+		pub = new LogTab(gui, "Public Chat");
+		whisper = new LogTab(gui, "Whisper/Say/Yell");
+		guild = new LogTab(gui, "Guild");
 		
 		addTab(all);
 		addTab(pub);
@@ -52,7 +53,7 @@ public class ChatTab extends Tab implements Clearable {
 	}
 	
 	private void addTab(Tab t) {
-		tabs.addTab(t.name, t);
+		tabs.addTab(t);
 	}
 	
 	public void add(ChatLogEntry e) {
@@ -71,12 +72,6 @@ public class ChatTab extends Tab implements Clearable {
 	}
 	
 	public void clear(boolean clearingAll) {
-		if (!clearingAll) {
-			((Clearable) tabs.getSelectedComponent()).clear(false);
-		} else {
-			for (int i = 0; i < tabs.getComponentCount(); i++) {
-				((Clearable) tabs.getComponentAt(i)).clear(true);
-			}
-		}
+		tabs.clear(clearingAll);
 	}
 }

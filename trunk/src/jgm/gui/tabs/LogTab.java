@@ -20,16 +20,36 @@
  */
 package jgm.gui.tabs;
 
-import jgm.Config;
-import jgm.glider.log.*;
-import jgm.util.RingBuffer;
-
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+
+import jgm.Config;
+import jgm.glider.log.ChatLink;
+import jgm.glider.log.ChatLinkType;
+import jgm.glider.log.ChatLogEntry;
+import jgm.glider.log.LogEntry;
+import jgm.util.RingBuffer;
+import jgm.wow.ItemSet;
 
 public class LogTab extends Tab implements Clearable {
 	static Font BASE_FONT = null;
@@ -58,18 +78,16 @@ public class LogTab extends Tab implements Clearable {
 		COLOR_MAP.put("Status", COLOR_MAP.get("GliderLog"));
 	}
 	
-	protected JTabbedPane   parent;
 	private LogTable      logTable;
 	private LogTableModel logEntries;
 	private JScrollPane   jsp;
 	
-	public LogTab(jgm.gui.GUI gui, String s, JTabbedPane tp) {
+	public LogTab(jgm.gui.GUI gui, String s) {
 		super(gui, new BorderLayout(), s);
 
 		this.setBackground(Color.BLACK);
 		this.setOpaque(true);
 		
-		parent     = tp;
 		logEntries = new LogTableModel();
 		logTable   = new LogTable(logEntries);
 
@@ -87,14 +105,16 @@ public class LogTab extends Tab implements Clearable {
 		logEntries.add(e);
 		
 		// to scroll the added entry into view but not keep it selected
-		logTable.changeSelection(
-			logTable.getRowCount() - 1, 1, false, false
-		);
+		Rectangle r = logTable.getBounds();
+		r.y = r.height - 2;
+		r.height = 1;
+		logTable.scrollRectToVisible(r);
 		logTable.clearSelection();
 		
 		if (select) {
 			this.select();
 		}
+		repaint();
 	}
 
 	public void clear(boolean clearingAll) {
@@ -125,7 +145,7 @@ public class LogTab extends Tab implements Clearable {
 		}
 	};
 	
-	private class LogTable extends JTable implements MouseListener {
+	private class LogTable extends JTable implements MouseListener, MouseMotionListener {
 		ColorLabelRenderer colorLabelRenderer = new ColorLabelRenderer();
 		
 		public LogTable(TableModel dm) {
@@ -155,10 +175,94 @@ public class LogTab extends Tab implements Clearable {
 			
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			this.addMouseListener(this);
+			this.addMouseMotionListener(this);
 		}
 		
-		public void mouseEntered(MouseEvent e) {}
-		public void mouseExited(MouseEvent e) {}
+		private void updateItemTooltip(MouseEvent e) {
+			Point p = e.getPoint();
+			int realX = -1;
+			int vRow = rowAtPoint(p);
+			int vCol = columnAtPoint(p);
+			int mRow = convertRowIndexToModel(vRow);
+			int mCol = convertColumnIndexToModel(vCol);
+			
+			if (mRow < 0 || mCol != 2) {
+				gui.itemTooltipPane.setItemSet(null);
+				return;
+			}
+			
+			int itemId = 0;
+			LogEntry entry = ((LogTableModel) dataModel).get(mRow);
+			Component c = null;
+			FontMetrics fm = null;
+			
+			if (entry.hasChatLinks()) {
+				char[] entryTextChars = null;
+				
+				for (ChatLink cl : entry.getChatLinks().values()) {
+					if (ChatLinkType.ITEM != cl.type)
+						continue;
+					
+					if (cl.pixelOffset < 0 || cl.pixelWidth < 0) {
+						if (null == fm) {
+							c = getCellRenderer(vRow, vCol).getTableCellRendererComponent(this, "ZZZ", false, false, vRow, vCol);
+							fm = c.getFontMetrics(c.getFont());
+						}
+						
+						if (null == entryTextChars) {
+							entryTextChars = entry.getText().toCharArray();
+						}
+						
+//						System.out.printf("Measuring %s%n", cl);
+						cl.pixelOffset = fm.charsWidth(entryTextChars, 0, cl.offset);
+						cl.pixelWidth = fm.charsWidth(entryTextChars, cl.offset, cl.length());
+//						System.out.printf("  x=%d,w=%d%n", cl.pixelOffset, cl.pixelWidth);
+					}
+					
+					if (realX < 0) {
+						Rectangle rect = getCellRect(vRow, vCol, false);
+						realX = p.x - rect.x;
+//						System.out.printf("realX/p.x/rect = %d/%d/%s%n", realX, p.x, rect);
+					}
+					
+					if (cl.pixelOffset <= realX && realX < cl.pixelOffset + cl.pixelWidth) {
+						try {
+							itemId = Integer.parseInt(cl.parts[1]);
+						} catch (NumberFormatException nfe) {
+							nfe.printStackTrace();
+						}
+						break;
+					}
+				}
+			}
+			
+			if (itemId > 0) {
+				if (null == gui.itemTooltipPane.getItemSet() ||
+						itemId != gui.itemTooltipPane.getItemSet().getItem().id) {
+					ItemSet is = ItemSet.factory(itemId, "FIXME", 1);
+					gui.itemTooltipPane.setItemSet(is);
+				} else {
+					gui.itemTooltipPane.moveTooltip();
+				}
+			} else {
+				gui.itemTooltipPane.setItemSet(null);
+			}
+		}
+		
+		public void mouseMoved(MouseEvent e) {
+			updateItemTooltip(e);
+		}
+		
+		public void mouseDragged(MouseEvent e) {}
+		
+		public void mouseEntered(MouseEvent e) {
+			updateItemTooltip(e);
+		}
+		
+		public void mouseExited(MouseEvent e) {
+			gui.itemTooltipPane.setItemSet(null);
+		}
+		
 		public void mousePressed(MouseEvent e) {}
 		public void mouseReleased(MouseEvent e) {}
 		
@@ -205,7 +309,7 @@ public class LogTab extends Tab implements Clearable {
 			if (entries.size() < entries.capacity())
 				fireTableRowsInserted(entries.size(), entries.size());
 			else
-				fireTableRowsUpdated(0, entries.size());
+				fireTableDataChanged();
 		}
 
 		public LogEntry get(int row) {
